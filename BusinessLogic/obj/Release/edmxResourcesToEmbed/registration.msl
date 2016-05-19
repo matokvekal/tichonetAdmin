@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="BusProjectModelStoreContainer" CdmEntityContainer="BusProjectEntities">
+    <EntitySetMapping Name="tblDictSystems">
+      <EntityTypeMapping TypeName="BusProjectModel.tblDictSystem">
+        <MappingFragment StoreEntitySet="tblDictSystem">
+          <ScalarProperty Name="cantBeChange" ColumnName="cantBeChange" />
+          <ScalarProperty Name="DateCreatedUTC" ColumnName="DateCreatedUTC" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="cultures" ColumnName="cultures" />
+          <ScalarProperty Name="SystemTranslated" ColumnName="SystemTranslated" />
+          <ScalarProperty Name="CustomerTranslated" ColumnName="CustomerTranslated" />
+          <ScalarProperty Name="term" ColumnName="term" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblCultures">
+      <EntityTypeMapping TypeName="BusProjectModel.tblCulture">
+        <MappingFragment StoreEntitySet="tblCulture">
+          <ScalarProperty Name="comment" ColumnName="comment" />
+          <ScalarProperty Name="culture" ColumnName="culture" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblYears">
+      <EntityTypeMapping TypeName="BusProjectModel.tblYear">
+        <MappingFragment StoreEntitySet="tblYears">
+          <ScalarProperty Name="nameHeb" ColumnName="nameHeb" />
+          <ScalarProperty Name="nameEng" ColumnName="nameEng" />
+          <ScalarProperty Name="year" ColumnName="year" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblStudents">
+      <EntityTypeMapping TypeName="BusProjectModel.tblStudent">
+        <MappingFragment StoreEntitySet="tblStudent">
+          <ScalarProperty Name="registrationStatus" ColumnName="registrationStatus" />
+          <ScalarProperty Name="lastUpdate" ColumnName="lastUpdate" />
+          <ScalarProperty Name="dateCreate" ColumnName="dateCreate" />
+          <ScalarProperty Name="paymentStatus" ColumnName="paymentStatus" />
+          <ScalarProperty Name="GetAlertByEmail" ColumnName="GetAlertByEmail" />
+          <ScalarProperty Name="EmailConfirm" ColumnName="EmailConfirm" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="GetAlertByCell" ColumnName="GetAlertByCell" />
+          <ScalarProperty Name="CellConfirm" ColumnName="CellConfirm" />
+          <ScalarProperty Name="CellPhone" ColumnName="CellPhone" />
+          <ScalarProperty Name="zipCode" ColumnName="zipCode" />
+          <ScalarProperty Name="houseNumber" ColumnName="houseNumber" />
+          <ScalarProperty Name="street" ColumnName="street" />
+          <ScalarProperty Name="city" ColumnName="city" />
+          <ScalarProperty Name="class" ColumnName="class" />
+          <ScalarProperty Name="Shicva" ColumnName="Shicva" />
+          <ScalarProperty Name="yearRegistration" ColumnName="yearRegistration" />
+          <ScalarProperty Name="lastName" ColumnName="lastName" />
+          <ScalarProperty Name="firstName" ColumnName="firstName" />
+          <ScalarProperty Name="studentId" ColumnName="studentId" />
+          <ScalarProperty Name="familyId" ColumnName="familyId" />
+          <ScalarProperty Name="pk" ColumnName="pk" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblStreets">
+      <EntityTypeMapping TypeName="BusProjectModel.tblStreet">
+        <MappingFragment StoreEntitySet="tblStreet">
+          <ScalarProperty Name="streetName" ColumnName="streetName" />
+          <ScalarProperty Name="streetId" ColumnName="streetId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblSystems">
+      <EntityTypeMapping TypeName="BusProjectModel.tblSystem">
+        <MappingFragment StoreEntitySet="tblSystem">
+          <ScalarProperty Name="value" ColumnName="value" />
+          <ScalarProperty Name="key" ColumnName="key" />
+          <ScalarProperty Name="pk" ColumnName="pk" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tblFamilies">
+      <EntityTypeMapping TypeName="BusProjectModel.tblFamily">
+        <MappingFragment StoreEntitySet="tblFamily">
+          <ScalarProperty Name="iAgree" ColumnName="iAgree" />
+          <ScalarProperty Name="paymentDateConfirm" ColumnName="paymentDateConfirm" />
+          <ScalarProperty Name="paymentOk" ColumnName="paymentOk" />
+          <ScalarProperty Name="LastUpdate" ColumnName="LastUpdate" />
+          <ScalarProperty Name="date" ColumnName="date" />
+          <ScalarProperty Name="parent2GetAlertBycell" ColumnName="parent2GetAlertBycell" />
+          <ScalarProperty Name="parent2CellConfirm" ColumnName="parent2CellConfirm" />
+          <ScalarProperty Name="parent2CellPhone" ColumnName="parent2CellPhone" />
+          <ScalarProperty Name="parent2GetAlertByEmail" ColumnName="parent2GetAlertByEmail" />
+          <ScalarProperty Name="parent2EmailConfirm" ColumnName="parent2EmailConfirm" />
+          <ScalarProperty Name="parent2Email" ColumnName="parent2Email" />
+          <ScalarProperty Name="parent2LastName" ColumnName="parent2LastName" />
+          <ScalarProperty Name="parent2FirstName" ColumnName="parent2FirstName" />
+          <ScalarProperty Name="parent2Type" ColumnName="parent2Type" />
+          <ScalarProperty Name="parent1GetAlertBycell" ColumnName="parent1GetAlertBycell" />
+          <ScalarProperty Name="parent1CellConfirm" ColumnName="parent1CellConfirm" />
+          <ScalarProperty Name="parent1CellPhone" ColumnName="parent1CellPhone" />
+          <ScalarProperty Name="parent1GetAlertByEmail" ColumnName="parent1GetAlertByEmail" />
+          <ScalarProperty Name="parent1EmailConfirm" ColumnName="parent1EmailConfirm" />
+          <ScalarProperty Name="parent1Email" ColumnName="parent1Email" />
+          <ScalarProperty Name="parent1LastName" ColumnName="parent1LastName" />
+          <ScalarProperty Name="parent1FirstName" ColumnName="parent1FirstName" />
+          <ScalarProperty Name="parent1Type" ColumnName="parent1Type" />
+          <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+          <ScalarProperty Name="familyId" ColumnName="familyId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Logins">
+      <EntityTypeMapping TypeName="BusProjectModel.Login">
+        <MappingFragment StoreEntitySet="Login">
+          <ScalarProperty Name="familyId" ColumnName="familyId" />
+          <ScalarProperty Name="passwordUnSecure" ColumnName="passwordUnSecure" />
+          <ScalarProperty Name="emailConfirm" ColumnName="emailConfirm" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="userName" ColumnName="userName" />
+          <ScalarProperty Name="userId" ColumnName="userId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

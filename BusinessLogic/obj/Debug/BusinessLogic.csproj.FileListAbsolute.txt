@@ -1,0 +1,10 @@
+C:\PROJECTS\BusinessLogic\bin\Debug\BusinessLogic.dll.config
+C:\PROJECTS\BusinessLogic\bin\Debug\BusinessLogic.dll
+C:\PROJECTS\BusinessLogic\bin\Debug\BusinessLogic.pdb
+C:\PROJECTS\BusinessLogic\bin\Debug\EntityFramework.dll
+C:\PROJECTS\BusinessLogic\bin\Debug\EntityFramework.SqlServer.dll
+C:\PROJECTS\BusinessLogic\bin\Debug\EntityFramework.xml
+C:\PROJECTS\BusinessLogic\bin\Debug\EntityFramework.SqlServer.xml
+C:\PROJECTS\BusinessLogic\obj\Debug\BusinessLogic.csprojResolveAssemblyReference.cache
+C:\PROJECTS\BusinessLogic\obj\Debug\BusinessLogic.dll
+C:\PROJECTS\BusinessLogic\obj\Debug\BusinessLogic.pdb

@@ -1,0 +1,6 @@
+C:\PROJECTS\Ticonet-Registration\BusinessLogic\bin\Debug\Business_Logic.dll.config
+C:\PROJECTS\Ticonet-Registration\BusinessLogic\bin\Debug\Business_Logic.dll
+C:\PROJECTS\Ticonet-Registration\BusinessLogic\bin\Debug\Business_Logic.pdb
+C:\PROJECTS\Ticonet-Registration\BusinessLogic\obj\Debug\Business_Logic.dll
+C:\PROJECTS\Ticonet-Registration\BusinessLogic\obj\Debug\Business_Logic.pdb
+C:\PROJECTS\Ticonet-Registration\BusinessLogic\obj\Debug\Business_Logic.csprojResolveAssemblyReference.cache

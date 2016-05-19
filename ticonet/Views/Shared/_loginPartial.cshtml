@@ -1,0 +1,18 @@
+﻿
+@using ticonet;
+@if (Request.IsAuthenticated)
+{
+    <text>Hello @User.Identity.Name </text>
+    using (Html.BeginForm("Signout", "Account", FormMethod.Post, new { id = "signoutForm", style = "display:inline" }))
+    {    @Html.AntiForgeryToken()
+    <a href="javascript:document.getElementById('signoutForm').submit()">Signout</a>
+    }
+}
+else
+{
+    @*@Html.ActionLink("Log In","Login","Account")*@
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}
+

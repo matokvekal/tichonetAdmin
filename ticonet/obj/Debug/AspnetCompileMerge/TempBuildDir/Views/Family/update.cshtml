@@ -1,0 +1,157 @@
+﻿@model ticonet.familyViewModel
+@using Business_Logic
+
+@{
+    ViewBag.Title = "update";
+}
+
+
+<h2>@DictExpressionBuilderSystem.Translate("general.updateFamily")</h2>
+
+@using (Html.BeginForm())
+{
+
+
+
+    <hr />
+
+    <div class="form-control-static">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+   
+        @if (@ViewBag.message != null)
+        { <div>
+            <strong style="color:red">@ViewBag.message</strong>
+        </div>}
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>@DictExpressionBuilderSystem.Translate("general.majorParent")</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EditableTblFamily.ParentId)
+                        @Html.DisplayFor(model => model.EditableTblFamily.ParentId, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.EditableTblFamily.parent1FirstName)
+                        @Html.DisplayFor(x => x.EditableTblFamily.parent1FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.EditableTblFamily.parent1LastName)
+                        @Html.DisplayFor(x => x.EditableTblFamily.parent1LastName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.EditableTblFamily.parent1Type)
+                        @Html.DisplayFor(x => x.EditableTblFamily.parent1Type, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.EditableTblFamily.parent1CellPhone)
+                        @Html.EditorFor(x => x.EditableTblFamily.parent1CellPhone, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.EditableTblFamily.parent1CellPhone, "", new { @class = "text-danger" })
+
+                        @*<div class="form-group">
+                            @Html.LabelFor(x => x.EditableTblFamily.parent1GetAlertBycell)
+                            @Html.CheckBoxFor(model => model.EditableTblFamily.parent1GetAlertBycell)
+                        </div>*@
+                    </div>
+                    <div class="panel panel-success">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <div class="editor-field">
+                                    @Html.LabelFor(x => x.EditableTblFamily.parent1Email)
+                                    @Html.EditorFor(model => model.EditableTblFamily.parent1Email, new { disabled = "disabled", @readonly = "readonly", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.EditableTblFamily.parent1Email, "", new { @class = "text-danger" })
+                                </div>
+
+
+                                <div class="editor-field" style="margin-top:6px;margin-bottom:3px;">
+                                    @Html.LabelFor(x => x.EditableTblFamily.parent1EmailConfirm)
+                                    @{if (Model.parent1EmailConfirm == null)
+                                    {<img src="~/Content/img/false.png" alt="NO">
+                                        <button type="button" class=" btn btn-primary btn-sm">@DictExpressionBuilderSystem.Translate("general.confirm")</button>}
+                                      else if ((bool)Model.parent1EmailConfirm)
+                                    {<img src="~/Content/img/true.png" alt="YES"> }
+                                    else
+                                    {<img src="~/Content/img/false.png" alt="NO">
+                                        <button type="button" class=" btn btn-primary btn-sm">@DictExpressionBuilderSystem.Translate("general.confirm")</button>}
+}
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.EditableTblFamily.parent1GetAlertByEmail)
+                                    @Html.CheckBoxFor(model => model.EditableTblFamily.parent1GetAlertByEmail)
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(x => x.EditableTblFamily.allredyUsed)
+                                    @Html.CheckBoxFor(model => model.allredyUse)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>@DictExpressionBuilderSystem.Translate("general.secondParent")</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EditableTblFamily.parent2Type)
+                        @Html.EditorFor(model => model.EditableTblFamily.parent2Type, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EditableTblFamily.parent2FirstName)
+                        @Html.EditorFor(model => model.EditableTblFamily.parent2FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EditableTblFamily.parent2LastName)
+                        @Html.EditorFor(model => model.EditableTblFamily.parent2LastName, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EditableTblFamily.parent2Email)
+                        @Html.EditorFor(model => model.EditableTblFamily.parent2Email, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.EditableTblFamily.parent2CellPhone)
+                        @Html.EditorFor(model => model.EditableTblFamily.parent2CellPhone, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-6 ">
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <div class="form-group">
+
+                        <input type="submit" value=@DictExpressionBuilderSystem.Translate("general.save") class="btn btn-success" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+}
+
+
+
+<style>
+    .form-control {
+        display: inline !important;
+    }
+
+    .form-group {
+        margin-bottom: 7px !important;
+    }
+</style>
+
+
+

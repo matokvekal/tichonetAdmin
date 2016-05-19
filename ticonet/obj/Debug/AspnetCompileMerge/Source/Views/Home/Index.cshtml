@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>מערכת הרשמה להסעות</h1>
+    <p class="lead">תיכונט - תל אביב</p>
+    <p><a href="#" class="btn btn-primary btn-large">שנת הלימודי 2017 &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <dl>
+            <dt>יש לקרא היטב לפני ביצוע ההרשמה</dt>
+            <dd>
+                You can initialize ASP.NET Identity when the application starts. Since ASP.NET Identity is Entity Framework based in this sample,
+                you can create DatabaseInitializer which is configured to get called each time the app starts.
+                <strong>Please look in App_Start\IdentityConfig.cs</strong>
+                This code shows the following
+                <ul>
+                    <li>When should the Initializer run and when should the database be created</li>
+                    <li>Create Admin user</li>
+                    <li>Create Admin role</li>
+                    <li>Add Admin user to Admin role</li>
+                </ul>
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-4">
+        <dl>
+            <dt>Add profile data for the user</dt>
+            <dd>
+                <a href="http://blogs.msdn.com/b/webdev/archive/2013/10/16/customizing-profile-information-in-asp-net-identity-in-vs-2013-templates.aspx">Please follow this tutorial.</a>
+
+                <ul>
+                    <li>Add profile information in the Users Table</li>
+                    <li>Look in Models\IdentityModels.cs for examples</li>
+                </ul>
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-4">
+        <dl>
+            <dt>Validation</dt>
+            <dd>
+                When you create a User using a username or password, the Identity system performs validation on the username and password, and the passwords are hashed before they are
+                stored in the database. You can customize the validation by changing some of the properties of the validators such as Turn alphanumeric on/off, set minimum password length
+                or you can write your own custom validators and register them with the UserManager.
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-4">
+        <dl>
+            <dt>Register a user and login</dt>
+            <dd>
+                Click @Html.ActionLink("Register", "Register", "Account") and see the code in AccountController.cs and Register Action.
+                Click @Html.ActionLink("Log in", "Login", "Account") and see the code in AccountController.cs and Login Action.
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-4">
+        <dl>
+            <dt>Social Logins</dt>
+            <dd>
+                You can the support so that users can login using their Facebook, Google, Twitter, Microsoft Account and more.
+            </dd>
+            <dd>
+                <ul>
+                    <li>
+                        <a href="http://www.windowsazure.com/en-us/documentation/articles/web-sites-dotnet-deploy-aspnet-mvc-app-membership-oauth-sql-database/">Add Social Logins</a>
+                    </li>
+                    <li>
+                        <a href="http://blogs.msdn.com/b/webdev/archive/2013/10/16/get-more-information-from-social-providers-used-in-the-vs-2013-project-templates.aspx">Get more data about the user when they login suing Facebook</a>
+                    </li>
+                </ul>
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-4">
+        <dl>
+            <dt>Basic User Management</dt>
+            <dd>
+                Do Create, Update, List and Delete Users.
+                Assign a Role to a User.
+                Only Users In Role Admin can access this page. This uses the [Authorize(Roles = "Admin")] on the UserAdmin controller.
+            </dd>
+        </dl>
+    </div>
+
+
+</div>

@@ -1,0 +1,37 @@
+﻿@using ticonet;
+@using Business_Logic;
+@model LoginModel
+<link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Login";
+}
+@{
+    Layout = "";
+}
+
+@using (Html.BeginForm())
+{
+    <div class="AdminloginForm">
+
+        <h2>@Business_Logic.DictExpressionBuilderSystem.Translate("Login.userNameAdmin")</h2> 
+        @Html.EditorFor(m => m.userName, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(m => m.userName, "", new { @class = "text-danger" })
+        <br />
+        <br />
+        @Html.LabelFor(model => model.password)<text>:</text>
+        @Html.EditorFor(model => model.password, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.password, "", new { @class = "text-danger" })
+
+        <br />
+        <br />    @Html.LabelFor(model => model.RememberMe)
+        @Html.EditorFor(model => model.RememberMe)
+
+        <br />
+        <br />
+        <input type="submit" value="Login" />
+        <div style="color:red">
+            @ViewBag.message
+        </div>
+    </div>
+}

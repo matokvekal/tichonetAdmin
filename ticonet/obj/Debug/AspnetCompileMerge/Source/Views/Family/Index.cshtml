@@ -1,0 +1,375 @@
+﻿@using ticonet;
+@using Business_Logic;
+@model familyViewModel
+
+
+
+<div class="section1">
+
+    <form>
+        <div class="row ">
+
+            <div class="col-md-4 ">
+                <h2>@DictExpressionBuilderSystem.Translate("general.majorParent")</h2>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1FirstName)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent1FirstName)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1LastName)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent1LastName)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1Type)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent1Type)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1CellPhone)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent1CellPhone)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1CellConfirm)
+                    @*@Html.CheckBoxFor(m => m.parent1CellConfirm, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.parent1CellConfirm == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent1CellConfirm)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+                </div>
+                @*<div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1GetAlertBycell)
+                  
+                    @{if (Model.EditableTblFamily.parent1GetAlertBycell == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent1GetAlertBycell)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+                </div>*@
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1Email)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent1Email)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1EmailConfirm)
+                    @*@Html.CheckBoxFor(m => m.parent1EmailConfirm, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.parent1EmailConfirm == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent1EmailConfirm)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent1GetAlertByEmail)
+                    @*@Html.CheckBoxFor(m => m.parent1EmailGetAlert, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.parent1GetAlertByEmail == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent1GetAlertByEmail)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+
+                </div>
+
+
+
+            </div>
+            <div class="col-md-4">
+                <h2>@DictExpressionBuilderSystem.Translate("general.secondParent")</h2>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2FirstName)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent2FirstName)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2LastName)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent2LastName)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2Type)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent2Type)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2CellPhone)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent2CellPhone)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2CellConfirm)
+                    @*@Html.CheckBoxFor(m => m.parent1CellConfirm, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.parent2CellConfirm == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent2CellConfirm)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2GetAlertBycell)
+                    @*@Html.CheckBoxFor(m => m.parent1CellGetAlert, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.parent2GetAlertBycell == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent2GetAlertBycell)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2Email)
+                    @Html.DisplayFor(x => x.EditableTblFamily.parent2Email)
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2EmailConfirm)
+                    @*@Html.CheckBoxFor(m => m.parent1EmailConfirm, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.parent2EmailConfirm == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent2EmailConfirm)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.parent2GetAlertByEmail)
+                    @*@Html.CheckBoxFor(m => m.parent1EmailGetAlert, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.parent2GetAlertByEmail == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.parent2GetAlertByEmail)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+
+                </div>
+                <div>
+                    @Html.LabelFor(x => x.EditableTblFamily.allredyUsed)
+                    @*@Html.CheckBoxFor(m => m.parent1EmailGetAlert, new { @checked = "checked" })*@
+                    @{if (Model.EditableTblFamily.allredyUsed == null)
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    else if ((bool)Model.EditableTblFamily.allredyUsed)
+                    {<img src="~/Content/img/true.png" alt="YES"> }
+                    else
+                    {<img src="~/Content/img/false.png" alt="NO">}
+                    }
+
+                </div>
+              
+            </div>
+            <div class="col-md-4">
+                <h2>@DictExpressionBuilderSystem.Translate("general.payment")</h2>
+                <div>
+                   @DictExpressionBuilderSystem.Translate("general.paymentMethod")
+                </div>
+                <div>
+                  
+                </div>
+                <div>
+                  
+                </div>
+                <div>
+                 
+                </div>
+                <div>
+                  
+                </div>
+
+            </div>
+        </div>
+        <p> <button type="button" class="btn btn-default " onclick="location.href='@Url.Action("update", "Family")';" ><span class="glyphicon glyphicon-pencil"></span>עדכון פרטים</button></p>
+
+
+        <div class="col-md-12">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                   @DictExpressionBuilderSystem.Translate("general.kids")
+                </div>
+                <div class="panel panel-default">
+                    <table class="table table-striped table-hover table-responsive table-condensed" data-toggle="table" dir="rtl">
+                        <tr class="students">
+                            <th >
+                                <strong> @DictExpressionBuilderSystem.Translate("tblStudent.year")</strong>
+                            </th>
+                            <th >
+                                <strong>   @DictExpressionBuilderSystem.Translate("tblStudent.studentId")</strong>
+                            </th>
+                            <th>
+                                <strong>   @DictExpressionBuilderSystem.Translate("tblStudent.lastName")</strong>
+                            </th>
+                            <th>
+                                <strong>   @DictExpressionBuilderSystem.Translate("tblStudent.firstName")</strong>
+                            </th>
+                            @*<th>
+                                <strong>    @DictExpressionBuilderSystem.Translate("tblStudent.Shicva")</strong>
+                            </th>*@
+                            <th>
+                                <strong> @DictExpressionBuilderSystem.Translate("tblStudent.class") </strong>
+                            </th>
+                            @*<th>
+                                <strong>    @DictExpressionBuilderSystem.Translate("tblStudent.cityCode")</strong>
+                            </th>
+                            <th>
+                                <strong>    @DictExpressionBuilderSystem.Translate("tblStudent.streetCode")</strong>
+                            </th>
+                            <th>
+                                <strong>  @DictExpressionBuilderSystem.Translate("tblStudent.streetCode")</strong>
+                            </th>
+                            <th>
+                                <strong> @DictExpressionBuilderSystem.Translate("tblStudent.zipCode")</strong>
+                            </th>*@
+                            <th>
+                                <strong>  @DictExpressionBuilderSystem.Translate("tblStudent.CellPhone")</strong>
+                            </th>
+                            @*<th>
+                                <strong>@DictExpressionBuilderSystem.Translate("tblStudent.CellConfirm")</strong>
+                            </th>
+                            <th>
+                                <strong>     @DictExpressionBuilderSystem.Translate("tblStudent.GetAlertByCell")</strong>
+                            </th>*@
+                            <th>
+                                <strong>  @DictExpressionBuilderSystem.Translate("tblStudent.paymentStatus")</strong>
+                            </th>
+                            <th>
+                                <strong>  @DictExpressionBuilderSystem.Translate("tblStudent.registrationStatus")</strong>
+                            </th>
+                            <th>
+                                <strong>     @DictExpressionBuilderSystem.Translate("tblStudent.ShowCard")</strong>
+                            </th>
+                            <th>
+                                <strong>  @DictExpressionBuilderSystem.Translate("tblStudent.payments")</strong>
+                            </th>
+                        </tr>
+                        @if (Model.students != null)
+                        {
+                            foreach (var item in Model.students)
+                            {
+                                <tr class="students">
+                                    <td class="col-lg-1">
+                                        @Html.DropDownListFor(x => item.yearRegistration, new SelectList(ViewBag.Years, "year", "nameHeb", item.yearRegistration), new { @disabled = "disabled" })
+                                    </td>
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.studentId)</span>
+                                    </td>
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.firstName)</span>
+                                    </td>
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.lastName)</span>
+                                    </td>
+
+                                    @*<td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.Shicva)</span>
+                                    </td>*@
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.@class)</span>
+                                    </td>
+                                    @*<td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.cityCode)</span>
+                                    </td>
+
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.streetCode)</span>
+                                    </td>
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.houseNumber)</span>
+                                    </td>
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.zipCode)</span>
+                                    </td>*@
+                                    <td class="col-lg-1">
+                                        <span>@Html.DisplayFor(modelItem => item.CellPhone)</span>
+                                    </td>
+
+                                    @*<td class="col-lg-1">
+                                        <span>
+                                            @{if (item.CellConfirm == null)
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            else if ((bool)item.CellConfirm)
+                                            {
+                                                <img src="~/Content/img/true.png" alt="YES"> }
+                                            else
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            }
+                                        </span>
+                                    </td>*@
+
+                                    @*<td class="col-lg-1">
+                                        <span>
+                                            @{if (item.GetAlertByCell == null)
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            else if ((bool)item.GetAlertByCell)
+                                            {
+                                                <img src="~/Content/img/true.png" alt="YES"> }
+                                            else
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            }
+                                        </span>
+                                    </td>*@
+                                    <td class="col-lg-1">
+                                        <span>
+                                            @{if (item.paymentStatus == null)
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            else if ((bool)item.paymentStatus)
+                                            {
+                                                <img src="~/Content/img/true.png" alt="YES"> }
+                                            else
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            }
+                                        </span>
+                                    </td>
+                                    <td class="col-lg-1">
+                                        <span>
+                                            @{if (item.registrationStatus == null)
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            else if ((bool)item.registrationStatus)
+                                            {
+                                                <img src="~/Content/img/true.png" alt="YES"> }
+                                            else
+                                            {
+                                                <img src="~/Content/img/false.png" alt="NO">}
+                                            }
+                                        </span>
+                                    </td>
+
+                                    <td class="col-lg-1">
+                                        <button type="button" style="margin:1px; " class="btn btn-primary col-lg-12  " onclick="location.href='@Url.Action("update", "tblStudent", new { id = @item.pk, projectid = @ViewBag.projectId })' ;return false;"><span style="margin-right: 2px" class="glyphicon glyphicon-pencil"></span>עדכן</button>
+                                    </td>
+                                    <td class="col-lg-1">
+                                        <button type="button" style="margin:1px; " class="btn btn-success col-lg-12" onclick="location.href='#';return false;"><span style="margin-right: 2px" class="glyphicon glyphicon-list"></span>@DictExpressionBuilderSystem.Translate("general.paymentList")</button>
+                                    </td>
+                                </tr>
+                            }
+
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>NO DATA</td>
+                            </tr>
+                        }
+
+                    </table>
+                    <div class="panel-footer">
+                        <p> <button type="button" class="btn btn-success " onclick="location.href='@Url.Action("create", "tblStudent")' ;"><span class="glyphicon glyphicon-bookmark"></span> @DictExpressionBuilderSystem.Translate("general.AddKid")&raquo;</button></p>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>

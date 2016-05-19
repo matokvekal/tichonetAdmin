@@ -1,0 +1,178 @@
+﻿@model Business_Logic.tblFamily
+@using Business_Logic
+
+    @*@{
+        ViewBag.Title = "create";
+    }*@
+
+    <h2>@DictExpressionBuilderSystem.Translate("general.BuildFamily")</h2>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+
+        <hr />
+
+        <div class="form-control-static">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @if (@ViewBag.message != null)
+            { <div>
+                <strong style="color:red">@ViewBag.message</strong>
+            </div>}
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>@DictExpressionBuilderSystem.Translate("general.majorParent")</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ParentId)
+                            @Html.EditorFor(model => model.ParentId, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ParentId, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.parent1FirstName)
+                            @Html.EditorFor(x => x.parent1FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.parent1FirstName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.parent1LastName)
+                            @Html.EditorFor(x => x.parent1LastName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.parent1LastName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.parent1Type)
+                            @Html.EditorFor(x => x.parent1Type, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.parent1Type, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(x => x.parent1CellPhone)
+                            @Html.EditorFor(x => x.parent1CellPhone, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.parent1CellPhone, "", new { @class = "text-danger" })
+
+                            @*<div class="form-group">
+                                @Html.LabelFor(x => x.parent1GetAlertBycell)
+                                @Html.CheckBoxFor(model => model.parent1GetAlertBycell)
+                            </div>*@
+                        </div>
+                        <div class="panel panel-success">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <div class="editor-field">
+                                        @Html.LabelFor(x => x.parent1Email)
+                                        @Html.TextBoxFor(model => model.parent1Email, new { disabled = "disabled", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+
+
+                                    <div class="editor-field" style="margin-top:6px;margin-bottom:3px;">
+                                        @Html.LabelFor(x => x.parent1EmailConfirm)
+                                        @{if (Model.parent1CellConfirm == null)
+                                        {<img src="~/Content/img/false.png" alt="NO">
+                                            <button type="button" class=" btn btn-primary btn-sm">@DictExpressionBuilderSystem.Translate("general.confirm")</button>}
+                                        else if ((bool)Model.parent1CellConfirm)
+                                        {<img src="~/Content/img/true.png" alt="YES"> }
+                                        else
+                                        {<img src="~/Content/img/false.png" alt="NO">
+                                            @*<button type="button" class=" btn btn-primary btn-sm">@DictExpressionBuilderSystem.Translate("general.confirm")</button>*@
+                                        }
+                                        }
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(x => x.allredyUsed)
+                                        @Html.CheckBoxFor(model => model.allredyUsed.Value)
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(x => x.parent1GetAlertByEmail)
+                                        @Html.CheckBoxFor(model => model.parent1GetAlertByEmail)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>@DictExpressionBuilderSystem.Translate("general.secondParent")</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.parent2Type)
+                            @Html.EditorFor(model => model.parent2Type, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.parent2FirstName)
+                            @Html.EditorFor(model => model.parent2FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.parent2LastName)
+                            @Html.EditorFor(model => model.parent2LastName, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.parent2Email)
+                            @Html.EditorFor(model => model.parent2Email, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.parent2CellPhone)
+                            @Html.EditorFor(model => model.parent2CellPhone, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-6 ">
+                <div class="panel panel-success">
+                    <div class="panel-body">
+                        <div class="form-group">
+
+                            @if (Model.iAgree == true)
+                            {
+                                @Html.HiddenFor(x => x.iAgree, new { id = "iAgree" })
+                            }
+                            else
+                            {
+                                @Html.LabelFor(x => x.iAgree, new { id = "labelIAgree" })
+                                @Html.CheckBoxFor(model => model.iAgree, new { id = "iAgree" })
+                                @Html.ValidationMessageFor(model => model.iAgree, "", new { @class = "text-danger" })
+                            }
+
+
+
+                            @Html.ActionLink("תנאים כלליים", "Index")
+                            <input type="submit" value="שמירה" class="btn btn-success" />
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+
+
+
+    <style>
+        .form-control {
+            display: inline !important;
+        }
+
+        .form-group {
+            margin-bottom: 7px !important;
+        }
+    </style>
+    <script>
+
+        $("#iAgree").click(function () {
+            document.getElementById("labelIAgree").hidden;
+            document.getElementById("iAgree").hidden;
+        })
+    </script>
