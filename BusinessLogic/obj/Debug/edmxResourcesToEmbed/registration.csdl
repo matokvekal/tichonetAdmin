@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BusProjectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="BusProjectEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="tblDictSystems" EntityType="BusProjectModel.tblDictSystem" />
+    <EntitySet Name="tblCultures" EntityType="BusProjectModel.tblCulture" />
+    <EntitySet Name="tblYears" EntityType="BusProjectModel.tblYear" />
+    <EntitySet Name="tblStreets" EntityType="BusProjectModel.tblStreet" />
+    <EntitySet Name="tblSystems" EntityType="BusProjectModel.tblSystem" />
+    <EntitySet Name="Logins" EntityType="BusProjectModel.Login" />
+    <EntitySet Name="tblStudents" EntityType="BusProjectModel.tblStudent" />
+    <EntitySet Name="tblFamilies" EntityType="BusProjectModel.tblFamily" />
+    <EntitySet Name="tblAlertsQueues" EntityType="BusProjectModel.tblAlertsQueue" />
+  </EntityContainer>
+  <EntityType Name="tblDictSystem">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="term" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CustomerTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="SystemTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="cultures" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="DateCreatedUTC" Type="DateTime" Precision="3" />
+    <Property Name="cantBeChange" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="tblCulture">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="culture" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="comment" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tblYear">
+    <Key>
+      <PropertyRef Name="year" />
+    </Key>
+    <Property Name="year" Type="Int32" Nullable="false" />
+    <Property Name="nameEng" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="nameHeb" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tblStreet">
+    <Key>
+      <PropertyRef Name="streetId" />
+    </Key>
+    <Property Name="streetId" Type="Int32" Nullable="false" />
+    <Property Name="streetName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tblSystem">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="strNamespace" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+    <Property Name="strKey" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="strValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="LastModify" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="ModifedBy" Type="Int32" />
+  </EntityType>
+  <EntityType Name="Login">
+    <Key>
+      <PropertyRef Name="userId" />
+    </Key>
+    <Property Name="userId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="emailConfirm" Type="Boolean" Nullable="false" />
+    <Property Name="passwordUnSecure" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="familyId" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tblStudent">
+    <Key>
+      <PropertyRef Name="pk" />
+    </Key>
+    <Property Name="pk" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="familyId" Type="Int32" Nullable="false" />
+    <Property Name="studentId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="firstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="lastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="yearRegistration" Type="Int32" Nullable="false" />
+    <Property Name="Shicva" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="class" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="city" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="street" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="houseNumber" Type="Int32" Nullable="false" />
+    <Property Name="zipCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CellPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CellConfirm" Type="Boolean" />
+    <Property Name="GetAlertByCell" Type="Boolean" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="EmailConfirm" Type="Boolean" />
+    <Property Name="GetAlertByEmail" Type="Boolean" />
+    <Property Name="paymentStatus" Type="Boolean" />
+    <Property Name="dateCreate" Type="DateTime" Precision="3" />
+    <Property Name="lastUpdate" Type="DateTime" Precision="3" />
+    <Property Name="registrationStatus" Type="Boolean" Nullable="false" />
+    <Property Name="subsidy" Type="Boolean" />
+    <Property Name="Color" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="Lat" Type="Double" />
+    <Property Name="Lng" Type="Double" />
+    <Property Name="Active" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="tblFamily">
+    <Key>
+      <PropertyRef Name="familyId" />
+    </Key>
+    <Property Name="familyId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ParentId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent1Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent1FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent1LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent1Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent1EmailConfirm" Type="Boolean" Nullable="false" />
+    <Property Name="parent1GetAlertByEmail" Type="Boolean" Nullable="false" />
+    <Property Name="parent1CellPhone" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent1CellConfirm" Type="Boolean" Nullable="false" />
+    <Property Name="parent1GetAlertBycell" Type="Boolean" Nullable="false" />
+    <Property Name="parent2Type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent2FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent2LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent2Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent2EmailConfirm" Type="Boolean" />
+    <Property Name="parent2GetAlertByEmail" Type="Boolean" />
+    <Property Name="parent2CellPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="parent2CellConfirm" Type="Boolean" />
+    <Property Name="parent2GetAlertBycell" Type="Boolean" />
+    <Property Name="date" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="LastUpdate" Type="DateTime" Precision="3" />
+    <Property Name="paymentOk" Type="Boolean" />
+    <Property Name="paymentDateConfirm" Type="DateTime" Precision="3" />
+    <Property Name="iAgree" Type="Boolean" Nullable="false" />
+    <Property Name="subsidy" Type="Boolean" Nullable="false" />
+    <Property Name="allredyUsed" Type="Boolean" Nullable="false" />
+  </EntityType>
+  <EntityType Name="tblAlertsQueue">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="datetime" Type="DateTime" Precision="3" />
+    <Property Name="action" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="controler" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="active" Type="Boolean" />
+    <Property Name="messageType" Type="Int32" />
+    <Property Name="sendSMS" Type="Boolean" />
+    <Property Name="sendEmail" Type="Boolean" />
+    <Property Name="messageA" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="messageB" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="messageC" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="EmailList" Type="Int32" />
+    <Property Name="smsList" Type="Int32" />
+    <Property Name="startTime" Type="DateTime" Precision="3" />
+    <Property Name="totalTimes" Type="Int32" />
+    <Property Name="durationSec" Type="Int32" />
+    <Property Name="totalSend" Type="Int32" />
+  </EntityType>
+</Schema>

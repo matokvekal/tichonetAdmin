@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Logins">
+    <Key>
+      <PropertyRef Name="userId" />
+    </Key>
+    <Property Name="userId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="userName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="emailConfirm" Type="bit" Nullable="false" />
+    <Property Name="passwordUnSecure" Type="nvarchar" MaxLength="50" />
+    <Property Name="familyId" Type="int" />
+  </EntityType>
+  <EntityType Name="tblAlertsQueues">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="datetime" Type="datetime" />
+    <Property Name="action" Type="nvarchar" MaxLength="50" />
+    <Property Name="controler" Type="nvarchar" MaxLength="50" />
+    <Property Name="active" Type="bit" />
+    <Property Name="messageType" Type="int" />
+    <Property Name="sendSMS" Type="bit" />
+    <Property Name="sendEmail" Type="bit" />
+    <Property Name="messageA" Type="nvarchar(max)" />
+    <Property Name="messageB" Type="nvarchar(max)" />
+    <Property Name="messageC" Type="nvarchar(max)" />
+    <Property Name="title" Type="nvarchar(max)" />
+    <Property Name="EmailList" Type="int" />
+    <Property Name="smsList" Type="int" />
+    <Property Name="startTime" Type="datetime" />
+    <Property Name="totalTimes" Type="int" />
+    <Property Name="durationSec" Type="int" />
+    <Property Name="totalSend" Type="int" />
+  </EntityType>
+  <EntityType Name="tblCultures">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="culture" Type="nvarchar" MaxLength="50" />
+    <Property Name="comment" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="tblDictSystem">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="term" Type="nvarchar" MaxLength="50" />
+    <Property Name="CustomerTranslated" Type="nvarchar" MaxLength="200" />
+    <Property Name="SystemTranslated" Type="nvarchar" MaxLength="200" />
+    <Property Name="cultures" Type="nvarchar" MaxLength="50" />
+    <Property Name="status" Type="nvarchar" MaxLength="50" />
+    <Property Name="DateCreatedUTC" Type="datetime" />
+    <Property Name="cantBeChange" Type="bit" />
+  </EntityType>
+  <EntityType Name="tblFamilies">
+    <Key>
+      <PropertyRef Name="familyId" />
+    </Key>
+    <Property Name="familyId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ParentId" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="parent1Type" Type="nvarchar" MaxLength="50" />
+    <Property Name="parent1FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="parent1LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="parent1Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="parent1EmailConfirm" Type="bit" Nullable="false" />
+    <Property Name="parent1GetAlertByEmail" Type="bit" Nullable="false" />
+    <Property Name="parent1CellPhone" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="parent1CellConfirm" Type="bit" Nullable="false" />
+    <Property Name="parent1GetAlertBycell" Type="bit" Nullable="false" />
+    <Property Name="parent2Type" Type="nvarchar" MaxLength="50" />
+    <Property Name="parent2FirstName" Type="nvarchar" MaxLength="50" />
+    <Property Name="parent2LastName" Type="nvarchar" MaxLength="50" />
+    <Property Name="parent2Email" Type="nvarchar" MaxLength="50" />
+    <Property Name="parent2EmailConfirm" Type="bit" />
+    <Property Name="parent2GetAlertByEmail" Type="bit" />
+    <Property Name="parent2CellPhone" Type="nvarchar" MaxLength="50" />
+    <Property Name="parent2CellConfirm" Type="bit" />
+    <Property Name="parent2GetAlertBycell" Type="bit" />
+    <Property Name="date" Type="datetime" Nullable="false" />
+    <Property Name="LastUpdate" Type="datetime" />
+    <Property Name="paymentOk" Type="bit" />
+    <Property Name="paymentDateConfirm" Type="datetime" />
+    <Property Name="iAgree" Type="bit" Nullable="false" />
+    <Property Name="subsidy" Type="bit" Nullable="false" />
+    <Property Name="allredyUsed" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="tblStreets">
+    <Key>
+      <PropertyRef Name="streetId" />
+    </Key>
+    <Property Name="streetId" Type="int" Nullable="false" />
+    <Property Name="streetName" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="tblStudents">
+    <Key>
+      <PropertyRef Name="pk" />
+    </Key>
+    <Property Name="pk" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="familyId" Type="int" Nullable="false" />
+    <Property Name="studentId" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="firstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="lastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="yearRegistration" Type="int" Nullable="false" />
+    <Property Name="Shicva" Type="nvarchar" MaxLength="50" />
+    <Property Name="class" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="city" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="street" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="houseNumber" Type="int" Nullable="false" />
+    <Property Name="zipCode" Type="nvarchar" MaxLength="50" />
+    <Property Name="CellPhone" Type="nvarchar" MaxLength="50" />
+    <Property Name="CellConfirm" Type="bit" />
+    <Property Name="GetAlertByCell" Type="bit" />
+    <Property Name="Email" Type="nvarchar" MaxLength="50" />
+    <Property Name="EmailConfirm" Type="bit" />
+    <Property Name="GetAlertByEmail" Type="bit" />
+    <Property Name="paymentStatus" Type="bit" />
+    <Property Name="dateCreate" Type="datetime" />
+    <Property Name="lastUpdate" Type="datetime" />
+    <Property Name="registrationStatus" Type="bit" Nullable="false" />
+    <Property Name="subsidy" Type="bit" />
+    <Property Name="Color" Type="nvarchar" MaxLength="10" />
+    <Property Name="Lat" Type="float" />
+    <Property Name="Lng" Type="float" />
+    <Property Name="Active" Type="bit" />
+  </EntityType>
+  <EntityType Name="tblSystem">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="strNamespace" Type="nchar" MaxLength="10" />
+    <Property Name="strKey" Type="nvarchar" MaxLength="250" Nullable="false" />
+    <Property Name="strValue" Type="nvarchar(max)" />
+    <Property Name="LastModify" Type="datetime" Nullable="false" />
+    <Property Name="ModifedBy" Type="int" />
+  </EntityType>
+  <EntityType Name="tblYears">
+    <Key>
+      <PropertyRef Name="year" />
+    </Key>
+    <Property Name="year" Type="int" Nullable="false" />
+    <Property Name="nameEng" Type="nvarchar" MaxLength="50" />
+    <Property Name="nameHeb" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityContainer Name="BusProjectModelStoreContainer">
+    <EntitySet Name="Logins" EntityType="Self.Logins" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblAlertsQueues" EntityType="Self.tblAlertsQueues" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblCultures" EntityType="Self.tblCultures" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblFamilies" EntityType="Self.tblFamilies" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblStreets" EntityType="Self.tblStreets" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblStudents" EntityType="Self.tblStudents" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblSystem" EntityType="Self.tblSystem" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tblYears" EntityType="Self.tblYears" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

@@ -303,7 +303,6 @@
     <Compile Include="Controllers\SmsController.cs" />
     <Compile Include="Controllers\StreetController.cs" />
     <Compile Include="Controllers\StudentsController.cs" />
-    <Compile Include="Controllers\StudentsListController.cs" />
     <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -334,7 +333,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Sms\" />
-    <Folder Include="Views\StudentsList\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\Business_Logic.csproj">

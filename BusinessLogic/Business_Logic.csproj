@@ -60,12 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseLogic.cs" />
-    <Compile Include="Bus.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="BusesToLine.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
     <Compile Include="Constants\GeneralConstants.cs" />
     <Compile Include="DictSystemLogic.cs" />
     <Compile Include="Entities\LoginInfo.cs" />
@@ -73,17 +67,11 @@
     <Compile Include="Entities\StudentShortInfo.cs" />
     <Compile Include="Enums\FlagsUserRoles.cs" />
     <Compile Include="Enums\UserRole.cs" />
-    <Compile Include="GetStudentsForTable_Result.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\AccountManager.cs" />
     <Compile Include="Helpers\CryptographyHelper.cs" />
     <Compile Include="Helpers\MapHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\StringCipher.cs" />
-    <Compile Include="Line.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
     <Compile Include="localization\DBpartialClass.cs" />
     <Compile Include="localization\expresionBuilder.cs" />
     <Compile Include="localization\Systemlocalization.cs" />
@@ -91,15 +79,6 @@
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="LoginLogic.cs" />
-    <Compile Include="Station.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="StationsToLine.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="StudentsToLine.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
     <Compile Include="tbAlertsQueueLogic.cs" />
     <Compile Include="tblAlertsQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>

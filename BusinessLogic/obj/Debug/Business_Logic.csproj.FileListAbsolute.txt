@@ -35,3 +35,11 @@ C:\PROJECTS\Tichonet-Administration\Dev\BusinessLogic\bin\Debug\Newtonsoft.Json.
 C:\PROJECTS\Tichonet-Administration\Dev\BusinessLogic\bin\Debug\Newtonsoft.Json.xml
 C:\PROJECTS\Tichonet-Administration\Dev\BusinessLogic\obj\Debug\Business_Logic.dll
 C:\PROJECTS\Tichonet-Administration\Dev\BusinessLogic\obj\Debug\Business_Logic.pdb
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\obj\Debug\Business_Logic.csprojResolveAssemblyReference.cache
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\obj\Debug\Business_Logic.dll
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\obj\Debug\Business_Logic.pdb
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\bin\Debug\Business_Logic.dll.config
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\bin\Debug\Business_Logic.dll
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\bin\Debug\Business_Logic.pdb
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\bin\Debug\Newtonsoft.Json.dll
+E:\Projects\GitHub\tichonetAdmin\BusinessLogic\bin\Debug\Newtonsoft.Json.xml

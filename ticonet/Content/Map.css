@@ -1,0 +1,61 @@
+﻿.map-canvas {
+    /*z-index: -30;*/
+}
+
+#map-canvas {
+    width: 100%;
+    height: calc(100% - 40px);
+    /*position: absolute;*/
+    display: block;
+}
+
+.student-info-window {
+    padding: 10px;
+}
+
+.tbl-family {
+    border: none;
+    font-size: 10pt;
+    color: #999999;
+}
+
+.students-fly {
+    position: absolute;
+    right: 25px;
+    top: 10px;
+    width: 550px;
+    min-height: 20px;
+    background-color: #222;
+    color: #999;
+    direction: ltr;
+}
+
+    .students-fly .header {
+        padding: 10px 2px;
+        position: relative;
+        width: 100%;
+        direction: ltr;
+    }
+
+        .students-fly .header h2 {
+            padding: 0;
+            margin: 0 5px ;
+            font-size: 16pt;
+        }
+
+        .students-fly .header .toggle {
+            position: absolute;
+            font-size: 16pt;
+            right: 10px;
+            top: 7px;
+            cursor: pointer;
+        }
+            .students-fly .header .toggle:hover {
+                color: white;
+            }
+    .students-fly .content {
+        display: none;
+    }
+    .ui-search-table input {
+        padding: 0 !important;
+    }
