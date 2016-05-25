@@ -38,6 +38,10 @@
       <HintPath>..\Ticonet-Registration\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -56,7 +60,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseLogic.cs" />
+    <Compile Include="Bus.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BusesToLine.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Constants\GeneralConstants.cs" />
     <Compile Include="DictSystemLogic.cs" />
+    <Compile Include="Entities\LoginInfo.cs" />
+    <Compile Include="Entities\StudentSearchRequest.cs" />
+    <Compile Include="Entities\StudentShortInfo.cs" />
+    <Compile Include="Enums\FlagsUserRoles.cs" />
+    <Compile Include="Enums\UserRole.cs" />
+    <Compile Include="GetStudentsForTable_Result.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\AccountManager.cs" />
+    <Compile Include="Helpers\CryptographyHelper.cs" />
+    <Compile Include="Helpers\MapHelper.cs" />
+    <Compile Include="Helpers\SettingsHelper.cs" />
+    <Compile Include="Helpers\StringCipher.cs" />
+    <Compile Include="Line.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
     <Compile Include="localization\DBpartialClass.cs" />
     <Compile Include="localization\expresionBuilder.cs" />
     <Compile Include="localization\Systemlocalization.cs" />
@@ -64,6 +91,16 @@
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="LoginLogic.cs" />
+    <Compile Include="Station.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StationsToLine.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StudentsToLine.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tbAlertsQueueLogic.cs" />
     <Compile Include="tblAlertsQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -76,7 +113,6 @@
     <Compile Include="tblFamily.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
-    <Compile Include="tbAlertsQueueLogic.cs" />
     <Compile Include="tblStreet.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>

@@ -12,13 +12,15 @@ namespace Business_Logic
     using System;
     using System.Collections.Generic;
     
-    public partial class tblSystem
+    public partial class StationsToLine
     {
         public int Id { get; set; }
-        public string strNamespace { get; set; }
-        public string strKey { get; set; }
-        public string strValue { get; set; }
-        public System.DateTime LastModify { get; set; }
-        public Nullable<int> ModifedBy { get; set; }
+        public int StationId { get; set; }
+        public int LineId { get; set; }
+        public int Position { get; set; }
+        public System.TimeSpan ArrivalDate { get; set; }
+    
+        public virtual Line Line { get; set; }
+        public virtual Station Station { get; set; }
     }
 }

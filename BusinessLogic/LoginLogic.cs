@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Business_Logic.Entities;
+using Business_Logic.Helpers;
 
 namespace Business_Logic
 {
@@ -28,7 +26,13 @@ namespace Business_Logic
         {
             try
             {
-                return DB.Logins.Any(l => l.userName == userName && l.Password == password);
+                var un = DB.Logins.FirstOrDefault(l => l.userName == userName && l.Password == password);
+                if (un != null)
+                {
+                    AccountManager.LoginInfo = new LoginInfo(un);
+                    return true;
+                }
+                return false;
             }
             catch
             {
@@ -40,7 +44,7 @@ namespace Business_Logic
         {
             try
             {
-                return DB.Logins.Any(l => l.userName == userName && l.emailConfirm==true);
+                return DB.Logins.Any(l => l.userName == userName && l.emailConfirm == true);
             }
             catch
             {
@@ -93,7 +97,7 @@ namespace Business_Logic
         }
 
 
-        public  Login getLogin(string userName, string password)
+        public Login getLogin(string userName, string password)
         {
             try
             {
@@ -140,7 +144,7 @@ namespace Business_Logic
             try
             {
 
-                      BusProjectEntities db = new BusProjectEntities();
+                BusProjectEntities db = new BusProjectEntities();
                 var v = (from s in db.Logins
                          where s.userName == Email
                          select s);

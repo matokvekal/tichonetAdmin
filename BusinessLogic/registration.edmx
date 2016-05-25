@@ -5,6 +5,39 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Buses">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BusId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PlateNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BusType" Type="int" Nullable="false" />
+          <Property Name="Occupation" Type="int" Nullable="false" />
+          <Property Name="Owner" Type="int" Nullable="false" />
+          <Property Name="GpsSource" Type="int" Nullable="false" />
+          <Property Name="GpsCode" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="BusesToLines">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LineId" Type="int" Nullable="false" />
+          <Property Name="BusId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Lines">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LineName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="LineNumber" Type="nvarchar" MaxLength="50" />
+          <Property Name="HexColor" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="Direction" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="totalStudents" Type="int" />
+        </EntityType>
         <EntityType Name="Login">
           <Key>
             <PropertyRef Name="userId" />
@@ -15,6 +48,39 @@
           <Property Name="emailConfirm" Type="bit" Nullable="false" />
           <Property Name="passwordUnSecure" Type="nvarchar" MaxLength="50" />
           <Property Name="familyId" Type="int" />
+        </EntityType>
+        <EntityType Name="Stations">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Lattitude" Type="nvarchar" MaxLength="50" />
+          <Property Name="Longitude" Type="nvarchar" MaxLength="50" />
+          <Property Name="StationName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="color" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="StationsToLines">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StationId" Type="int" Nullable="false" />
+          <Property Name="LineId" Type="int" Nullable="false" />
+          <Property Name="Position" Type="int" Nullable="false" />
+          <Property Name="ArrivalDate" Type="time" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="StudentsToLines">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="StudentId" Type="int" Nullable="false" />
+          <Property Name="LineId" Type="int" Nullable="false" />
+          <Property Name="StationId" Type="int" Nullable="false" />
+          <Property Name="Direction" Type="int" Nullable="false" />
+          <Property Name="Date" Type="date" />
+          <Property Name="color" Type="nvarchar" MaxLength="50" />
+          <Property Name="distanceFromStation" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="tblAlertsQueue">
           <Key>
@@ -126,14 +192,21 @@
           <Property Name="lastUpdate" Type="date" />
           <Property Name="registrationStatus" Type="bit" Nullable="false" />
           <Property Name="subsidy" Type="bit" />
+          <Property Name="Color" Type="nvarchar" MaxLength="10" />
+          <Property Name="Lat" Type="float" />
+          <Property Name="Lng" Type="float" />
+          <Property Name="Active" Type="bit" />
         </EntityType>
         <EntityType Name="tblSystem">
           <Key>
-            <PropertyRef Name="pk" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="pk" Type="int" Nullable="false" />
-          <Property Name="key" Type="nvarchar" MaxLength="50" />
-          <Property Name="value" Type="nvarchar" MaxLength="50" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="strNamespace" Type="nchar" MaxLength="10" />
+          <Property Name="strKey" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="strValue" Type="nvarchar(max)" />
+          <Property Name="LastModify" Type="datetime" Nullable="false" />
+          <Property Name="ModifedBy" Type="int" />
         </EntityType>
         <EntityType Name="tblYears">
           <Key>
@@ -143,8 +216,98 @@
           <Property Name="nameEng" Type="nvarchar" MaxLength="50" />
           <Property Name="nameHeb" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <Association Name="FK_BusesToLines_ToBuses">
+          <End Role="Buses" Type="Self.Buses" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="BusesToLines" Type="Self.BusesToLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Buses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BusesToLines">
+              <PropertyRef Name="BusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BusesToLines_ToLines">
+          <End Role="Lines" Type="Self.Lines" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="BusesToLines" Type="Self.BusesToLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lines">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BusesToLines">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StationsToLines_ToLines">
+          <End Role="Lines" Type="Self.Lines" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="StationsToLines" Type="Self.StationsToLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lines">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StationsToLines">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StationsToLines_ToStations">
+          <End Role="Stations" Type="Self.Stations" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="StationsToLines" Type="Self.StationsToLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StationsToLines">
+              <PropertyRef Name="StationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StudentsToLines_ToLines">
+          <End Role="Lines" Type="Self.Lines" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="StudentsToLines" Type="Self.StudentsToLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lines">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StudentsToLines">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StudentsToLines_ToStations">
+          <End Role="Stations" Type="Self.Stations" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="StudentsToLines" Type="Self.StudentsToLines" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stations">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StudentsToLines">
+              <PropertyRef Name="StationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="BusProjectModelStoreContainer">
+          <EntitySet Name="Buses" EntityType="Self.Buses" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BusesToLines" EntityType="Self.BusesToLines" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Lines" EntityType="Self.Lines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Login" EntityType="Self.Login" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stations" EntityType="Self.Stations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StationsToLines" EntityType="Self.StationsToLines" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="StudentsToLines" EntityType="Self.StudentsToLines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblAlertsQueue" EntityType="Self.tblAlertsQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCulture" EntityType="Self.tblCulture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
@@ -153,65 +316,143 @@
           <EntitySet Name="tblStudent" EntityType="Self.tblStudent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSystem" EntityType="Self.tblSystem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblYears" EntityType="Self.tblYears" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_BusesToLines_ToBuses" Association="Self.FK_BusesToLines_ToBuses">
+            <End Role="Buses" EntitySet="Buses" />
+            <End Role="BusesToLines" EntitySet="BusesToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BusesToLines_ToLines" Association="Self.FK_BusesToLines_ToLines">
+            <End Role="Lines" EntitySet="Lines" />
+            <End Role="BusesToLines" EntitySet="BusesToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StationsToLines_ToLines" Association="Self.FK_StationsToLines_ToLines">
+            <End Role="Lines" EntitySet="Lines" />
+            <End Role="StationsToLines" EntitySet="StationsToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StationsToLines_ToStations" Association="Self.FK_StationsToLines_ToStations">
+            <End Role="Stations" EntitySet="Stations" />
+            <End Role="StationsToLines" EntitySet="StationsToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StudentsToLines_ToLines" Association="Self.FK_StudentsToLines_ToLines">
+            <End Role="Lines" EntitySet="Lines" />
+            <End Role="StudentsToLines" EntitySet="StudentsToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StudentsToLines_ToStations" Association="Self.FK_StudentsToLines_ToStations">
+            <End Role="Stations" EntitySet="Stations" />
+            <End Role="StudentsToLines" EntitySet="StudentsToLines" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="BusProjectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="BusProjectEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="tblDictSystems" EntityType="BusProjectModel.tblDictSystem" />
-          <EntitySet Name="tblCultures" EntityType="BusProjectModel.tblCulture" />
-          <EntitySet Name="tblYears" EntityType="BusProjectModel.tblYear" />
-          <EntitySet Name="tblStreets" EntityType="BusProjectModel.tblStreet" />
-          <EntitySet Name="tblSystems" EntityType="BusProjectModel.tblSystem" />
+          <EntitySet Name="Buses" EntityType="BusProjectModel.Bus" />
+          <EntitySet Name="BusesToLines" EntityType="BusProjectModel.BusesToLine" />
+          <EntitySet Name="Lines" EntityType="BusProjectModel.Line" />
           <EntitySet Name="Logins" EntityType="BusProjectModel.Login" />
-          <EntitySet Name="tblStudents" EntityType="BusProjectModel.tblStudent" />
-          <EntitySet Name="tblFamilies" EntityType="BusProjectModel.tblFamily" />
+          <EntitySet Name="Stations" EntityType="BusProjectModel.Station" />
+          <EntitySet Name="StationsToLines" EntityType="BusProjectModel.StationsToLine" />
+          <EntitySet Name="StudentsToLines" EntityType="BusProjectModel.StudentsToLine" />
           <EntitySet Name="tblAlertsQueues" EntityType="BusProjectModel.tblAlertsQueue" />
+          <EntitySet Name="tblCultures" EntityType="BusProjectModel.tblCulture" />
+          <EntitySet Name="tblFamilies" EntityType="BusProjectModel.tblFamily" />
+          <EntitySet Name="tblStreets" EntityType="BusProjectModel.tblStreet" />
+          <EntitySet Name="tblStudents" EntityType="BusProjectModel.tblStudent" />
+          <EntitySet Name="tblSystems" EntityType="BusProjectModel.tblSystem" />
+          <EntitySet Name="tblYears" EntityType="BusProjectModel.tblYear" />
+          <EntitySet Name="tblDictSystems" EntityType="BusProjectModel.tblDictSystem" />
+          <AssociationSet Name="FK_BusesToLines_ToBuses" Association="BusProjectModel.FK_BusesToLines_ToBuses">
+            <End Role="Bus" EntitySet="Buses" />
+            <End Role="BusesToLine" EntitySet="BusesToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BusesToLines_ToLines" Association="BusProjectModel.FK_BusesToLines_ToLines">
+            <End Role="Line" EntitySet="Lines" />
+            <End Role="BusesToLine" EntitySet="BusesToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StationsToLines_ToLines" Association="BusProjectModel.FK_StationsToLines_ToLines">
+            <End Role="Line" EntitySet="Lines" />
+            <End Role="StationsToLine" EntitySet="StationsToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StudentsToLines_ToLines" Association="BusProjectModel.FK_StudentsToLines_ToLines">
+            <End Role="Line" EntitySet="Lines" />
+            <End Role="StudentsToLine" EntitySet="StudentsToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StationsToLines_ToStations" Association="BusProjectModel.FK_StationsToLines_ToStations">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="StationsToLine" EntitySet="StationsToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StudentsToLines_ToStations" Association="BusProjectModel.FK_StudentsToLines_ToStations">
+            <End Role="Station" EntitySet="Stations" />
+            <End Role="StudentsToLine" EntitySet="StudentsToLines" />
+          </AssociationSet>
         </EntityContainer>
-        <EntityType Name="tblDictSystem">
+        <ComplexType Name="GetStudentsForTable_Result">
+          <Property Type="Int32" Name="pk" Nullable="false" />
+          <Property Type="Int32" Name="familyId" Nullable="false" />
+          <Property Type="String" Name="studentId" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="firstName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="lastName" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="yearRegistration" Nullable="false" />
+          <Property Type="String" Name="Shicva" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="class" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="city" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="street" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="houseNumber" Nullable="false" />
+          <Property Type="String" Name="zipCode" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="CellPhone" Nullable="true" MaxLength="50" />
+          <Property Type="Boolean" Name="CellConfirm" Nullable="true" />
+          <Property Type="Boolean" Name="GetAlertByCell" Nullable="true" />
+          <Property Type="String" Name="Email" Nullable="true" MaxLength="50" />
+          <Property Type="Boolean" Name="EmailConfirm" Nullable="true" />
+          <Property Type="Boolean" Name="GetAlertByEmail" Nullable="true" />
+          <Property Type="Boolean" Name="paymentStatus" Nullable="true" />
+          <Property Type="DateTime" Name="dateCreate" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="lastUpdate" Nullable="true" Precision="23" />
+          <Property Type="Boolean" Name="registrationStatus" Nullable="false" />
+          <Property Type="Boolean" Name="subsidy" Nullable="true" />
+          <Property Type="String" Name="Color" Nullable="true" MaxLength="10" />
+          <Property Type="Double" Name="Lat" Nullable="true" />
+          <Property Type="Double" Name="Lng" Nullable="true" />
+          <Property Type="Boolean" Name="Active" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="Bus">
           <Key>
-            <PropertyRef Name="id" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="term" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CustomerTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="SystemTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="cultures" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="DateCreatedUTC" Type="DateTime" Precision="3" />
-          <Property Name="cantBeChange" Type="Boolean" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BusId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PlateNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BusType" Type="Int32" Nullable="false" />
+          <Property Name="Occupation" Type="Int32" Nullable="false" />
+          <Property Name="Owner" Type="Int32" Nullable="false" />
+          <Property Name="GpsSource" Type="Int32" Nullable="false" />
+          <Property Name="GpsCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToBuses" FromRole="Bus" ToRole="BusesToLine" />
         </EntityType>
-        <EntityType Name="tblCulture">
+        <EntityType Name="BusesToLine">
           <Key>
-            <PropertyRef Name="id" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="culture" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="comment" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LineId" Type="Int32" Nullable="false" />
+          <Property Name="BusId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Bus" Relationship="BusProjectModel.FK_BusesToLines_ToBuses" FromRole="BusesToLine" ToRole="Bus" />
+          <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="BusesToLine" ToRole="Line" />
         </EntityType>
-        <EntityType Name="tblYear">
+        <EntityType Name="Line">
           <Key>
-            <PropertyRef Name="year" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="year" Type="Int32" Nullable="false" />
-          <Property Name="nameEng" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="nameHeb" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="tblStreet">
-          <Key>
-            <PropertyRef Name="streetId" />
-          </Key>
-          <Property Name="streetId" Type="Int32" Nullable="false" />
-          <Property Name="streetName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="tblSystem">
-          <Key>
-            <PropertyRef Name="pk" />
-          </Key>
-          <Property Name="pk" Type="Int32" Nullable="false" />
-          <Property Name="key" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="value" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LineName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LineNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="HexColor" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Direction" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="totalStudents" Type="Int32" />
+          <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="Line" ToRole="BusesToLine" />
+          <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
+          <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="Line" ToRole="StudentsToLine" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -224,33 +465,75 @@
           <Property Name="passwordUnSecure" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="familyId" Type="Int32" />
         </EntityType>
-        <EntityType Name="tblStudent">
+        <EntityType Name="Station">
           <Key>
-            <PropertyRef Name="pk" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="pk" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="familyId" Type="Int32" Nullable="false" />
-          <Property Name="studentId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="firstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="lastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="yearRegistration" Type="Int32" Nullable="false" />
-          <Property Name="Shicva" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="class" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="city" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="street" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="houseNumber" Type="Int32" Nullable="false" />
-          <Property Name="zipCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CellPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CellConfirm" Type="Boolean" />
-          <Property Name="GetAlertByCell" Type="Boolean" />
-          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="EmailConfirm" Type="Boolean" />
-          <Property Name="GetAlertByEmail" Type="Boolean" />
-          <Property Name="paymentStatus" Type="Boolean" />
-          <Property Name="dateCreate" Type="DateTime" Precision="0" />
-          <Property Name="lastUpdate" Type="DateTime" Precision="0" />
-          <Property Name="registrationStatus" Type="Boolean" Nullable="false" />
-          <Property Name="subsidy" Type="Boolean" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Lattitude" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Longitude" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StationName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToStations" FromRole="Station" ToRole="StationsToLine" />
+          <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToStations" FromRole="Station" ToRole="StudentsToLine" />
+        </EntityType>
+        <EntityType Name="StationsToLine">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StationId" Type="Int32" Nullable="false" />
+          <Property Name="LineId" Type="Int32" Nullable="false" />
+          <Property Name="Position" Type="Int32" Nullable="false" />
+          <Property Name="ArrivalDate" Type="Time" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="StationsToLine" ToRole="Line" />
+          <NavigationProperty Name="Station" Relationship="BusProjectModel.FK_StationsToLines_ToStations" FromRole="StationsToLine" ToRole="Station" />
+        </EntityType>
+        <EntityType Name="StudentsToLine">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StudentId" Type="Int32" Nullable="false" />
+          <Property Name="LineId" Type="Int32" Nullable="false" />
+          <Property Name="StationId" Type="Int32" Nullable="false" />
+          <Property Name="Direction" Type="Int32" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="distanceFromStation" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="StudentsToLine" ToRole="Line" />
+          <NavigationProperty Name="Station" Relationship="BusProjectModel.FK_StudentsToLines_ToStations" FromRole="StudentsToLine" ToRole="Station" />
+        </EntityType>
+        <EntityType Name="tblAlertsQueue">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="datetime" Type="DateTime" Precision="3" />
+          <Property Name="action" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="controler" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="active" Type="Boolean" />
+          <Property Name="messageType" Type="Int32" />
+          <Property Name="sendSMS" Type="Boolean" />
+          <Property Name="sendEmail" Type="Boolean" />
+          <Property Name="messageA" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="messageB" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="messageC" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EmailList" Type="Int32" />
+          <Property Name="smsList" Type="Int32" />
+          <Property Name="startTime" Type="DateTime" Precision="3" />
+          <Property Name="totalTimes" Type="Int32" />
+          <Property Name="durationSec" Type="Int32" />
+          <Property Name="totalSend" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblCulture">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="culture" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="comment" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblFamily">
           <Key>
@@ -284,81 +567,200 @@
           <Property Name="subsidy" Type="Boolean" Nullable="false" />
           <Property Name="allredyUsed" Type="Boolean" Nullable="false" />
         </EntityType>
-        <EntityType Name="tblAlertsQueue">
+        <EntityType Name="tblStreet">
+          <Key>
+            <PropertyRef Name="streetId" />
+          </Key>
+          <Property Name="streetId" Type="Int32" Nullable="false" />
+          <Property Name="streetName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblStudent">
+          <Key>
+            <PropertyRef Name="pk" />
+          </Key>
+          <Property Name="pk" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="familyId" Type="Int32" Nullable="false" />
+          <Property Name="studentId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="firstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="lastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="yearRegistration" Type="Int32" Nullable="false" />
+          <Property Name="Shicva" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="class" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="city" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="street" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="houseNumber" Type="Int32" Nullable="false" />
+          <Property Name="zipCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CellPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CellConfirm" Type="Boolean" />
+          <Property Name="GetAlertByCell" Type="Boolean" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirm" Type="Boolean" />
+          <Property Name="GetAlertByEmail" Type="Boolean" />
+          <Property Name="paymentStatus" Type="Boolean" />
+          <Property Name="dateCreate" Type="DateTime" Precision="0" />
+          <Property Name="lastUpdate" Type="DateTime" Precision="0" />
+          <Property Name="registrationStatus" Type="Boolean" Nullable="false" />
+          <Property Name="subsidy" Type="Boolean" />
+          <Property Name="Color" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Lat" Type="Double" />
+          <Property Name="Lng" Type="Double" />
+          <Property Name="Active" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="tblSystem">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="strNamespace" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="strKey" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="strValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LastModify" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifedBy" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblYear">
+          <Key>
+            <PropertyRef Name="year" />
+          </Key>
+          <Property Name="year" Type="Int32" Nullable="false" />
+          <Property Name="nameEng" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="nameHeb" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblDictSystem">
           <Key>
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="datetime" Type="DateTime" Precision="3" />
-          <Property Name="action" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="controler" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="active" Type="Boolean" />
-          <Property Name="messageType" Type="Int32" />
-          <Property Name="sendSMS" Type="Boolean" />
-          <Property Name="sendEmail" Type="Boolean" />
-          <Property Name="messageA" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="messageB" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="messageC" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="EmailList" Type="Int32" />
-          <Property Name="smsList" Type="Int32" />
-          <Property Name="startTime" Type="DateTime" Precision="3" />
-          <Property Name="totalTimes" Type="Int32" />
-          <Property Name="durationSec" Type="Int32" />
-          <Property Name="totalSend" Type="Int32" />
+          <Property Name="term" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="SystemTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="cultures" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DateCreatedUTC" Type="DateTime" Precision="3" />
+          <Property Name="cantBeChange" Type="Boolean" />
         </EntityType>
-      </Schema>
+        <Association Name="FK_BusesToLines_ToBuses">
+          <End Type="BusProjectModel.Bus" Role="Bus" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BusProjectModel.BusesToLine" Role="BusesToLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bus">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BusesToLine">
+              <PropertyRef Name="BusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BusesToLines_ToLines">
+          <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BusProjectModel.BusesToLine" Role="BusesToLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Line">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BusesToLine">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StationsToLines_ToLines">
+          <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BusProjectModel.StationsToLine" Role="StationsToLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Line">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StationsToLine">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StudentsToLines_ToLines">
+          <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BusProjectModel.StudentsToLine" Role="StudentsToLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Line">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StudentsToLine">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StationsToLines_ToStations">
+          <End Type="BusProjectModel.Station" Role="Station" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BusProjectModel.StationsToLine" Role="StationsToLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StationsToLine">
+              <PropertyRef Name="StationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StudentsToLines_ToStations">
+          <End Type="BusProjectModel.Station" Role="Station" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BusProjectModel.StudentsToLine" Role="StudentsToLine" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Station">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="StudentsToLine">
+              <PropertyRef Name="StationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="BusProjectModelStoreContainer" CdmEntityContainer="BusProjectEntities">
-          <EntitySetMapping Name="tblDictSystems">
-            <EntityTypeMapping TypeName="BusProjectModel.tblDictSystem">
-              <MappingFragment StoreEntitySet="tblDictSystem">
-                <ScalarProperty Name="cantBeChange" ColumnName="cantBeChange" />
-                <ScalarProperty Name="DateCreatedUTC" ColumnName="DateCreatedUTC" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="cultures" ColumnName="cultures" />
-                <ScalarProperty Name="SystemTranslated" ColumnName="SystemTranslated" />
-                <ScalarProperty Name="CustomerTranslated" ColumnName="CustomerTranslated" />
-                <ScalarProperty Name="term" ColumnName="term" />
-                <ScalarProperty Name="id" ColumnName="id" />
+          <EntitySetMapping Name="Buses">
+            <EntityTypeMapping TypeName="BusProjectModel.Bus">
+              <MappingFragment StoreEntitySet="Buses">
+                <ScalarProperty Name="GpsCode" ColumnName="GpsCode" />
+                <ScalarProperty Name="GpsSource" ColumnName="GpsSource" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="Occupation" ColumnName="Occupation" />
+                <ScalarProperty Name="BusType" ColumnName="BusType" />
+                <ScalarProperty Name="PlateNumber" ColumnName="PlateNumber" />
+                <ScalarProperty Name="BusId" ColumnName="BusId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="tblCultures">
-            <EntityTypeMapping TypeName="BusProjectModel.tblCulture">
-              <MappingFragment StoreEntitySet="tblCulture">
-                <ScalarProperty Name="comment" ColumnName="comment" />
-                <ScalarProperty Name="culture" ColumnName="culture" />
-                <ScalarProperty Name="id" ColumnName="id" />
+          <EntitySetMapping Name="BusesToLines">
+            <EntityTypeMapping TypeName="BusProjectModel.BusesToLine">
+              <MappingFragment StoreEntitySet="BusesToLines">
+                <ScalarProperty Name="BusId" ColumnName="BusId" />
+                <ScalarProperty Name="LineId" ColumnName="LineId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="tblYears">
-            <EntityTypeMapping TypeName="BusProjectModel.tblYear">
-              <MappingFragment StoreEntitySet="tblYears">
-                <ScalarProperty Name="nameHeb" ColumnName="nameHeb" />
-                <ScalarProperty Name="nameEng" ColumnName="nameEng" />
-                <ScalarProperty Name="year" ColumnName="year" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="tblStreets">
-            <EntityTypeMapping TypeName="BusProjectModel.tblStreet">
-              <MappingFragment StoreEntitySet="tblStreet">
-                <ScalarProperty Name="streetName" ColumnName="streetName" />
-                <ScalarProperty Name="streetId" ColumnName="streetId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="tblSystems">
-            <EntityTypeMapping TypeName="BusProjectModel.tblSystem">
-              <MappingFragment StoreEntitySet="tblSystem">
-                <ScalarProperty Name="value" ColumnName="value" />
-                <ScalarProperty Name="key" ColumnName="key" />
-                <ScalarProperty Name="pk" ColumnName="pk" />
+          <EntitySetMapping Name="Lines">
+            <EntityTypeMapping TypeName="BusProjectModel.Line">
+              <MappingFragment StoreEntitySet="Lines">
+                <ScalarProperty Name="totalStudents" ColumnName="totalStudents" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Direction" ColumnName="Direction" />
+                <ScalarProperty Name="HexColor" ColumnName="HexColor" />
+                <ScalarProperty Name="LineNumber" ColumnName="LineNumber" />
+                <ScalarProperty Name="LineName" ColumnName="LineName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -374,32 +776,72 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="tblStudents">
-            <EntityTypeMapping TypeName="BusProjectModel.tblStudent">
-              <MappingFragment StoreEntitySet="tblStudent">
-                <ScalarProperty Name="subsidy" ColumnName="subsidy" />
-                <ScalarProperty Name="registrationStatus" ColumnName="registrationStatus" />
-                <ScalarProperty Name="lastUpdate" ColumnName="lastUpdate" />
-                <ScalarProperty Name="dateCreate" ColumnName="dateCreate" />
-                <ScalarProperty Name="paymentStatus" ColumnName="paymentStatus" />
-                <ScalarProperty Name="GetAlertByEmail" ColumnName="GetAlertByEmail" />
-                <ScalarProperty Name="EmailConfirm" ColumnName="EmailConfirm" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="GetAlertByCell" ColumnName="GetAlertByCell" />
-                <ScalarProperty Name="CellConfirm" ColumnName="CellConfirm" />
-                <ScalarProperty Name="CellPhone" ColumnName="CellPhone" />
-                <ScalarProperty Name="zipCode" ColumnName="zipCode" />
-                <ScalarProperty Name="houseNumber" ColumnName="houseNumber" />
-                <ScalarProperty Name="street" ColumnName="street" />
-                <ScalarProperty Name="city" ColumnName="city" />
-                <ScalarProperty Name="class" ColumnName="class" />
-                <ScalarProperty Name="Shicva" ColumnName="Shicva" />
-                <ScalarProperty Name="yearRegistration" ColumnName="yearRegistration" />
-                <ScalarProperty Name="lastName" ColumnName="lastName" />
-                <ScalarProperty Name="firstName" ColumnName="firstName" />
-                <ScalarProperty Name="studentId" ColumnName="studentId" />
-                <ScalarProperty Name="familyId" ColumnName="familyId" />
-                <ScalarProperty Name="pk" ColumnName="pk" />
+          <EntitySetMapping Name="Stations">
+            <EntityTypeMapping TypeName="BusProjectModel.Station">
+              <MappingFragment StoreEntitySet="Stations">
+                <ScalarProperty Name="color" ColumnName="color" />
+                <ScalarProperty Name="StationName" ColumnName="StationName" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Lattitude" ColumnName="Lattitude" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StationsToLines">
+            <EntityTypeMapping TypeName="BusProjectModel.StationsToLine">
+              <MappingFragment StoreEntitySet="StationsToLines">
+                <ScalarProperty Name="ArrivalDate" ColumnName="ArrivalDate" />
+                <ScalarProperty Name="Position" ColumnName="Position" />
+                <ScalarProperty Name="LineId" ColumnName="LineId" />
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="StudentsToLines">
+            <EntityTypeMapping TypeName="BusProjectModel.StudentsToLine">
+              <MappingFragment StoreEntitySet="StudentsToLines">
+                <ScalarProperty Name="distanceFromStation" ColumnName="distanceFromStation" />
+                <ScalarProperty Name="color" ColumnName="color" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Direction" ColumnName="Direction" />
+                <ScalarProperty Name="StationId" ColumnName="StationId" />
+                <ScalarProperty Name="LineId" ColumnName="LineId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblAlertsQueues">
+            <EntityTypeMapping TypeName="BusProjectModel.tblAlertsQueue">
+              <MappingFragment StoreEntitySet="tblAlertsQueue">
+                <ScalarProperty Name="totalSend" ColumnName="totalSend" />
+                <ScalarProperty Name="durationSec" ColumnName="durationSec" />
+                <ScalarProperty Name="totalTimes" ColumnName="totalTimes" />
+                <ScalarProperty Name="startTime" ColumnName="startTime" />
+                <ScalarProperty Name="smsList" ColumnName="smsList" />
+                <ScalarProperty Name="EmailList" ColumnName="EmailList" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="messageC" ColumnName="messageC" />
+                <ScalarProperty Name="messageB" ColumnName="messageB" />
+                <ScalarProperty Name="messageA" ColumnName="messageA" />
+                <ScalarProperty Name="sendEmail" ColumnName="sendEmail" />
+                <ScalarProperty Name="sendSMS" ColumnName="sendSMS" />
+                <ScalarProperty Name="messageType" ColumnName="messageType" />
+                <ScalarProperty Name="active" ColumnName="active" />
+                <ScalarProperty Name="controler" ColumnName="controler" />
+                <ScalarProperty Name="action" ColumnName="action" />
+                <ScalarProperty Name="datetime" ColumnName="datetime" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCultures">
+            <EntityTypeMapping TypeName="BusProjectModel.tblCulture">
+              <MappingFragment StoreEntitySet="tblCulture">
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="culture" ColumnName="culture" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -436,26 +878,78 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="tblAlertsQueues">
-            <EntityTypeMapping TypeName="BusProjectModel.tblAlertsQueue">
-              <MappingFragment StoreEntitySet="tblAlertsQueue">
-                <ScalarProperty Name="totalSend" ColumnName="totalSend" />
-                <ScalarProperty Name="durationSec" ColumnName="durationSec" />
-                <ScalarProperty Name="totalTimes" ColumnName="totalTimes" />
-                <ScalarProperty Name="startTime" ColumnName="startTime" />
-                <ScalarProperty Name="smsList" ColumnName="smsList" />
-                <ScalarProperty Name="EmailList" ColumnName="EmailList" />
-                <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="messageC" ColumnName="messageC" />
-                <ScalarProperty Name="messageB" ColumnName="messageB" />
-                <ScalarProperty Name="messageA" ColumnName="messageA" />
-                <ScalarProperty Name="sendEmail" ColumnName="sendEmail" />
-                <ScalarProperty Name="sendSMS" ColumnName="sendSMS" />
-                <ScalarProperty Name="messageType" ColumnName="messageType" />
-                <ScalarProperty Name="active" ColumnName="active" />
-                <ScalarProperty Name="controler" ColumnName="controler" />
-                <ScalarProperty Name="action" ColumnName="action" />
-                <ScalarProperty Name="datetime" ColumnName="datetime" />
+          <EntitySetMapping Name="tblStreets">
+            <EntityTypeMapping TypeName="BusProjectModel.tblStreet">
+              <MappingFragment StoreEntitySet="tblStreet">
+                <ScalarProperty Name="streetName" ColumnName="streetName" />
+                <ScalarProperty Name="streetId" ColumnName="streetId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblStudents">
+            <EntityTypeMapping TypeName="BusProjectModel.tblStudent">
+              <MappingFragment StoreEntitySet="tblStudent">
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="Lng" ColumnName="Lng" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="Color" ColumnName="Color" />
+                <ScalarProperty Name="subsidy" ColumnName="subsidy" />
+                <ScalarProperty Name="registrationStatus" ColumnName="registrationStatus" />
+                <ScalarProperty Name="lastUpdate" ColumnName="lastUpdate" />
+                <ScalarProperty Name="dateCreate" ColumnName="dateCreate" />
+                <ScalarProperty Name="paymentStatus" ColumnName="paymentStatus" />
+                <ScalarProperty Name="GetAlertByEmail" ColumnName="GetAlertByEmail" />
+                <ScalarProperty Name="EmailConfirm" ColumnName="EmailConfirm" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="GetAlertByCell" ColumnName="GetAlertByCell" />
+                <ScalarProperty Name="CellConfirm" ColumnName="CellConfirm" />
+                <ScalarProperty Name="CellPhone" ColumnName="CellPhone" />
+                <ScalarProperty Name="zipCode" ColumnName="zipCode" />
+                <ScalarProperty Name="houseNumber" ColumnName="houseNumber" />
+                <ScalarProperty Name="street" ColumnName="street" />
+                <ScalarProperty Name="city" ColumnName="city" />
+                <ScalarProperty Name="class" ColumnName="class" />
+                <ScalarProperty Name="Shicva" ColumnName="Shicva" />
+                <ScalarProperty Name="yearRegistration" ColumnName="yearRegistration" />
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
+                <ScalarProperty Name="studentId" ColumnName="studentId" />
+                <ScalarProperty Name="familyId" ColumnName="familyId" />
+                <ScalarProperty Name="pk" ColumnName="pk" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSystems">
+            <EntityTypeMapping TypeName="BusProjectModel.tblSystem">
+              <MappingFragment StoreEntitySet="tblSystem">
+                <ScalarProperty Name="ModifedBy" ColumnName="ModifedBy" />
+                <ScalarProperty Name="LastModify" ColumnName="LastModify" />
+                <ScalarProperty Name="strValue" ColumnName="strValue" />
+                <ScalarProperty Name="strKey" ColumnName="strKey" />
+                <ScalarProperty Name="strNamespace" ColumnName="strNamespace" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblYears">
+            <EntityTypeMapping TypeName="BusProjectModel.tblYear">
+              <MappingFragment StoreEntitySet="tblYears">
+                <ScalarProperty Name="nameHeb" ColumnName="nameHeb" />
+                <ScalarProperty Name="nameEng" ColumnName="nameEng" />
+                <ScalarProperty Name="year" ColumnName="year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblDictSystems">
+            <EntityTypeMapping TypeName="BusProjectModel.tblDictSystem">
+              <MappingFragment StoreEntitySet="tblDictSystem">
+                <ScalarProperty Name="cantBeChange" ColumnName="cantBeChange" />
+                <ScalarProperty Name="DateCreatedUTC" ColumnName="DateCreatedUTC" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="cultures" ColumnName="cultures" />
+                <ScalarProperty Name="SystemTranslated" ColumnName="SystemTranslated" />
+                <ScalarProperty Name="CustomerTranslated" ColumnName="CustomerTranslated" />
+                <ScalarProperty Name="term" ColumnName="term" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

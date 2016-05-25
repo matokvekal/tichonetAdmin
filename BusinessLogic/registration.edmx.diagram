@@ -4,16 +4,28 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="5eb064808b9a463988f1eb5850d30659" Name="Diagram1" ZoomLevel="83">
-        <EntityTypeShape EntityType="BusProjectModel.tblDictSystem" Width="1.5" PointX="5.375" PointY="0.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblCulture" Width="1.5" PointX="3.375" PointY="5.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblYear" Width="1.5" PointX="5.375" PointY="4.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblStreet" Width="1.5" PointX="0.75" PointY="7.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblSystem" Width="1.5" PointX="5.375" PointY="7.75" />
-        <EntityTypeShape EntityType="BusProjectModel.Login" Width="1.5" PointX="7.375" PointY="6.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblStudent" Width="1.5" PointX="9.375" PointY="0.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblFamily" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblAlertsQueue" Width="1.5" PointX="9.375" PointY="7.75" />
+      <Diagram DiagramId="5eb064808b9a463988f1eb5850d30659" Name="Diagram1" ZoomLevel="87">
+        <EntityTypeShape EntityType="BusProjectModel.Bus" Width="1.5" PointX="0.75" PointY="8.5" />
+        <EntityTypeShape EntityType="BusProjectModel.BusesToLine" Width="1.5" PointX="3" PointY="5" />
+        <EntityTypeShape EntityType="BusProjectModel.Line" Width="1.5" PointX="0.75" PointY="4.5" />
+        <EntityTypeShape EntityType="BusProjectModel.Login" Width="1.5" PointX="5.75" PointY="1" />
+        <EntityTypeShape EntityType="BusProjectModel.Station" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="BusProjectModel.StationsToLine" Width="1.5" PointX="3" PointY="1.75" />
+        <EntityTypeShape EntityType="BusProjectModel.StudentsToLine" Width="1.5" PointX="6" PointY="4.5" />
+        <EntityTypeShape EntityType="BusProjectModel.tblAlertsQueue" Width="1.5" PointX="2.75" PointY="8" />
+        <EntityTypeShape EntityType="BusProjectModel.tblCulture" Width="1.5" PointX="7.75" PointY="1" />
+        <EntityTypeShape EntityType="BusProjectModel.tblFamily" Width="1.5" PointX="4.75" PointY="9" />
+        <EntityTypeShape EntityType="BusProjectModel.tblStreet" Width="1.5" PointX="6.75" PointY="9" />
+        <EntityTypeShape EntityType="BusProjectModel.tblStudent" Width="1.5" PointX="8.75" PointY="8" />
+        <EntityTypeShape EntityType="BusProjectModel.tblSystem" Width="1.5" PointX="9.75" PointY="1" />
+        <EntityTypeShape EntityType="BusProjectModel.tblYear" Width="1.5" PointX="10.75" PointY="4" />
+        <EntityTypeShape EntityType="BusProjectModel.tblDictSystem" Width="1.5" PointX="11.375" PointY="6.75" />
+        <AssociationConnector Association="BusProjectModel.FK_BusesToLines_ToBuses" />
+        <AssociationConnector Association="BusProjectModel.FK_BusesToLines_ToLines" />
+        <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToLines" />
+        <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToLines" />
+        <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToStations" />
+        <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToStations" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

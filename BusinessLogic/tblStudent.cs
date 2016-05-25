@@ -37,5 +37,9 @@ namespace Business_Logic
         public Nullable<System.DateTime> lastUpdate { get; set; }
         public bool registrationStatus { get; set; }
         public Nullable<bool> subsidy { get; set; }
+        public string Color { get; set; }
+        public Nullable<double> Lat { get; set; }
+        public Nullable<double> Lng { get; set; }
+        public Nullable<bool> Active { get; set; }
     }
 }

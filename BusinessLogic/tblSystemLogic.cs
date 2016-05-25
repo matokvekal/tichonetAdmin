@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Business_Logic;
+﻿using System.Linq;
 
 namespace Business_Logic
 {
@@ -18,7 +12,7 @@ namespace Business_Logic
             try
             {
                 BusProjectEntities db = new BusProjectEntities();
-                return db.tblSystems.FirstOrDefault(c => c.key == key);
+                return db.tblSystems.FirstOrDefault(c => c.strKey == key);
             }
             catch
             {

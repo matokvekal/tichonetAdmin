@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Business_Logic;
-
-namespace Business_Logic
+﻿namespace Business_Logic
 {
     public class tblAlertsQueueLogic : baseLogic
     {

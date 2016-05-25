@@ -102,8 +102,12 @@
       <HintPath>..\packages\Microsoft.Owin.Security.Twitter.2.1.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="MvcJqGrid, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvcJqGrid.1.0.12\lib\net40\MvcJqGrid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -188,9 +192,24 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\images\ui-icons_c5c4c4_256x240.png" />
+    <Content Include="Content\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\false.png" />
     <Content Include="Content\img\true.png" />
+    <Content Include="Content\jquery-ui.min.css" />
+    <Content Include="Content\jquery-ui.structure.css" />
+    <Content Include="Content\jquery-ui.structure.min.css" />
+    <Content Include="Content\jquery-ui.theme.css" />
+    <Content Include="Content\jquery-ui.theme.min.css" />
+    <Content Include="Content\Map.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Content\ui.jqgrid-bootstrap.css" />
+    <Content Include="Content\ui.jqgrid.css" />
     <Content Include="Errors\Error404.html" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -201,6 +220,59 @@
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jqGrid\Changes.txt" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-ar.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-bg.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-ca.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-cn.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-cs.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-de.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-dk.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-el.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-en.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-es.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-fa.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-fi.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-fr.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-gl.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-he.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-hr.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-hu.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-id.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-is.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-it.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-ja.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-kr.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-lt.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-me.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-nl.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-no.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-pl.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-pt-br.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-pt.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-ro.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-ru.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-sk.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-sq.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-sr-latin.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-sr.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-sv.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-th.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-tr.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-tw.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-uk.js" />
+    <Content Include="Scripts\jqGrid\i18n\grid.locale-vi.js" />
+    <Content Include="Scripts\jqGrid\install.txt" />
+    <Content Include="Scripts\jqGrid\jquery.jqGrid.min.js" />
+    <Content Include="Scripts\jqGrid\plugins\grid.addons.js" />
+    <Content Include="Scripts\jqGrid\plugins\grid.postext.js" />
+    <Content Include="Scripts\jqGrid\plugins\grid.setcolumns.js" />
+    <Content Include="Scripts\jqGrid\plugins\jquery.contextmenu.js" />
+    <Content Include="Scripts\jqGrid\plugins\jquery.searchFilter.js" />
+    <Content Include="Scripts\jqGrid\plugins\jquery.tablednd.js" />
+    <Content Include="Scripts\jqGrid\plugins\searchFilter.css" />
+    <Content Include="Scripts\jqGrid\plugins\ui.multiselect.css" />
+    <Content Include="Scripts\jqGrid\plugins\ui.multiselect.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -208,6 +280,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\Map\Map.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -229,6 +302,8 @@
     <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\SmsController.cs" />
     <Compile Include="Controllers\StreetController.cs" />
+    <Compile Include="Controllers\StudentsController.cs" />
+    <Compile Include="Controllers\StudentsListController.cs" />
     <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -248,6 +323,7 @@
     <Content Include="Views\System\OK.cshtml" />
     <Content Include="Views\home\Index.cshtml" />
     <Content Include="Views\Shared\_loginPartial.cshtml" />
+    <Content Include="Scripts\Map\Map.Table.js" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -258,6 +334,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Sms\" />
+    <Folder Include="Views\StudentsList\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessLogic\Business_Logic.csproj">

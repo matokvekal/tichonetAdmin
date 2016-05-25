@@ -1,1 +1,27 @@
-﻿
+﻿@using System.Web.Optimization
+@using Business_Logic.Helpers
+@using MvcJqGrid
+@section scripts{
+    @Scripts.Render("http://maps.googleapis.com/maps/api/js?key=" + MapHelper.ApiKey )
+    @Scripts.Render("~/bundles/map");
+    <script type="text/javascript">
+        $(document).ready(smap.init);
+    </script>
+}
+
+
+@Html.Hidden("hfCenterLat", (string)ViewBag.CenterLat, new { @id = "hfCenterLat" })
+@Html.Hidden("hfCenterLng", (string)ViewBag.CenterLng, new { @id = "hfCenterLng" })
+@Html.Hidden("hfZoom", (string)ViewBag.Zoom, new { @id = "hfZoom" })
+<div class="map-canvas" id="map-canvas" style=""></div>
+
+<div class="students-fly">
+    <div class="header">
+        <h2>Students</h2>
+        <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleStudents"></div>
+    </div>
+    <div class="content" id="dStudentsTable">
+        <table id="grStudents"></table>
+        <div id="pgStudents"></div>
+    </div>
+</div>
