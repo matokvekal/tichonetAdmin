@@ -269,6 +269,7 @@
     <Content Include="Scripts\jqGrid\plugins\grid.addons.js" />
     <Content Include="Scripts\jqGrid\plugins\grid.postext.js" />
     <Content Include="Scripts\jqGrid\plugins\grid.setcolumns.js" />
+    <Content Include="Scripts\jqGrid\plugins\grid.subgrid.js" />
     <Content Include="Scripts\jqGrid\plugins\jquery.contextmenu.js" />
     <Content Include="Scripts\jqGrid\plugins\jquery.searchFilter.js" />
     <Content Include="Scripts\jqGrid\plugins\jquery.tablednd.js" />
@@ -315,10 +316,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AddStationToLineModel.cs" />
     <Compile Include="Models\AttachStudentModel.cs" />
     <Compile Include="Models\LineModel.cs" />
     <Compile Include="Models\MapStateModel.cs" />
     <Compile Include="Models\SaveStationResultModel.cs" />
+    <Compile Include="Models\SaveStationToLineResult.cs" />
     <Compile Include="Models\StationModel.cs" />
     <Compile Include="Models\StationToLineModel.cs" />
     <Compile Include="Models\StudentToLineModel.cs" />

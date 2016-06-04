@@ -30,6 +30,7 @@ namespace IdentitySample
                          "~/Scripts/Map/Map.Lines.js",
                         "~/Scripts/jqGrid/jquery.jqGrid.min.js",
                         "~/Scripts/jqGrid/plugins/grid.addons.js",
+                        "~/Scripts/jqGrid/plugins/grid.subgrid.js",
                         "~/Scripts/jqGrid/plugins/jquery.searchFilter.js",
                         "~/Scripts/jqGrid/i18n/grid.locale-en.js",
                         "~/Scripts/spectrum.js"));

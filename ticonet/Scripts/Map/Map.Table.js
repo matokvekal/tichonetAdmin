@@ -143,13 +143,13 @@
                     width: 75,
                     sorttype: "integer",
                     template: "integer",
-                     align: "center"
+                    align: "center"
                 },
                 {
                     name: 'Name',
                     index: 'Name',
                     sorttype: "text",
-                    width: 198
+                    width: 170
                 },
                 {
                     name: 'Color',
@@ -160,7 +160,23 @@
                 },
                 { name: 'Direction', index: 'Direction', width: 100, align: "center" },
                 { name: 'StudentsCount', index: 'StudentsCount', width: 100, align: "center" }
-            ]
+            ],
+            subGrid: true,
+            subGridRowExpanded: function (subgridDivId, rowId) {
+                var subgridTableId = subgridDivId + "_t";
+                $("#" + subgridDivId).html("<table id='" + subgridTableId + "'></table>");
+                $("#" + subgridTableId).jqGrid({
+                    datatype: 'local',
+                    data: smap.getLine(rowId).Stations,
+                    colNames: ['Position', 'Name', 'Time'],
+                    colModel: [
+                        { name: 'Position', width: 100, align:'center' },
+                        { name: 'StationId', width: 200, formatter: smap.table.stationNameFormatter,},
+                        { name: 'ArrivalDateString', width: 100, align: 'center' }
+                    ]
+                });
+            }
+
         });
 
         for (var k = 0; k < smap.lines.list.length; k++) {
@@ -210,6 +226,11 @@
         return '<input ref="cbLn" rel="' + id + '" type="checkbox"' + (line.show ? ' checked="checked"' : '') +
             'onchange="smap.lines.preSwitch(' + id + ')"/>';
 
+    },
+    stationNameFormatter: function (cellvalue, options, rowObject) {
+        var station = smap.stations.getStation(cellvalue);
+        if (station == null) return "--";
+        return station.Name;
     },
     preSwithMarker: function (id) {
         var sel = $("input[ref=cbSt][rel=" + id + "]").prop("checked");

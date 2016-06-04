@@ -81,27 +81,51 @@
     .contextmenu div {
         padding: 5px 5px 5px 15px;
     }
+
     .contextmenu a {
         cursor: pointer;
         color: #999;
     }
-    .contextmenu a:hover {
-        color: #ffffff;
-        
-    }
-    .ui-dialog-titlebar-close {
-        background: #222 url("images/ui-icons_555555_256x240.png") -96px -128px no-repeat;
-        border: none;
-        width: 18px !important;
-    }
-      .ui-dialog-titlebar-close:hover {
+
+        .contextmenu a:hover {
+            color: #ffffff;
+        }
+
+.ui-dialog-titlebar-close {
+    background: #222 url("images/ui-icons_555555_256x240.png") -96px -128px no-repeat;
+    border: none;
+    width: 18px !important;
+}
+
+    .ui-dialog-titlebar-close:hover {
         background: #222 url("images/ui-icons_ffffff_256x240.png") -96px -128px no-repeat;
-       
     }
-      .message {
-          padding-top: 10px;
-          text-align: center;
-      }
-      .text {
-          background-color: white;
-      }
+
+.message {
+    padding-top: 10px;
+    text-align: center;
+}
+
+.text {
+    background-color: white;
+}
+
+.color-indicator {
+    border: 1px solid #ffffff;
+    width: 50px;
+    height: 20px;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.header a {
+    cursor: pointer;
+    color: #999;
+}
+
+    .header a:hover {
+        color: #ffffff;
+    }

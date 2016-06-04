@@ -2,7 +2,8 @@
     mainMap: null,
     students: [],
     Geocoder: null,
-    directionsService:null,
+    directionsService: null,
+    showStationsWithoutLines: true,
     init: function () {
         // getting map's center
         var latCenter = 32.086368;
@@ -41,8 +42,8 @@
         //smap.loadStudents();
         //smap.stations.load();
     },
-    loadData: function() {
-        $.get("/api/Map/State").done(function(loader) {
+    loadData: function () {
+        $.get("/api/Map/State").done(function (loader) {
             smap.lines.list = loader.Lines;
             for (var j = 0; j < smap.lines.list.length; j++) {
                 smap.lines.list[j].show = false;
@@ -52,7 +53,9 @@
                 if (smap.stations.getStation(stt.Id) == null) {
                     smap.stations.list.push(stt);
                 }
-                smap.stations.setMarker(stt);
+                var lines = smap.stations.getLines(stt.Id);
+                if (smap.showStationsWithoutLines || lines.length > 0)
+                    smap.stations.setMarker(stt);
             }
             smap.students = loader.Students;
             for (var k = 0; k < smap.students.length; k++) {
@@ -75,6 +78,29 @@
             smap.table.init();
             smap.findLatLngForStudent();
         });
+    },
+    switchStationsVisible: function () {
+        smap.showStationsWithoutLines = !smap.showStationsWithoutLines;
+        smap.showStationsVisibleButton();
+    },
+    showStationsVisibleButton: function () {
+        if (smap.showStationsWithoutLines) {
+            $("#btToggleStationsVisible").attr("class", "glyphicon glyphicon-eye-open");
+            for (var i = 0; i < smap.stations.list.length; i++) {
+                smap.stations.setMarker(smap.stations.list[i]);
+            }
+        } else {
+            $("#btToggleStationsVisible").attr("class", "glyphicon glyphicon-eye-close");
+            for (var j = 0; j < smap.stations.list.length; j++) {
+                var station = smap.stations.list[j];
+                var lines = smap.stations.getLines(station.Id);
+                if (lines.length == 0 && station.Marker != null) {
+                    station.Marker.setMap(null);
+                    station.Marker = null;
+                }
+                
+            }
+        }
     },
     getStudent: function (id) {
         var res = null;
@@ -123,7 +149,7 @@
                 draggable: true,
                 icon: icon,
                 title: student.Name,
-                student:student
+                student: student
             });
 
             student.Marker.addListener('dblclick', function (e) {
@@ -160,7 +186,7 @@
                 smap.stations.studentDargEnd(event.latLng, student);
                 smap.setMarker(student);
             });
-            google.maps.event.addListener(student.Marker, "dragstart", function(event) {smap.stations.showBorders()});
+            google.maps.event.addListener(student.Marker, "dragstart", function (event) { smap.stations.showBorders() });
         }
     },
     loadFamily: function (id) {//load info about family for show in InfoWindow
@@ -249,7 +275,7 @@
         smap.closeConextMenu();
         var contextmenuDir = document.createElement("div");
         contextmenuDir.className = 'contextmenu';
-        contextmenuDir.innerHTML = '<a id="menu1" href="javascript:smap.stations.openPopup(null,' + lat +',' + lng +');"><div class="context">Add station<\/div><\/a>';
+        contextmenuDir.innerHTML = '<a id="menu1" href="javascript:smap.stations.openPopup(null,' + lat + ',' + lng + ');"><div class="context">Add station<\/div><\/a>';
 
         $(smap.mainMap.getDiv()).append(contextmenuDir);
 
@@ -257,11 +283,11 @@
 
         contextmenuDir.style.visibility = "visible";
     },
-    showStudentContextMenu: function (currentLatLng,student) {
+    showStudentContextMenu: function (currentLatLng, student) {
         smap.closeConextMenu();
         var contextmenuDir = document.createElement("div");
         contextmenuDir.className = 'contextmenu';
-        contextmenuDir.innerHTML = '<a id="menuS1" href="javscript:smap.stations.openPopup(null);"><div class="context">'+ student.Name +'<\/div><\/a>';
+        contextmenuDir.innerHTML = '<a id="menuS1" href="javscript:smap.stations.openPopup(null);"><div class="context">' + student.Name + '<\/div><\/a>';
 
         $(smap.mainMap.getDiv()).append(contextmenuDir);
 
@@ -269,7 +295,11 @@
 
         contextmenuDir.style.visibility = "visible";
     },
-    closeConextMenu:function() {
+    closeConextMenu: function () {
         $('.contextmenu').remove();
+    },
+    fixCssColor: function (color) { //fix color for use in css properies
+        if (color.substring(0, 1) != "#") color = "#" + color;
+        return color;
     }
 }

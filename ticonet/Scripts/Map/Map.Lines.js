@@ -11,6 +11,7 @@
     showLine: function (id) {
         var line = smap.getLine(id);
         if (line.Stations.length < 2) return;
+
         line.route = null;
         line.gDirectionsDisplay = null;
         line.currentStationsList = [];

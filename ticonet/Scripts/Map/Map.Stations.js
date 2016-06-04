@@ -53,7 +53,7 @@
                             }
                             smap.stations.setMarker(stt); //Add or move Marker
                             for (var i = 0; i < stt.Students.length; i++) {
-                                var student = smap.getStudent( stt.Students[i]);
+                                var student = smap.getStudent(stt.Students[i]);
                                 student.Color = stt.Color;
                                 smap.setMarker(student);
                             }
@@ -94,7 +94,7 @@
         }
         return "/icons/StationIcon?color=" + color;
     },
-    getLines: function(stationId) {
+    getLines: function (stationId) {
         var res = [];
         for (var i = 0; i < smap.lines.list.length; i++) {
             var line = smap.lines.list[i];
@@ -138,9 +138,9 @@
         contextmenuDir.innerHTML = '<a id="menuST1" href="javascript:smap.stations.openPopup(' + station.Id + ');"><div class="context">Edit<\/div><\/a>';
         contextmenuDir.innerHTML += '<a id="menuST2" href="javascript:smap.stations.deleteStation(' + station.Id + ');"><div class="context">Delete<\/div><\/a>';
         contextmenuDir.innerHTML += '<hr  class="context" style="margin-top:0px;margin-bottom:0px;"/>';
-        contextmenuDir.innerHTML += '<a id="menuST3" href="javascript:smap.stations.deleteStation(' + station.Id + ');"><div class="context">Add to Line<\/div><\/a>';
+        contextmenuDir.innerHTML += '<a id="menuST3" href="javascript:smap.stations.addToLine(' + station.Id + ');"><div class="context">Add to Line<\/div><\/a>';
         if (smap.stations.getLines(station.Id).length > 0) {
-            contextmenuDir.innerHTML += '<a id="menuST3" href="javascript:smap.stations.deleteStation(' + station.Id + ');"><div class="context">Edit Line<\/div><\/a>';
+            contextmenuDir.innerHTML += '<a id="menuST3" href="javascript:smap.stations.editToLine(' + station.Id + ');"><div class="context">Edit Line<\/div><\/a>';
 
         }
         contextmenuDir.innerHTML += '<a id="menuST4" href="javascript:smap.stations.deleteStation(' + station.Id + ');"><div class="context">Remove from line<\/div><\/a>';
@@ -221,7 +221,7 @@
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     },
     showBorders: function () {//show areas around all stations
-        var z = 44-(smap.mainMap.getZoom()*2);
+        var z = (22 - smap.mainMap.getZoom()) ^ 4;
         for (var i = 0; i < smap.stations.list.length; i++) {
             //smap.stations.list[i].Marker.setAnimation(google.maps.Animation.BOUNCE);
             smap.stations.list[i].Marker.Circle = new google.maps.Circle({
@@ -232,7 +232,7 @@
                 fillOpacity: 0.35,
                 map: smap.mainMap,
                 center: smap.stations.list[i].Marker.getPosition(),
-                radius: z * 10
+                radius: z * 30
             });
         }
     },
@@ -250,7 +250,7 @@
             m.Circle = null;
         }
     },
-    attachStudentToStation:function(student,station) {
+    attachStudentToStation: function (student, station) {
         $("#dConfirmAttach").html("Do you want to attach " + student.Name + " to station '" + station.Name + "'?");
         $("#dAttachDist").html('<img src="/Content/img/ajax-loader.gif"/>');
         $("#hfAttachStudentId").val(student.Id);
@@ -266,7 +266,7 @@
                 "Attach": function () {
                     var student = smap.getStudent($("#hfAttachStudentId").val());
                     var station = smap.stations.getStation($("#hfAttachStationId").val());
-                    $.post("/api/stations/AttachStudent", { StudentId: student.Id, StationId: station.Id,Distance:$("#hfAttachDistance").val() })
+                    $.post("/api/stations/AttachStudent", { StudentId: student.Id, StationId: station.Id, Distance: $("#hfAttachDistance").val() })
                         .done(function (loader) {
                             if (loader.Data) {
                                 student.Color = station.Color;
@@ -275,7 +275,7 @@
                             $("#dlgAttach").dialog("close");
                         });
 
-                    
+
                 },
                 Cancel: function () {
                     dialog.dialog("close");
@@ -284,7 +284,7 @@
         });
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
         if (smap.directionsService == null) smap.directionsService = new google.maps.DirectionsService();
-        
+
         var request = {
             origin: addr1,
             destination: addr2,
@@ -298,12 +298,100 @@
                 //gDirectionsDisplay.setDirections(response);
                 //wlk.panorama.setPosition(addr1);
                 console.log(legs[0].distance);
-                $("#dAttachDist").html("Distance " + legs[0].distance.text + " (" + legs[0].duration.text  + ")");
+                $("#dAttachDist").html("Distance " + legs[0].distance.text + " (" + legs[0].duration.text + ")");
                 $("#hfAttachDistance").val(legs[0].distance.value);
             } else {
                 var d = google.maps.geometry.spherical.computeDistanceBetween(addr1, addr2);
                 $("#dAttachDist").html("Distance " + d + "m (directly)");
             }
+        });
+    },
+    addToLine: function (id) {
+        smap.closeConextMenu();
+
+        $("#hfAddStationId").val(id);
+        //Fill lines drop down list (All lines exclude already attached)
+        $("#ddlAddLine").empty();
+        var lines = smap.stations.getLines(id);
+        for (var i = 0; i < smap.lines.list.length; i++) {
+            var l = smap.lines.list[i];
+            if (lines.indexOf(l) == -1) {
+                $("<option value='" + l.Id + "'>" + l.Name + "</option>").appendTo("#ddlAddLine");
+            }
+        }
+        $("#ddlAddLine").change(function () {
+            smap.stations.fillPositionDropDown($("#ddlAddLine").val());
+        });
+        smap.stations.fillPositionDropDown($("#ddlAddLine").val());
+
+        $("#tbAddLineHours").val(0);
+        $("#tbAddLineMinutes").val(0);
+
+        var station = smap.stations.getStation(id);
+        $("#dAddStation").css("background-color", smap.fixCssColor(station.Color));
+
+        $("#rAddLine").prop("checked", true);
+
+        var dialog= $("#dlgAddToLine").dialog({
+            autoOpen: true,
+            height: 350,
+            width: 420,
+            modal: true,
+            buttons: {
+                "Add": function () {
+                    var data = $("#frmAddStationTolIne").serialize();
+                    $.post("/api/stations/AddToLine", data).done(function (loader) {
+                        dialog.dialog("close");
+                        smap.lines.hideLine(loader.Line.Id);
+                        var line = smap.getLine(loader.Line.Id);
+                        var index = smap.lines.list.indexOf(line);
+                        console.log(index);
+                        smap.lines.list[index] = loader.Line;
+                        smap.lines.showLine(line.Id);
+
+                        var station = smap.stations.getStation(loader.Station.Id);
+                        index = smap.stations.list.indexOf(station);
+                        smap.stations.list[index] = loader.stations;
+                        smap.stations.setMarker(loader.Station);
+                    });
+                },
+                Cancel: function () {
+                    dialog.dialog("close");
+                }
+            }
+        });
+        $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+    },
+    fillPositionDropDown: function (lineId) {
+        var line = smap.getLine(lineId);
+        $("#ddlAddPosition").empty();
+        for (var j = 1; j <= line.Stations.length + 1; j++) {
+            $("<option value='" + j + "'>" + j + "</option>").appendTo("#ddlAddPosition");
+        }
+        $("#ddlAddPosition").val(line.Stations.length + 1);
+        $("#dAddLine").css("background-color", smap.fixCssColor(line.Color));
+    },
+    editToLine: function (id) {
+        var lines = smap.stations.getLines(id);
+        var tabs = $("#tabLines").tabs();
+        var tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>";
+        var tabCounter = 0;
+        for (var i = 0; i < lines.length; i++) {
+            var label =  "Tab " + tabCounter,
+        iid = "tabs-" + tabCounter,
+        li = $(tabTemplate.replace(/#\{href\}/g, "#" + iid).replace(/#\{label\}/g, label)),
+        tabContentHtml =  "Tab " + tabCounter + " content.";
+
+            tabs.append(li);
+            tabs.append("<div id='" + iid + "'><p>" + tabContentHtml + "</p></div>");
+            tabs.tabs("refresh");
+            tabCounter++;
+        }
+        var dialog = $("#dlgEditToLine").dialog({
+            autoOpen: true,
+            height: 200,
+            width: 350,
+            modal: true
         });
     }
 }

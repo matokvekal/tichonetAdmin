@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Mvc;
 using Business_Logic;
@@ -74,6 +76,36 @@ namespace ticonet.Controllers
                 res = logic.AttachStudent(model.StudentId, model.StationId, model.Distance);
             }
             return new JsonResult { Data = res };
+        }
+
+        [System.Web.Http.ActionName("AddToLine")]
+        public object PostAddToLine(AddStationToLineModel model)
+        {
+            var ts = new TimeSpan(model.Hours,model.Minutes,0);
+            var res = new SaveStationToLineResult();
+            using (var logic = new StationsLogic())
+            {
+                res.Done = logic.AddToLine(
+                    model.StationId, 
+                    model.LineId, 
+                    ts, 
+                    model.Position, 
+                    model.ChangeColor);
+
+                res.Station = new StationModel(logic.GetStation(model.StationId));
+                res.Station.Students = logic.GetStudents(model.StationId)
+                        .Select(z => new StudentToLineModel(z))
+                        .ToList();
+            }
+            using (var logic = new LineLogic())
+            {
+                res.Line = new LineModel(logic.GetLine(model.LineId));
+                res.Line.Stations = logic.GetStations(model.LineId)
+                        .OrderBy(z => z.Position)
+                        .Select(z => new StationToLineModel(z))
+                        .ToList();
+            }
+            return res;
         }
     }
 }

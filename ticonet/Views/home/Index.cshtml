@@ -16,6 +16,13 @@
 <div class="map-canvas" id="map-canvas" style=""></div>
 
 <div class="students-fly">
+    <div class="header" style="padding-left: 10px;">
+        <h2>
+            <a href="javascript:smap.switchStationsVisible();" title="Show / hide stations without lines">
+                <span class="glyphicon glyphicon-eye-open" id="btToggleStationsVisible"></span>
+            </a> 
+        </h2>
+    </div>
     <div class="header">
         <h2>Lines</h2>
         <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleLines"></div>
@@ -57,14 +64,64 @@
 </div>
 <div id="dlgConfirm" title="Confirm action" style="display: none;">
     <div id="dConfirmMessage" class="message"></div>
-    <input type="hidden" id="hfCurrentId"/>
+    <input type="hidden" id="hfCurrentId" />
 </div>
 <div id="dlgAttach" title="Attach student to station" style="display: none;">
     <div class="message" id="dConfirmAttach"></div>
-    <div id="dAttachDist" class="message"><img src="/Content/img/ajax-loader.gif"/></div>
-    <input type="hidden" id="hfAttachStudentId"/>
-    <input type="hidden" id="hfAttachStationId"/>
+    <div id="dAttachDist" class="message"><img src="/Content/img/ajax-loader.gif" /></div>
+    <input type="hidden" id="hfAttachStudentId" />
+    <input type="hidden" id="hfAttachStationId" />
     <input type="hidden" id="hfAttachDistance" />
 </div>
+<div id="dlgAddToLine" title="Add station to line" style="display: none;">
+    <form id="frmAddStationTolIne">
+        <input type="hidden" name="StationId" id="hfAddStationId" />
+        <div class="form-group">
+            <label for="ddlAddLine" class="col-xs-3 control-label">Line</label>
+            <select id="ddlAddLine" name="LineId" class="text form-control input-sm" style="width: 200px"></select>
+        </div>
+        <div class="form-group">
+            <label for="tbAddLineHours" class="col-xs-3 control-label">Arrival Time</label>
+            <span>
+                <input type="number" id="tbAddLineHours" name="Hours" class="form-control input-sm" style="width: 50px; float: left;" />
+                <span class="form-control-static" style="float: left; margin-left: 5px; margin-right: 5px;">:</span>
+                <input type="number" id="tbAddLineMinutes" name="Minutes" class="form-control input-sm" style="width: 50px; float: left;" />
+                <div style="clear: both"></div>
+            </span>
+            <div class="form-group">
+                <label for="ddlAddLine" class="col-xs-3 control-label">Position</label>
+                <select id="ddlAddPosition" name="Position" class="text form-control input-sm" style="width: 50px"></select>
+            </div>
+            <div class="form-group">
+                <div class="row">
 
+                    <label for="ddlAddLine" class="col-xs-3 col-sm-3 col-md-3 col-lg-3 control-label">Color</label>
+                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                        <input type="radio" name="ChangeColor" value="false" id="rAddStation" />
+                        <span style="margin-left: 5px; margin-right: 5px;">Leave</span>
+                    </div>
+                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                        <div class="color-indicator" id="dAddStation"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xs-offset-3  col-lg-offset-3 col-sm-offset-3 col-md-offset-3">
+                        <input type="radio" name="ChangeColor" value="true" id="rAddLine" />
+                        <span style="margin-left: 5px; margin-right: 5px;">Line</span>
+
+                    </div>
+                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                        <div class="color-indicator" id="dAddLine"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+<div id="dlgEditToLine" title="Edit station on line" style="display: none;">
+    <div id="tabLines">
+
+    </div>
+</div>
 @*End Dialogs*@

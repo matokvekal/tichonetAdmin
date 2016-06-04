@@ -17,5 +17,19 @@ namespace Business_Logic
         {
             return DB.StationsToLines.Where(z => z.LineId == lineId).ToList();
         }
+
+        public Line GetLine(int id)
+        {
+            return DB.Lines.FirstOrDefault(z => z.Id == id);
+        }
+
+        public void UpdateStudentCount()
+        {
+            foreach (var line in DB.Lines)
+            {
+                line.totalStudents = DB.StudentsToLines.Count(z => z.LineId == line.Id);
+            }
+            DB.SaveChanges();
+        }
     }
 }

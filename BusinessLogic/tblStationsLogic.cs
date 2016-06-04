@@ -33,16 +33,23 @@ namespace Business_Logic
             return station;
         }
 
+
+        public Station GetStation(int id)
+        {
+            return DB.Stations.FirstOrDefault(z => z.Id == id);
+        }
+
+
         public List<StudentsToLine> GetStudents(int stationsId)
         {
             return DB.StudentsToLines.Where(z => z.StationId == stationsId).ToList();
-        } 
+        }
 
         public List<int> GetAttachedStudentsIds(int stationId)
         {
             return new List<int>();
             //return DB.tblStudentsToStations.Where(z => z.StationId == stationId).Select(z => z.StudentId).ToList();
-        } 
+        }
 
         public List<Station> GetList()
         {
@@ -53,7 +60,7 @@ namespace Business_Logic
         {
             return DB.StudentsToLines
                 .Where(z => z.LineId == null)
-                .Select(z=>z.Station)
+                .Select(z => z.Station)
                 .ToList();
         }
 
@@ -73,6 +80,53 @@ namespace Business_Logic
             catch (Exception e)
             {
                 Console.WriteLine(e);
+            }
+            return res;
+        }
+
+        public bool AddToLine(int stationId, int lineId, TimeSpan arrivalTime, int position, bool changeColor)
+        {
+            var res = false;
+            try
+            {
+                //Remove old value if it exists
+                var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
+                if (itm != null)
+                {
+                    DB.StationsToLines.Remove(itm);
+                    DB.SaveChanges();
+                }
+                var stationsOnLine = DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position); //All station of line exclude  new
+                foreach (var station in stationsOnLine)
+                {
+                    //If position of station equals ore more that new station position then move to one position
+                    if (station.Position >= position) station.Position++;
+                }
+                itm = new StationsToLine
+                {
+                    LineId = lineId,
+                    StationId = stationId,
+                    ArrivalDate = arrivalTime,
+                    Position = position
+                };
+                DB.StationsToLines.Add(itm);
+                if (changeColor)
+                {
+                    var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
+                    var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
+                    if (station != null && line != null)
+                        station.color = line.HexColor;
+                }
+                DB.SaveChanges();
+                using (var logic = new LineLogic())
+                {
+                    logic.UpdateStudentCount();
+                }
+                res = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
             return res;
         }
