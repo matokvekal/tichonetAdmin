@@ -10,6 +10,51 @@
     <EntitySet Name="tblStudents" EntityType="BusProjectModel.tblStudent" />
     <EntitySet Name="tblFamilies" EntityType="BusProjectModel.tblFamily" />
     <EntitySet Name="tblAlertsQueues" EntityType="BusProjectModel.tblAlertsQueue" />
+    <EntitySet Name="Buses" EntityType="BusProjectModel.Bus" />
+    <EntitySet Name="BusesToLines" EntityType="BusProjectModel.BusesToLine" />
+    <EntitySet Name="Drivers" EntityType="BusProjectModel.Driver" />
+    <EntitySet Name="Lines" EntityType="BusProjectModel.Line" />
+    <EntitySet Name="Schedules" EntityType="BusProjectModel.Schedule" />
+    <EntitySet Name="Stations" EntityType="BusProjectModel.Station" />
+    <EntitySet Name="StationsToLines" EntityType="BusProjectModel.StationsToLine" />
+    <EntitySet Name="Users" EntityType="BusProjectModel.User" />
+    <AssociationSet Name="FK_BusesToLines_ToBuses" Association="BusProjectModel.FK_BusesToLines_ToBuses">
+      <End Role="Bus" EntitySet="Buses" />
+      <End Role="BusesToLine" EntitySet="BusesToLines" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Schedule_ToBuses" Association="BusProjectModel.FK_Schedule_ToBuses">
+      <End Role="Bus" EntitySet="Buses" />
+      <End Role="Schedule" EntitySet="Schedules" />
+    </AssociationSet>
+    <AssociationSet Name="FK_BusesToLines_ToLines" Association="BusProjectModel.FK_BusesToLines_ToLines">
+      <End Role="Line" EntitySet="Lines" />
+      <End Role="BusesToLine" EntitySet="BusesToLines" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Schedule_ToDrivers" Association="BusProjectModel.FK_Schedule_ToDrivers">
+      <End Role="Driver" EntitySet="Drivers" />
+      <End Role="Schedule" EntitySet="Schedules" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Schedule_ToLines" Association="BusProjectModel.FK_Schedule_ToLines">
+      <End Role="Line" EntitySet="Lines" />
+      <End Role="Schedule" EntitySet="Schedules" />
+    </AssociationSet>
+    <AssociationSet Name="FK_StationsToLines_ToLines" Association="BusProjectModel.FK_StationsToLines_ToLines">
+      <End Role="Line" EntitySet="Lines" />
+      <End Role="StationsToLine" EntitySet="StationsToLines" />
+    </AssociationSet>
+    <AssociationSet Name="FK_StationsToLines_ToStations" Association="BusProjectModel.FK_StationsToLines_ToStations">
+      <End Role="Station" EntitySet="Stations" />
+      <End Role="StationsToLine" EntitySet="StationsToLines" />
+    </AssociationSet>
+    <EntitySet Name="StudentsToLines" EntityType="BusProjectModel.StudentsToLine" />
+    <AssociationSet Name="FK_StudentsToLines_ToLines" Association="BusProjectModel.FK_StudentsToLines_ToLines">
+      <End Role="Line" EntitySet="Lines" />
+      <End Role="StudentsToLine" EntitySet="StudentsToLines" />
+    </AssociationSet>
+    <AssociationSet Name="FK_StudentsToLines_ToStations" Association="BusProjectModel.FK_StudentsToLines_ToStations">
+      <End Role="Station" EntitySet="Stations" />
+      <End Role="StudentsToLine" EntitySet="StudentsToLines" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="tblDictSystem">
     <Key>
@@ -92,8 +137,8 @@
     <Property Name="EmailConfirm" Type="Boolean" />
     <Property Name="GetAlertByEmail" Type="Boolean" />
     <Property Name="paymentStatus" Type="Boolean" />
-    <Property Name="dateCreate" Type="DateTime" Precision="3" />
-    <Property Name="lastUpdate" Type="DateTime" Precision="3" />
+    <Property Name="dateCreate" Type="DateTime" Precision="0" />
+    <Property Name="lastUpdate" Type="DateTime" Precision="0" />
     <Property Name="registrationStatus" Type="Boolean" Nullable="false" />
     <Property Name="subsidy" Type="Boolean" />
     <Property Name="Color" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
@@ -125,10 +170,10 @@
     <Property Name="parent2CellPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="parent2CellConfirm" Type="Boolean" />
     <Property Name="parent2GetAlertBycell" Type="Boolean" />
-    <Property Name="date" Type="DateTime" Nullable="false" Precision="3" />
-    <Property Name="LastUpdate" Type="DateTime" Precision="3" />
+    <Property Name="date" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="LastUpdate" Type="DateTime" Precision="0" />
     <Property Name="paymentOk" Type="Boolean" />
-    <Property Name="paymentDateConfirm" Type="DateTime" Precision="3" />
+    <Property Name="paymentDateConfirm" Type="DateTime" Precision="0" />
     <Property Name="iAgree" Type="Boolean" Nullable="false" />
     <Property Name="subsidy" Type="Boolean" Nullable="false" />
     <Property Name="allredyUsed" Type="Boolean" Nullable="false" />
@@ -156,4 +201,248 @@
     <Property Name="durationSec" Type="Int32" />
     <Property Name="totalSend" Type="Int32" />
   </EntityType>
+  <EntityType Name="Bus">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BusId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="PlateNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="BusType" Type="Int32" Nullable="false" />
+    <Property Name="Occupation" Type="Int32" Nullable="false" />
+    <Property Name="Owner" Type="Int32" Nullable="false" />
+    <Property Name="GpsSource" Type="Int32" Nullable="false" />
+    <Property Name="GpsCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToBuses" FromRole="Bus" ToRole="BusesToLine" />
+    <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToBuses" FromRole="Bus" ToRole="Schedule" />
+  </EntityType>
+  <EntityType Name="BusesToLine">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="LineId" Type="Int32" Nullable="false" />
+    <Property Name="BusId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Bus" Relationship="BusProjectModel.FK_BusesToLines_ToBuses" FromRole="BusesToLine" ToRole="Bus" />
+    <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="BusesToLine" ToRole="Line" />
+  </EntityType>
+  <EntityType Name="Driver">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Company" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CellNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="GpsId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToDrivers" FromRole="Driver" ToRole="Schedule" />
+  </EntityType>
+  <EntityType Name="Line">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="LineName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="LineNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="HexColor" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="Direction" Type="Int32" Nullable="false" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="totalStudents" Type="Int32" />
+    <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="Line" ToRole="BusesToLine" />
+    <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToLines" FromRole="Line" ToRole="Schedule" />
+    <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
+    <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="Line" ToRole="StudentsToLine" />
+  </EntityType>
+  <EntityType Name="Schedule">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="Direction" Type="Int32" Nullable="false" />
+    <Property Name="LineId" Type="Int32" Nullable="false" />
+    <Property Name="DriverId" Type="Int32" Nullable="false" />
+    <Property Name="BusId" Type="Int32" Nullable="false" />
+    <Property Name="FirstStationStartTime" Type="DateTime" Nullable="false" Precision="7" />
+    <NavigationProperty Name="Bus" Relationship="BusProjectModel.FK_Schedule_ToBuses" FromRole="Schedule" ToRole="Bus" />
+    <NavigationProperty Name="Driver" Relationship="BusProjectModel.FK_Schedule_ToDrivers" FromRole="Schedule" ToRole="Driver" />
+    <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_Schedule_ToLines" FromRole="Schedule" ToRole="Line" />
+  </EntityType>
+  <EntityType Name="Station">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Lattitude" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Longitude" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="StationName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToStations" FromRole="Station" ToRole="StationsToLine" />
+    <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToStations" FromRole="Station" ToRole="StudentsToLine" />
+  </EntityType>
+  <EntityType Name="StationsToLine">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="StationId" Type="Int32" Nullable="false" />
+    <Property Name="LineId" Type="Int32" Nullable="false" />
+    <Property Name="Position" Type="Int32" Nullable="false" />
+    <Property Name="ArrivalDate" Type="Time" Nullable="false" Precision="7" />
+    <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="StationsToLine" ToRole="Line" />
+    <NavigationProperty Name="Station" Relationship="BusProjectModel.FK_StationsToLines_ToStations" FromRole="StationsToLine" ToRole="Station" />
+  </EntityType>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserNameEmail" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <Association Name="FK_BusesToLines_ToBuses">
+    <End Type="BusProjectModel.Bus" Role="Bus" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.BusesToLine" Role="BusesToLine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Bus">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="BusesToLine">
+        <PropertyRef Name="BusId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Schedule_ToBuses">
+    <End Type="BusProjectModel.Bus" Role="Bus" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.Schedule" Role="Schedule" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Bus">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Schedule">
+        <PropertyRef Name="BusId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_BusesToLines_ToLines">
+    <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.BusesToLine" Role="BusesToLine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Line">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="BusesToLine">
+        <PropertyRef Name="LineId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Schedule_ToDrivers">
+    <End Type="BusProjectModel.Driver" Role="Driver" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.Schedule" Role="Schedule" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Driver">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Schedule">
+        <PropertyRef Name="DriverId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Schedule_ToLines">
+    <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.Schedule" Role="Schedule" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Line">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Schedule">
+        <PropertyRef Name="LineId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_StationsToLines_ToLines">
+    <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.StationsToLine" Role="StationsToLine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Line">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="StationsToLine">
+        <PropertyRef Name="LineId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_StationsToLines_ToStations">
+    <End Type="BusProjectModel.Station" Role="Station" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.StationsToLine" Role="StationsToLine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Station">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="StationsToLine">
+        <PropertyRef Name="StationId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="StudentsToLine">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="StudentId" Type="Int32" Nullable="false" />
+    <Property Name="LineId" Type="Int32" Nullable="true" />
+    <Property Name="StationId" Type="Int32" Nullable="false" />
+    <Property Name="Direction" Type="Int32" Nullable="false" />
+    <Property Name="Date" Type="DateTime" Precision="0" />
+    <Property Name="color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="distanceFromStation" Type="Int32" Nullable="true" />
+    <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Station" Relationship="BusProjectModel.FK_StudentsToLines_ToStations" FromRole="StudentsToLine" ToRole="Station" />
+  </EntityType>
+  <Association Name="FK_StudentsToLines_ToLines">
+    <End Type="BusProjectModel.Line" Role="Line" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.StudentsToLine" Role="StudentsToLine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Line">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="StudentsToLine">
+        <PropertyRef Name="LineId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_StudentsToLines_ToStations">
+    <End Type="BusProjectModel.Station" Role="Station" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.StudentsToLine" Role="StudentsToLine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Station">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="StudentsToLine">
+        <PropertyRef Name="StationId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>

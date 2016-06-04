@@ -199,6 +199,7 @@
     <Content Include="Content\images\ui-icons_cc0000_256x240.png" />
     <Content Include="Content\images\ui-icons_ffffff_256x240.png" />
     <Content Include="Content\img\ajax-loader.gif" />
+    <Content Include="Content\img\bus-marker-icon.png" />
     <Content Include="Content\img\false.png" />
     <Content Include="Content\img\true.png" />
     <Content Include="Content\jquery-ui.min.css" />
@@ -208,6 +209,7 @@
     <Content Include="Content\jquery-ui.theme.min.css" />
     <Content Include="Content\Map.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Content\spectrum.css" />
     <Content Include="Content\ui.jqgrid-bootstrap.css" />
     <Content Include="Content\ui.jqgrid.css" />
     <Content Include="Errors\Error404.html" />
@@ -276,14 +278,17 @@
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\Map\Map.js" />
+    <Content Include="Scripts\Map\Map.Lines.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\spectrum.js" />
     <Content Include="Views\Account\unAutorise.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
@@ -300,13 +305,23 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\homeController.cs" />
+    <Compile Include="Controllers\IconsController.cs" />
+    <Compile Include="Controllers\MapController.cs" />
     <Compile Include="Controllers\SmsController.cs" />
+    <Compile Include="Controllers\StationsController.cs" />
     <Compile Include="Controllers\StreetController.cs" />
     <Compile Include="Controllers\StudentsController.cs" />
     <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AttachStudentModel.cs" />
+    <Compile Include="Models\LineModel.cs" />
+    <Compile Include="Models\MapStateModel.cs" />
+    <Compile Include="Models\SaveStationResultModel.cs" />
+    <Compile Include="Models\StationModel.cs" />
+    <Compile Include="Models\StationToLineModel.cs" />
+    <Compile Include="Models\StudentToLineModel.cs" />
     <Compile Include="Models\viewModels\familyViewModel.cs" />
     <Compile Include="Models\viewModels\LoginModel.cs" />
     <Compile Include="Models\viewModels\studentViewModel.cs" />
@@ -323,6 +338,7 @@
     <Content Include="Views\home\Index.cshtml" />
     <Content Include="Views\Shared\_loginPartial.cshtml" />
     <Content Include="Scripts\Map\Map.Table.js" />
+    <Content Include="Scripts\Map\Map.Stations.js" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

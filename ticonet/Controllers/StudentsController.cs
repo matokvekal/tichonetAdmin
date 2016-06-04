@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
 using System.Web.Http;
-using System.Web.Mvc;
 using Business_Logic;
 using Business_Logic.Entities;
-using MvcJqGrid;
+using Business_Logic.Helpers;
 
 namespace ticonet.Controllers
 {
     public class StudentsController : ApiController
     {
-        [System.Web.Http.ActionName("StudentsForMap")]
+        [ActionName("StudentsForMap")]
         public List<StudentShortInfo> GetStudentsForMap()
         {
             var res = new List<StudentShortInfo>();
@@ -27,7 +23,7 @@ namespace ticonet.Controllers
                     StudentId = data.studentId,
                     Lat = data.Lat,
                     Lng = data.Lng,
-                    Color = data.Color,
+                    Color = string.IsNullOrEmpty(data.Color.Trim()) ? "FF0000" : data.Color.Trim().Replace("#", ""),
                     Name = data.lastName + ", " + data.firstName,
                     CellPhone = data.CellPhone,
                     Email = data.Email,
@@ -40,15 +36,14 @@ namespace ticonet.Controllers
             return res;
         }
 
-        [System.Web.Http.ActionName("SaveCoords")]
+        [ActionName("SaveCoords")]
         public void GetSaveCoords(int id, string lat, string lng)
         {
             double pLat = 0;
             double pLng = 0;
 
-            string sep = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            string strLat = lat.Replace(".", sep).Replace(",", sep);
-            string strLng = lng.Replace(".", sep).Replace(",", sep);
+            string strLat = StringHelper.FixDecimalSeparator(lat);
+            string strLng = StringHelper.FixDecimalSeparator(lng);
 
 
             if (!double.TryParse(strLat, out pLat)) return;
@@ -72,7 +67,7 @@ namespace ticonet.Controllers
             }
         }
 
-        [System.Web.Http.ActionName("Family")]
+        [ActionName("Family")]
         public object GetFamily(int id)
         {
             tblFamily res = null;

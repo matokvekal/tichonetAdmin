@@ -1,11 +1,4 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Business_Logic.Entities
+﻿namespace Business_Logic.Entities
 {
     public class StudentShortInfo
     {
@@ -19,7 +12,7 @@ namespace Business_Logic.Entities
             StudentId = data.studentId;
             Lat = data.Lat;
             Lng = data.Lng;
-            Color = data.Color;
+            Color = string.IsNullOrEmpty(data.Color.Trim()) ? "FF0000" : data.Color.Trim().Replace("#", "");
             Name = data.lastName + ", " + data.firstName;
             CellPhone = data.CellPhone;
             Email = data.Email;
@@ -37,13 +30,8 @@ namespace Business_Logic.Entities
         public string Address { get; set; }
         public string Color { get; set; }
         public bool Active { get; set; }
-        public int LineId { get; set; }
-        public string LineColor { get; set; }
-
         public double? Lat { get; set; }
-
         public double? Lng { get; set; }
-
         public string CellPhone { get; set; }
         public string Email { get; set; }
 

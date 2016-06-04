@@ -9,12 +9,13 @@ namespace IdentitySample
         {
             bundles.Add(new ScriptBundle("~/bundles/mainScripts").Include(
                         "~/Scripts/jquery-1.10.2.min.js",
+                        "~/Scripts/jquery-ui.min.js",
                         "~/Scripts/bootstrap.min.js",
                         "~/Scripts/jquery.validate.min.js",
                         "~/Scripts/jquery.validate.unobtrusive.min.js",
                         "~/Scripts/modernizr-2.6.2.js"));
 
-            
+
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
@@ -25,10 +26,13 @@ namespace IdentitySample
             bundles.Add(new ScriptBundle("~/bundles/map").Include(
                         "~/Scripts/Map/Map.js",
                          "~/Scripts/Map/Map.Table.js",
+                         "~/Scripts/Map/Map.Stations.js",
+                         "~/Scripts/Map/Map.Lines.js",
                         "~/Scripts/jqGrid/jquery.jqGrid.min.js",
                         "~/Scripts/jqGrid/plugins/grid.addons.js",
                         "~/Scripts/jqGrid/plugins/jquery.searchFilter.js",
-                        "~/Scripts/jqGrid/i18n/grid.locale-en.js"));
+                        "~/Scripts/jqGrid/i18n/grid.locale-en.js",
+                        "~/Scripts/spectrum.js"));
 
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
@@ -44,6 +48,7 @@ namespace IdentitySample
                       "~/Content/bootstrap.min.css",
                       "~/Content/Site.css",
                       "~/Content/Map.css",
+                      "~/Content/spectrum.css",
                       "~/Content/ui.jqgrid.css",
                       "~/Content/jquery-ui.min.css",
                       "~/Content/jquery-ui.structure.min.css",

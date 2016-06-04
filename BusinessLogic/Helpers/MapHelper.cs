@@ -73,7 +73,11 @@ namespace Business_Logic.Helpers
             else
             {
                 var strParts = strValue.Split(';');
-                return new double[] { double.Parse(strParts[0].Substring(3)), double.Parse(strParts[1].Substring(3)) };
+                return new double[]
+                {
+                    double.Parse(StringHelper.FixDecimalSeparator( strParts[0].Substring(3))),
+                    double.Parse(StringHelper.FixDecimalSeparator(strParts[1].Substring(3)))
+                };
             }
         }
 

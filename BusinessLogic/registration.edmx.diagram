@@ -14,6 +14,24 @@
         <EntityTypeShape EntityType="BusProjectModel.tblStudent" Width="1.5" PointX="9.375" PointY="0.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblFamily" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblAlertsQueue" Width="1.5" PointX="9.375" PointY="7.75" />
+        <EntityTypeShape EntityType="BusProjectModel.Bus" Width="1.5" PointX="11.75" PointY="13.125" />
+        <EntityTypeShape EntityType="BusProjectModel.BusesToLine" Width="1.5" PointX="14" PointY="1.625" />
+        <EntityTypeShape EntityType="BusProjectModel.Driver" Width="1.5" PointX="14.75" PointY="8.5" />
+        <EntityTypeShape EntityType="BusProjectModel.Line" Width="1.5" PointX="11.75" PointY="4.125" />
+        <EntityTypeShape EntityType="BusProjectModel.Schedule" Width="1.5" PointX="17" PointY="4.125" />
+        <EntityTypeShape EntityType="BusProjectModel.Station" Width="1.5" PointX="11.75" PointY="17.625" />
+        <EntityTypeShape EntityType="BusProjectModel.StationsToLine" Width="1.5" PointX="14" PointY="4.5" />
+        <EntityTypeShape EntityType="BusProjectModel.User" Width="1.5" PointX="8.75" PointY="13.75" />
+        <AssociationConnector Association="BusProjectModel.FK_BusesToLines_ToBuses" />
+        <AssociationConnector Association="BusProjectModel.FK_Schedule_ToBuses" />
+        <AssociationConnector Association="BusProjectModel.FK_BusesToLines_ToLines" />
+        <AssociationConnector Association="BusProjectModel.FK_Schedule_ToDrivers" />
+        <AssociationConnector Association="BusProjectModel.FK_Schedule_ToLines" />
+        <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToLines" />
+        <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToStations" />
+        <EntityTypeShape EntityType="BusProjectModel.StudentsToLine" Width="1.5" PointX="15.625" PointY="11.75" />
+        <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToLines" />
+        <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToStations" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

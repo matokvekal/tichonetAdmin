@@ -110,6 +110,11 @@ namespace Business_Logic
 
         }
 
+        public List<tblStudent> GetActiveStudents()
+        {
+            return DB.tblStudents.Where(z => z.Active ?? false).ToList();
+        } 
+
         public tblStudent getStudentByPk(int pk)
         {
             try

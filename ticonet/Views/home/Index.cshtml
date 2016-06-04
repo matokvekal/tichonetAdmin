@@ -2,7 +2,7 @@
 @using Business_Logic.Helpers
 @using MvcJqGrid
 @section scripts{
-    @Scripts.Render("http://maps.googleapis.com/maps/api/js?key=" + MapHelper.ApiKey )
+    @Scripts.Render("http://maps.googleapis.com/maps/api/js?key=" + MapHelper.ApiKey)
     @Scripts.Render("~/bundles/map");
     <script type="text/javascript">
         $(document).ready(smap.init);
@@ -17,6 +17,14 @@
 
 <div class="students-fly">
     <div class="header">
+        <h2>Lines</h2>
+        <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleLines"></div>
+    </div>
+    <div class="content" id="dLinesTable">
+        <table id="grLines"></table>
+        <div id="pgLines"></div>
+    </div>
+    <div class="header">
         <h2>Students</h2>
         <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleStudents"></div>
     </div>
@@ -25,3 +33,38 @@
         <div id="pgStudents"></div>
     </div>
 </div>
+
+@*Dialogs*@
+
+<div id="dialog-form" title="Add / Edit station" style="display: none; overflow: hidden;">
+
+
+    <form action="/api/stations/Save" id="frmCreate" method="POST" class="form-horizontal">
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">Name</label>
+            <input type="text" name="Name" id="tbName" value="New station" class="text form-control">
+        </div>
+        <div class="form-group">
+            <label for="tbColor" class="col-sm-2 control-label">Color</label>
+            <input type='text' id="tbColor" class="form-control" class="basic" />
+
+        </div>
+        <input type="hidden" id="hfStationId" name="Id" />
+        <input type="hidden" id="hfCreateColor" name="Color" />
+        <input type="hidden" id="hfCreateLat" name="StrLat" />
+        <input type="hidden" id="hfCreateLng" name="StrLng" />
+    </form>
+</div>
+<div id="dlgConfirm" title="Confirm action" style="display: none;">
+    <div id="dConfirmMessage" class="message"></div>
+    <input type="hidden" id="hfCurrentId"/>
+</div>
+<div id="dlgAttach" title="Attach student to station" style="display: none;">
+    <div class="message" id="dConfirmAttach"></div>
+    <div id="dAttachDist" class="message"><img src="/Content/img/ajax-loader.gif"/></div>
+    <input type="hidden" id="hfAttachStudentId"/>
+    <input type="hidden" id="hfAttachStationId"/>
+    <input type="hidden" id="hfAttachDistance" />
+</div>
+
+@*End Dialogs*@

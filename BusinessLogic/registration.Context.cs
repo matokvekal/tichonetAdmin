@@ -34,5 +34,14 @@ namespace Business_Logic
         public virtual DbSet<tblStudent> tblStudents { get; set; }
         public virtual DbSet<tblFamily> tblFamilies { get; set; }
         public virtual DbSet<tblAlertsQueue> tblAlertsQueues { get; set; }
+        public virtual DbSet<Bus> Buses { get; set; }
+        public virtual DbSet<BusesToLine> BusesToLines { get; set; }
+        public virtual DbSet<Driver> Drivers { get; set; }
+        public virtual DbSet<Line> Lines { get; set; }
+        public virtual DbSet<Schedule> Schedules { get; set; }
+        public virtual DbSet<Station> Stations { get; set; }
+        public virtual DbSet<StationsToLine> StationsToLines { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<StudentsToLine> StudentsToLines { get; set; }
     }
 }

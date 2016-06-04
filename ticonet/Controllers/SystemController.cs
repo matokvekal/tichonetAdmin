@@ -1,16 +1,10 @@
 ﻿using System;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
-
-
 using System.Web.Mvc;
-
 using System.Web.Security;
 using Business_Logic;
-
-
-
-using System.Security.Policy;
-
 
 namespace ticonet
 {
@@ -56,14 +50,14 @@ namespace ticonet
                 );
             string encryptedTicket = FormsAuthentication.Encrypt(formsTicket);
 
-            System.Net.Mail.MailMessage m = new System.Net.Mail.MailMessage(
-                new System.Net.Mail.MailAddress("harshamaHasaot@gmail.com", "Web Registration"),
-                new System.Net.Mail.MailAddress(email));
+            MailMessage m = new MailMessage(
+                new MailAddress("harshamaHasaot@gmail.com", "Web Registration"),
+                new MailAddress(email));
             m.Subject = "Email confirmation";
             m.Body = string.Format("Dear {0}<BR/>" + DictExpressionBuilderSystem.Translate("message.pleaseclickontheLinkbelow") + ": <a href=\"{1}\" title=\"" + DictExpressionBuilderSystem.Translate("message.UserEmailConfirm") + "\">Click here</a>", email, Url.Action("ConfirmEmail", "System", new { Token = encryptedTicket, Email = email }, Request.Url.Scheme));
             m.IsBodyHtml = true;
-            System.Net.Mail.SmtpClient smtp = new System.Net.Mail.SmtpClient("smtp.gmail.com");
-            smtp.Credentials = new System.Net.NetworkCredential("harshamaHasaot@gmail.com", "zaqzaq8*");
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
+            smtp.Credentials = new NetworkCredential("harshamaHasaot@gmail.com", "zaqzaq8*");
             smtp.EnableSsl = true;
             //  await smtp.SendMailAsync(m);
             Task<string> t = new Task<string>(() =>

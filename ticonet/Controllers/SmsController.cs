@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-
-
 
 namespace ticonet
 {
@@ -39,7 +36,7 @@ namespace ticonet
                 string messageInterval = "5";
                 string userName = "hasaot";
                 string password = "tichonet1234";
-                string messageText = System.Security.SecurityElement.Escape(message);
+                string messageText = SecurityElement.Escape(message);
                 string senderName = "tichonet";
                 string senderNumber = "054-1111111";
                 //set phone numbers
@@ -68,7 +65,7 @@ namespace ticonet
                 //  <DelayInSeconds>60</DelayInSeconds>
                 sbXml.Append("</Settings>");
                 sbXml.Append("</Inforu >");
-                string strXML = HttpUtility.UrlEncode(sbXml.ToString(), System.Text.Encoding.UTF8);
+                string strXML = HttpUtility.UrlEncode(sbXml.ToString(), Encoding.UTF8);
                 Task<string> x= PostDataToURL("http://api.smsim.co.il/SendMessageXml.ashx", "InforuXML=" + strXML);
 
                 return true;

@@ -60,8 +60,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseLogic.cs" />
+    <Compile Include="Bus.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BusesToLine.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
     <Compile Include="Constants\GeneralConstants.cs" />
     <Compile Include="DictSystemLogic.cs" />
+    <Compile Include="Driver.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entities\LoginInfo.cs" />
     <Compile Include="Entities\StudentSearchRequest.cs" />
     <Compile Include="Entities\StudentShortInfo.cs" />
@@ -72,6 +81,11 @@
     <Compile Include="Helpers\MapHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\StringCipher.cs" />
+    <Compile Include="Helpers\StringHelper.cs" />
+    <Compile Include="Line.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LineLogic.cs" />
     <Compile Include="localization\DBpartialClass.cs" />
     <Compile Include="localization\expresionBuilder.cs" />
     <Compile Include="localization\Systemlocalization.cs" />
@@ -79,6 +93,18 @@
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="LoginLogic.cs" />
+    <Compile Include="Schedule.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Station.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StationsToLine.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="StudentsToLine.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
     <Compile Include="tbAlertsQueueLogic.cs" />
     <Compile Include="tblAlertsQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>
@@ -92,6 +118,7 @@
     <Compile Include="tblFamily.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblStationsLogic.cs" />
     <Compile Include="tblStreet.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -124,6 +151,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>registration.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="User.cs">
+      <DependentUpon>registration.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
