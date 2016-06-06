@@ -79,7 +79,7 @@ namespace ticonet.Controllers
         }
 
         [System.Web.Http.ActionName("AddToLine")]
-        public object PostAddToLine(AddStationToLineModel model)
+        public SaveStationToLineResult PostAddToLine(AddStationToLineModel model)
         {
             var ts = new TimeSpan(model.Hours,model.Minutes,0);
             var res = new SaveStationToLineResult();
@@ -91,6 +91,36 @@ namespace ticonet.Controllers
                     ts, 
                     model.Position, 
                     model.ChangeColor);
+
+                res.Station = new StationModel(logic.GetStation(model.StationId));
+                res.Station.Students = logic.GetStudents(model.StationId)
+                        .Select(z => new StudentToLineModel(z))
+                        .ToList();
+            }
+            using (var logic = new LineLogic())
+            {
+                res.Line = new LineModel(logic.GetLine(model.LineId));
+                res.Line.Stations = logic.GetStations(model.LineId)
+                        .OrderBy(z => z.Position)
+                        .Select(z => new StationToLineModel(z))
+                        .ToList();
+            }
+            return res;
+        }
+
+        [System.Web.Http.ActionName("SaveOnLine")]
+        public SaveStationToLineResult PostSaveOnLine(AddStationToLineModel model)
+        {
+            var ts = new TimeSpan(model.Hours, model.Minutes, 0);
+            var res = new SaveStationToLineResult();
+            using (var logic = new StationsLogic())
+            {
+                res.Done = logic.SaveOnLine(
+                    model.StationId,
+                    model.LineId,
+                    ts,
+                    model.Position,
+                    (model.StrChangeColor??"off").ToLower()=="on");
 
                 res.Station = new StationModel(logic.GetStation(model.StationId));
                 res.Station.Students = logic.GetStudents(model.StationId)

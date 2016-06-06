@@ -116,6 +116,14 @@
     height: 20px;
 }
 
+.color-indicator-small {
+    border: 1px solid #ffffff;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    margin-left: 5px;
+}
+
 .row {
     margin-left: 0;
     margin-right: 0;

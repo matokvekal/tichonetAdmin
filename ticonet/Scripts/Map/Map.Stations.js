@@ -84,7 +84,8 @@
             }
         }
         return res;
-    }, getMarkerIcon: function (station) {
+    },
+    getMarkerIcon: function (station) {
         var color = station.Color;
         if (color == null || color == undefined) color = "FF0000";
         if (color.length < 3) color = "FF0000";
@@ -351,7 +352,7 @@
 
                         var station = smap.stations.getStation(loader.Station.Id);
                         index = smap.stations.list.indexOf(station);
-                        smap.stations.list[index] = loader.stations;
+                        smap.stations.list[index] = loader.Station;
                         smap.stations.setMarker(loader.Station);
                     });
                 },
@@ -372,26 +373,76 @@
         $("#dAddLine").css("background-color", smap.fixCssColor(line.Color));
     },
     editToLine: function (id) {
+        smap.closeConextMenu();
+        $("#hfEditToLineStationId").val(id);
         var lines = smap.stations.getLines(id);
-        var tabs = $("#tabLines").tabs();
-        var tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>";
-        var tabCounter = 0;
+        $("#tabLines").empty();
+        $("<div id='tabLinesCont'></div>").appendTo("#tabLines");
+        $("<ul id='lstTabLines'></ul>").appendTo($("#tabLinesCont"));
         for (var i = 0; i < lines.length; i++) {
-            var label =  "Tab " + tabCounter,
-        iid = "tabs-" + tabCounter,
-        li = $(tabTemplate.replace(/#\{href\}/g, "#" + iid).replace(/#\{label\}/g, label)),
-        tabContentHtml =  "Tab " + tabCounter + " content.";
-
-            tabs.append(li);
-            tabs.append("<div id='" + iid + "'><p>" + tabContentHtml + "</p></div>");
-            tabs.tabs("refresh");
-            tabCounter++;
+            var line = lines[i];
+            $("<li rel='" + line.Id + "'><a href='#line" + line.Id + "'>"
+                + line.Name + "<span class='color-indicator-small' style='background-color:" 
+                + smap.fixCssColor(line.Color) +"'></span></a></li>").appendTo($("#lstTabLines"));
+            $("<div id='line" + line.Id + "'></div>").appendTo($("#tabLinesCont"));
         }
+
+        smap.stations.fillEditOnLineDialog(lines[0], id);
+        $("#hfEditToLineLineId").val(lines[0].Id);
+        var tabs = $("#tabLinesCont").tabs({
+            activate: function (event, ui) {
+                var lineId = $(ui.newTab).attr("rel");
+                $("#hfEditToLineLineId").val(lineId);
+                smap.stations.fillEditOnLineDialog(smap.getLine(lineId), $("#hfEditToLineStationId").val());
+            }
+        });
         var dialog = $("#dlgEditToLine").dialog({
             autoOpen: true,
-            height: 200,
-            width: 350,
-            modal: true
+            height: 400,
+            width: 500,
+            modal: true,
+            buttons: {
+                "Save":function() {
+                    var data = $("#frmEditToLine").serialize();
+                    $.post("/api/stations/SaveOnLine", data).done(function (loader) {
+                        dialog.dialog("close");
+                        smap.lines.hideLine(loader.Line.Id);
+                        var line = smap.getLine(loader.Line.Id);
+                        var index = smap.lines.list.indexOf(line);
+                        console.log(index);
+                        smap.lines.list[index] = loader.Line;
+                        smap.lines.showLine(line.Id);
+
+                        var station = smap.stations.getStation(loader.Station.Id);
+                        index = smap.stations.list.indexOf(station);
+                        smap.stations.list[index] = loader.Station;
+                        smap.stations.setMarker(loader.Station);
+                    });
+                },
+                Cancel:function() {
+                    dialog.dialog("close");
+                }
+            }
         });
+        $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+    },
+    fillEditOnLineDialog: function (line, stationId) {
+        if (line == null) return;
+        var station = null;
+        for (var i = 0; i < line.Stations.length; i++) {
+            if (line.Stations[i].StationId == stationId) {
+                station = line.Stations[i];
+                break;
+            }
+        }
+        if (station == null)return;
+        var t = station.ArrivalDateString.split(":");
+        $("#tbEditLineHours").val(t[0]);
+        $("#tbEditLineMinutes").val(t[1]);
+        $("#ddlEditPosition").empty();
+        for (var j = 1; j <= line.Stations.length; j++) {
+            $("<option value='" + j + "'>" + j + "</option>").appendTo($("#ddlEditPosition"));
+        }
+        $("#ddlEditPosition").val(station.Position);
     }
 }

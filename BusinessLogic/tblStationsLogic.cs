@@ -131,6 +131,40 @@ namespace Business_Logic
             return res;
         }
 
+        public bool SaveOnLine(int stationId, int lineId, TimeSpan arrivalTime, int position, bool changeColor)
+        {
+            var res = false;
+            var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
+            if (itm != null)
+            {
+                if (itm.Position != position) //reorder
+                {
+                    var p = 1;
+                    foreach (var station in DB.StationsToLines.Where(z=>z.LineId==lineId).OrderBy(z=>z.Position))
+                    {
+                        if (station.StationId != stationId)
+                        {
+                            if (p == position) p++;
+                            station.Position = p;
+                            p++;
+                        }
+                    }
+                    itm.Position = position;
+                }
+                itm.ArrivalDate = arrivalTime;
+                if (changeColor)
+                {
+                    var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
+                    var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
+                    if (station != null && line != null)
+                        station.color = line.HexColor;
+                }
+                DB.SaveChanges();
+                res = true;
+            }
+            return res;
+        }
+
         public bool AttachStudent(int studentId, int stationId, int distance)
         {
             var res = false;

@@ -18,6 +18,7 @@ namespace ticonet.Models
         public int Position { get; set; }
 
         public bool ChangeColor { get; set; }
+        public string  StrChangeColor { get; set; }
 
     }
 }

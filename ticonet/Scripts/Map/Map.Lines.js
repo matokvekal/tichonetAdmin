@@ -18,7 +18,7 @@
         for (var i = 0; i < line.Stations.length; i++) {
             line.currentStationsList.push(line.Stations[i].StationId);
         }
-        
+
         smap.lines.showSegment(line);
     },
     showSegment: function (line) {
@@ -51,7 +51,7 @@
         smap.directionsService.route(request, function (response, status) {
 
             if (status == google.maps.DirectionsStatus.OK) {
-               
+
                 if (line.route) {
                     for (var i = 0; i < response.routes[0].legs.length; i++) {
                         line.route.routes[0].legs.push(response.routes[0].legs[i]);
@@ -71,7 +71,8 @@
     },
     hideLine: function (id) {
         var line = smap.getLine(id);
-        line.gDirectionsDisplay.setMap(null);
+        if (line.gDirectionsDisplay != null)
+            line.gDirectionsDisplay.setMap(null);
     },
     getColor: function (id) {
         var line = smap.getLine(id);
