@@ -162,6 +162,10 @@ namespace Business_Logic
                             station.color = line.HexColor;
                     }
                     DB.SaveChanges();
+                    using (var logic = new LineLogic())
+                    {
+                        logic.UpdateStudentCount();
+                    }
                     res = true;
                 }
             }
@@ -189,6 +193,10 @@ namespace Business_Logic
                         p++;
                     }
                     DB.SaveChanges();
+                    using (var logic = new LineLogic())
+                    {
+                        logic.UpdateStudentCount();
+                    }
                     res = true;
                 }
             }

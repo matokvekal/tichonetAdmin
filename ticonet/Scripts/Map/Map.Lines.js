@@ -8,6 +8,15 @@
             smap.lines.hideLine(id);
         }
     },
+    updateLine: function (line, show) {
+        line.show = (show == true);
+        if (show == true) smap.lines.hideLine(line.Id);
+        var oldline = smap.getLine(line.Id);
+        var index = smap.lines.list.indexOf(oldline);
+        smap.lines.list[index] = line;
+        if (show == true) smap.lines.showLine(line.Id);
+        smap.table.linesGrid.setRowData(line.Id, line);
+    },
     showLine: function (id) {
         var line = smap.getLine(id);
         if (line.Stations.length < 2) return;
@@ -21,6 +30,7 @@
 
         smap.lines.showSegment(line);
     },
+   
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
         var st2 = smap.stations.getStation(line.currentStationsList[1]);

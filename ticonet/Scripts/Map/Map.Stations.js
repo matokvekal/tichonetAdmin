@@ -342,15 +342,10 @@
                     var data = $("#frmAddStationTolIne").serialize();
                     $.post("/api/stations/AddToLine", data).done(function (loader) {
                         dialog.dialog("close");
-                        smap.lines.hideLine(loader.Line.Id);
-                        var line = smap.getLine(loader.Line.Id);
-                        var index = smap.lines.list.indexOf(line);
-                        console.log(index);
-                        smap.lines.list[index] = loader.Line;
-                        smap.lines.showLine(line.Id);
+                        smap.lines.updateLine(loader.Line, true);
 
                         var station = smap.stations.getStation(loader.Station.Id);
-                        index = smap.stations.list.indexOf(station);
+                        var index = smap.stations.list.indexOf(station);
                         smap.stations.list[index] = loader.Station;
                         smap.stations.setMarker(loader.Station);
                     });
@@ -404,14 +399,11 @@
                     var data = $("#frmEditToLine").serialize();
                     $.post("/api/stations/SaveOnLine", data).done(function (loader) {
                         dialog.dialog("close");
-                        smap.lines.hideLine(loader.Line.Id);
-                        var line = smap.getLine(loader.Line.Id);
-                        var index = smap.lines.list.indexOf(line);
-                        smap.lines.list[index] = loader.Line;
-                        smap.lines.showLine(line.Id);
+                        smap.lines.updateLine(loader.Line, true);
+                        
 
                         var station = smap.stations.getStation(loader.Station.Id);
-                        index = smap.stations.list.indexOf(station);
+                        var index = smap.stations.list.indexOf(station);
                         smap.stations.list[index] = loader.Station;
                         smap.stations.setMarker(loader.Station);
                     });
@@ -468,11 +460,7 @@
         }
         $.post("/api/stations/DeleteFomLine", data).done(function (loader) {
             
-            smap.lines.hideLine(loader.Line.Id);
-            var line = smap.getLine(loader.Line.Id);
-            var index = smap.lines.list.indexOf(line);
-            smap.lines.list[index] = loader.Line;
-            smap.lines.showLine(line.Id);
+            smap.lines.updateLine(loader.Line,true);
             
             var lines = smap.stations.getLines(loader.Station.Id);
             if (lines.length == 0)
