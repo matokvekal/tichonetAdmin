@@ -142,9 +142,8 @@
         contextmenuDir.innerHTML += '<a id="menuST3" href="javascript:smap.stations.addToLine(' + station.Id + ');"><div class="context">Add to Line<\/div><\/a>';
         if (smap.stations.getLines(station.Id).length > 0) {
             contextmenuDir.innerHTML += '<a id="menuST3" href="javascript:smap.stations.editToLine(' + station.Id + ');"><div class="context">Edit Line<\/div><\/a>';
-
+            contextmenuDir.innerHTML += '<a id="menuST4" href="javascript:smap.stations.deleteFromLines(' + station.Id + ');"><div class="context">Remove from line<\/div><\/a>';
         }
-        contextmenuDir.innerHTML += '<a id="menuST4" href="javascript:smap.stations.deleteStation(' + station.Id + ');"><div class="context">Remove from line<\/div><\/a>';
 
 
         $(smap.mainMap.getDiv()).append(contextmenuDir);
@@ -333,7 +332,7 @@
 
         $("#rAddLine").prop("checked", true);
 
-        var dialog= $("#dlgAddToLine").dialog({
+        var dialog = $("#dlgAddToLine").dialog({
             autoOpen: true,
             height: 350,
             width: 420,
@@ -382,8 +381,8 @@
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
             $("<li rel='" + line.Id + "'><a href='#line" + line.Id + "'>"
-                + line.Name + "<span class='color-indicator-small' style='background-color:" 
-                + smap.fixCssColor(line.Color) +"'></span></a></li>").appendTo($("#lstTabLines"));
+                + line.Name + "<span class='color-indicator-small' style='background-color:"
+                + smap.fixCssColor(line.Color) + "'></span></a></li>").appendTo($("#lstTabLines"));
             $("<div id='line" + line.Id + "'></div>").appendTo($("#tabLinesCont"));
         }
 
@@ -398,18 +397,16 @@
         });
         var dialog = $("#dlgEditToLine").dialog({
             autoOpen: true,
-            height: 400,
             width: 500,
             modal: true,
             buttons: {
-                "Save":function() {
+                "Save": function () {
                     var data = $("#frmEditToLine").serialize();
                     $.post("/api/stations/SaveOnLine", data).done(function (loader) {
                         dialog.dialog("close");
                         smap.lines.hideLine(loader.Line.Id);
                         var line = smap.getLine(loader.Line.Id);
                         var index = smap.lines.list.indexOf(line);
-                        console.log(index);
                         smap.lines.list[index] = loader.Line;
                         smap.lines.showLine(line.Id);
 
@@ -419,7 +416,7 @@
                         smap.stations.setMarker(loader.Station);
                     });
                 },
-                Cancel:function() {
+                Cancel: function () {
                     dialog.dialog("close");
                 }
             }
@@ -435,7 +432,7 @@
                 break;
             }
         }
-        if (station == null)return;
+        if (station == null) return;
         var t = station.ArrivalDateString.split(":");
         $("#tbEditLineHours").val(t[0]);
         $("#tbEditLineMinutes").val(t[1]);
@@ -444,5 +441,45 @@
             $("<option value='" + j + "'>" + j + "</option>").appendTo($("#ddlEditPosition"));
         }
         $("#ddlEditPosition").val(station.Position);
-    }
+    },
+    deleteFromLines: function (id) {
+        smap.closeConextMenu();
+        smap.stations.fillDeleteFromLinesDialog(id);
+        var dialog = $("#dlgDeleteFromLine").dialog({
+            autoOpen: true,
+            width: 350,
+            modal: true
+        });
+    },
+    fillDeleteFromLinesDialog: function (id) {
+        $("#hfDeleteFromLineStationId").val(id);
+        $("#dDeleteLines").empty();
+         var lines = smap.stations.getLines(id);
+        for (var i = 0; i < lines.length; i++) {
+            $("<div>" + lines[i].Name + "<span class='color-indicator-small' style='margin-right:20px;background-color:"
+                + smap.fixCssColor(lines[i].Color) + "'></span><a style='color:red;' href='javascript:smap.stations.doDeleteFromLine(" +
+                 lines[i].Id + ")'><span class='glyphicon glyphicon-remove'></span></a></div>").appendTo($("#dDeleteLines"));
+        }
+    },
+    doDeleteFromLine: function (id) {
+        var data  = {
+            StationId: $("#hfDeleteFromLineStationId").val(),
+            LineId:id
+        }
+        $.post("/api/stations/DeleteFomLine", data).done(function (loader) {
+            
+            smap.lines.hideLine(loader.Line.Id);
+            var line = smap.getLine(loader.Line.Id);
+            var index = smap.lines.list.indexOf(line);
+            smap.lines.list[index] = loader.Line;
+            smap.lines.showLine(line.Id);
+            
+            var lines = smap.stations.getLines(loader.Station.Id);
+            if (lines.length == 0)
+                $("#dlgDeleteFromLine").dialog("close");
+            else 
+                smap.stations.fillDeleteFromLinesDialog(loader.Station.Id);
+
+        });
+    } 
 }

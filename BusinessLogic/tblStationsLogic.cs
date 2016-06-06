@@ -134,33 +134,67 @@ namespace Business_Logic
         public bool SaveOnLine(int stationId, int lineId, TimeSpan arrivalTime, int position, bool changeColor)
         {
             var res = false;
-            var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
-            if (itm != null)
+            try
             {
-                if (itm.Position != position) //reorder
+                var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
+                if (itm != null)
                 {
-                    var p = 1;
-                    foreach (var station in DB.StationsToLines.Where(z=>z.LineId==lineId).OrderBy(z=>z.Position))
+                    if (itm.Position != position) //reorder
                     {
-                        if (station.StationId != stationId)
+                        var p = 1;
+                        foreach (var station in DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position))
                         {
-                            if (p == position) p++;
-                            station.Position = p;
-                            p++;
+                            if (station.StationId != stationId)
+                            {
+                                if (p == position) p++;
+                                station.Position = p;
+                                p++;
+                            }
                         }
+                        itm.Position = position;
                     }
-                    itm.Position = position;
+                    itm.ArrivalDate = arrivalTime;
+                    if (changeColor)
+                    {
+                        var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
+                        var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
+                        if (station != null && line != null)
+                            station.color = line.HexColor;
+                    }
+                    DB.SaveChanges();
+                    res = true;
                 }
-                itm.ArrivalDate = arrivalTime;
-                if (changeColor)
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return res;
+        }
+
+        public bool DeleteFromLine(int stationId, int lineId)
+        {
+            var res = false;
+            try
+            {
+                var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
+                if (itm != null)
                 {
-                    var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
-                    var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
-                    if (station != null && line != null)
-                        station.color = line.HexColor;
+                    DB.StationsToLines.Remove(itm);
+                    DB.SaveChanges();
+                    var p = 1;
+                    foreach (var station in DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position))
+                    {
+                        station.Position = p;
+                        p++;
+                    }
+                    DB.SaveChanges();
+                    res = true;
                 }
-                DB.SaveChanges();
-                res = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
             return res;
         }

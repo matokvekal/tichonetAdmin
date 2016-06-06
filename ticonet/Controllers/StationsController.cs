@@ -137,5 +137,27 @@ namespace ticonet.Controllers
             }
             return res;
         }
+
+        [System.Web.Http.ActionName("DeleteFomLine")]
+        public SaveStationToLineResult PostDeleteFomLine(AddStationToLineModel model)
+        {
+            var res = new SaveStationToLineResult();
+            using (var logic = new StationsLogic())
+            {
+                logic.DeleteFromLine(model.StationId, model.LineId);
+                res.Station = new StationModel{Id = model.StationId};
+            }
+            using (var logic = new LineLogic())
+            {
+                res.Line = new LineModel(logic.GetLine(model.LineId))
+                {
+                    Stations = logic.GetStations(model.LineId)
+                        .OrderBy(z => z.Position)
+                        .Select(z => new StationToLineModel(z))
+                        .ToList()
+                };
+            }
+            return res;
+        }
     }
 }
