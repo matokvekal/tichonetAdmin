@@ -259,7 +259,6 @@
         var addr2 = new google.maps.LatLng(station.StrLat, station.StrLng);
         var dialog = $("#dlgAttach").dialog({
             autoOpen: true,
-            height: 200,
             width: 350,
             modal: true,
             buttons: {
@@ -345,6 +344,7 @@
                         smap.lines.updateLine(loader.Line, true);
 
                         var station = smap.stations.getStation(loader.Station.Id);
+                        loader.Station.Marker = station.Marker;
                         var index = smap.stations.list.indexOf(station);
                         smap.stations.list[index] = loader.Station;
                         smap.stations.setMarker(loader.Station);
@@ -390,6 +390,7 @@
                 smap.stations.fillEditOnLineDialog(smap.getLine(lineId), $("#hfEditToLineStationId").val());
             }
         });
+        $("#cbEditLineColor").prop("checked", false);
         var dialog = $("#dlgEditToLine").dialog({
             autoOpen: true,
             width: 500,
@@ -403,6 +404,7 @@
                         
 
                         var station = smap.stations.getStation(loader.Station.Id);
+                        loader.Station.Marker = station.Marker;
                         var index = smap.stations.list.indexOf(station);
                         smap.stations.list[index] = loader.Station;
                         smap.stations.setMarker(loader.Station);
