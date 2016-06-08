@@ -137,3 +137,6 @@
     .header a:hover {
         color: #ffffff;
     }
+#frmEditLine input,#frmEditLine select {
+    width: 150px;
+}

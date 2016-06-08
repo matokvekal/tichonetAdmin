@@ -122,7 +122,7 @@
             altRows: false,
             sortable: true,
             altclass: "ui-state-default",
-            colNames: ["", "Number", "Name", "Color", "Direcion", "Students"],
+            colNames: ["", "Number", "Name", "Color", "Direcion", "Students",""],
             colModel: [
                 {
                     name: "show",
@@ -149,7 +149,7 @@
                     name: 'Name',
                     index: 'Name',
                     sorttype: "text",
-                    width: 170
+                    width: 120
                 },
                 {
                     name: 'Color',
@@ -159,7 +159,14 @@
                     formatter: smap.table.colorFormatter
                 },
                 { name: 'Direction', index: 'Direction', width: 100, align: "center" },
-                { name: 'StudentsCount', index: 'StudentsCount', width: 100, align: "center" }
+                { name: 'StudentsCount', index: 'StudentsCount', width: 100, align: "center" },
+                {
+                    name: "Id",
+                    index: 'Id',
+                    width:50,
+                    formatter: smap.table.lineActionsFormatter,
+                    align: "center"
+                }
             ],
             subGrid: true,
             subGridRowExpanded: function (subgridDivId, rowId) {
@@ -257,6 +264,12 @@
         var color = cellvalue;
         if (color.substring(0, 1) != "#") color = "#" + color;
         return '<div style="width:50px; height:10px;background-color:' + color + '" title="' + color + '"></div>';
+    },
+    lineActionsFormatter: function(cellvalue, options, rowObject) {
+        var res = "<a href='javascript:smap.lines.editLine(" + cellvalue + ")' title='Edit line'><span class='glyphicon glyphicon-pencil'></span></a>";
+        res += "&nbsp;&nbsp;";
+        res += "<a href='javascript:smap.lines.deleteLine(" + cellvalue + ")' title='Delete line'><span class='glyphicon glyphicon-trash'></span></a>";
+        return res;
     }
 
 }

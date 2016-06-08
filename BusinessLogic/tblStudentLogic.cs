@@ -241,5 +241,13 @@ namespace Business_Logic
             }
             return res;
         }
+
+        public List<tblStudent> GetStudentsForLine(int lineId)
+        {
+            var ids = DB.StudentsToLines
+                .Where(z => z.LineId == lineId)
+                .Select(z => z.StudentId).ToArray();
+            return DB.tblStudents.Where(z => ids.Contains(z.pk)).ToList();
+        }
     }
 }

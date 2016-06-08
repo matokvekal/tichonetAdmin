@@ -21,6 +21,9 @@
             <a href="javascript:smap.switchStationsVisible();" title="Show / hide stations without lines">
                 <span class="glyphicon glyphicon-eye-open" id="btToggleStationsVisible"></span>
             </a>
+            <a href="javascript:smap.lines.editLine(0);" title="Add new line" style="margin-left: 5px;">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
         </h2>
     </div>
     <div class="header">
@@ -53,7 +56,7 @@
         </div>
         <div class="form-group">
             <label for="tbColor" class="col-sm-2 control-label">Color</label>
-            <input type='text' id="tbColor" class="form-control" class="basic" />
+            <input type='text' id="tbColor" class="form-contro basic" />
 
         </div>
         <input type="hidden" id="hfStationId" name="Id" />
@@ -68,7 +71,9 @@
 </div>
 <div id="dlgAttach" title="Attach student to station" style="display: none;">
     <div class="message" id="dConfirmAttach"></div>
-    <div id="dAttachDist" class="message"><img src="/Content/img/ajax-loader.gif" /></div>
+    <div id="dAttachDist" class="message"><img src="/Content/img/ajax-loader.gif"/>
+    </div>
+    <div id="dAttachLines"></div>
     <input type="hidden" id="hfAttachStudentId" />
     <input type="hidden" id="hfAttachStationId" />
     <input type="hidden" id="hfAttachDistance" />
@@ -149,6 +154,31 @@
     <div id="dDeleteLines">
 
     </div>
-    <input type="hidden" id="hfDeleteFromLineStationId" />
+    <input type="hidden" id="hfDeleteFromLineStationId"/>
+</div>
+<div id="dlgAddLine" title="Add new line" style="display: none;" >
+    <form id="frmEditLine">
+        <input type="hidden" id="hfEditLineId" name="Id"/>
+        <input type="hidden" id="hfEditLineColor" name="Color" />
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="tbEditLineNumber">Number</label>
+            <input type="text" id="tbEditLineNumber" name="LineNumber" class="form-control" />
+        </div>
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="tbEditLineName">Name</label>
+            <input type="text" id="tbEditLineName" name="Name" class="form-control" />
+        </div>
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="tbEditLineColor">Color</label>
+            <input type="text" id="tbEditLineColor" class="form-control" />
+        </div>
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="ddlEditLineDirection">Direction</label>
+            <select id="ddlEditLineDirection" name="Direction" class="form-control">
+                <option value="0">0</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+    </form>
 </div>
 @*End Dialogs*@

@@ -318,6 +318,7 @@
     </Compile>
     <Compile Include="Models\AddStationToLineModel.cs" />
     <Compile Include="Models\AttachStudentModel.cs" />
+    <Compile Include="Models\EditLineResultModel.cs" />
     <Compile Include="Models\LineModel.cs" />
     <Compile Include="Models\MapStateModel.cs" />
     <Compile Include="Models\SaveStationResultModel.cs" />

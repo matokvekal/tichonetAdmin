@@ -56,10 +56,11 @@ namespace Business_Logic
             return DB.Stations.ToList();
         }
 
-        public List<Station> GetStationWithoutLine()
+       
+        public List<Station> GetStationForLine(int lineId)
         {
-            return DB.StudentsToLines
-                .Where(z => z.LineId == null)
+            return DB.StationsToLines
+                .Where(z => z.LineId == lineId)
                 .Select(z => z.Station)
                 .ToList();
         }

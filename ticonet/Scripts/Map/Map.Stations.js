@@ -176,6 +176,7 @@
                     $.post("/api/stations/Save", model)
                         .done(function (loader) {
                             dialog.dialog("close");
+                            smap.stations.updateStation(loader.Data.Station);
                         });
                 },
                 Cancel: function () {
@@ -187,6 +188,13 @@
             }
         });
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+    },
+    updateStation:function(station) {
+        var oldStation = smap.stations.getStation(station.Id);
+        station.Marker = oldStation.Marker;
+        var index = smap.stations.list.indexOf(oldStation);
+        smap.stations.list[index] = station;
+        smap.stations.setMarker(station);
     },
     deleteStation: function (id) {
         smap.closeConextMenu();
@@ -255,6 +263,9 @@
         $("#dAttachDist").html('<img src="/Content/img/ajax-loader.gif"/>');
         $("#hfAttachStudentId").val(student.Id);
         $("#hfAttachStationId").val(station.Id);
+
+        var lines = smap.stations.getLines(station.Id);
+        $("#dAttachLines").html(lines.length);
         var addr1 = new google.maps.LatLng(student.Lat, student.Lng);
         var addr2 = new google.maps.LatLng(station.StrLat, station.StrLng);
         var dialog = $("#dlgAttach").dialog({

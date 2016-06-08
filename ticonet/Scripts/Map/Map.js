@@ -276,7 +276,7 @@
         var contextmenuDir = document.createElement("div");
         contextmenuDir.className = 'contextmenu';
         contextmenuDir.innerHTML = '<a id="menu1" href="javascript:smap.stations.openPopup(null,' + lat + ',' + lng + ');"><div class="context">Add station<\/div><\/a>';
-
+        contextmenuDir.innerHTML += '<a id="menu1" href="javascript:smap.lines.editLine(0);"><div class="context">Add new line</div></a>';
         $(smap.mainMap.getDiv()).append(contextmenuDir);
 
         smap.setMenuXY(currentLatLng);
@@ -302,4 +302,5 @@
         if (color.substring(0, 1) != "#") color = "#" + color;
         return color;
     }
+  
 }

@@ -12,10 +12,18 @@
         line.show = (show == true);
         if (show == true) smap.lines.hideLine(line.Id);
         var oldline = smap.getLine(line.Id);
-        var index = smap.lines.list.indexOf(oldline);
-        smap.lines.list[index] = line;
+        if (oldline) {
+            var index = smap.lines.list.indexOf(oldline);
+            smap.lines.list[index] = line;
+            smap.table.linesGrid.setRowData(line.Id, line);
+        } else {
+            console.log("Add");
+            console.log(line);
+            smap.lines.list.push(line);
+            smap.table.linesGrid.jqGrid('addRowData', line.Id, line);
+        }
         if (show == true) smap.lines.showLine(line.Id);
-        smap.table.linesGrid.setRowData(line.Id, line);
+
     },
     showLine: function (id) {
         var line = smap.getLine(id);
@@ -30,7 +38,7 @@
 
         smap.lines.showSegment(line);
     },
-   
+
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
         var st2 = smap.stations.getStation(line.currentStationsList[1]);
@@ -81,8 +89,9 @@
     },
     hideLine: function (id) {
         var line = smap.getLine(id);
-        if (line.gDirectionsDisplay != null)
-            line.gDirectionsDisplay.setMap(null);
+        if (line != null)
+            if (line.gDirectionsDisplay != null)
+                line.gDirectionsDisplay.setMap(null);
     },
     getColor: function (id) {
         var line = smap.getLine(id);
@@ -94,6 +103,83 @@
         } else {
             return "#0000FF";
         }
+    },
+    editLine: function (id) {
+        smap.closeConextMenu();
+        $("#frmEditLine")[0].reset();
+        $("#hfEditLineId").val(id);
+        var color = '#00FF00';
+        if (id != 0) {
+            $("#dlgAddLine").attr("title", "Edit line");
+            var line = smap.getLine(id);
+            $("#tbEditLineNumber").val(line.LineNumber);
+            $("#tbEditLineName").val(line.Name);
+            $("#ddlEditLineDirection").val(line.Direction);
+            color = line.Color;
+        } else {
+            $("#dlgAddLine").attr("title", "Add new line");
+        }
+        $("#hfEditLineColor").val(color);
+        $("#tbEditLineColor").spectrum({
+            color: color,
+            change: function (color) {
+                $("#hfEditLineColor").val(color.toHexString());
+            }
+        });
+
+
+        var dialog = $("#dlgAddLine").dialog({
+            autoOpen: true,
+            width: 300,
+            modal: true,
+            buttons: {
+                "Save": function () {
+                    var data = $("#frmEditLine").serialize();
+                    $.post("/api/map/SaveLine", data).done(function (loader) {
+                        smap.lines.updateLine(loader.Line, true);
+                        for (var i = 0; i < loader.Stations.length; i++) {
+                            smap.stations.updateStation(loader.Stations[i]);
+                        }
+                    });
+                    dialog.dialog("close");
+                },
+                cancel: function () {
+                    dialog.dialog("close");
+                }
+            }
+        });
+        $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+    },
+    deleteLine: function (id) {
+        var line = smap.getLine(id);
+        $("#dConfirmMessage").html("Do you want delete line '" + line.Name + "' ?");
+        $("#hfCurrentId").val(line.Id);
+        var dialog = $("#dlgConfirm").dialog({
+            autoOpen: true,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Yes": function () {
+                    $.post("/api/map/deleteLine/" + line.Id, null).done(function (loader) {
+                        if (loader.Done == true) {
+                            var line = smap.getLine(loader.Line.Id);
+                            if (line != null) {
+                                smap.lines.hideLine(line.Id);
+                                var index = smap.lines.list.indexOf(line);
+                                smap.lines.list.splice(index,1);
+                            }
+                            smap.table.linesGrid.jqGrid('delRowData', loader.Line.Id);
+                        }
+                    });
+                    dialog.dialog("close");
+                },
+                Cancel: function () {
+
+                    dialog.dialog("close");
+                }
+            }
+        });
+        $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     }
 
 }
