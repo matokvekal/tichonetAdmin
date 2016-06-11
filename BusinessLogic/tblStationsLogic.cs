@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Business_Logic.Enums;
 
 namespace Business_Logic
 {
@@ -208,31 +209,37 @@ namespace Business_Logic
             return res;
         }
 
-        public bool AttachStudent(int studentId, int stationId, int distance)
+        public bool AttachStudent(int studentId, int stationId,int? lineId, int distance, ColorMode colorMode)
         {
             var res = false;
             try
             {
-                ////Remove all previous attachments of this student
-                //var lstOld = DB.tblStudentsToStations.Where(z => z.StudentId == studentId);
-                //DB.tblStudentsToStations.RemoveRange(lstOld);
+                using (var logic = new LineLogic())
+                {
+                    var student = DB.tblStudents.FirstOrDefault(z => z.pk == stationId);
+                    if (student == null) return false;
+                    var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
+                    if (station == null) return false;
 
-                //var itm = new tblStudentsToStation
-                //{
-                //    StationId = stationId,
-                //    StudentId = studentId
-                //};
-                //DB.tblStudentsToStations.Add(itm);
+                    
+                    if (colorMode == ColorMode.Station)
+                    {
+                        student.Color = station.color;
+                    }
 
-                //var station = DB.tblStations.FirstOrDefault(z => z.Id == stationId);
-                //var student = DB.tblStudents.FirstOrDefault(z => z.pk == studentId);
-                //if (student != null && station != null)
-                //{
-                //    student.Color = station.Color;
-                //}
+                    var item = new StudentsToLine
+                    {
+                        StudentId = studentId,
+                        StationId = stationId,
+                        LineId = lineId,
+                        color = student.Color,
+                        Date = null,
+                        
+                    };
 
-                //DB.SaveChanges();
-                //res = true;
+                    logic.UpdateStudentCount();
+                }
+                res = true;
             }
             catch (Exception e)
             {

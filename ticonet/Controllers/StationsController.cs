@@ -44,15 +44,24 @@ namespace ticonet.Controllers
                 Lattitude = lat.ToString(CultureInfo.InvariantCulture),
                 Longitude = lng.ToString(CultureInfo.InvariantCulture)
             };
-            var res= new SaveStationResultModel();
-            
+            var res = new SaveStationResultModel();
+
             using (var logic = new StationsLogic())
             {
                 var stRes = logic.Save(station);
                 res.Station = stRes == null ? null : new StationModel(stRes);
-                res.Students = logic.GetAttachedStudentsIds(station.Id);
+                if (res.Station != null)
+                {
+                    res.Station.Students = logic.GetStudents(station.Id)
+                        .Select(z => new StudentToLineModel(z))
+                        .ToList();
+                    using (var logic2 = new LineLogic())
+                    {
+                        res.Lines = logic2.GetLinesForStation(res.Station.Id)
+                            .Select(z => new LineModel(z)).ToList();
+                    }
+                }
             }
-
             return new JsonResult { Data = res };
         }
 
@@ -81,15 +90,15 @@ namespace ticonet.Controllers
         [System.Web.Http.ActionName("AddToLine")]
         public SaveStationToLineResult PostAddToLine(AddStationToLineModel model)
         {
-            var ts = new TimeSpan(model.Hours,model.Minutes,0);
+            var ts = new TimeSpan(model.Hours, model.Minutes, 0);
             var res = new SaveStationToLineResult();
             using (var logic = new StationsLogic())
             {
                 res.Done = logic.AddToLine(
-                    model.StationId, 
-                    model.LineId, 
-                    ts, 
-                    model.Position, 
+                    model.StationId,
+                    model.LineId,
+                    ts,
+                    model.Position,
                     model.ChangeColor);
 
                 res.Station = new StationModel(logic.GetStation(model.StationId));
@@ -120,7 +129,7 @@ namespace ticonet.Controllers
                     model.LineId,
                     ts,
                     model.Position,
-                    (model.StrChangeColor??"off").ToLower()=="on");
+                    (model.StrChangeColor ?? "off").ToLower() == "on");
 
                 res.Station = new StationModel(logic.GetStation(model.StationId));
                 res.Station.Students = logic.GetStudents(model.StationId)
@@ -145,7 +154,7 @@ namespace ticonet.Controllers
             using (var logic = new StationsLogic())
             {
                 logic.DeleteFromLine(model.StationId, model.LineId);
-                res.Station = new StationModel{Id = model.StationId};
+                res.Station = new StationModel { Id = model.StationId };
             }
             using (var logic = new LineLogic())
             {
@@ -157,7 +166,7 @@ namespace ticonet.Controllers
                         .ToList()
                 };
             }
-            
+
             return res;
         }
     }

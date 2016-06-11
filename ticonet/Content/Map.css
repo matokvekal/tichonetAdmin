@@ -114,6 +114,7 @@
     border: 1px solid #ffffff;
     width: 50px;
     height: 20px;
+    display: inline-block;
 }
 
 .color-indicator-small {
@@ -139,4 +140,9 @@
     }
 #frmEditLine input,#frmEditLine select {
     width: 150px;
+}
+
+#dAttachColor span {
+    margin-left: 5px;
+    margin-right: 5px;
 }

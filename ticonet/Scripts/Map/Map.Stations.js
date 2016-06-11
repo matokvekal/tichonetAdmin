@@ -43,17 +43,18 @@
                     $.post("/api/stations/Save", data)
                         .done(function (loader) {
                             var stt = loader.Data.Station;
-                            stt.Students = loader.Data.Students;
-                            var st = smap.stations.getStation(stt.Id);
-                            if (st == null) { //If it is new stations,then adding to list
-                                smap.stations.list.push(stt);
-                            } else { // else replace for set new values
-                                stt.Marker = st.Marker;
-                                smap.stations.list[smap.stations.list.indexOf(st)] = stt;
-                            }
-                            smap.stations.setMarker(stt); //Add or move Marker
+                            smap.stations.updateStation(stt);
+                            ////stt.Students = loader.Data.Students;
+                            //var st = smap.stations.getStation(stt.Id);
+                            //if (st == null) { //If it is new stations,then adding to list
+                            //    smap.stations.list.push(stt);
+                            //} else { // else replace for set new values
+                            //    stt.Marker = st.Marker;
+                            //    smap.stations.list[smap.stations.list.indexOf(st)] = stt;
+                            //}
+                            //smap.stations.setMarker(stt); //Add or move Marker
                             for (var i = 0; i < stt.Students.length; i++) {
-                                var student = smap.getStudent(stt.Students[i]);
+                                var student = smap.getStudent(stt.Students[i].pk);
                                 student.Color = stt.Color;
                                 smap.setMarker(student);
                             }
@@ -177,6 +178,9 @@
                         .done(function (loader) {
                             dialog.dialog("close");
                             smap.stations.updateStation(loader.Data.Station);
+                            for (var i = 0; i < loader.Data.Lines.length; i++) {
+                                smap.lines.updateLine(loader.Data.Lines[i]);
+                            }
                         });
                 },
                 Cancel: function () {
@@ -189,7 +193,7 @@
         });
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     },
-    updateStation:function(station) {
+    updateStation: function (station) {
         var oldStation = smap.stations.getStation(station.Id);
         station.Marker = oldStation.Marker;
         var index = smap.stations.list.indexOf(oldStation);
@@ -265,7 +269,27 @@
         $("#hfAttachStationId").val(station.Id);
 
         var lines = smap.stations.getLines(station.Id);
-        $("#dAttachLines").html(lines.length);
+        $("#ddlAttachLines").empty();
+        if (lines.length == 0) {
+            $("#dAttachLines").css("display", "none");
+            $("#rAttachStation").prop("checked", true);
+        } else {
+            $("#dAttachLines").css("display", "block");
+            for (var i in lines) {
+                $("<option value='" + lines[i].Id + "'>" + lines[i].Name + " (" + lines[i].StudentsCount + " students)</option>").appendTo($("#ddlAttachLines"));
+            }
+            smap.stations.attachStudentLineSelected();
+            $("#rAttachLine").prop("checked", true);
+        }
+
+        $("#ciAttachLeave").css("background-color", smap.fixCssColor(student.Color));
+        $("#ciAttachLeave").attr("title", smap.fixCssColor(student.Color));
+        $("#ciAttachStation").css("background-color", smap.fixCssColor(station.Color));
+        $("#ciAttachStation").attr("title", smap.fixCssColor(student.Color));
+
+
+
+
         var addr1 = new google.maps.LatLng(student.Lat, student.Lng);
         var addr2 = new google.maps.LatLng(station.StrLat, station.StrLng);
         var dialog = $("#dlgAttach").dialog({
@@ -274,9 +298,8 @@
             modal: true,
             buttons: {
                 "Attach": function () {
-                    var student = smap.getStudent($("#hfAttachStudentId").val());
-                    var station = smap.stations.getStation($("#hfAttachStationId").val());
-                    $.post("/api/stations/AttachStudent", { StudentId: student.Id, StationId: station.Id, Distance: $("#hfAttachDistance").val() })
+                    var data = $("#frmAttach").serialize();
+                    $.post("/api/stations/AttachStudent", data)
                         .done(function (loader) {
                             if (loader.Data) {
                                 student.Color = station.Color;
@@ -284,8 +307,6 @@
                             }
                             $("#dlgAttach").dialog("close");
                         });
-
-
                 },
                 Cancel: function () {
                     dialog.dialog("close");
@@ -315,6 +336,12 @@
                 $("#dAttachDist").html("Distance " + d + "m (directly)");
             }
         });
+    },
+    attachStudentLineSelected: function () {
+        var lineId = $("#ddlAttachLines").val();
+        var line = smap.getLine(lineId);
+        $("#ciAttachLine").css("background-color", smap.fixCssColor(line.Color));
+        $("#ciAttachLine").attr("title", smap.fixCssColor(line.Color));
     },
     addToLine: function (id) {
         smap.closeConextMenu();
@@ -412,7 +439,7 @@
                     $.post("/api/stations/SaveOnLine", data).done(function (loader) {
                         dialog.dialog("close");
                         smap.lines.updateLine(loader.Line, true);
-                        
+
 
                         var station = smap.stations.getStation(loader.Station.Id);
                         loader.Station.Marker = station.Marker;
@@ -459,7 +486,7 @@
     fillDeleteFromLinesDialog: function (id) {
         $("#hfDeleteFromLineStationId").val(id);
         $("#dDeleteLines").empty();
-         var lines = smap.stations.getLines(id);
+        var lines = smap.stations.getLines(id);
         for (var i = 0; i < lines.length; i++) {
             $("<div>" + lines[i].Name + "<span class='color-indicator-small' style='margin-right:20px;background-color:"
                 + smap.fixCssColor(lines[i].Color) + "'></span><a style='color:red;' href='javascript:smap.stations.doDeleteFromLine(" +
@@ -467,20 +494,20 @@
         }
     },
     doDeleteFromLine: function (id) {
-        var data  = {
+        var data = {
             StationId: $("#hfDeleteFromLineStationId").val(),
-            LineId:id
+            LineId: id
         }
         $.post("/api/stations/DeleteFomLine", data).done(function (loader) {
-            
-            smap.lines.updateLine(loader.Line,true);
-            
+
+            smap.lines.updateLine(loader.Line, true);
+
             var lines = smap.stations.getLines(loader.Station.Id);
             if (lines.length == 0)
                 $("#dlgDeleteFromLine").dialog("close");
-            else 
+            else
                 smap.stations.fillDeleteFromLinesDialog(loader.Station.Id);
 
         });
-    } 
+    }
 }

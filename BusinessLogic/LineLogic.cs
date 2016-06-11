@@ -1,18 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business_Logic
 {
     public class LineLogic : baseLogic
     {
-        public System.Collections.Generic.List<Line> GetList()
+        public List<Line> GetList()
         {
             return DB.Lines.Where(z => z.IsActive).ToList();
         }
 
-        public System.Collections.Generic.List<StationsToLine> GetStations(int lineId)
+        public List<StationsToLine> GetStations(int lineId)
         {
             return DB.StationsToLines.Where(z => z.LineId == lineId).ToList();
         }
@@ -97,6 +96,14 @@ namespace Business_Logic
                 Console.WriteLine(e);
             }
             return res;
+        }
+
+        public List<Line> GetLinesForStation(int stationId)
+        {
+            return DB.StationsToLines
+                .Where(z => z.StationId == stationId)
+                .Select(z => z.Line)
+                .ToList();
         }
     }
 }
