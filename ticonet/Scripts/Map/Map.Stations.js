@@ -195,9 +195,13 @@
     },
     updateStation: function (station) {
         var oldStation = smap.stations.getStation(station.Id);
-        station.Marker = oldStation.Marker;
-        var index = smap.stations.list.indexOf(oldStation);
-        smap.stations.list[index] = station;
+        if (oldStation != null) {
+            station.Marker = oldStation.Marker;
+            var index = smap.stations.list.indexOf(oldStation);
+            smap.stations.list[index] = station;
+        } else {
+            smap.stations.list.push(station);
+        }
         smap.stations.setMarker(station);
     },
     deleteStation: function (id) {
