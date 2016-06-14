@@ -9,6 +9,6 @@ GO
 
 ALTER TABLE dbo.tblFamily
 ADD  
-	[oneParentOnly][bit] NULL
+	[oneParentOnly][bit]NOT NULL
 
 GO
