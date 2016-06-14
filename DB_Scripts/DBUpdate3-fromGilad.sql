@@ -6,3 +6,9 @@ ADD  	[distanceFromSchool] [float] NULL,
 
 
 GO
+
+ALTER TABLE dbo.tblFamily
+ADD  
+	[oneParentOnly][bit] NULL
+
+GO
