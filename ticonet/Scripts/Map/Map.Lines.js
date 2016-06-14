@@ -17,8 +17,8 @@
             smap.lines.list[index] = line;
             smap.table.linesGrid.setRowData(line.Id, line);
         } else {
-            console.log("Add");
-            console.log(line);
+            //console.log("Add");
+            //console.log(line);
             smap.lines.list.push(line);
             smap.table.linesGrid.jqGrid('addRowData', line.Id, line);
         }
@@ -26,7 +26,10 @@
 
     },
     showLine: function (id) {
+        //console.log(id);
         var line = smap.getLine(id);
+        //console.log(line);
+        if (!(line.Stations)) return;
         if (line.Stations.length < 2) return;
 
         line.route = null;

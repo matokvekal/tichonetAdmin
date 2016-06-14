@@ -40,18 +40,18 @@ namespace Business_Logic
             return DB.Stations.FirstOrDefault(z => z.Id == id);
         }
 
+        public List<Station> GetStations(List<int> ids)
+        {
+            return DB.Stations.Where(z => ids.Contains( z.Id )).ToList();
+        }
+
 
         public List<StudentsToLine> GetStudents(int stationsId)
         {
             return DB.StudentsToLines.Where(z => z.StationId == stationsId).ToList();
         }
 
-        public List<int> GetAttachedStudentsIds(int stationId)
-        {
-            return new List<int>();
-            //return DB.tblStudentsToStations.Where(z => z.StationId == stationId).Select(z => z.StudentId).ToList();
-        }
-
+      
         public List<Station> GetList()
         {
             return DB.Stations.ToList();
@@ -209,22 +209,40 @@ namespace Business_Logic
             return res;
         }
 
-        public bool AttachStudent(int studentId, int stationId,int? lineId, int distance, ColorMode colorMode)
+        public bool AttachStudent(int studentId, int stationId,int? lineId, int distance, ColorMode colorMode, DateTime? date)
         {
             var res = false;
             try
             {
                 using (var logic = new LineLogic())
                 {
-                    var student = DB.tblStudents.FirstOrDefault(z => z.pk == stationId);
+                    //Remove duplicate
+                    var duplicates = DB.StudentsToLines
+                        .Where(z => z.StudentId == studentId && z.Date == date);
+                                    //z.StationId == stationId &&
+                                    //z.LineId == lineId &&
+                                    
+                    DB.StudentsToLines.RemoveRange(duplicates);
+                    DB.SaveChanges();
+
+
+                    var student = DB.tblStudents.FirstOrDefault(z => z.pk == studentId);
                     if (student == null) return false;
                     var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
                     if (station == null) return false;
+                    var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
 
+                    var direction = 0;
+                    if (line != null) direction = line.Direction;
                     
                     if (colorMode == ColorMode.Station)
                     {
                         student.Color = station.color;
+                    }
+
+                    if (line != null && colorMode == ColorMode.Line)
+                    {
+                        student.Color = line.HexColor;
                     }
 
                     var item = new StudentsToLine
@@ -234,8 +252,11 @@ namespace Business_Logic
                         LineId = lineId,
                         color = student.Color,
                         Date = null,
-                        
+                        Direction = direction,
+                        distanceFromStation = distance
                     };
+                    DB.StudentsToLines.Add(item);
+                    DB.SaveChanges();
 
                     logic.UpdateStudentCount();
                 }

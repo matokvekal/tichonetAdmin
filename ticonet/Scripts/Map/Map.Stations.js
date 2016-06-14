@@ -177,9 +177,10 @@
                     $.post("/api/stations/Save", model)
                         .done(function (loader) {
                             dialog.dialog("close");
+                          
                             smap.stations.updateStation(loader.Data.Station);
                             for (var i = 0; i < loader.Data.Lines.length; i++) {
-                                smap.lines.updateLine(loader.Data.Lines[i]);
+                                smap.lines.updateLine(loader.Data.Lines[i],true);
                             }
                         });
                 },
@@ -241,10 +242,10 @@
         for (var i = 0; i < smap.stations.list.length; i++) {
             //smap.stations.list[i].Marker.setAnimation(google.maps.Animation.BOUNCE);
             smap.stations.list[i].Marker.Circle = new google.maps.Circle({
-                strokeColor: '#' + smap.stations.list[i].Color,
+                strokeColor: smap.fixCssColor( smap.stations.list[i].Color),
                 strokeOpacity: 0.8,
                 strokeWeight: 1,
-                fillColor: '#' + smap.stations.list[i].Color,
+                fillColor: smap.fixCssColor(smap.stations.list[i].Color),
                 fillOpacity: 0.35,
                 map: smap.mainMap,
                 center: smap.stations.list[i].Marker.getPosition(),
@@ -258,7 +259,6 @@
             var d = google.maps.geometry.spherical.computeDistanceBetween(m.getPosition(), position);
             var r = m.Circle.getRadius();
             if (d <= r) {//marker in circle
-                console.log(smap.stations.list[i].Name);
                 smap.stations.attachStudentToStation(student, smap.stations.list[i]);
             }
             m.setAnimation(null);
@@ -275,10 +275,10 @@
         var lines = smap.stations.getLines(station.Id);
         $("#ddlAttachLines").empty();
         if (lines.length == 0) {
-            $("#dAttachLines").css("display", "none");
+            $("div[rel=AttachLines]").css("display", "none");
             $("#rAttachStation").prop("checked", true);
         } else {
-            $("#dAttachLines").css("display", "block");
+            $("div[rel=AttachLines]").css("display", "block");
             for (var i in lines) {
                 $("<option value='" + lines[i].Id + "'>" + lines[i].Name + " (" + lines[i].StudentsCount + " students)</option>").appendTo($("#ddlAttachLines"));
             }
@@ -305,9 +305,15 @@
                     var data = $("#frmAttach").serialize();
                     $.post("/api/stations/AttachStudent", data)
                         .done(function (loader) {
-                            if (loader.Data) {
-                                student.Color = station.Color;
-                                smap.setMarker(student);
+                           
+                            if (loader.Done==true) {
+                                for (var i in loader.Lines) {
+                                    smap.lines.updateLine(loader.Lines[i]);
+                                }
+                                for (var i in loader.Stations) {
+                                    smap.stations.updateStation(loader.Stations[i]);
+                                }
+                                smap.updateStudent(loader.Student);
                             }
                             $("#dlgAttach").dialog("close");
                         });
@@ -332,7 +338,7 @@
                 var legs = response.routes[0].legs;
                 //gDirectionsDisplay.setDirections(response);
                 //wlk.panorama.setPosition(addr1);
-                console.log(legs[0].distance);
+                
                 $("#dAttachDist").html("Distance " + legs[0].distance.text + " (" + legs[0].duration.text + ")");
                 $("#hfAttachDistance").val(legs[0].distance.value);
             } else {

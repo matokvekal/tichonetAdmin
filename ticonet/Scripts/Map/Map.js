@@ -112,6 +112,18 @@
         }
         return res;
     },
+    updateStudent: function(student) {
+        var old = smap.getStudent(student.Id);
+        if (old == null) {
+            // add new student
+        } else {
+            // update exists
+            var index = smap.students.indexOf(old);
+            smap.students[index] = student;
+            smap.setMarker(student);
+            smap.table.studentsGrid.setRowData(student.Id, student);
+        }
+    },
     getLine: function (id) {
         var res = null;
         for (var i = 0; i < smap.lines.list.length; i++) {
@@ -210,6 +222,7 @@
         });
     },
     findLatLngForStudent: function () { // Looking student coordinates by address
+        
         var st = null;
         for (var i = 0; i < smap.students.length; i++) {
             if (smap.students[i].Lat == null || smap.students[i].Lng == null) {
@@ -219,23 +232,29 @@
         }
 
         if (st != null) {
+            $("#spStatus").html("Looking " + st.Name + " by address...");
             //geocoding address
-            smap.Geocoder.geocode({ 'address': st.city + ", " + st.street + ", " + st.houseNumber }, function (results1, status1) {
-
+            smap.Geocoder.geocode({ 'address': st.Address }, function(results1, status1) {
+                
                 if (results1.length > 0) {
                     st.Lat = results1[0].geometry.location.lat();
                     st.Lng = results1[0].geometry.location.lng();
 
                     //save coordinates
-                    $.get("api/Students/SaveCoords", { id: st.Id, lat: st.Lat, lng: st.Lng }).done(function (loader) {
+                    $.get("/api/Students/SaveCoords", { id: st.Id, lat: st.Lat, lng: st.Lng }).done(function(loader) {
 
                     });
 
 
                     smap.setMarker(st);
-                    smap.findLatLngForStudent();
+                    setTimeout("smap.findLatLngForStudent();", 1000);
+                } else {
+                    console.log("not found");
+                    console.log(st);
                 }
             });
+        } else {
+            $("#spStatus").html("");
         }
     },
     setMenuXY: function (caurrentLatLng) { //Move context menu to clicked point

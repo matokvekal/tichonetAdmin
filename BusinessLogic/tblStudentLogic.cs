@@ -249,5 +249,10 @@ namespace Business_Logic
                 .Select(z => z.StudentId).ToArray();
             return DB.tblStudents.Where(z => ids.Contains(z.pk)).ToList();
         }
+
+        public List<StudentsToLine> GetAttachInfo(int studentId)
+        {
+            return DB.StudentsToLines.Where(z => z.StudentId == studentId).ToList();
+        } 
     }
 }

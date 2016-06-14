@@ -24,6 +24,7 @@
             <a href="javascript:smap.lines.editLine(0);" title="Add new line" style="margin-left: 5px;">
                 <span class="glyphicon glyphicon-plus"></span>
             </a>
+            <span style="margin-left: 5px; font-size: 10pt;" id="spStatus"></span>
         </h2>
     </div>
     <div class="header">
@@ -75,7 +76,7 @@
         <div id="dAttachDist" class="message">
             <img src="/Content/img/ajax-loader.gif" />
         </div>
-        <div id="dAttachLines" class="form-group row message">
+        <div id="dAttachLines" rel="AttachLines" class="form-group row message">
             <label for="ddlAttachLines" class="col-xs-3 col-lg-3 col-md-3 col-sm-3 control-label">Line</label>
             <select id="ddlAttachLines" name="LineId" style="width: 200px;" class="form-control" onchange="smap.stations.attachStudentLineSelected();"></select>
         </div>
@@ -89,10 +90,13 @@
                 <input type="radio" name="UseColor" value="1" id="rAttachStation" />
                 <span>Station</span>
                 <div class="color-indicator-small" id="ciAttachStation"></div>
-                <br />
-                <input type="radio" name="UseColor" value="2" id="rAttachLine" />
-                <span>Line</span>
-                <div class="color-indicator-small" id="ciAttachLine"></div>
+                
+                <div rel="AttachLines">
+                    <input type="radio" name="UseColor" value="2" id="rAttachLine" />
+
+                    <span>Line</span>
+                    <div class="color-indicator-small" id="ciAttachLine"></div>
+                </div>
             </div>
         </div>
         <input type="hidden" id="hfAttachStudentId" name="StudentId" />

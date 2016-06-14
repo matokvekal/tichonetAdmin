@@ -21,6 +21,11 @@ namespace Business_Logic
             return DB.Lines.FirstOrDefault(z => z.Id == id);
         }
 
+        public List<Line> GetLines(List<int> ids)
+        {
+            return DB.Lines.Where(z =>ids.Contains( z.Id )).ToList();
+        }
+
         public void UpdateStudentCount()
         {
             foreach (var line in DB.Lines)

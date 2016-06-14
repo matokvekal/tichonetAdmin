@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Mvc;
 using Business_Logic;
+using Business_Logic.Entities;
+using Business_Logic.Enums;
 using Business_Logic.Helpers;
 using ticonet.Models;
 
@@ -59,6 +62,13 @@ namespace ticonet.Controllers
                     {
                         res.Lines = logic2.GetLinesForStation(res.Station.Id)
                             .Select(z => new LineModel(z)).ToList();
+                        foreach (var line in res.Lines)
+                        {
+                            line.Stations = logic2.GetStations(line.Id)
+                                .OrderBy(z=>z.Position)
+                                .Select(z => new StationToLineModel(z))
+                                .ToList();
+                        }
                     }
                 }
             }
@@ -77,14 +87,57 @@ namespace ticonet.Controllers
         }
 
         [System.Web.Http.ActionName("AttachStudent")]
-        public JsonResult PostAttachStudent(AttachStudentModel model)
+        public AttachStudentResultModel PostAttachStudent(AttachStudentModel model)
         {
-            bool res;
+            var res = new AttachStudentResultModel();
+            List<int> stations;
+            List<int> lines;
+
+            using (var logic = new tblStudentLogic())
+            {
+                var oldList = logic.GetAttachInfo(model.StudentId);
+                stations = oldList.Select(z => z.StationId).ToList();
+                lines = oldList.Where(z => z.LineId != null).Select(z => z.LineId.Value).ToList();
+            }
             using (var logic = new StationsLogic())
             {
-                res = logic.AttachStudent(model.StudentId, model.StationId, model.Distance);
+                res.Done = logic.AttachStudent(
+                    model.StudentId,
+                    model.StationId,
+                    model.LineId,
+                    model.Distance,
+                    (ColorMode)model.UseColor, null);
             }
-            return new JsonResult { Data = res };
+            using (var logic = new tblStudentLogic())
+            {
+                var newList = logic.GetAttachInfo(model.StudentId);
+                stations.AddRange(newList.Select(z => z.StationId).ToList());
+                lines.AddRange(newList.Where(z => z.LineId != null).Select(z => z.LineId.Value).ToList());
+
+                res.Student = new StudentShortInfo(logic.getStudentByPk(model.StudentId));
+            }
+            using (var logic = new StationsLogic())
+            {
+                res.Stations = logic.GetStations(stations)
+                    .Select(z => new StationModel(z)).ToList();
+                foreach (var station in res.Stations)
+                {
+                    station.Students = logic.GetStudents(station.Id)
+                                            .Select(z => new StudentToLineModel(z))
+                                            .ToList();
+                }
+            }
+            using (var logic = new LineLogic())
+            {
+                res.Lines = logic.GetLines(lines).Select(z => new LineModel(z)).ToList();
+                foreach (var line in res.Lines)
+                {
+                    line.Stations = logic.GetStations(line.Id)
+                        .Select(z => new StationToLineModel(z))
+                        .ToList();
+                }
+            }
+            return res;
         }
 
         [System.Web.Http.ActionName("AddToLine")]
