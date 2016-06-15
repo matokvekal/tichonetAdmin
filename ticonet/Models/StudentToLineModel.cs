@@ -10,7 +10,14 @@ namespace ticonet.Models
         public StudentToLineModel(StudentsToLine data)
         {
             StudentId = data.StudentId;
-            LineId = data.LineId;
+            if (data.LineId == -1)
+            {
+                LineId = null;
+            }
+            else
+            {
+                LineId = data.LineId;
+            }
             StationId = data.StationId;
             Direction = data.Direction;
             Date = data.Date;

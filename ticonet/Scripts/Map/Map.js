@@ -41,6 +41,7 @@
         smap.loadData();
         //smap.loadStudents();
         //smap.stations.load();
+        $("#tbAttachDate").datepicker();
     },
     loadData: function () {
         $.get("/api/Map/State").done(function (loader) {
@@ -98,7 +99,7 @@
                     station.Marker.setMap(null);
                     station.Marker = null;
                 }
-                
+
             }
         }
     },
@@ -112,7 +113,7 @@
         }
         return res;
     },
-    updateStudent: function(student) {
+    updateStudent: function (student) {
         var old = smap.getStudent(student.Id);
         if (old == null) {
             // add new student
@@ -222,7 +223,7 @@
         });
     },
     findLatLngForStudent: function () { // Looking student coordinates by address
-        
+
         var st = null;
         for (var i = 0; i < smap.students.length; i++) {
             if (smap.students[i].Lat == null || smap.students[i].Lng == null) {
@@ -234,14 +235,14 @@
         if (st != null) {
             $("#spStatus").html("Looking " + st.Name + " by address...");
             //geocoding address
-            smap.Geocoder.geocode({ 'address': st.Address }, function(results1, status1) {
-                
+            smap.Geocoder.geocode({ 'address': st.Address }, function (results1, status1) {
+
                 if (results1.length > 0) {
                     st.Lat = results1[0].geometry.location.lat();
                     st.Lng = results1[0].geometry.location.lng();
 
                     //save coordinates
-                    $.get("/api/Students/SaveCoords", { id: st.Id, lat: st.Lat, lng: st.Lng }).done(function(loader) {
+                    $.get("/api/Students/SaveCoords", { id: st.Id, lat: st.Lat, lng: st.Lng }).done(function (loader) {
 
                     });
 
@@ -320,6 +321,16 @@
     fixCssColor: function (color) { //fix color for use in css properies
         if (color.substring(0, 1) != "#") color = "#" + color;
         return color;
+    },
+    getAttachInfo: function (studentId) {
+        var res = [];
+        for (var i in smap.stations.list) {
+            var st = smap.stations.list[i];
+            for (var j in st.Students) {
+                if (st.Students[j].StudentId == studentId)
+                    res.push(st.Students[j]);
+            }
+        }
+        return res;
     }
-  
 }

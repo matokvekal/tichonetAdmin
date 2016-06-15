@@ -19,6 +19,8 @@ namespace Business_Logic
         public int LineId { get; set; }
         public int Position { get; set; }
         public System.TimeSpan ArrivalDate { get; set; }
+        public string color { get; set; }
+        public string distanceFromStation { get; set; }
     
         public virtual Line Line { get; set; }
         public virtual Station Station { get; set; }

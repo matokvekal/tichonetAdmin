@@ -27,6 +27,8 @@
     <EntitySetMapping Name="tblSystems">
       <EntityTypeMapping TypeName="BusProjectModel.tblSystem">
         <MappingFragment StoreEntitySet="tblSystem">
+          <ScalarProperty Name="value" ColumnName="value" />
+          <ScalarProperty Name="key" ColumnName="key" />
           <ScalarProperty Name="ModifedBy" ColumnName="ModifedBy" />
           <ScalarProperty Name="LastModify" ColumnName="LastModify" />
           <ScalarProperty Name="strValue" ColumnName="strValue" />
@@ -112,6 +114,8 @@
     <EntitySetMapping Name="StationsToLines">
       <EntityTypeMapping TypeName="BusProjectModel.StationsToLine">
         <MappingFragment StoreEntitySet="StationsToLines">
+          <ScalarProperty Name="distanceFromStation" ColumnName="distanceFromStation" />
+          <ScalarProperty Name="color" ColumnName="color" />
           <ScalarProperty Name="ArrivalDate" ColumnName="ArrivalDate" />
           <ScalarProperty Name="Position" ColumnName="Position" />
           <ScalarProperty Name="LineId" ColumnName="LineId" />

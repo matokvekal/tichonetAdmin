@@ -42,7 +42,7 @@ namespace Business_Logic
 
         public List<Station> GetStations(List<int> ids)
         {
-            return DB.Stations.Where(z => ids.Contains( z.Id )).ToList();
+            return DB.Stations.Where(z => ids.Contains(z.Id)).ToList();
         }
 
 
@@ -51,13 +51,13 @@ namespace Business_Logic
             return DB.StudentsToLines.Where(z => z.StationId == stationsId).ToList();
         }
 
-      
+
         public List<Station> GetList()
         {
             return DB.Stations.ToList();
         }
 
-       
+
         public List<Station> GetStationForLine(int lineId)
         {
             return DB.StationsToLines
@@ -209,7 +209,7 @@ namespace Business_Logic
             return res;
         }
 
-        public bool AttachStudent(int studentId, int stationId,int? lineId, int distance, ColorMode colorMode, DateTime? date)
+        public bool AttachStudent(int studentId, int stationId, int? lineId, int distance, ColorMode colorMode, DateTime? date, ConflictActions action)
         {
             var res = false;
             try
@@ -218,12 +218,24 @@ namespace Business_Logic
                 {
                     //Remove duplicate
                     var duplicates = DB.StudentsToLines
-                        .Where(z => z.StudentId == studentId && z.Date == date);
-                                    //z.StationId == stationId &&
-                                    //z.LineId == lineId &&
-                                    
-                    DB.StudentsToLines.RemoveRange(duplicates);
-                    DB.SaveChanges();
+                        .Where(z => z.StudentId == studentId && z.Date == null)
+                        .ToList();
+
+                    DateTime? dt = null;
+                    if (duplicates.Any())
+                    {
+                        if (action == ConflictActions.Replace || date == null)
+                        {
+                            DB.StudentsToLines.RemoveRange(duplicates);
+                            DB.SaveChanges();
+                        }
+                        else
+                        {
+                            dt = date;
+                        }
+                    }
+
+
 
 
                     var student = DB.tblStudents.FirstOrDefault(z => z.pk == studentId);
@@ -234,7 +246,7 @@ namespace Business_Logic
 
                     var direction = 0;
                     if (line != null) direction = line.Direction;
-                    
+
                     if (colorMode == ColorMode.Station)
                     {
                         student.Color = station.color;
@@ -249,9 +261,9 @@ namespace Business_Logic
                     {
                         StudentId = studentId,
                         StationId = stationId,
-                        LineId = lineId,
+                        LineId = lineId ?? -1,
                         color = student.Color,
-                        Date = null,
+                        Date = dt,
                         Direction = direction,
                         distanceFromStation = distance
                     };

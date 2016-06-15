@@ -291,8 +291,25 @@
         $("#ciAttachStation").css("background-color", smap.fixCssColor(station.Color));
         $("#ciAttachStation").attr("title", smap.fixCssColor(student.Color));
 
+        var attaches = smap.getAttachInfo(student.Id);
+        var mainAttach = null;
+        for (var i in attaches) {
+            if (attaches[i].Date == null) mainAttach = attaches[i];
+        }
 
-
+        $("#rAttachReplace").prop("checked", true);
+        $("#tbAttachHours").val(0);
+        $("#tbAttachMinutes").val(0);
+        $("tbAttachDate").datepicker("option", "gotoCurrent", true);
+        if (mainAttach == null) {
+            $("#dAttachMultiline").css("display", "none");
+        }
+        else
+        {
+            $("#dAttachMultiline").css("display", "block");
+            $("#sAttachMName").html(student.Name);
+            $("#sAttachMStation").html(station.Name);
+        }
 
         var addr1 = new google.maps.LatLng(student.Lat, student.Lng);
         var addr2 = new google.maps.LatLng(station.StrLat, station.StrLng);

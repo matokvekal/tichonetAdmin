@@ -65,7 +65,7 @@ namespace ticonet.Controllers
                         foreach (var line in res.Lines)
                         {
                             line.Stations = logic2.GetStations(line.Id)
-                                .OrderBy(z=>z.Position)
+                                .OrderBy(z => z.Position)
                                 .Select(z => new StationToLineModel(z))
                                 .ToList();
                         }
@@ -92,12 +92,25 @@ namespace ticonet.Controllers
             var res = new AttachStudentResultModel();
             List<int> stations;
             List<int> lines;
+            DateTime? date = null;
+
+            var dtList = model.StrDate.Split('/');
+            if (dtList.Length == 3)
+            {
+                date = new DateTime(
+                    Int32.Parse(dtList[2]),
+                    Int32.Parse(dtList[0]),
+                    Int32.Parse(dtList[1]),
+                    model.Hours,
+                    model.Minutes, 0);
+            }
+
 
             using (var logic = new tblStudentLogic())
             {
                 var oldList = logic.GetAttachInfo(model.StudentId);
                 stations = oldList.Select(z => z.StationId).ToList();
-                lines = oldList.Where(z => z.LineId != null).Select(z => z.LineId.Value).ToList();
+                lines = oldList.Where(z => z.LineId != -1).Select(z => z.LineId).ToList();
             }
             using (var logic = new StationsLogic())
             {
@@ -106,13 +119,15 @@ namespace ticonet.Controllers
                     model.StationId,
                     model.LineId,
                     model.Distance,
-                    (ColorMode)model.UseColor, null);
+                    (ColorMode)model.UseColor, 
+                    date, 
+                    model.ConflictAction);
             }
             using (var logic = new tblStudentLogic())
             {
                 var newList = logic.GetAttachInfo(model.StudentId);
                 stations.AddRange(newList.Select(z => z.StationId).ToList());
-                lines.AddRange(newList.Where(z => z.LineId != null).Select(z => z.LineId.Value).ToList());
+                lines.AddRange(newList.Where(z => z.LineId != -1).Select(z => z.LineId).ToList());
 
                 res.Student = new StudentShortInfo(logic.getStudentByPk(model.StudentId));
             }

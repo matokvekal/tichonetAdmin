@@ -30,7 +30,6 @@
         <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToLines" />
         <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToStations" />
         <EntityTypeShape EntityType="BusProjectModel.StudentsToLine" Width="1.5" PointX="15.625" PointY="11.75" />
-        <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToLines" />
         <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToStations" />
       </Diagram>
     </edmx:Diagrams>

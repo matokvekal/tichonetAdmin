@@ -262,7 +262,7 @@
     },
     colorFormatter: function (cellvalue, options, rowObject) {
         var color = smap.fixCssColor( cellvalue);
-        return '<div style="width:50px; height:10px;background-color:' + color + '" title="' + color + '"></div>';
+        return '<div style="width:46px; height:10px;background-color:' + color + '" title="' + color + '"></div>';
     },
     lineActionsFormatter: function(cellvalue, options, rowObject) {
         var res = "<a href='javascript:smap.lines.editLine(" + cellvalue + ")' title='Edit line'><span class='glyphicon glyphicon-pencil'></span></a>";
@@ -271,20 +271,20 @@
         return res;
     },
     lineColorFormatter: function (cellvalue, options, rowObject) {
-        console.log(rowObject);
+        
         var id = cellvalue;
-        console.log(id);
+       
         var stl = null;
         var station = null;
         var line = null;
         var res = "";
         for (var i in  smap.stations.list) {
             var st = smap.stations.list[i];
-            console.log(st);
+           
             for (var j in st.Students) {
                 if (st.Students[j].StudentId == id && st.Students[j].Date == null) {
                     stl = st.Students[j];
-                    console.log(stl);
+                   
                     station = st;
                     break;
                 }
@@ -308,7 +308,7 @@
         }
         if (color != "") {
             color = smap.fixCssColor(color);
-            res = '<div style="width:50px; height:10px;background-color:' + color + '" title="' + title + '"></div>';
+            res = '<div style="width:46px; height:10px;background-color:' + color + '" title="' + title + '"></div>';
         }
         return res;
     }

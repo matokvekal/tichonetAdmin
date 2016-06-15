@@ -16,7 +16,7 @@ namespace Business_Logic
     {
         public int Id { get; set; }
         public int StudentId { get; set; }
-        public Nullable<int> LineId { get; set; }
+        public int LineId { get; set; }
         public int StationId { get; set; }
         public int Direction { get; set; }
         public Nullable<System.DateTime> Date { get; set; }

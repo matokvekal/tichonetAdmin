@@ -75,6 +75,7 @@
     <Compile Include="Entities\StudentSearchRequest.cs" />
     <Compile Include="Entities\StudentShortInfo.cs" />
     <Compile Include="Enums\ColorMode.cs" />
+    <Compile Include="Enums\ConflictActions.cs" />
     <Compile Include="Enums\FlagsUserRoles.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\AccountManager.cs" />

@@ -1,4 +1,6 @@
-﻿namespace ticonet.Models
+﻿using Business_Logic.Enums;
+
+namespace ticonet.Models
 {
     public class AttachStudentModel
     {
@@ -11,5 +13,13 @@
         public int? LineId { get; set; }
 
         public int UseColor { get; set; }
+
+        public ConflictActions ConflictAction { get; set; }
+
+        public string StrDate { get; set; }
+
+        public int Hours { get; set; }
+
+        public int Minutes { get; set; }
     }
 }

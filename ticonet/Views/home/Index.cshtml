@@ -83,20 +83,33 @@
         <div class="form-group row message">
             <label for="dAttachColor" class="col-xs-3 col-lg-3 col-md-3 col-sm-3 control-label">Color</label>
             <div id="dAttachColor" style="text-align: left;" class="col-xs-9 col-lg-9 col-md-9 col-sm-9">
-                <input type="radio" name="UseColor"value="0" id="rAttachLeave" />
+                <input type="radio" name="UseColor" value="0" id="rAttachLeave" />
                 <span>Leave</span>
                 <div class="color-indicator-small" id="ciAttachLeave"></div>
                 <br />
                 <input type="radio" name="UseColor" value="1" id="rAttachStation" />
                 <span>Station</span>
                 <div class="color-indicator-small" id="ciAttachStation"></div>
-                
+
                 <div rel="AttachLines">
                     <input type="radio" name="UseColor" value="2" id="rAttachLine" />
 
                     <span>Line</span>
                     <div class="color-indicator-small" id="ciAttachLine"></div>
                 </div>
+            </div>
+        </div>
+        <div class="form-group row message" id="dAttachMultiline" style="display: none;">
+            <div class="row"><span id="sAttachMName"></span> already attached to station <span id="sAttachMStation"></span></div>
+            <div class="row message" style="text-align: left;">
+                <input type="radio" name="ConflictAction" id="rAttachReplace" value="0"/> <span>Replace default route</span><br/>
+                <input type="radio" name="ConflictAction" id="rAttachSchedule" value="1" /><span>Schedule route for</span>
+            </div>
+            <div class="row message">
+                <input type="text" id="tbAttachDate" style="width: 150px;" name="StrDate"/>
+                <input type="number" id="tbAttachHours" style="width: 30px; margin-left: 20px;" name="Hours"/>
+                <span>:</span>
+                <input type="number" id="tbAttachMinutes" style="width: 30px;" name="Minutes"/>
             </div>
         </div>
         <input type="hidden" id="hfAttachStudentId" name="StudentId" />

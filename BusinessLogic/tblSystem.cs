@@ -18,7 +18,9 @@ namespace Business_Logic
         public string strNamespace { get; set; }
         public string strKey { get; set; }
         public string strValue { get; set; }
-        public System.DateTime LastModify { get; set; }
+        public Nullable<System.DateTime> LastModify { get; set; }
         public Nullable<int> ModifedBy { get; set; }
+        public string key { get; set; }
+        public string value { get; set; }
     }
 }
