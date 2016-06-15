@@ -93,18 +93,19 @@ namespace ticonet.Controllers
             List<int> stations;
             List<int> lines;
             DateTime? date = null;
-
-            var dtList = model.StrDate.Split('/');
-            if (dtList.Length == 3)
+            if (!string.IsNullOrEmpty(model.StrDate))
             {
-                date = new DateTime(
-                    Int32.Parse(dtList[2]),
-                    Int32.Parse(dtList[0]),
-                    Int32.Parse(dtList[1]),
-                    model.Hours,
-                    model.Minutes, 0);
+                var dtList = model.StrDate.Split('/');
+                if (dtList.Length == 3)
+                {
+                    date = new DateTime(
+                        Int32.Parse(dtList[2]),
+                        Int32.Parse(dtList[0]),
+                        Int32.Parse(dtList[1]),
+                        model.Hours,
+                        model.Minutes, 0);
+                }
             }
-
 
             using (var logic = new tblStudentLogic())
             {
