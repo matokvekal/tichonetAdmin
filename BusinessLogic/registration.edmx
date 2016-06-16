@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Buses">
           <Key>
             <PropertyRef Name="Id" />
@@ -184,6 +184,7 @@
           <Property Name="iAgree" Type="bit" Nullable="false" />
           <Property Name="subsidy" Type="bit" Nullable="false" />
           <Property Name="allredyUsed" Type="bit" Nullable="false" />
+          <Property Name="oneParentOnly" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="tblStreet">
           <Key>
@@ -223,19 +224,23 @@
           <Property Name="Lat" Type="float" />
           <Property Name="Lng" Type="float" />
           <Property Name="Active" Type="bit" />
+          <Property Name="distanceFromSchool" Type="float" />
+          <Property Name="siblingAtSchool" Type="bit" />
+          <Property Name="specialRequest" Type="bit" />
+          <Property Name="request" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="tblSystem">
           <Key>
-            <PropertyRef Name="Id" />
+            <PropertyRef Name="pk" />
           </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="strNamespace" Type="nchar" MaxLength="10" />
+          <Property Name="pk" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="strKey" Type="nvarchar" MaxLength="250" />
+          <Property Name="key" Type="nvarchar" MaxLength="50" />
+          <Property Name="value" Type="nvarchar" MaxLength="50" />
           <Property Name="strValue" Type="nvarchar(max)" />
           <Property Name="LastModify" Type="datetime" />
           <Property Name="ModifedBy" Type="int" />
-          <Property Name="key" Type="nvarchar" MaxLength="50" />
-          <Property Name="value" Type="nvarchar" MaxLength="50" />
+          <Property Name="strNamespace" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="tblYears">
           <Key>
@@ -428,7 +433,6 @@
           <EntitySet Name="tblCultures" EntityType="BusProjectModel.tblCulture" />
           <EntitySet Name="tblYears" EntityType="BusProjectModel.tblYear" />
           <EntitySet Name="tblStreets" EntityType="BusProjectModel.tblStreet" />
-          <EntitySet Name="tblSystems" EntityType="BusProjectModel.tblSystem" />
           <EntitySet Name="Logins" EntityType="BusProjectModel.Login" />
           <EntitySet Name="tblStudents" EntityType="BusProjectModel.tblStudent" />
           <EntitySet Name="tblFamilies" EntityType="BusProjectModel.tblFamily" />
@@ -474,6 +478,7 @@
             <End Role="Station" EntitySet="Stations" />
             <End Role="StudentsToLine" EntitySet="StudentsToLines" />
           </AssociationSet>
+          <EntitySet Name="tblSystems" EntityType="BusProjectModel.tblSystem" />
         </EntityContainer>
         <EntityType Name="tblDictSystem">
           <Key>
@@ -510,19 +515,6 @@
           </Key>
           <Property Name="streetId" Type="Int32" Nullable="false" />
           <Property Name="streetName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="tblSystem">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="strNamespace" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="strKey" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="strValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="LastModify" Type="DateTime" Precision="3" />
-          <Property Name="ModifedBy" Type="Int32" />
-          <Property Name="key" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="value" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -566,6 +558,10 @@
           <Property Name="Lat" Type="Double" />
           <Property Name="Lng" Type="Double" />
           <Property Name="Active" Type="Boolean" />
+          <Property Name="distanceFromSchool" Type="Double" />
+          <Property Name="siblingAtSchool" Type="Boolean" />
+          <Property Name="specialRequest" Type="Boolean" />
+          <Property Name="request" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblFamily">
           <Key>
@@ -598,6 +594,7 @@
           <Property Name="iAgree" Type="Boolean" Nullable="false" />
           <Property Name="subsidy" Type="Boolean" Nullable="false" />
           <Property Name="allredyUsed" Type="Boolean" Nullable="false" />
+          <Property Name="oneParentOnly" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="tblAlertsQueue">
           <Key>
@@ -853,6 +850,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="tblSystem">
+          <Key>
+            <PropertyRef Name="pk" />
+          </Key>
+          <Property Name="pk" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="strKey" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="key" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="value" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="strValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LastModify" Type="DateTime" Precision="3" />
+          <Property Name="ModifedBy" Type="Int32" />
+          <Property Name="strNamespace" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -879,20 +889,6 @@
                 <ScalarProperty Name="nameHeb" ColumnName="nameHeb" />
                 <ScalarProperty Name="nameEng" ColumnName="nameEng" />
                 <ScalarProperty Name="year" ColumnName="year" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="tblSystems">
-            <EntityTypeMapping TypeName="BusProjectModel.tblSystem">
-              <MappingFragment StoreEntitySet="tblSystem">
-                <ScalarProperty Name="value" ColumnName="value" />
-                <ScalarProperty Name="key" ColumnName="key" />
-                <ScalarProperty Name="ModifedBy" ColumnName="ModifedBy" />
-                <ScalarProperty Name="LastModify" ColumnName="LastModify" />
-                <ScalarProperty Name="strValue" ColumnName="strValue" />
-                <ScalarProperty Name="strKey" ColumnName="strKey" />
-                <ScalarProperty Name="strNamespace" ColumnName="strNamespace" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -996,6 +992,7 @@
           <EntitySetMapping Name="tblFamilies">
             <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.tblFamily)">
               <MappingFragment StoreEntitySet="tblFamily">
+                <ScalarProperty Name="oneParentOnly" ColumnName="oneParentOnly" />
                 <ScalarProperty Name="allredyUsed" ColumnName="allredyUsed" />
                 <ScalarProperty Name="subsidy" ColumnName="subsidy" />
                 <ScalarProperty Name="iAgree" ColumnName="iAgree" />
@@ -1037,6 +1034,10 @@
           <EntitySetMapping Name="tblStudents">
             <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.tblStudent)">
               <MappingFragment StoreEntitySet="tblStudent">
+                <ScalarProperty Name="request" ColumnName="request" />
+                <ScalarProperty Name="specialRequest" ColumnName="specialRequest" />
+                <ScalarProperty Name="siblingAtSchool" ColumnName="siblingAtSchool" />
+                <ScalarProperty Name="distanceFromSchool" ColumnName="distanceFromSchool" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="Lng" ColumnName="Lng" />
                 <ScalarProperty Name="Lat" ColumnName="Lat" />
@@ -1124,6 +1125,20 @@
                 <ScalarProperty Name="LineId" ColumnName="LineId" />
                 <ScalarProperty Name="StudentId" ColumnName="StudentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSystems">
+            <EntityTypeMapping TypeName="BusProjectModel.tblSystem">
+              <MappingFragment StoreEntitySet="tblSystem">
+                <ScalarProperty Name="strNamespace" ColumnName="strNamespace" />
+                <ScalarProperty Name="ModifedBy" ColumnName="ModifedBy" />
+                <ScalarProperty Name="LastModify" ColumnName="LastModify" />
+                <ScalarProperty Name="strValue" ColumnName="strValue" />
+                <ScalarProperty Name="value" ColumnName="value" />
+                <ScalarProperty Name="key" ColumnName="key" />
+                <ScalarProperty Name="strKey" ColumnName="strKey" />
+                <ScalarProperty Name="pk" ColumnName="pk" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

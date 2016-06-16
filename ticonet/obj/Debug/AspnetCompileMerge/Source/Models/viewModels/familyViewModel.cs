@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Collections.Generic;
 using Business_Logic;
-
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ticonet
 {
     public class familyViewModel
     {
+        public class ApplicationUser : IdentityUser
+        {
+            public string mail { get; set; }
+            public bool ConfirmedEmail { get; set; }
+        }
+
         public tblFamily EditableTblFamily { get; set; }
         public List<tblStudent> students { get; set; }
         public bool parent1EmailConfirm
@@ -78,6 +80,17 @@ namespace ticonet
             set
             {
                 EditableTblFamily.allredyUsed = value;
+            }
+        }
+        public bool subsidy
+        {
+            get
+            {
+                return EditableTblFamily.subsidy == true;
+            }
+            set
+            {
+                EditableTblFamily.subsidy = value;
             }
         }
     }

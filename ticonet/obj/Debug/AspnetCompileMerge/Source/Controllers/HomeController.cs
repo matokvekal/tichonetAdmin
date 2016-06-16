@@ -1,26 +1,22 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Business_Logic.Helpers;
+using System.Globalization;
 
-namespace IdentitySample.Controllers
+namespace ticonet.Controllers
 {
-    public class HomeController : Controller
+    public class homeController : Controller
     {
+        // GET: home
+        [Authorize]
         public ActionResult Index()
         {
-            return View();
-        }
-
-        [Authorize]
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your app description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
+            ViewBag.CenterLat = MapHelper.CenterLat.ToString(CultureInfo.InvariantCulture);
+            ViewBag.CenterLng = MapHelper.CenterLng.ToString(CultureInfo.InvariantCulture);
+            ViewBag.Zoom = MapHelper.Zoom.ToString();
             return View();
         }
     }

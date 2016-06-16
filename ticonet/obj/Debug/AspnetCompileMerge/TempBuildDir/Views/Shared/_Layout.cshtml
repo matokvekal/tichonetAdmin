@@ -1,16 +1,18 @@
-﻿@using Business_Logic
+﻿@using System.Web.Optimization
+@using Business_Logic
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Hasaot Registration</title>
-    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <script src="~/Scripts/modernizr-2.6.2.js"></script>
-    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    @*<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>*@
+    @Scripts.Render("~/bundles/mainScripts")<!-- Moved to bundles. All scripts should be in head section-->
+    @RenderSection("scripts", required: false)
+
+    @Styles.Render("~/bundles/css")
+    @RenderSection("styles", required: false)
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -25,10 +27,13 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.myCard"), "Index", "Family")</li>
                     <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Home"), "Index", "Home")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.About"), "About", "Home")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Contact"), "Contact", "Home")</li>
+                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Insets"), "Index", "Insets")</li>
+                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.reports"), "Index", "reports")</li>
+                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.accountancy"), "Index", "accountancy")</li>
+                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.notification"), "Index", "notification")</li>
+                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.history"), "Index", "history")</li>
+                    
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -43,8 +48,6 @@
         </footer>
     </div>
 
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/bootstrap.min.js"></script>
-    @RenderSection("scripts", required: false)
+ 
 </body>
 </html>

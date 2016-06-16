@@ -11,6 +11,8 @@ namespace IdentitySample
             //all site error handle
             filters.Add(new HandleErrorAttribute());
             filters.Add(new AuthorizeAttribute());
+
+
   
             //all site DataBase error handle  for databse exception 
             HandleErrorAttribute dbException = new HandleErrorAttribute();

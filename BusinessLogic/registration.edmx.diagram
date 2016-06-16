@@ -9,7 +9,6 @@
         <EntityTypeShape EntityType="BusProjectModel.tblCulture" Width="1.5" PointX="3.375" PointY="5.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblYear" Width="1.5" PointX="5.375" PointY="4.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblStreet" Width="1.5" PointX="0.75" PointY="7.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblSystem" Width="1.5" PointX="5.375" PointY="7.75" />
         <EntityTypeShape EntityType="BusProjectModel.Login" Width="1.5" PointX="7.375" PointY="6.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblStudent" Width="1.5" PointX="9.375" PointY="0.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblFamily" Width="1.5" PointX="0.75" PointY="0.75" />
@@ -31,6 +30,7 @@
         <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToStations" />
         <EntityTypeShape EntityType="BusProjectModel.StudentsToLine" Width="1.5" PointX="15.625" PointY="11.75" />
         <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToStations" />
+        <EntityTypeShape EntityType="BusProjectModel.tblSystem" Width="1.5" PointX="3.375" PointY="8.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -51,3 +51,10 @@ C:\Users\Asus\Source\Repos\tichonetAdmin\BusinessLogic\bin\Debug\Newtonsoft.Json
 C:\Users\Asus\Source\Repos\tichonetAdmin\BusinessLogic\obj\Debug\Business_Logic.csprojResolveAssemblyReference.cache
 C:\Users\Asus\Source\Repos\tichonetAdmin\BusinessLogic\obj\Debug\Business_Logic.dll
 C:\Users\Asus\Source\Repos\tichonetAdmin\BusinessLogic\obj\Debug\Business_Logic.pdb
+C:\PROJECTS\Tichonet-Administration\from pavel\14-6-16\trunk\BusinessLogic\bin\Debug\Business_Logic.dll.config
+C:\PROJECTS\Tichonet-Administration\from pavel\14-6-16\trunk\BusinessLogic\bin\Debug\Business_Logic.dll
+C:\PROJECTS\Tichonet-Administration\from pavel\14-6-16\trunk\BusinessLogic\bin\Debug\Business_Logic.pdb
+C:\PROJECTS\Tichonet-Administration\from pavel\14-6-16\trunk\BusinessLogic\bin\Debug\Newtonsoft.Json.dll
+C:\PROJECTS\Tichonet-Administration\from pavel\14-6-16\trunk\BusinessLogic\bin\Debug\Newtonsoft.Json.xml
+C:\PROJECTS\Tichonet-Administration\from pavel\14-6-16\trunk\BusinessLogic\obj\Debug\Business_Logic.dll
+C:\PROJECTS\Tichonet-Administration\from pavel\14-6-16\trunk\BusinessLogic\obj\Debug\Business_Logic.pdb
