@@ -4,6 +4,8 @@
     Geocoder: null,
     directionsService: null,
     showStationsWithoutLines: true,
+    checkDistanceStation: null,
+    checkDistanceStudents: [],
     init: function () {
         // getting map's center
         var latCenter = 32.086368;
@@ -332,5 +334,64 @@
             }
         }
         return res;
+    },
+    updateDistance: function () {
+        if (smap.checkDistanceStation == null || smap.checkDistanceStudents.length == 0) {
+            $("#spStatus").html("");
+            smap.checkDistanceStation = null;
+            smap.checkDistanceStudents = [];
+            return;
+        }
+        var st = smap.getStudent(smap.checkDistanceStudents[0]);
+        $("#spStatus").html("Calculatedistance for " + st.Name);
+
+        if (smap.directionsService == null) smap.directionsService = new google.maps.DirectionsService();
+
+        var addr1 = new google.maps.LatLng(st.Lat, st.Lng);
+        var addr2 = new google.maps.LatLng(smap.checkDistanceStation.StrLat, smap.checkDistanceStation.StrLng);
+
+        var request = {
+            origin: addr1,
+            destination: addr2,
+            travelMode: google.maps.DirectionsTravelMode.WALKING
+        };
+        smap.directionsService.route(request, function (response, status) {
+            var d = 0;
+            if (status == google.maps.DirectionsStatus.OK) {
+                var legs = response.routes[0].legs;
+                d = legs[0].distance.value;
+            } else {
+                d = google.maps.geometry.spherical.computeDistanceBetween(addr1, addr2);
+
+            }
+            console.log(d);
+            // save
+            var data = new Object();
+            data.StudentId = st.Id;
+            data.StationId = smap.checkDistanceStation.Id;
+            data.Distance = d;
+            $.post("/api/stations/UpdateAttachStudent", data).done(function (loader) {
+
+                if (loader.Done == true) {
+                    for (var i in loader.Stations) {
+
+                        var stt = smap.stations.getStation(loader.Stations[i].Id);
+                        smap.stations.updateStation(stt);
+                        for (var j in stt.Students) {
+                            var student = smap.getStudent(stt.Students[j].StudentId);
+                            smap.updateStudent(student);
+                        }
+                    }
+                }
+                smap.checkDistanceStudents.splice(0, 1);
+                smap.updateDistance();
+            });
+
+
+
+        });
+
+
+
     }
 }

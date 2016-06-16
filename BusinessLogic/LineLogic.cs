@@ -44,14 +44,35 @@ namespace Business_Logic
                 {
                     IsActive = true
                 };
+                var c = itm.HexColor;
                 var oldColor = itm.HexColor;
                 itm.LineNumber = number;
                 itm.LineName = name;
+                var updateColors = itm.HexColor != color;
+                var updateDirections = itm.Direction != direction;
                 itm.HexColor = color;
                 itm.Direction = direction;
                 if (itm.Id == 0)
                 {
                     DB.Lines.Add(itm);
+                }
+                if (updateDirections)
+                {
+                    foreach (var st in DB.StudentsToLines.Where(z=>z.LineId==id))
+                    {
+                        st.Direction = itm.Direction;
+                    }
+                }
+                if (updateColors)
+                {
+                    foreach (var st in DB.StudentsToLines.Where(z => z.LineId == id))
+                    {
+                        var stud = DB.tblStudents.FirstOrDefault(z => z.pk == st.StudentId);
+                        if (stud != null && stud.Color == c)
+                        {
+                            stud.Color = itm.HexColor;
+                        }
+                    }
                 }
                 DB.SaveChanges();
 

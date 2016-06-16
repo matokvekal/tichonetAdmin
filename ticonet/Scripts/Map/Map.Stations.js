@@ -44,17 +44,9 @@
                         .done(function (loader) {
                             var stt = loader.Data.Station;
                             smap.stations.updateStation(stt);
-                            ////stt.Students = loader.Data.Students;
-                            //var st = smap.stations.getStation(stt.Id);
-                            //if (st == null) { //If it is new stations,then adding to list
-                            //    smap.stations.list.push(stt);
-                            //} else { // else replace for set new values
-                            //    stt.Marker = st.Marker;
-                            //    smap.stations.list[smap.stations.list.indexOf(st)] = stt;
-                            //}
-                            //smap.stations.setMarker(stt); //Add or move Marker
+                           
                             for (var i = 0; i < stt.Students.length; i++) {
-                                var student = smap.getStudent(stt.Students[i].pk);
+                                var student = smap.getStudent(stt.Students[i].StudentId);
                                 student.Color = stt.Color;
                                 smap.setMarker(student);
                             }
@@ -182,6 +174,15 @@
                             for (var i = 0; i < loader.Data.Lines.length; i++) {
                                 smap.lines.updateLine(loader.Data.Lines[i],true);
                             }
+
+                            // update students distances
+                            for (var i in loader.Data.Station.Students)
+                            {
+                                smap.checkDistanceStudents.push(loader.Data.Station.Students[i].StudentId);
+                            }
+                            smap.checkDistanceStation = loader.Data.Station;
+                            smap.updateDistance();
+                            
                         });
                 },
                 Cancel: function () {
@@ -283,7 +284,7 @@
                 $("<option value='" + lines[i].Id + "'>" + lines[i].Name + " (" + lines[i].StudentsCount + " students)</option>").appendTo($("#ddlAttachLines"));
             }
             smap.stations.attachStudentLineSelected();
-            $("#rAttachLine").prop("checked", true);
+            $("#rAttachStation").prop("checked", true);
         }
 
         $("#ciAttachLeave").css("background-color", smap.fixCssColor(student.Color));
@@ -394,7 +395,7 @@
         var station = smap.stations.getStation(id);
         $("#dAddStation").css("background-color", smap.fixCssColor(station.Color));
 
-        $("#rAddLine").prop("checked", true);
+        $("#rAddStation").prop("checked", true);
 
         var dialog = $("#dlgAddToLine").dialog({
             autoOpen: true,
@@ -536,5 +537,5 @@
                 smap.stations.fillDeleteFromLinesDialog(loader.Station.Id);
 
         });
-    }
+    }    
 }

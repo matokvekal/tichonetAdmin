@@ -50,7 +50,7 @@
                 rulesText: " rules",
                 clearSearch: false
             },
-            colNames: ["", "Id", "Name", "Shicva", "Class", "Address", "Color", "Line"],
+            colNames: ["", "Id", "Name", "Shicva", "Class", "Address", "Color", "Line","Dist"],
             colModel: [
                 {
                     name: "show",
@@ -84,7 +84,8 @@
                 { name: 'Class', index: 'Class', clearSearch: false, width: 50, align: "center" },
                 { name: 'Address', index: 'Address', clearSearch: false, width: 198 },
                 { name: 'Color', index: 'Color', clearSearch: false, width: 50, search: false, formatter: smap.table.colorFormatter },
-                { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter }
+                { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter },
+                { name: 'Id', index: 'Id', clearSearch: false, width: 50,align: "center", search: false, formatter: smap.table.distanceFormatter }
             ]
         }).filterToolbar({ searchOnEnter: true, defaultSearch: 'cn' });
         //Add students to table
@@ -140,7 +141,7 @@
                 {
                     name: "LineNumber",
                     index: "LineNumber",
-                    width: 75,
+                    width: 85,
                     sorttype: "integer",
                     template: "integer",
                     align: "center"
@@ -149,7 +150,7 @@
                     name: 'Name',
                     index: 'Name',
                     sorttype: "text",
-                    width: 120
+                    width: 160
                 },
                 {
                     name: 'Color',
@@ -158,7 +159,7 @@
                     search: false,
                     formatter: smap.table.colorFormatter
                 },
-                { name: 'Direction', index: 'Direction', width: 100, align: "center" },
+                { name: 'Direction', index: 'Direction', width: 100, align: "center", formatter: smap.table.directionFormatter },
                 { name: 'StudentsCount', index: 'StudentsCount', width: 100, align: "center" },
                 {
                     name: "Id",
@@ -296,19 +297,35 @@
             if (stl.LineId == null) {
                 if (station != null) {
                     color = station.Color;
-                    title = "Station: " + station.Name;
+                    title =  station.Name;
                 }
             } else {
                 line = smap.getLine(stl.LineId);
                 if (line != null && station != null) {
                     color = line.Color;
-                    title = "Station: " + station.Name  + " (" + line.Name + ")";
+                    title = line.LineNumber;
                 }
             }
         }
         if (color != "") {
             color = smap.fixCssColor(color);
             res = '<div style="width:46px; height:10px;background-color:' + color + '" title="' + title + '"></div>';
+        }
+        return title;
+    },
+    directionFormatter: function (cellvalue, options, rowObject) {        
+        var res = cellvalue;
+        if (cellvalue == 0) res = "TO";
+        if (cellvalue == 1) res = "FROM";
+        return res;
+    },
+    distanceFormatter: function (cellvalue, options, rowObject) {
+        var res = "";
+        var atts = smap.getAttachInfo(cellvalue);
+        for (var i in atts) {
+            if (atts[i].Date == null) {//default route
+                res = atts[i].Distance.toString() + " m";
+            }
         }
         return res;
     }

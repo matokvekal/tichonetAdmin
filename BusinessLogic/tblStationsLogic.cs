@@ -112,13 +112,33 @@ namespace Business_Logic
                     Position = position
                 };
                 DB.StationsToLines.Add(itm);
+                var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
+                var c = "";
                 if (changeColor)
                 {
                     var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
-                    var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
+
                     if (station != null && line != null)
+                    {
                         station.color = line.HexColor;
+                        c = line.HexColor;
+                    }
                 }
+                //Students attached to stations without line
+                var students = DB.StudentsToLines.Where(z => z.StationId == stationId && z.LineId == -1);
+                foreach (var student in students)
+                {
+                    student.LineId = lineId;
+                    if (line != null) student.Direction = line.Direction;
+                    if (!string.IsNullOrEmpty(c))
+                    {
+                        var st = DB.tblStudents.FirstOrDefault(z => z.pk == student.StudentId);
+                        if (st != null) st.Color = c;
+                    }
+
+                }
+
+
                 DB.SaveChanges();
                 using (var logic = new LineLogic())
                 {
@@ -156,13 +176,20 @@ namespace Business_Logic
                         itm.Position = position;
                     }
                     itm.ArrivalDate = arrivalTime;
+                    var c = "";
                     if (changeColor)
                     {
                         var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
                         var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
                         if (station != null && line != null)
+                        {
                             station.color = line.HexColor;
+                           
+                        }
+
                     }
+
+
                     DB.SaveChanges();
                     using (var logic = new LineLogic())
                     {
@@ -193,6 +220,11 @@ namespace Business_Logic
                     {
                         station.Position = p;
                         p++;
+                    }
+                    var students = DB.StudentsToLines.Where(z => z.StationId == stationId && z.LineId == lineId);
+                    foreach (var student in students)
+                    {
+                        student.LineId = -1;
                     }
                     DB.SaveChanges();
                     using (var logic = new LineLogic())
@@ -279,6 +311,25 @@ namespace Business_Logic
                 Console.WriteLine(e);
             }
             return res;
+        }
+        public bool UpdateDistance(int studentId, int stationId, int distance)
+        {
+            var res = false;
+            try
+            {
+                foreach (var itm in DB.StudentsToLines.Where(z => z.StudentId == studentId && z.StationId == stationId))
+                {
+                    itm.distanceFromStation = distance;
+                }
+                DB.SaveChanges();
+                res = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return res;
+
         }
     }
 }

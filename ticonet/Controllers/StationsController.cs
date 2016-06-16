@@ -120,8 +120,8 @@ namespace ticonet.Controllers
                     model.StationId,
                     model.LineId,
                     model.Distance,
-                    (ColorMode)model.UseColor, 
-                    date, 
+                    (ColorMode)model.UseColor,
+                    date,
                     model.ConflictAction);
             }
             using (var logic = new tblStudentLogic())
@@ -152,6 +152,29 @@ namespace ticonet.Controllers
                         .Select(z => new StationToLineModel(z))
                         .ToList();
                 }
+            }
+            return res;
+        }
+
+        [System.Web.Http.ActionName("UpdateAttachStudent")]
+
+        public AttachStudentResultModel PostUpdateAttachStudent(AttachStudentModel model)
+        {
+            var res = new AttachStudentResultModel();
+            if (model.Id == 0) //update distance
+            {
+                res.Stations = new List<StationModel>();
+                using (var logic = new StationsLogic())
+                {
+                    res.Done = logic.UpdateDistance(model.StudentId, model.StationId, model.Distance);
+
+                    var st = new StationModel(logic.GetStation(model.StationId));
+                    st.Students = logic.GetStudents(model.StationId)
+                    .Select(z => new StudentToLineModel(z))
+                    .ToList();
+                    res.Stations.Add(st);
+                }
+
             }
             return res;
         }

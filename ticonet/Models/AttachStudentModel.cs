@@ -4,6 +4,8 @@ namespace ticonet.Models
 {
     public class AttachStudentModel
     {
+        public int Id { get; set; }
+
         public int StudentId { get; set; }
 
         public int StationId { get; set; }
