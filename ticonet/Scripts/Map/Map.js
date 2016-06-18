@@ -125,6 +125,7 @@
             // update exists
             student.Marker = old.Marker;
             student.Marker.student = student;
+            student.show = old.show;
             var index = smap.students.indexOf(old);
             smap.students[index] = student;
             smap.setMarker(student);
