@@ -123,7 +123,7 @@
             altRows: false,
             sortable: true,
             altclass: "ui-state-default",
-            colNames: ["", "Number", "Name", "Color", "Direcion", "Students",""],
+            colNames: ["", "Number", "Name", "Color", "Active", "Direcion", "Students",""],
             colModel: [
                 {
                     name: "show",
@@ -150,7 +150,7 @@
                     name: 'Name',
                     index: 'Name',
                     sorttype: "text",
-                    width: 160
+                    width: 110
                 },
                 {
                     name: 'Color',
@@ -158,6 +158,13 @@
                     width: 50,
                     search: false,
                     formatter: smap.table.colorFormatter
+                },
+                {
+                    name: "Id",
+                    index: 'Id',
+                    width:50,
+                    formatter: smap.table.lineActiveFormatter,
+                    align: "center"
                 },
                 { name: 'Direction', index: 'Direction', width: 100, align: "center", formatter: smap.table.directionFormatter },
                 { name: 'StudentsCount', index: 'StudentsCount', width: 100, align: "center" },
@@ -271,6 +278,24 @@
         res += "<a href='javascript:smap.lines.deleteLine(" + cellvalue + ")' title='Delete line'><span class='glyphicon glyphicon-trash'></span></a>";
         return res;
     },
+    lineNameFormatter: function(cellvalue, options, rowObject) {
+        var ln = smap.getLine(cellvalue);
+        if (ln == null) return "--";
+        return ln.Name;
+    },
+    lineNumberFormatter: function (cellvalue, options, rowObject) {
+        var ln = smap.getLine(cellvalue);
+        if (ln == null) return "--";
+        return ln.LineNumber;
+    },
+    lineActiveFormatter: function(cellvalue, options, rowObject) {
+        var res = "<input type='checkbox'";
+        var ln = smap.getLine(cellvalue);
+        if (ln.Active == true) res += " checked='checked' ";
+        res += "onchange='smap.lines.saveLineAcive(" + cellvalue + ")'";
+        res += " ref='lnActive' rel='" + cellvalue + "' />";
+        return res;
+    },
     lineColorFormatter: function (cellvalue, options, rowObject) {
         
         var id = cellvalue;
@@ -327,6 +352,13 @@
                 res = atts[i].Distance.toString() + " m";
             }
         }
+        return res;
+    },
+    simpleDistanceFormatter: function(cellvalue, options, rowObject) {
+        return cellvalue.toString() + " m";
+    },
+    attachActionFormatter: function(cellvalue, options, rowObject) {
+        var res = "<a href='javascript:smap.deleteAttach(" + cellvalue + ")' title='Delete'><span class='glyphicon glyphicon-trash'></span></a>";
         return res;
     }
 

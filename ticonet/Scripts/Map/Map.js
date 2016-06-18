@@ -6,6 +6,8 @@
     showStationsWithoutLines: true,
     checkDistanceStation: null,
     checkDistanceStudents: [],
+    graphicElements: [],
+    attachGrid: null,
     init: function () {
         // getting map's center
         var latCenter = 32.086368;
@@ -121,6 +123,8 @@
             // add new student
         } else {
             // update exists
+            student.Marker = old.Marker;
+            student.Marker.student = student;
             var index = smap.students.indexOf(old);
             smap.students[index] = student;
             smap.setMarker(student);
@@ -173,10 +177,16 @@
                     var st = smap.students[i];
                     if (st.IW != null) {
                         st.IW.close();
-
                     }
-                    //st.IW = null;
                 }
+                for (var i in smap.stations.list) {
+                    var st = smap.stations.list[i];
+                    if (st.IW != null) {
+                        st.IW.close();
+                    }
+                    st.IW = null;
+                }
+                smap.clearGraphic();
                 if (student.IW != null) {
                     student.IW.open(smap.mainMap, student.Marker);
                 } else {
@@ -194,12 +204,25 @@
                     smap.loadFamily(student.Id);
                 }
 
+                //show stations connect lines
+                var stations = smap.getAttachInfo(student.Id);
+                console.log(stations);
+                for (var j in stations) {
+                    var stt = smap.stations.getStation(stations[j].StationId);
+                    var nm = stations[j].Date != null;
+                    smap.drawLine(student.Lat, student.Lng, stt.StrLat, stt.StrLng, nm);
+                }
+
+                //handle closing info window for hide lines
+                student.IW.addListener('closeclick', function () { smap.clearGraphic(); });
             });
             google.maps.event.addListener(student.Marker, "rightclick", function (event) { smap.showStudentContextMenu(event.latLng, student); });
             google.maps.event.addListener(student.Marker, "click", function (event) { smap.closeConextMenu(); });
             google.maps.event.addListener(student.Marker, "dragend", function (event) {
-                smap.stations.studentDargEnd(event.latLng, student);
-                smap.setMarker(student);
+                var st = smap.getStudent(student.Id);
+                smap.stations.studentDargEnd(event.latLng, st);
+                
+                smap.setMarker(st);
             });
             google.maps.event.addListener(student.Marker, "dragstart", function (event) { smap.stations.showBorders() });
         }
@@ -309,7 +332,7 @@
         smap.closeConextMenu();
         var contextmenuDir = document.createElement("div");
         contextmenuDir.className = 'contextmenu';
-        contextmenuDir.innerHTML = '<a id="menuS1" href="javscript:smap.stations.openPopup(null);"><div class="context">' + student.Name + '<\/div><\/a>';
+        contextmenuDir.innerHTML = '<a id="menuS1" href="javascript:smap.showSchedule(' + student.Id + ');"><div class="context">Stations<\/div><\/a>';
 
         $(smap.mainMap.getDiv()).append(contextmenuDir);
 
@@ -364,34 +387,133 @@
                 d = google.maps.geometry.spherical.computeDistanceBetween(addr1, addr2);
 
             }
-            console.log(d);
+
             // save
             var data = new Object();
             data.StudentId = st.Id;
             data.StationId = smap.checkDistanceStation.Id;
             data.Distance = d;
             $.post("/api/stations/UpdateAttachStudent", data).done(function (loader) {
-
-                if (loader.Done == true) {
-                    for (var i in loader.Stations) {
-
-                        var stt = smap.stations.getStation(loader.Stations[i].Id);
-                        smap.stations.updateStation(stt);
-                        for (var j in stt.Students) {
-                            var student = smap.getStudent(stt.Students[j].StudentId);
-                            smap.updateStudent(student);
-                        }
+                var stt = smap.stations.getStation(loader.StationId);
+                for (var i in stt.Students) {
+                    if (stt.Students[i].StudentId == loader.StudentId) {
+                        stt.Students[i].Distance = loader.Distance;
+                        var st = smap.getStudent(stt.Students[i].StudentId);
+                        smap.updateStudent(st);
                     }
                 }
+                
                 smap.checkDistanceStudents.splice(0, 1);
                 smap.updateDistance();
             });
-
-
-
         });
+    },
+    drawLine: function (lat1, lng1, lat2, lng2, notMain) {
+        var point1 = new google.maps.LatLng(lat1, lng1);
+        var point2 = new google.maps.LatLng(lat2, lng2);
+        var color = '#222222';
+        var opacity = 0.7;
+        var weight = 2;
+        if (notMain == true) {
+            opacity = 0.7;
+            weight = 1;
+        }
+        var polyline = new google.maps.Polyline({
+            path: [point1, point2],
+            geodesic: true,
+            strokeColor: color,
+            strokeOpacity: opacity,
+            strokeWeight: weight
+        });
+        smap.graphicElements.push(polyline);
+        polyline.setMap(smap.mainMap);
+    },
+    clearGraphic: function () {
+        for (var i in smap.graphicElements) {
+            var el = smap.graphicElements[i];
+            el.setMap(null);
+        }
+        smap.graphicElements = [];
+    },
+    showSchedule: function (studentId) {
+        smap.closeConextMenu();
+
+        $("#hfAttachListStationId").val(studentId);
+        var st = smap.getStudent(studentId);
+        if (st != null) $("#dAttachName").html(st.Name);
+
+        if (smap.attachGrid == null) {
+            smap.attachGrid = $("#dScheduleGrid").jqGrid({
+                datatype: "clientSide",
+                height: '100%',
+                regional: 'il',
+                hidegrid: false,
+                multiselect: false,
+                rowNum: 10,
+                rowList: [10, 20],
+                viewrecords: true,
+                width: '100%',
+                loadui: 'disable',
+                altRows: false,
+                emptyrecords: 'No lines',
+                sortable: true,
+                altclass: "ui-state-default",
+                colNames: ["Line", "Station", "Distance", "Date", "Time", ""],
+                colModel: [
+                    { name: 'LineId', width: 50, align: 'center', formatter: smap.table.lineNameFormatter },
+                    { name: 'StationId', width: 100, align: 'center', formatter: smap.table.stationNameFormatter },
+                    { name: 'Distance', width: 100, align: 'center', formatter: smap.table.simpleDistanceFormatter },
+                    { name: 'StrDate', width: 100, align: 'center' },
+                    { name: 'StrTime', width: 50, align: 'center' },
+                    { name: 'Id', width: 50, align: 'center', formatter: smap.table.attachActionFormatter }
+                ]
+            });
+        }
+        smap.attachGrid.jqGrid("clearGridData");
+        var data = smap.getAttachInfo(studentId);
+        for (var i in data) {
+            smap.attachGrid.jqGrid('addRowData', data[i].Id, data[i]);
+        }
+
+        smap.attachGrid.jqGrid('setGridParam', { sortorder: 'asc' });
+        smap.attachGrid.jqGrid("sortGrid", "StrDate");
 
 
-
+        $("#dlgSchedule").dialog({
+            autoOpen: true,
+            width: 500,
+            modal: true
+        });
+    },
+    deleteAttach: function (id) {
+        $("#dConfirmMessage").html("Are you sure?");
+        $("#hfCurrentId").val(id);
+        var dialog = $("#dlgConfirm").dialog({
+            autoOpen: true,
+            width: 500,
+            modal: true,
+            buttons: {
+                "Delete": function () {
+                    $.post("/api/stations/DeleteAttachStudent/" + id, null).done(function (loader) {
+                        console.log(loader);
+                        for (var k in loader.Lines) {
+                            smap.lines.updateLine(loader.Lines[k]);
+                        }
+                        for (var i in loader.Stations) {
+                            smap.stations.updateStation(loader.Stations[i]);
+                        }
+                        smap.attachGrid.jqGrid("clearGridData");
+                        var data = smap.getAttachInfo($("#hfAttachListStationId").val());
+                        for (var j in data) {
+                            smap.attachGrid.jqGrid('addRowData', data[j].Id, data[j]);
+                        }
+                        dialog.dialog("close");
+                    });
+                },
+                Cancel: function () {
+                    dialog.dialog("close");
+                }
+            }
+        });
     }
 }

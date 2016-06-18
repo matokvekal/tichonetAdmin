@@ -8,11 +8,13 @@
         }
         public StudentShortInfo(tblStudent data)
         {
+            var c = data.Color ?? "";
+
             Id = data.pk;
             StudentId = data.studentId;
             Lat = data.Lat;
             Lng = data.Lng;
-            Color = string.IsNullOrEmpty(data.Color.Trim()) ? "FFFFFF" : data.Color.Trim().Replace("#", "");
+            Color = string.IsNullOrEmpty(c.Trim()) ? "FFFFFF" : c.Trim().Replace("#", "");
             Name = data.lastName + ", " + data.firstName;
             CellPhone = data.CellPhone;
             Email = data.Email;

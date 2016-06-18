@@ -41,7 +41,6 @@
 
         smap.lines.showSegment(line);
     },
-
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
         var st2 = smap.stations.getStation(line.currentStationsList[1]);
@@ -143,6 +142,9 @@
                         for (var i = 0; i < loader.Stations.length; i++) {
                             smap.stations.updateStation(loader.Stations[i]);
                         }
+                        for (var j in loader.Students) {
+                            smap.updateStudent(loader.Students[j]);
+                        }
                     });
                     dialog.dialog("close");
                 },
@@ -183,6 +185,14 @@
             }
         });
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+    },
+    saveLineAcive: function (id) {
+        var ctrl = $("input[ref=lnActive][rel=" + id + "]").prop("checked");
+        $.post("/api/map/LineActiveSwitch", { LineId: id, Active: ctrl }).done(function(loader) {
+            if (loader.Done == true) {
+                var ln = smap.getLine(loader.LineId);
+                ln.Active = loader.Active;
+            }
+        });
     }
-
 }

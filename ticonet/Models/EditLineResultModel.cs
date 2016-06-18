@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Business_Logic;
+using Business_Logic.Entities;
 
 namespace ticonet.Models
 {
@@ -14,7 +15,7 @@ namespace ticonet.Models
 
         public List<StationModel> Stations { get; set; }
 
-        public List<tblStudent> Students { get; set; } 
+        public List<StudentShortInfo> Students { get; set; } 
 
     }
 }

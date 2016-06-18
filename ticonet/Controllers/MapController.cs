@@ -79,7 +79,9 @@ namespace ticonet.Controllers
             }
             using (var logic = new tblStudentLogic())
             {
-                res.Students = logic.GetStudentsForLine(res.Line.Id);
+                res.Students = logic.GetStudentsForLine(res.Line.Id)
+                    .Select(z=>new StudentShortInfo(z))
+                    .ToList();
             }
             return res;
         }
@@ -93,6 +95,18 @@ namespace ticonet.Controllers
                 res.Done = logic.DeleteLine(id);
             }
             res.Line = new LineModel{Id =  id};
+            return res;
+        }
+         [ActionName("LineActiveSwitch")]
+        public LineActiveSwitchModel PostLineActiveSwitch(LineActiveSwitchModel data)
+        {
+            var res= new LineActiveSwitchModel();
+            using (var logic = new LineLogic())
+            {
+                res.Done = logic.SwitchActive(data.LineId, data.Active);
+                res.LineId = data.LineId;
+                res.Active = data.Active;
+            }
             return res;
         }
     }

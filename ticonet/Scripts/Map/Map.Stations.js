@@ -117,11 +117,79 @@
                 station: station
             });
             // Handle events
-            google.maps.event.addListener(station.Marker, "rightclick", function (event) { smap.stations.showStationContextMenu(event.latLng, station); });
-            google.maps.event.addListener(station.Marker, "click", function (event) { smap.closeConextMenu(); });
-            google.maps.event.addListener(station.Marker, "dragend", function (event) {
+            google.maps.event.addListener(station.Marker, "rightclick", function(event) { smap.stations.showStationContextMenu(event.latLng, station); });
+            google.maps.event.addListener(station.Marker, "click", function(event) { smap.closeConextMenu(); });
+            google.maps.event.addListener(station.Marker, "dragend", function(event) {
 
                 smap.stations.moveStation(station);
+            });
+            google.maps.event.addListener(station.Marker, "dblclick", function(event) {
+                var stt = smap.stations.getStation(station.Id);
+                for (var i = 0; i < smap.students.length; i++) {
+                    var st = smap.students[i];
+                    if (st.IW != null) {
+                        st.IW.close();
+                    }
+                }
+                for (var i in smap.stations.list) {
+                    var st = smap.stations.list[i];
+                    if (st.IW != null) {
+                        st.IW.close();
+                        st.IW = null;
+                    }
+                }
+                smap.clearGraphic();
+
+                if (stt.IW != null) {
+                    stt.IW.close();
+                } 
+                var content = "<h4 style='margin-bottom:2px;'>" + stt.Name + "</h4>";
+                content += "<div style='margin-bottom:5px;'>Total students: <b>" + stt.Students.length.toString() + "</b></div>";
+                    var lines = [];
+                    for (var l in  smap.lines.list) {
+                        var ln = smap.lines.list[l];
+                        for (var m in  ln.Stations) {
+                            if (ln.Stations[m].StationId == stt.Id) lines.push(ln.Stations[m]);
+                        }
+                    }
+                    
+                    if (lines.length > 0) {
+                        content += "<table class='table table-striped lines-table'>";
+                        content += "<tr>";
+                        content += "<td>Line</td>";
+                        content += "<td>Arrival</td>";
+                        content += "<td>Order</td>";
+                        content += "</tr>";
+                        for (var k in lines) {
+                            var line = smap.getLine( lines[k].LineId);
+                            console.log(line);
+                            content += "<tr>";
+                            content += "<td>" + line.LineNumber + "</td>";
+                            content += "<td>" + lines[k].ArrivalDateString + "</td>";
+                            content += "<td>" + lines[k].Position + "</td>";
+                            content += "</tr>";
+                        }
+                        content += "</table>";
+                    } else {
+                        content += "<div style='text-align:center;'>No lines</div>";
+                    }
+                    var infowindow = new google.maps.InfoWindow({
+                        content: content
+                    });
+                    stt.IW = infowindow;
+                    infowindow.open(smap.mainMap, stt.Marker);
+                
+                    for (var j in stt.Students) {
+                        var stud = smap.getStudent(stt.Students[j].StudentId);
+                        smap.drawLine(stud.Lat, stud.Lng, stt.StrLat, stt.StrLng, false);
+                }
+
+                //handle closing info window for hide lines
+                stt.IW.addListener('closeclick', function() {
+                    smap.clearGraphic();
+                    stt.IW = null;
+                });
+
             });
         }
     },
@@ -239,7 +307,7 @@
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     },
     showBorders: function () {//show areas around all stations
-        var z = (22 - smap.mainMap.getZoom()) ^ 4;
+        var z = (23 - smap.mainMap.getZoom())/4 ;
         for (var i = 0; i < smap.stations.list.length; i++) {
             //smap.stations.list[i].Marker.setAnimation(google.maps.Animation.BOUNCE);
             smap.stations.list[i].Marker.Circle = new google.maps.Circle({
@@ -301,7 +369,8 @@
         $("#rAttachReplace").prop("checked", true);
         $("#tbAttachHours").val(0);
         $("#tbAttachMinutes").val(0);
-        $("tbAttachDate").datepicker("option", "gotoCurrent", true);
+        $("#tbAttachDate").datepicker("option", "gotoCurrent", true);
+        $("#tbAttachDate").datepicker("setDate", new Date());
         if (mainAttach == null) {
             $("#dAttachMultiline").css("display", "none");
         }
@@ -311,6 +380,10 @@
             $("#sAttachMName").html(student.Name);
             $("#sAttachMStation").html(station.Name);
         }
+
+        $("#rAttachSchedule").change(smap.stations.dateVisibleSwitch);
+        $("#rAttachReplace").change(smap.stations.dateVisibleSwitch);
+        smap.stations.dateVisibleSwitch();
 
         var addr1 = new google.maps.LatLng(student.Lat, student.Lng);
         var addr2 = new google.maps.LatLng(station.StrLat, station.StrLng);
@@ -371,6 +444,12 @@
         $("#ciAttachLine").css("background-color", smap.fixCssColor(line.Color));
         $("#ciAttachLine").attr("title", smap.fixCssColor(line.Color));
     },
+    dateVisibleSwitch:function() {
+        var check = $("#rAttachSchedule").prop("checked");
+        $("#tbAttachDate").prop("disabled", !check);
+        $("#tbAttachHours").prop("disabled", !check);
+        $("#tbAttachMinutes").prop("disabled", !check);
+    },
     addToLine: function (id) {
         smap.closeConextMenu();
 
@@ -406,14 +485,17 @@
                 "Add": function () {
                     var data = $("#frmAddStationTolIne").serialize();
                     $.post("/api/stations/AddToLine", data).done(function (loader) {
+                        console.log(loader);
                         dialog.dialog("close");
                         smap.lines.updateLine(loader.Line, true);
 
-                        var station = smap.stations.getStation(loader.Station.Id);
-                        loader.Station.Marker = station.Marker;
-                        var index = smap.stations.list.indexOf(station);
-                        smap.stations.list[index] = loader.Station;
-                        smap.stations.setMarker(loader.Station);
+                       
+                        smap.stations.updateStation(loader.Station);
+                        
+                        for (var i in loader.Students) {
+                            smap.updateStudent(loader.Students[i]);
+                        }
+                        
                     });
                 },
                 Cancel: function () {

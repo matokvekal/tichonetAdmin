@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Business_Logic
 {
@@ -8,7 +9,7 @@ namespace Business_Logic
     {
         public List<Line> GetList()
         {
-            return DB.Lines.Where(z => z.IsActive).ToList();
+            return DB.Lines.ToList();
         }
 
         public List<StationsToLine> GetStations(int lineId)
@@ -23,7 +24,7 @@ namespace Business_Logic
 
         public List<Line> GetLines(List<int> ids)
         {
-            return DB.Lines.Where(z =>ids.Contains( z.Id )).ToList();
+            return DB.Lines.Where(z => ids.Contains(z.Id)).ToList();
         }
 
         public void UpdateStudentCount()
@@ -58,7 +59,7 @@ namespace Business_Logic
                 }
                 if (updateDirections)
                 {
-                    foreach (var st in DB.StudentsToLines.Where(z=>z.LineId==id))
+                    foreach (var st in DB.StudentsToLines.Where(z => z.LineId == id))
                     {
                         st.Direction = itm.Direction;
                     }
@@ -130,6 +131,26 @@ namespace Business_Logic
                 .Where(z => z.StationId == stationId)
                 .Select(z => z.Line)
                 .ToList();
+        }
+
+        public bool SwitchActive(int id, bool active)
+        {
+            var res = false;
+            try
+            {
+                var itm = DB.Lines.FirstOrDefault(z => z.Id == id);
+                if (itm != null)
+                {
+                    itm.IsActive = active;
+                    DB.SaveChanges();
+                    res = true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return res;
         }
     }
 }

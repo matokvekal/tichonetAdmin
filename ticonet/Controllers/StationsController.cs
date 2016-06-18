@@ -158,26 +158,62 @@ namespace ticonet.Controllers
 
         [System.Web.Http.ActionName("UpdateAttachStudent")]
 
-        public AttachStudentResultModel PostUpdateAttachStudent(AttachStudentModel model)
+        public StudentToLineModel PostUpdateAttachStudent(AttachStudentModel model)
         {
-            var res = new AttachStudentResultModel();
+            StudentToLineModel res = null;
             if (model.Id == 0) //update distance
             {
-                res.Stations = new List<StationModel>();
+                
                 using (var logic = new StationsLogic())
                 {
-                    res.Done = logic.UpdateDistance(model.StudentId, model.StationId, model.Distance);
-
-                    var st = new StationModel(logic.GetStation(model.StationId));
-                    st.Students = logic.GetStudents(model.StationId)
-                    .Select(z => new StudentToLineModel(z))
-                    .ToList();
-                    res.Stations.Add(st);
+                    if ( logic.UpdateDistance(model.StudentId, model.StationId, model.Distance));
+                    {
+                        var att = logic.GetAttachInfo(model.StudentId, model.StationId);
+                        if (att.Count > 0) res = new StudentToLineModel(att[0]);
+                    }
                 }
-
             }
             return res;
         }
+
+        [System.Web.Http.ActionName("DeleteAttachStudent")]
+        public AttachStudentResultModel PostDeleteAttachStudent(int id)
+        {
+            var res = new AttachStudentResultModel { Stations = new List<StationModel>(), Lines = new List<LineModel>() };
+            using (var logic = new StationsLogic())
+            {
+                var itm = logic.GetAttachInfo(id);
+                if (itm != null)
+                {
+                    var stId = itm.StationId;
+                    var lnId = itm.LineId;
+                    res.Done = logic.DeleteAttach(id);
+                    if (lnId != -1)
+                    {
+                        using (var logic2 = new LineLogic())
+                        {
+                            var ln = new LineModel(logic2.GetLine(lnId))
+                            {
+                                Stations = logic2.GetStations(lnId)
+                                .Select(z => new StationToLineModel(z))
+                                .ToList()
+                            };
+                            res.Lines.Add(ln);
+                        }
+                    }
+                    var st = new StationModel(logic.GetStation(stId))
+                    {
+                        Students = logic.GetStudents(stId)
+                            .Select(z => new StudentToLineModel(z))
+                            .ToList()
+                    };
+                    res.Stations.Add(st);
+                }
+            }
+            return res;
+        }
+
+
 
         [System.Web.Http.ActionName("AddToLine")]
         public SaveStationToLineResult PostAddToLine(AddStationToLineModel model)
@@ -197,6 +233,7 @@ namespace ticonet.Controllers
                 res.Station.Students = logic.GetStudents(model.StationId)
                         .Select(z => new StudentToLineModel(z))
                         .ToList();
+                
             }
             using (var logic = new LineLogic())
             {
@@ -205,6 +242,12 @@ namespace ticonet.Controllers
                         .OrderBy(z => z.Position)
                         .Select(z => new StationToLineModel(z))
                         .ToList();
+            }
+            using (var logic = new tblStudentLogic())
+            {
+                res.Students = logic.GetStudentsForStation(model.StationId)
+                    .Select(z => new StudentShortInfo(z))
+                    .ToList();
             }
             return res;
         }
@@ -235,6 +278,12 @@ namespace ticonet.Controllers
                         .OrderBy(z => z.Position)
                         .Select(z => new StationToLineModel(z))
                         .ToList();
+            }
+            using (var logic = new tblStudentLogic())
+            {
+                res.Students = logic.GetStudentsForStation(model.StationId)
+                    .Select(z => new StudentShortInfo(z))
+                    .ToList();
             }
             return res;
         }

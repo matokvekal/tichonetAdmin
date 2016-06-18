@@ -1,11 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Schema Namespace="BusProjectModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
   <EntityContainer Name="BusProjectEntities" annotation:LazyLoadingEnabled="true">
-    <EntitySet Name="tblDictSystems" EntityType="BusProjectModel.tblDictSystem" />
     <EntitySet Name="tblCultures" EntityType="BusProjectModel.tblCulture" />
     <EntitySet Name="tblYears" EntityType="BusProjectModel.tblYear" />
     <EntitySet Name="tblStreets" EntityType="BusProjectModel.tblStreet" />
-    <EntitySet Name="tblSystems" EntityType="BusProjectModel.tblSystem" />
     <EntitySet Name="Logins" EntityType="BusProjectModel.Login" />
     <EntitySet Name="tblStudents" EntityType="BusProjectModel.tblStudent" />
     <EntitySet Name="tblFamilies" EntityType="BusProjectModel.tblFamily" />
@@ -51,20 +49,13 @@
       <End Role="Station" EntitySet="Stations" />
       <End Role="StudentsToLine" EntitySet="StudentsToLines" />
     </AssociationSet>
+    <EntitySet Name="tblSystems" EntityType="BusProjectModel.tblSystem" />
+    <EntitySet Name="tblDictSystems" EntityType="BusProjectModel.tblDictSystem" />
+    <AssociationSet Name="FK_StudentsToLines_ToLines" Association="BusProjectModel.FK_StudentsToLines_ToLines">
+      <End Role="Line" EntitySet="Lines" />
+      <End Role="StudentsToLine" EntitySet="StudentsToLines" />
+    </AssociationSet>
   </EntityContainer>
-  <EntityType Name="tblDictSystem">
-    <Key>
-      <PropertyRef Name="id" />
-    </Key>
-    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="term" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="CustomerTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-    <Property Name="SystemTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-    <Property Name="cultures" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="DateCreatedUTC" Type="DateTime" Precision="3" />
-    <Property Name="cantBeChange" Type="Boolean" />
-  </EntityType>
   <EntityType Name="tblCulture">
     <Key>
       <PropertyRef Name="id" />
@@ -87,19 +78,6 @@
     </Key>
     <Property Name="streetId" Type="Int32" Nullable="false" />
     <Property Name="streetName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-  </EntityType>
-  <EntityType Name="tblSystem">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="strNamespace" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-    <Property Name="strKey" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-    <Property Name="strValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-    <Property Name="LastModify" Type="DateTime" Precision="3" />
-    <Property Name="ModifedBy" Type="Int32" />
-    <Property Name="key" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="value" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="Login">
     <Key>
@@ -143,6 +121,10 @@
     <Property Name="Lat" Type="Double" />
     <Property Name="Lng" Type="Double" />
     <Property Name="Active" Type="Boolean" />
+    <Property Name="distanceFromSchool" Type="Double" />
+    <Property Name="siblingAtSchool" Type="Boolean" />
+    <Property Name="specialRequest" Type="Boolean" />
+    <Property Name="request" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="tblFamily">
     <Key>
@@ -175,6 +157,7 @@
     <Property Name="iAgree" Type="Boolean" Nullable="false" />
     <Property Name="subsidy" Type="Boolean" Nullable="false" />
     <Property Name="allredyUsed" Type="Boolean" Nullable="false" />
+    <Property Name="oneParentOnly" Type="Boolean" Nullable="false" />
   </EntityType>
   <EntityType Name="tblAlertsQueue">
     <Key>
@@ -251,6 +234,7 @@
     <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToLines" FromRole="Line" ToRole="Schedule" />
     <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
     <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="Line" ToRole="StudentsToLine" />
   </EntityType>
   <EntityType Name="Schedule">
     <Key>
@@ -415,6 +399,7 @@
     <Property Name="distanceFromStation" Type="Int32" Nullable="true" />
     <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="Station" Relationship="BusProjectModel.FK_StudentsToLines_ToStations" FromRole="StudentsToLine" ToRole="Station" />
+    <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="StudentsToLine" ToRole="Line" />
   </EntityType>
   <Association Name="FK_StudentsToLines_ToStations">
     <End Type="BusProjectModel.Station" Role="Station" Multiplicity="1">
@@ -427,6 +412,46 @@
       </Principal>
       <Dependent Role="StudentsToLine">
         <PropertyRef Name="StationId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tblSystem">
+    <Key>
+      <PropertyRef Name="pk" />
+    </Key>
+    <Property Name="pk" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="strKey" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="key" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="value" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="strValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="LastModify" Type="DateTime" Precision="3" />
+    <Property Name="ModifedBy" Type="Int32" />
+    <Property Name="strNamespace" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tblDictSystem">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="term" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CustomerTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="SystemTranslated" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="cultures" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="DateCreatedUTC" Type="DateTime" Precision="3" />
+    <Property Name="cantBeChange" Type="Boolean" />
+  </EntityType>
+  <Association Name="FK_StudentsToLines_ToLines">
+    <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="BusProjectModel.StudentsToLine" Role="StudentsToLine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Line">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="StudentsToLine">
+        <PropertyRef Name="LineId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

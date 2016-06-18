@@ -179,6 +179,7 @@
     <Property Name="iAgree" Type="bit" Nullable="false" />
     <Property Name="subsidy" Type="bit" Nullable="false" />
     <Property Name="allredyUsed" Type="bit" Nullable="false" />
+    <Property Name="oneParentOnly" Type="bit" Nullable="false" />
   </EntityType>
   <EntityType Name="tblStreet">
     <Key>
@@ -218,19 +219,23 @@
     <Property Name="Lat" Type="float" />
     <Property Name="Lng" Type="float" />
     <Property Name="Active" Type="bit" />
+    <Property Name="distanceFromSchool" Type="float" />
+    <Property Name="siblingAtSchool" Type="bit" />
+    <Property Name="specialRequest" Type="bit" />
+    <Property Name="request" Type="nvarchar" MaxLength="250" />
   </EntityType>
   <EntityType Name="tblSystem">
     <Key>
-      <PropertyRef Name="Id" />
+      <PropertyRef Name="pk" />
     </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="strNamespace" Type="nchar" MaxLength="10" />
+    <Property Name="pk" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="strKey" Type="nvarchar" MaxLength="250" />
+    <Property Name="key" Type="nvarchar" MaxLength="50" />
+    <Property Name="value" Type="nvarchar" MaxLength="50" />
     <Property Name="strValue" Type="nvarchar(max)" />
     <Property Name="LastModify" Type="datetime" />
     <Property Name="ModifedBy" Type="int" />
-    <Property Name="key" Type="nvarchar" MaxLength="50" />
-    <Property Name="value" Type="nvarchar" MaxLength="50" />
+    <Property Name="strNamespace" Type="nchar" MaxLength="10" />
   </EntityType>
   <EntityType Name="tblYears">
     <Key>
@@ -348,6 +353,20 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK_StudentsToLines_ToLines">
+    <End Role="Lines" Type="Self.Lines" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="StudentsToLines" Type="Self.StudentsToLines" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Lines">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="StudentsToLines">
+        <PropertyRef Name="LineId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK_StudentsToLines_ToStations">
     <End Role="Stations" Type="Self.Stations" Multiplicity="1">
       <OnDelete Action="Cascade" />
@@ -408,6 +427,10 @@
     <AssociationSet Name="FK_StationsToLines_ToStations" Association="Self.FK_StationsToLines_ToStations">
       <End Role="Stations" EntitySet="Stations" />
       <End Role="StationsToLines" EntitySet="StationsToLines" />
+    </AssociationSet>
+    <AssociationSet Name="FK_StudentsToLines_ToLines" Association="Self.FK_StudentsToLines_ToLines">
+      <End Role="Lines" EntitySet="Lines" />
+      <End Role="StudentsToLines" EntitySet="StudentsToLines" />
     </AssociationSet>
     <AssociationSet Name="FK_StudentsToLines_ToStations" Association="Self.FK_StudentsToLines_ToStations">
       <End Role="Stations" EntitySet="Stations" />

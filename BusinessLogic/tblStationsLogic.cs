@@ -114,12 +114,14 @@ namespace Business_Logic
                 DB.StationsToLines.Add(itm);
                 var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
                 var c = "";
+                var oldColor = "";
                 if (changeColor)
                 {
                     var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);
 
                     if (station != null && line != null)
                     {
+                        oldColor = station.color;
                         station.color = line.HexColor;
                         c = line.HexColor;
                     }
@@ -128,12 +130,19 @@ namespace Business_Logic
                 var students = DB.StudentsToLines.Where(z => z.StationId == stationId && z.LineId == -1);
                 foreach (var student in students)
                 {
-                    student.LineId = lineId;
-                    if (line != null) student.Direction = line.Direction;
+                    if (student.LineId == -1)
+                    {
+                        student.LineId = lineId;
+                        if (line != null) student.Direction = line.Direction;
+                    }
                     if (!string.IsNullOrEmpty(c))
                     {
                         var st = DB.tblStudents.FirstOrDefault(z => z.pk == student.StudentId);
-                        if (st != null) st.Color = c;
+                        if (st != null)
+                        {
+                            //if (student.LineId==-1 || st.Color==oldColor) st.Color = c; //Change student color if student didn't have lines before or same color like station
+                            st.Color = c;
+                        }
                     }
 
                 }
@@ -184,7 +193,7 @@ namespace Business_Logic
                         if (station != null && line != null)
                         {
                             station.color = line.HexColor;
-                           
+
                         }
 
                     }
@@ -331,6 +340,43 @@ namespace Business_Logic
             return res;
 
         }
+
+        public StudentsToLine GetAttachInfo(int id)
+        {
+            return DB.StudentsToLines.FirstOrDefault(z => z.Id == id);
+        }
+
+        public List<StudentsToLine> GetAttachInfo(int studentId, int stationId)
+        {
+            return DB.StudentsToLines.Where(z => z.StudentId == studentId && z.StationId == stationId).ToList();
+        }
+
+
+        public bool DeleteAttach(int id)
+        {
+            var res = false;
+            try
+            {
+                var att = GetAttachInfo(id);
+                if (att != null)
+                {
+                    DB.StudentsToLines.Remove(att);
+                    DB.SaveChanges();
+                    using (var logic = new LineLogic())
+                    {
+                        logic.UpdateStudentCount();
+                    }
+                    res = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return res;
+        }
+
     }
 }
 

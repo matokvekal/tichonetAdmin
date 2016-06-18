@@ -102,14 +102,14 @@
         <div class="form-group row message" id="dAttachMultiline" style="display: none;">
             <div class="row"><span id="sAttachMName"></span> already attached to station <span id="sAttachMStation"></span></div>
             <div class="row message" style="text-align: left;">
-                <input type="radio" name="ConflictAction" id="rAttachReplace" value="0"/> <span>Replace default route</span><br/>
-                <input type="radio" name="ConflictAction" id="rAttachSchedule" value="1" /><span>Schedule route for</span>
+                <input type="radio" name="ConflictAction" id="rAttachReplace" value="0" /> <span>Replace default route</span><br />
+                <input type="radio" name="ConflictAction" id="rAttachSchedule" value="1" onchange="smap.stations.dateVisibleSwitch" /><span>Schedule route for</span>
             </div>
             <div class="row message">
-                <input type="text" id="tbAttachDate" style="width: 150px;" name="StrDate"/>
-                <input type="number" id="tbAttachHours" style="width: 30px; margin-left: 20px;" name="Hours"/>
+                <input type="text" id="tbAttachDate" style="width: 150px;" name="StrDate" />
+                <input type="number" id="tbAttachHours" style="width: 40px; margin-left: 20px;" name="Hours" />
                 <span>:</span>
-                <input type="number" id="tbAttachMinutes" style="width: 30px;" name="Minutes"/>
+                <input type="number" id="tbAttachMinutes" style="width: 40px;" name="Minutes" />
             </div>
         </div>
         <input type="hidden" id="hfAttachStudentId" name="StudentId" />
@@ -219,5 +219,12 @@
             </select>
         </div>
     </form>
+</div>
+<div id="dlgSchedule" title="Student's stations" style="display: none;">
+    <input type="hidden" id="hfAttachListStationId"/>
+    <h2 id="dAttachName"></h2>
+    <table id="dScheduleGrid">
+
+    </table>
 </div>
 @*End Dialogs*@
