@@ -10,12 +10,15 @@ namespace ticonet.Models
 
         public StationToLineModel(StationsToLine data)
         {
+            Id = data.Id;
             LineId = data.LineId;
             StationId = data.StationId;
             Position = data.Position;
             ArrivalDate = data.ArrivalDate;
         }
 
+
+        public int Id { get; set; }
         public int LineId { get; set; }
 
         public int StationId { get; set; }

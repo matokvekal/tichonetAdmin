@@ -50,7 +50,7 @@
                 rulesText: " rules",
                 clearSearch: false
             },
-            colNames: ["", "Id", "Name", "Shicva", "Class", "Address", "Color", "Line","Dist"],
+            colNames: ["", "Id", "Name", "Shicva", "Class", "Address", "Color", "Line", "Dist"],
             colModel: [
                 {
                     name: "show",
@@ -85,7 +85,7 @@
                 { name: 'Address', index: 'Address', clearSearch: false, width: 198 },
                 { name: 'Color', index: 'Color', clearSearch: false, width: 50, search: false, formatter: smap.table.colorFormatter },
                 { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter },
-                { name: 'Id', index: 'Id', clearSearch: false, width: 50,align: "center", search: false, formatter: smap.table.distanceFormatter }
+                { name: 'Id', index: 'Id', clearSearch: false, width: 50, align: "center", search: false, formatter: smap.table.distanceFormatter }
             ]
         }).filterToolbar({ searchOnEnter: true, defaultSearch: 'cn' });
         //Add students to table
@@ -123,7 +123,7 @@
             altRows: false,
             sortable: true,
             altclass: "ui-state-default",
-            colNames: ["", "Number", "Name", "Color", "Active", "Direcion", "Students",""],
+            colNames: ["", "Number", "Name", "Color", "Active", "Dir", "Students","Duration", ""],
             colModel: [
                 {
                     name: "show",
@@ -141,7 +141,7 @@
                 {
                     name: "LineNumber",
                     index: "LineNumber",
-                    width: 85,
+                    width: 60,
                     sorttype: "integer",
                     template: "integer",
                     align: "center"
@@ -162,16 +162,17 @@
                 {
                     name: "Id",
                     index: 'Id',
-                    width:50,
+                    width: 50,
                     formatter: smap.table.lineActiveFormatter,
                     align: "center"
                 },
-                { name: 'Direction', index: 'Direction', width: 100, align: "center", formatter: smap.table.directionFormatter },
-                { name: 'StudentsCount', index: 'StudentsCount', width: 100, align: "center" },
+                { name: 'Direction', index: 'Direction', width: 50, align: "center", formatter: smap.table.directionFormatter },
+                { name: 'StudentsCount', index: 'StudentsCount', width: 75, align: "center" },
+                { name: 'Duration', index: 'Duration', width: 75, align: "center" },
                 {
                     name: "Id",
                     index: 'Id',
-                    width:50,
+                    width: 75,
                     formatter: smap.table.lineActionsFormatter,
                     align: "center"
                 }
@@ -183,10 +184,10 @@
                 $("#" + subgridTableId).jqGrid({
                     datatype: 'local',
                     data: smap.getLine(rowId).Stations,
-                    colNames: ['Position', 'Name', 'Time'],
+                    colNames: ['Position', 'Station', 'Time'],
                     colModel: [
-                        { name: 'Position', width: 100, align:'center' },
-                        { name: 'StationId', width: 200, formatter: smap.table.stationNameFormatter,},
+                        { name: 'Position', width: 100, align: 'center' },
+                        { name: 'StationId', width: 200, formatter: smap.table.stationNameFormatter, },
                         { name: 'ArrivalDateString', width: 100, align: 'center' }
                     ]
                 });
@@ -269,16 +270,18 @@
 
     },
     colorFormatter: function (cellvalue, options, rowObject) {
-        var color = smap.fixCssColor( cellvalue);
+        var color = smap.fixCssColor(cellvalue);
         return '<div style="width:46px; height:10px;background-color:' + color + '" title="' + color + '"></div>';
     },
-    lineActionsFormatter: function(cellvalue, options, rowObject) {
-        var res = "<a href='javascript:smap.lines.editLine(" + cellvalue + ")' title='Edit line'><span class='glyphicon glyphicon-pencil'></span></a>";
+    lineActionsFormatter: function (cellvalue, options, rowObject) {
+        var res = "<a href='javascript:smap.lines.showTimeTable(" + cellvalue + ")' title='Time table'><span class='glyphicon glyphicon-time'></span></a>"
+        res += "&nbsp;&nbsp;";
+        res += "<a href='javascript:smap.lines.editLine(" + cellvalue + ")' title='Edit line'><span class='glyphicon glyphicon-pencil'></span></a>";
         res += "&nbsp;&nbsp;";
         res += "<a href='javascript:smap.lines.deleteLine(" + cellvalue + ")' title='Delete line'><span class='glyphicon glyphicon-trash'></span></a>";
         return res;
     },
-    lineNameFormatter: function(cellvalue, options, rowObject) {
+    lineNameFormatter: function (cellvalue, options, rowObject) {
         var ln = smap.getLine(cellvalue);
         if (ln == null) return "--";
         return ln.Name;
@@ -288,7 +291,7 @@
         if (ln == null) return "--";
         return ln.LineNumber;
     },
-    lineActiveFormatter: function(cellvalue, options, rowObject) {
+    lineActiveFormatter: function (cellvalue, options, rowObject) {
         var res = "<input type='checkbox'";
         var ln = smap.getLine(cellvalue);
         if (ln.Active == true) res += " checked='checked' ";
@@ -297,20 +300,20 @@
         return res;
     },
     lineColorFormatter: function (cellvalue, options, rowObject) {
-        
+
         var id = cellvalue;
-       
+
         var stl = null;
         var station = null;
         var line = null;
         var res = "";
-        for (var i in  smap.stations.list) {
+        for (var i in smap.stations.list) {
             var st = smap.stations.list[i];
-           
+
             for (var j in st.Students) {
                 if (st.Students[j].StudentId == id && st.Students[j].Date == null) {
                     stl = st.Students[j];
-                   
+
                     station = st;
                     break;
                 }
@@ -322,7 +325,7 @@
             if (stl.LineId == null) {
                 if (station != null) {
                     color = station.Color;
-                    title =  station.Name;
+                    title = station.Name;
                 }
             } else {
                 line = smap.getLine(stl.LineId);
@@ -338,7 +341,7 @@
         }
         return title;
     },
-    directionFormatter: function (cellvalue, options, rowObject) {        
+    directionFormatter: function (cellvalue, options, rowObject) {
         var res = cellvalue;
         if (cellvalue == 0) res = "TO";
         if (cellvalue == 1) res = "FROM";
@@ -354,10 +357,10 @@
         }
         return res;
     },
-    simpleDistanceFormatter: function(cellvalue, options, rowObject) {
+    simpleDistanceFormatter: function (cellvalue, options, rowObject) {
         return cellvalue.toString() + " m";
     },
-    attachActionFormatter: function(cellvalue, options, rowObject) {
+    attachActionFormatter: function (cellvalue, options, rowObject) {
         var res = "<a href='javascript:smap.deleteAttach(" + cellvalue + ")' title='Delete'><span class='glyphicon glyphicon-trash'></span></a>";
         return res;
     }

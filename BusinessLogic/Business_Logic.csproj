@@ -72,6 +72,8 @@
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\LoginInfo.cs" />
+    <Compile Include="Entities\SaveDurationsModel.cs" />
+    <Compile Include="Entities\SegmentDuration.cs" />
     <Compile Include="Entities\StudentSearchRequest.cs" />
     <Compile Include="Entities\StudentShortInfo.cs" />
     <Compile Include="Enums\ColorMode.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Enums\FlagsUserRoles.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\AccountManager.cs" />
+    <Compile Include="Helpers\BusHelper.cs" />
     <Compile Include="Helpers\CryptographyHelper.cs" />
     <Compile Include="Helpers\MapHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />

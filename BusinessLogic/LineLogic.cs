@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Business_Logic.Entities;
+using Business_Logic.Helpers;
 
 namespace Business_Logic
 {
@@ -145,6 +147,76 @@ namespace Business_Logic
                     DB.SaveChanges();
                     res = true;
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return res;
+        }
+
+        public Line ReCalcTimeTable(SaveDurationsModel data)
+        {
+            Line res = null;
+            try
+            {
+                var line = DB.Lines.FirstOrDefault(z => z.Id == data.LineId);
+                if (line == null) return null;
+                var stations = DB.StationsToLines.Where(z => z.LineId == data.LineId)
+                    .OrderBy(z => z.Position).ToList();
+                if (stations.Count == 0) return null;
+                var loadTime = BusHelper.TimeForLoad;
+                TimeSpan fst;
+                if (data.FirstStation.Trim() == ":") //autoupdate
+                {
+                    if (line.Direction == 0)
+                    {
+                        fst = stations.Last().ArrivalDate;
+                    }
+                    else
+                    {
+                        fst = stations.First().ArrivalDate;
+                    }
+                
+                }
+                else
+                {
+                    var prts = data.FirstStation.Split(':');
+                    if (prts.Length != 2) return null;
+                    fst = new TimeSpan(int.Parse(prts[0]), int.Parse(prts[1]), 0); // time for first / last station 
+                }
+
+
+                var total = 0;
+                if (line.Direction == 0) //to Station
+                {
+                    //Important! Last station will not included to data.Durations because sent duration from prev station
+                    stations.Last().ArrivalDate = fst;
+                    var pt = fst;
+                    for (int i = data.Durations.GetLength(0) - 1; i >= 0; i--)
+                    {
+                        total += data.Durations[i].Duration + loadTime;
+                        var d = new TimeSpan(0, 0, data.Durations[i].Duration + loadTime);
+                        pt = pt.Subtract(d);
+                        stations.Find(z => z.StationId == data.Durations[i].StationId).ArrivalDate = pt;
+                    }
+                }
+                else //from Station
+                {
+                    var frst = data.Durations.First();
+                    stations.First(z => z.StationId == frst.StationId).ArrivalDate = fst;
+                    var pt = fst;
+                    for (var i = 0; i < data.Durations.Length; i++)
+                    {
+                        total += data.Durations[i].Duration + loadTime;
+                        var d = new TimeSpan(0, 0, data.Durations[i].Duration + loadTime);
+                        pt = pt.Add(d);
+                        stations[i + 1].ArrivalDate = pt;
+                    }
+                }
+                line.Duration = new TimeSpan(0, 0, total);
+                DB.SaveChanges();
+                res = DB.Lines.FirstOrDefault(z => z.Id == data.LineId);
             }
             catch (Exception e)
             {

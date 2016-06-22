@@ -17,6 +17,7 @@ namespace ticonet.Controllers
             ViewBag.CenterLat = MapHelper.CenterLat.ToString(CultureInfo.InvariantCulture);
             ViewBag.CenterLng = MapHelper.CenterLng.ToString(CultureInfo.InvariantCulture);
             ViewBag.Zoom = MapHelper.Zoom.ToString();
+            ViewBag.TimeForLoad = BusHelper.TimeForLoad;
             return View();
         }
     }

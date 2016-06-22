@@ -13,6 +13,7 @@
 @Html.Hidden("hfCenterLat", (string)ViewBag.CenterLat, new { @id = "hfCenterLat" })
 @Html.Hidden("hfCenterLng", (string)ViewBag.CenterLng, new { @id = "hfCenterLng" })
 @Html.Hidden("hfZoom", (string)ViewBag.Zoom, new { @id = "hfZoom" })
+@Html.Hidden("hfTimeForLoad", (int)ViewBag.TimeForLoad, new { @id = "hfTimeForLoad" })
 <div class="map-canvas" id="map-canvas" style=""></div>
 
 <div class="students-fly">
@@ -221,10 +222,23 @@
     </form>
 </div>
 <div id="dlgSchedule" title="Student's stations" style="display: none;">
-    <input type="hidden" id="hfAttachListStationId"/>
+    <input type="hidden" id="hfAttachListStationId" />
     <h2 id="dAttachName"></h2>
-    <table id="dScheduleGrid">
+    <table id="dScheduleGrid"></table>
+</div>
+<div id="dlgTimeTable" title="Time table" style="display: none;">
+    <input type="hidden" id="hfTTLineId"/>
+    <div id="dTTMessage" style="text-align: center;" class="row">
 
-    </table>
+    </div>
+    <div class="row form-horizontal text-center">
+        <input type="number" id="tbTTHours" class="form-inline" style="width: 50px;"/>
+        <span>:</span>
+        <input type="number" id="tbTTMinutes" class="form-inline" style="width: 50px;"/>
+        <button class="btn btn-primary btn-xs" onclick="smap.lines.reCalcTimeTable();">Calculate</button>
+    </div>
+    <div class="row">
+        <table id="tblTTGrid"></table>
+    </div>
 </div>
 @*End Dialogs*@

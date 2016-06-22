@@ -21,6 +21,7 @@ namespace ticonet.Models
             Active = data.IsActive;
             StudentsCount = data.totalStudents ?? 0;
             Geometry = data.PathGeometry;
+            Duration = data.Duration.HasValue ? data.Duration.ToString() : "--";
         }
 
         public int Id { get; set; }
@@ -38,6 +39,8 @@ namespace ticonet.Models
         public int StudentsCount { get; set; }
 
         public string Geometry { get; set; }
+
+        public string Duration { get; set; }
 
         public List<StationToLineModel> Stations { get; set; }
     }

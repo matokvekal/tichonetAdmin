@@ -1,5 +1,7 @@
 ﻿smap.lines = {
     list: [],
+    ttGrid: null,
+    durations: null,
     preSwitch: function (id) {
         var sel = $("input[ref=cbLn][rel=" + id + "]").prop("checked");
         if (sel) {
@@ -9,6 +11,7 @@
         }
     },
     updateLine: function (line, show) {
+        console.log(line);
         line.show = (show == true);
         if (show == true) smap.lines.hideLine(line.Id);
         var oldline = smap.getLine(line.Id);
@@ -79,14 +82,32 @@
                 } else {
                     line.route = response;
                 }
-                line.gDirectionsDisplay.setDirections(line.route);
+                if (smap.lines.durations == null) { //draw if not durations calculation
+                    line.gDirectionsDisplay.setDirections(line.route);
+                } else {
+                    var d = 0;
+                    for (var i = 0; i < response.routes[0].legs.length; i++) {
+                        d += response.routes[0].legs[i].duration.value;
+                    }
+
+                    smap.lines.durations.Durations.push({
+                        StationId: line.currentStationsList[0],
+                        Duration: d
+                    });
+                }
 
             } else {
                 //var d = google.maps.geometry.spherical.computeDistanceBetween(addr1, addr2);
                 //$("#dAttachDist").html("Distance " + d + "m (directly)");
             }
             line.currentStationsList.splice(0, 1);
-            if (line.currentStationsList.length >= 2) smap.lines.showSegment(line);
+            if (line.currentStationsList.length >= 2) {
+                smap.lines.showSegment(line);
+            } else {
+                if (smap.lines.durations != null) {
+                    smap.lines.saveDurations();
+                }
+            }
         });
     },
     hideLine: function (id) {
@@ -171,7 +192,7 @@
                             if (line != null) {
                                 smap.lines.hideLine(line.Id);
                                 var index = smap.lines.list.indexOf(line);
-                                smap.lines.list.splice(index,1);
+                                smap.lines.list.splice(index, 1);
                             }
                             smap.table.linesGrid.jqGrid('delRowData', loader.Line.Id);
                         }
@@ -188,11 +209,98 @@
     },
     saveLineAcive: function (id) {
         var ctrl = $("input[ref=lnActive][rel=" + id + "]").prop("checked");
-        $.post("/api/map/LineActiveSwitch", { LineId: id, Active: ctrl }).done(function(loader) {
+        $.post("/api/map/LineActiveSwitch", { LineId: id, Active: ctrl }).done(function (loader) {
             if (loader.Done == true) {
                 var ln = smap.getLine(loader.LineId);
                 ln.Active = loader.Active;
             }
         });
+    },
+    showTimeTable: function (id) {
+        var ln = smap.getLine(id);
+        if (ln.Stations.length == 0) {
+            $("#dConfirmMessage").html("Line " + ln.LineNumber + "has no stations");
+            var dlgInfo = $("#dlgConfirm").dialog({
+                autoOpen: true,
+                width: 350,
+                modal: true,
+                buttons: {
+                    Cancel: function () {
+                        dlgInfo.dialog("close");
+                    }
+                }
+            });
+            return;
+        }
+        $("#hfTTLineId").val(ln.Id);
+        var mess = "";
+        var st;
+        if (ln.Direction == 0) {
+            st = ln.Stations[ln.Stations.length - 1];
+
+            mess = "Arrival to " + smap.stations.getStation(st.StationId).Name + " at";
+
+        } else {
+            st = ln.Stations[0];
+            mess = "Departure from " + smap.stations.getStation(st.StationId).Name + " at";
+        }
+
+        var tparts = st.ArrivalDateString.split(":");
+        $("#tbTTHours").val(tparts[0]);
+        $("#tbTTMinutes").val(tparts[1]);
+
+        $("#dTTMessage").html(mess);
+        $("#dlgTimeTable").dialog({
+            autoOpen: true,
+            width: 450,
+            modal: true
+        });
+        if (smap.lines.ttGrid == null) {
+            smap.lines.ttGrid = $("#tblTTGrid").jqGrid({
+                datatype: 'local',
+                colNames: ['Position', 'Station', 'Time'],
+                colModel: [
+                    { name: 'Position', width: 100, align: 'center' },
+                    { name: 'StationId', width: 200, formatter: smap.table.stationNameFormatter },
+                    { name: 'ArrivalDateString', width: 100, align: 'center' }
+                ]
+            });
+        }
+        smap.lines.ttGrid.jqGrid("clearGridData");
+        for (var i in ln.Stations) {
+            smap.lines.ttGrid.jqGrid("addRowData", ln.Stations[i].Id, ln.Stations[i]);
+        }
+    },
+    startReCalcimeTable: function (lineId) {
+        $("#hfTTLineId").val(lineId);
+        smap.lines.reCalcTimeTable();
+    },
+    reCalcTimeTable: function () {
+        var lnId = $("#hfTTLineId").val();
+        var ln = smap.getLine(lnId);
+        smap.lines.durations = {
+            FirstStation: $("#tbTTHours").val() + ":" + $("#tbTTMinutes").val(),
+            LineId: lnId,
+            Durations: []
+        };
+
+        $("#spStatus").html("Update time table for line " + ln.LineNumber);
+        smap.lines.showLine(lnId, false);
+
+    },
+    saveDurations: function () {
+        $.post("/api/map/SaveDurations", smap.lines.durations).done(function (loader) {
+            console.log(loader);
+            smap.lines.updateLine(loader, false);
+            if (smap.lines.ttGrid != null)
+                for (var i in loader.Stations) {
+                    var st = loader.Stations[i];
+                    smap.lines.ttGrid.setRowData(st.Id, st);
+                }
+            $("#spStatus").html("");
+        });
+        smap.lines.durations = null;
+
+        //console.log(smap.lines.durations);
     }
 }

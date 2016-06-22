@@ -31,6 +31,7 @@ namespace Business_Logic
         public bool IsActive { get; set; }
         public Nullable<int> totalStudents { get; set; }
         public string PathGeometry { get; set; }
+        public Nullable<System.TimeSpan> Duration { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BusesToLine> BusesToLines { get; set; }

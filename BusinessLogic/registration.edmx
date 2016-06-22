@@ -49,6 +49,7 @@
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="totalStudents" Type="int" />
           <Property Name="PathGeometry" Type="nvarchar(max)" />
+          <Property Name="Duration" Type="time" Precision="7" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -358,20 +359,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_StudentsToLines_ToLines">
-          <End Role="Lines" Type="Self.Lines" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="StudentsToLines" Type="Self.StudentsToLines" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lines">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="StudentsToLines">
-              <PropertyRef Name="LineId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_StudentsToLines_ToStations">
           <End Role="Stations" Type="Self.Stations" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -432,10 +419,6 @@
           <AssociationSet Name="FK_StationsToLines_ToStations" Association="Self.FK_StationsToLines_ToStations">
             <End Role="Stations" EntitySet="Stations" />
             <End Role="StationsToLines" EntitySet="StationsToLines" />
-          </AssociationSet>
-          <AssociationSet Name="FK_StudentsToLines_ToLines" Association="Self.FK_StudentsToLines_ToLines">
-            <End Role="Lines" EntitySet="Lines" />
-            <End Role="StudentsToLines" EntitySet="StudentsToLines" />
           </AssociationSet>
           <AssociationSet Name="FK_StudentsToLines_ToStations" Association="Self.FK_StudentsToLines_ToStations">
             <End Role="Stations" EntitySet="Stations" />
@@ -681,6 +664,7 @@
           <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
           <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="Line" ToRole="StudentsToLine" />
+          <Property Name="Duration" Type="Time" Precision="7" />
         </EntityType>
         <EntityType Name="Schedule">
           <Key>
@@ -954,7 +938,8 @@
     <EntitySetMapping Name="Lines">
       <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Line)">
         <MappingFragment StoreEntitySet="Lines">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="LineName" ColumnName="LineName" />
           <ScalarProperty Name="LineNumber" ColumnName="LineNumber" />
           <ScalarProperty Name="HexColor" ColumnName="HexColor" />

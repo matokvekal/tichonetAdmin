@@ -44,7 +44,7 @@
                         .done(function (loader) {
                             var stt = loader.Data.Station;
                             smap.stations.updateStation(stt);
-                           
+
                             for (var i = 0; i < stt.Students.length; i++) {
                                 var student = smap.getStudent(stt.Students[i].StudentId);
                                 student.Color = stt.Color;
@@ -117,13 +117,13 @@
                 station: station
             });
             // Handle events
-            google.maps.event.addListener(station.Marker, "rightclick", function(event) { smap.stations.showStationContextMenu(event.latLng, station); });
-            google.maps.event.addListener(station.Marker, "click", function(event) { smap.closeConextMenu(); });
-            google.maps.event.addListener(station.Marker, "dragend", function(event) {
+            google.maps.event.addListener(station.Marker, "rightclick", function (event) { smap.stations.showStationContextMenu(event.latLng, station); });
+            google.maps.event.addListener(station.Marker, "click", function (event) { smap.closeConextMenu(); });
+            google.maps.event.addListener(station.Marker, "dragend", function (event) {
 
                 smap.stations.moveStation(station);
             });
-            google.maps.event.addListener(station.Marker, "dblclick", function(event) {
+            google.maps.event.addListener(station.Marker, "dblclick", function (event) {
                 var stt = smap.stations.getStation(station.Id);
                 for (var i = 0; i < smap.students.length; i++) {
                     var st = smap.students[i];
@@ -142,50 +142,50 @@
 
                 if (stt.IW != null) {
                     stt.IW.close();
-                } 
+                }
                 var content = "<h4 style='margin-bottom:2px;'>" + stt.Name + "</h4>";
                 content += "<div style='margin-bottom:5px;'>Total students: <b>" + stt.Students.length.toString() + "</b></div>";
-                    var lines = [];
-                    for (var l in  smap.lines.list) {
-                        var ln = smap.lines.list[l];
-                        for (var m in  ln.Stations) {
-                            if (ln.Stations[m].StationId == stt.Id) lines.push(ln.Stations[m]);
-                        }
+                var lines = [];
+                for (var l in smap.lines.list) {
+                    var ln = smap.lines.list[l];
+                    for (var m in ln.Stations) {
+                        if (ln.Stations[m].StationId == stt.Id) lines.push(ln.Stations[m]);
                     }
-                    
-                    if (lines.length > 0) {
-                        content += "<table class='table table-striped lines-table'>";
+                }
+
+                if (lines.length > 0) {
+                    content += "<table class='table table-striped lines-table'>";
+                    content += "<tr>";
+                    content += "<td>Line</td>";
+                    content += "<td>Arrival</td>";
+                    content += "<td>Order</td>";
+                    content += "</tr>";
+                    for (var k in lines) {
+                        var line = smap.getLine(lines[k].LineId);
+                        console.log(line);
                         content += "<tr>";
-                        content += "<td>Line</td>";
-                        content += "<td>Arrival</td>";
-                        content += "<td>Order</td>";
+                        content += "<td>" + line.LineNumber + "</td>";
+                        content += "<td>" + lines[k].ArrivalDateString + "</td>";
+                        content += "<td>" + lines[k].Position + "</td>";
                         content += "</tr>";
-                        for (var k in lines) {
-                            var line = smap.getLine( lines[k].LineId);
-                            console.log(line);
-                            content += "<tr>";
-                            content += "<td>" + line.LineNumber + "</td>";
-                            content += "<td>" + lines[k].ArrivalDateString + "</td>";
-                            content += "<td>" + lines[k].Position + "</td>";
-                            content += "</tr>";
-                        }
-                        content += "</table>";
-                    } else {
-                        content += "<div style='text-align:center;'>No lines</div>";
                     }
-                    var infowindow = new google.maps.InfoWindow({
-                        content: content
-                    });
-                    stt.IW = infowindow;
-                    infowindow.open(smap.mainMap, stt.Marker);
-                
-                    for (var j in stt.Students) {
-                        var stud = smap.getStudent(stt.Students[j].StudentId);
-                        smap.drawLine(stud.Lat, stud.Lng, stt.StrLat, stt.StrLng, false);
+                    content += "</table>";
+                } else {
+                    content += "<div style='text-align:center;'>No lines</div>";
+                }
+                var infowindow = new google.maps.InfoWindow({
+                    content: content
+                });
+                stt.IW = infowindow;
+                infowindow.open(smap.mainMap, stt.Marker);
+
+                for (var j in stt.Students) {
+                    var stud = smap.getStudent(stt.Students[j].StudentId);
+                    smap.drawLine(stud.Lat, stud.Lng, stt.StrLat, stt.StrLng, false);
                 }
 
                 //handle closing info window for hide lines
-                stt.IW.addListener('closeclick', function() {
+                stt.IW.addListener('closeclick', function () {
                     smap.clearGraphic();
                     stt.IW = null;
                 });
@@ -237,20 +237,19 @@
                     $.post("/api/stations/Save", model)
                         .done(function (loader) {
                             dialog.dialog("close");
-                          
+
                             smap.stations.updateStation(loader.Data.Station);
                             for (var i = 0; i < loader.Data.Lines.length; i++) {
-                                smap.lines.updateLine(loader.Data.Lines[i],true);
+                                smap.lines.updateLine(loader.Data.Lines[i], true);
                             }
 
                             // update students distances
-                            for (var i in loader.Data.Station.Students)
-                            {
+                            for (var i in loader.Data.Station.Students) {
                                 smap.checkDistanceStudents.push(loader.Data.Station.Students[i].StudentId);
                             }
                             smap.checkDistanceStation = loader.Data.Station;
                             smap.updateDistance();
-                            
+
                         });
                 },
                 Cancel: function () {
@@ -307,11 +306,11 @@
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     },
     showBorders: function () {//show areas around all stations
-        var z = (23 - smap.mainMap.getZoom())/4 ;
+        var z = (23 - smap.mainMap.getZoom()) / 4;
         for (var i = 0; i < smap.stations.list.length; i++) {
             //smap.stations.list[i].Marker.setAnimation(google.maps.Animation.BOUNCE);
             smap.stations.list[i].Marker.Circle = new google.maps.Circle({
-                strokeColor: smap.fixCssColor( smap.stations.list[i].Color),
+                strokeColor: smap.fixCssColor(smap.stations.list[i].Color),
                 strokeOpacity: 0.8,
                 strokeWeight: 1,
                 fillColor: smap.fixCssColor(smap.stations.list[i].Color),
@@ -374,8 +373,7 @@
         if (mainAttach == null) {
             $("#dAttachMultiline").css("display", "none");
         }
-        else
-        {
+        else {
             $("#dAttachMultiline").css("display", "block");
             $("#sAttachMName").html(student.Name);
             $("#sAttachMStation").html(station.Name);
@@ -396,8 +394,8 @@
                     var data = $("#frmAttach").serialize();
                     $.post("/api/stations/AttachStudent", data)
                         .done(function (loader) {
-                           
-                            if (loader.Done==true) {
+
+                            if (loader.Done == true) {
                                 for (var i in loader.Lines) {
                                     smap.lines.updateLine(loader.Lines[i]);
                                 }
@@ -429,7 +427,7 @@
                 var legs = response.routes[0].legs;
                 //gDirectionsDisplay.setDirections(response);
                 //wlk.panorama.setPosition(addr1);
-                
+
                 $("#dAttachDist").html("Distance " + legs[0].distance.text + " (" + legs[0].duration.text + ")");
                 $("#hfAttachDistance").val(legs[0].distance.value);
             } else {
@@ -444,7 +442,7 @@
         $("#ciAttachLine").css("background-color", smap.fixCssColor(line.Color));
         $("#ciAttachLine").attr("title", smap.fixCssColor(line.Color));
     },
-    dateVisibleSwitch:function() {
+    dateVisibleSwitch: function () {
         var check = $("#rAttachSchedule").prop("checked");
         $("#tbAttachDate").prop("disabled", !check);
         $("#tbAttachHours").prop("disabled", !check);
@@ -485,17 +483,18 @@
                 "Add": function () {
                     var data = $("#frmAddStationTolIne").serialize();
                     $.post("/api/stations/AddToLine", data).done(function (loader) {
-                        console.log(loader);
-                        dialog.dialog("close");
-                        smap.lines.updateLine(loader.Line, true);
-
-                       
-                        smap.stations.updateStation(loader.Station);
                         
+                        dialog.dialog("close");
+                        smap.lines.updateLine(loader.Line, false);
+
+
+                        smap.stations.updateStation(loader.Station);
+
                         for (var i in loader.Students) {
                             smap.updateStudent(loader.Students[i]);
                         }
                         
+                        smap.lines.startReCalcimeTable(loader.Line.Id);
                     });
                 },
                 Cancel: function () {
@@ -610,8 +609,8 @@
         }
         $.post("/api/stations/DeleteFomLine", data).done(function (loader) {
 
-            smap.lines.updateLine(loader.Line, true);
-
+            smap.lines.updateLine(loader.Line, false);
+            smap.lines.startReCalcimeTable(loader.Line.Id);
             var lines = smap.stations.getLines(loader.Station.Id);
             if (lines.length == 0)
                 $("#dlgDeleteFromLine").dialog("close");
@@ -619,5 +618,5 @@
                 smap.stations.fillDeleteFromLinesDialog(loader.Station.Id);
 
         });
-    }    
+    }
 }
