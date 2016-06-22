@@ -44,6 +44,7 @@
     <Property Name="IsActive" Type="bit" Nullable="false" />
     <Property Name="totalStudents" Type="int" />
     <Property Name="PathGeometry" Type="nvarchar(max)" />
+    <Property Name="Duration" Type="time" Precision="7" />
   </EntityType>
   <EntityType Name="Login">
     <Key>
@@ -353,20 +354,6 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK_StudentsToLines_ToLines">
-    <End Role="Lines" Type="Self.Lines" Multiplicity="1">
-      <OnDelete Action="Cascade" />
-    </End>
-    <End Role="StudentsToLines" Type="Self.StudentsToLines" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="Lines">
-        <PropertyRef Name="Id" />
-      </Principal>
-      <Dependent Role="StudentsToLines">
-        <PropertyRef Name="LineId" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK_StudentsToLines_ToStations">
     <End Role="Stations" Type="Self.Stations" Multiplicity="1">
       <OnDelete Action="Cascade" />
@@ -427,10 +414,6 @@
     <AssociationSet Name="FK_StationsToLines_ToStations" Association="Self.FK_StationsToLines_ToStations">
       <End Role="Stations" EntitySet="Stations" />
       <End Role="StationsToLines" EntitySet="StationsToLines" />
-    </AssociationSet>
-    <AssociationSet Name="FK_StudentsToLines_ToLines" Association="Self.FK_StudentsToLines_ToLines">
-      <End Role="Lines" EntitySet="Lines" />
-      <End Role="StudentsToLines" EntitySet="StudentsToLines" />
     </AssociationSet>
     <AssociationSet Name="FK_StudentsToLines_ToStations" Association="Self.FK_StudentsToLines_ToStations">
       <End Role="Stations" EntitySet="Stations" />

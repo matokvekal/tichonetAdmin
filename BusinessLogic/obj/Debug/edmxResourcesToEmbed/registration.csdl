@@ -235,6 +235,7 @@
     <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
     <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="Line" ToRole="StudentsToLine" />
+    <Property Name="Duration" Type="Time" Precision="7" />
   </EntityType>
   <EntityType Name="Schedule">
     <Key>

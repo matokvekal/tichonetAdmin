@@ -48,6 +48,7 @@
     <EntitySetMapping Name="Lines">
       <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Line)">
         <MappingFragment StoreEntitySet="Lines">
+          <ScalarProperty Name="Duration" ColumnName="Duration" />
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="LineName" ColumnName="LineName" />
           <ScalarProperty Name="LineNumber" ColumnName="LineNumber" />
