@@ -87,3 +87,21 @@ GO
 
 
 
+
+
+ALTER TABLE dbo.[Lines] ADD
+	[Sun] [bit] NULL,
+	[SunTime] [datetime] NULL,
+	[Mon] [bit] NULL,
+	[MonTime] [datetime] NULL,
+	[Tue] [bit] NULL,
+	[TueTime] [datetime] NULL,
+	[Wed] [bit] NULL,
+	[WedTime] [datetime] NULL,
+	[Thu] [bit] NULL,
+	[ThuTime] [datetime] NULL,
+	[Fri] [bit] NULL,
+	[FriTime] [datetime] NULL,
+	[Sut] [bit] NULL,
+	[SutTime] [datetime] NULL;
+GO
