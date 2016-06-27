@@ -6,7 +6,7 @@ using System.Web;
 
 using System.Web.Caching;
 using System.Web.Mvc;
-
+using log4net;
 using System.Web.Security;
 using Business_Logic;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -18,7 +18,7 @@ namespace ticonet
 {
     public class AccountController : Controller
     {
-
+        private static readonly ILog logger = LogManager.GetLogger(typeof(AccountController));
         public class ApplicationUser : IdentityUser
         {
             public string mail { get; set; }

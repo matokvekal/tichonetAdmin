@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Security;
 using Business_Logic;
+using log4net;
 
 namespace ticonet
 {
     public class SystemController : Controller
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(SystemController));
+
         //public class ApplicationUser : IdentityUser
         //{
         //    public string mail { get; set; }

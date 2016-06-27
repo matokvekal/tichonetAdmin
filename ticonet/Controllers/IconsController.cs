@@ -6,11 +6,13 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Web.Mvc;
+using log4net;
 
 namespace ticonet.Controllers
 {
     public class IconsController : Controller
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(IconsController));
         // GET: Icons
         public ActionResult Index()
         {

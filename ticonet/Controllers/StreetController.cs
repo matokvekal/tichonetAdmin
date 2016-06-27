@@ -6,11 +6,13 @@ using System.Web.Caching;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Business_Logic;
+using log4net;
 
 namespace ticonet
 {
     public class StreetController : Controller
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(StreetController));
 
         public bool checkstreet(string streetName)
         {

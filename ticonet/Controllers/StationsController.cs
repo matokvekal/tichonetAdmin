@@ -9,12 +9,16 @@ using Business_Logic;
 using Business_Logic.Entities;
 using Business_Logic.Enums;
 using Business_Logic.Helpers;
+using log4net;
 using ticonet.Models;
 
-namespace ticonet.Controllers
+namespace ticonet
 {
+
     public class StationsController : ApiController
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(StationsController));
+
         [System.Web.Http.ActionName("List")]
         public List<StationModel> GetList()
         {

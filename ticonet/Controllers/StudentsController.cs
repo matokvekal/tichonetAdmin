@@ -6,11 +6,14 @@ using System.Web.Http;
 using Business_Logic;
 using Business_Logic.Entities;
 using Business_Logic.Helpers;
+using log4net;
 
-namespace ticonet.Controllers
+namespace ticonet
 {
     public class StudentsController : ApiController
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(StudentsController));
+
         [ActionName("StudentsForMap")]
         public List<StudentShortInfo> GetStudentsForMap()
         {

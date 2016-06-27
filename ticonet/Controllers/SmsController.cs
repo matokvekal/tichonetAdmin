@@ -6,11 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using log4net;
 
 namespace ticonet
 {
     internal class SmsController : Controller
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(SmsController));
 
         //ajax  confirmSms (sms Phonenumber)
         //sesion smsTimes=1

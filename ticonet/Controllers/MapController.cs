@@ -3,12 +3,15 @@ using System.Web.Http;
 using Antlr.Runtime;
 using Business_Logic;
 using Business_Logic.Entities;
+using log4net;
 using ticonet.Models;
 
 namespace ticonet.Controllers
 {
     public class MapController : ApiController
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(MapController));
+
         /// <summary>
         /// Select all data for show map
         /// </summary>
