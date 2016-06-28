@@ -173,51 +173,7 @@
                 student: student
             });
 
-            student.Marker.addListener('dblclick', function (e) {
-
-                for (var i = 0; i < smap.students.length; i++) {
-                    var st = smap.students[i];
-                    if (st.IW != null) {
-                        st.IW.close();
-                    }
-                }
-                for (var i in smap.stations.list) {
-                    var st = smap.stations.list[i];
-                    if (st.IW != null) {
-                        st.IW.close();
-                    }
-                    st.IW = null;
-                }
-                smap.clearGraphic();
-                if (student.IW != null) {
-                    student.IW.open(smap.mainMap, student.Marker);
-                } else {
-                    var content = "<div class='student-info-window' id='dIW" + student.Id + "'>";
-                    content += "<h4>" + student.Name + "</h4>";
-                    content += "<div>" + student.CellPhone + "...." + student.Email + "</div>";
-                    content += "<div>" + student.Address + "</div>";
-                    content += "<div rel='family'><img src='/Content/img/ajax-loader.gif' /></div>";
-                    content += "</div>";
-                    var infowindow = new google.maps.InfoWindow({
-                        content: content
-                    });
-                    student.IW = infowindow;
-                    infowindow.open(smap.mainMap, student.Marker);
-                    smap.loadFamily(student.Id);
-                }
-
-                //show stations connect lines
-                var stations = smap.getAttachInfo(student.Id);
-                console.log(stations);
-                for (var j in stations) {
-                    var stt = smap.stations.getStation(stations[j].StationId);
-                    var nm = stations[j].Date != null;
-                    smap.drawLine(student.Lat, student.Lng, stt.StrLat, stt.StrLng, nm);
-                }
-
-                //handle closing info window for hide lines
-                student.IW.addListener('closeclick', function () { smap.clearGraphic(); });
-            });
+            student.Marker.addListener('dblclick', function (e) {smap.UI.openStudentInfoWindow(student)});
             google.maps.event.addListener(student.Marker, "rightclick", function (event) { smap.showStudentContextMenu(event.latLng, student); });
             google.maps.event.addListener(student.Marker, "click", function (event) { smap.closeConextMenu(); });
             google.maps.event.addListener(student.Marker, "dragend", function (event) {
@@ -228,26 +184,6 @@
             });
             google.maps.event.addListener(student.Marker, "dragstart", function (event) { smap.stations.showBorders() });
         }
-    },
-    loadFamily: function (id) {//load info about family for show in InfoWindow
-        $.get("/api/Students/Family", { id: id }).done(function (loader) {
-
-            var cont = $("#dIW" + loader.Id).children("div[rel=family]");
-            $(cont).empty();
-            if (loader.Family != null) {
-                var p1 = loader.Family.parent1Type + "</br>";
-                p1 += loader.Family.parent1FirstName + " " + loader.Family.parent1LastName + "</br>";
-                p1 += loader.Family.parent1CellPhone + "</br>";
-                p1 += loader.Family.parent1Email + "</br>";
-
-                var p2 = loader.Family.parent2Type + "</br>";
-                p2 += loader.Family.parent2FirstName + " " + loader.Family.parent2LastName + "</br>";
-                p2 += loader.Family.parent2CellPhone + "</br>";
-                p2 += loader.Family.parent2Email + "</br>";
-                $(cont).append("<hr/><table class='tbl-family' id='tblFamily" + loader.Id + "'><tr><td rel='p1'>" + p1 + "</td><td rel='p2'>" + p2 + "</td></tr></table");
-
-            }
-        });
     },
     findLatLngForStudent: function () { // Looking student coordinates by address
 

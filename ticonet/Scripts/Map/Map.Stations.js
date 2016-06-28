@@ -1,6 +1,8 @@
 ﻿smap.stations = {
     defaultColor: "#FF0000", //default station color
-    list: [],//List of markers of stations
+    list: [],//List of stations
+    SearchBox: null,
+    latestLineId: null,
     load: function () { //Loading exists stations from DB
         $.get("/api/stations/List").done(function (loader) {
             for (var i = 0; i < loader.length; i++) {
@@ -12,7 +14,6 @@
             }
         });
     },
-    SearchBox: null,
     openPopup: function (id, lat, lng) { //Open dialog for create / edit station
         smap.closeConextMenu();
         var sColor = smap.getRandomColor();
@@ -510,7 +511,10 @@
         for (var i = 0; i < smap.lines.list.length; i++) {
             var l = smap.lines.list[i];
             if (lines.indexOf(l) == -1) {
-                $("<option value='" + l.Id + "'>" + l.Name + "</option>").appendTo("#ddlAddLine");
+                var t = "<option value='" + l.Id + "' ";
+                if (l.Id == smap.stations.latestLineId) t += "selected='selected'";
+                t += ">" + l.Name + "</option>";
+                $(t).appendTo("#ddlAddLine");
             }
         }
         $("#ddlAddLine").change(function () {
@@ -533,6 +537,7 @@
             modal: true,
             buttons: {
                 "Add": function () {
+                    smap.stations.latestLineId = $("#ddlAddLine").val();
                     var data = $("#frmAddStationTolIne").serialize();
                     $.post("/api/stations/AddToLine", data).done(function (loader) {
 
@@ -655,21 +660,35 @@
         }
     },
     doDeleteFromLine: function (id) {
-        var data = {
-            StationId: $("#hfDeleteFromLineStationId").val(),
-            LineId: id
-        }
-        $.post("/api/stations/DeleteFomLine", data).done(function (loader) {
+        $("#dConfirmMessage").html("Are you sure?");
+        var dialog = $("#dlgConfirm").dialog({
+            autoOpen: true,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Delete": function () {
+                    dialog.dialog("close");
+                    var data = {
+                        StationId: $("#hfDeleteFromLineStationId").val(),
+                        LineId: id
+                    }
+                    $.post("/api/stations/DeleteFomLine", data).done(function (loader) {
 
-            smap.lines.updateLine(loader.Line, false);
-            smap.lines.startReCalcimeTable(loader.Line.Id);
-            var lines = smap.stations.getLines(loader.Station.Id);
-            if (lines.length == 0)
-                $("#dlgDeleteFromLine").dialog("close");
-            else
-                smap.stations.fillDeleteFromLinesDialog(loader.Station.Id);
-
+                        smap.lines.updateLine(loader.Line, false);
+                        smap.lines.startReCalcimeTable(loader.Line.Id);
+                        var lines = smap.stations.getLines(loader.Station.Id);
+                        if (lines.length == 0)
+                            $("#dlgDeleteFromLine").dialog("close");
+                        else
+                            smap.stations.fillDeleteFromLinesDialog(loader.Station.Id);
+                    });
+                },
+                Cancel: function () {
+                    dialog.dialog("close");
+                }
+            }
         });
+
     },
     resetSearchBox: function () {
         //reset address search box

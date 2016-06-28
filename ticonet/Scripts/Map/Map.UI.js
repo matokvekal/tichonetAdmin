@@ -110,13 +110,14 @@
     toggleSearchBar: function () {
         var d = 500;
         if (smap.UI.searchBarOpen) {
-            $("#dSearchForm").animate({ width: 0, opacity: 0 }, d, function() {
+            $("#dSearchForm").animate({ width: 0, opacity: 0 }, d, function () {
                 $("#tbSearch").val("");
             });
             $("#dSearchBar").animate({ width: "44px" }, d, function () { });
         } else {
             $("#dSearchForm").animate({ width: "319px", opacity: 1 }, d, function () { });
             $("#dSearchBar").animate({ width: "370px" }, d, function () { });
+            $("#tbSearch").focus();
         }
         smap.UI.searchBarOpen = !smap.UI.searchBarOpen;
     },
@@ -132,5 +133,128 @@
                 }
             }
         });
+    },
+    openStudentInfoWindow: function (student) {
+        for (var i = 0; i < smap.students.length; i++) {
+            var st = smap.students[i];
+            if (st.IW != null) {
+                st.IW.close();
+            }
+        }
+        for (var i in smap.stations.list) {
+            var st = smap.stations.list[i];
+            if (st.IW != null) {
+                st.IW.close();
+            }
+            st.IW = null;
+        }
+        smap.clearGraphic();
+
+        var content = "<div class='student-info-window' id='dIW" + student.Id + "'>";
+        content += "<ul class='nav nav-tabs'>";
+        content += "<li role='presentation' class='active'><a href='javascript:smap.UI.switchInfoWindowTab(" + student.Id + ",0);'>Student</a></li>";
+        content += "<li role='presentation'><a href='javascript:smap.UI.switchInfoWindowTab(" + student.Id + ",1);'>Buses</a></li>";
+        //content += "<li role='presentation'><a href='#'>Messages</a></li>";
+        content += "</ul>";
+        content += "<div class='iw-tab-content' >";
+        content += "<h4>" + student.Name + "</h4>";
+        content += "<div>" + student.CellPhone + "...." + student.Email + "</div>";
+        content += "<div>" + student.Address + "</div>";
+        content += "<div rel='family'><img src='/Content/img/ajax-loader.gif' /></div>";
+        content += "</div>";
+        content += "<div class='iw-tab-content' rel='buses' style='display:none;'>";
+        content += "</div>";
+        content += "</div>";
+        var infowindow = new google.maps.InfoWindow({
+            content: content
+        });
+        infowindow.open(smap.mainMap, student.Marker);
+        if (student.Family) {
+            smap.UI.showFamilyInfo(student.Id, student.Family);
+        } else {
+            smap.UI.loadFamily(student.Id);
+        }
+        
+
+        //show stations connect lines
+        var stations = smap.getAttachInfo(student.Id);
+
+        for (var j in stations) {
+            var stt = smap.stations.getStation(stations[j].StationId);
+            var nm = stations[j].Date != null;
+            smap.drawLine(student.Lat, student.Lng, stt.StrLat, stt.StrLng, nm);
+        }
+
+        //handle closing info window for hide lines
+        infowindow.addListener('closeclick', function () { smap.clearGraphic(); });
+        return false;
+    },
+    switchInfoWindowTab: function (studentId, tabIndex) {
+        var cont = $("#dIW" + studentId);
+        $(cont).children("ul").children("li").each(function (i, e) {
+            if (i == tabIndex) {
+                $(e).addClass("active");
+            } else {
+                $(e).removeClass("active");
+            }
+        });
+        $(cont).children(".iw-tab-content").each(function (i, e) {
+            if (i == tabIndex) {
+                $(e).css("display", "block");
+            } else {
+                $(e).css("display", "none");
+            }
+        });
+        if (tabIndex == 1) smap.UI.showBuses(studentId);
+    },
+    loadFamily: function (id) {//load info about family for show in InfoWindow
+        $.get("/api/Students/Family", { id: id }).done(function (loader) {
+
+            var cont = $("#dIW" + loader.Id).find("div[rel=family]");
+            $(cont).empty();
+            var st = smap.getStudent(loader.Id);
+            st.showFamilyInfo = loader.Family;
+            smap.UI.showFamilyInfo(loader.Id, loader.Family);
+        }).fail(function () {
+            console.log("Error");
+        });
+    },
+    showFamilyInfo: function (id, family) {
+        var cont = $("#dIW" + id).find("div[rel=family]");
+        if (family != null) {
+            var p1 = family.parent1Type + "</br>";
+            p1 += family.parent1FirstName + " " + family.parent1LastName + "</br>";
+            p1 += family.parent1CellPhone + "</br>";
+            p1 += family.parent1Email + "</br>";
+
+            var p2 = family.parent2Type + "</br>";
+            p2 += family.parent2FirstName + " " + family.parent2LastName + "</br>";
+            p2 += family.parent2CellPhone + "</br>";
+            p2 += family.parent2Email + "</br>";
+            $(cont).append("<hr/><table class='tbl-family' id='tblFamily" + id + "'><tr><td rel='p1'>" + p1 + "</td><td rel='p2'>" + p2 + "</td></tr></table");
+
+        }
+    },
+    showBuses: function (studenId) {
+        var cont = $("#dIW" + studenId).find("div[rel=buses]");
+        $(cont).empty();
+        var lst = smap.getAttachInfo(studenId);
+        for (var i in lst) {
+            var st = smap.stations.getStation(lst[i].StationId);
+            $("<div class='iw-bus-info'><b>" + lst[i].Distance + "m</b> to " + st.Name + "</div>").appendTo(cont);
+            var t = "";
+            if (lst[i].LineId != null) {
+                var ln = smap.getLine(lst[i].LineId);
+                var tm = "";
+                for (var j in ln.Stations) {
+                    if (ln.Stations[j].StationId == lst[i].StationId) tm = ln.Stations[j].ArrivalDateString;
+                }
+                t += "<span style='margin-right:10px;'>Line " + ln.LineNumber + " arrive at " + tm + ".</span>";
+            }
+            if (lst[i].StrDate != "--") {
+                t += "<span>" + lst[i].StrDate + " " + lst[i].StrTime + "&nbsp;only.</span>";
+            }
+            $("<div class='iw-bus-info-small'>" + t + "</div>").appendTo(cont);
+        }
     }
 }
