@@ -1,6 +1,7 @@
 ﻿smap.table = {
     studentsGrid: null,
     linesGrid: null,
+    jumpTimer: null,
     init: function () {
         //Toggle buttons
         $("#btToggleStudents").click(function () {
@@ -189,13 +190,8 @@
                         smap.table.resetBounce();
                         var st = smap.stations.getStation(id);
                         if (st) {
-                            console.log(st);
                             if (st.Marker != null) {
-                                st.Marker.setAnimation(google.maps.Animation.BOUNCE);
-                                window.setTimeout("smap.table.resetBounce();", 5000);
-                                if (!smap.mainMap.getBounds().contains(st.Marker.getPosition())) {
-                                    smap.mainMap.setCenter(st.Marker.getPosition());
-                                }
+                                smap.table.showMarker(st.Marker);
                             }
                         }
                     },
@@ -235,16 +231,16 @@
         var st = smap.getStudent(id);
         if (st) {
             if (st.Marker != null) {
-                st.Marker.setAnimation(google.maps.Animation.BOUNCE);
-                window.setTimeout("smap.table.resetBounce();", 5000);
-                if (!smap.mainMap.getBounds().contains(st.Marker.getPosition())) {
-                    smap.mainMap.setCenter(st.Marker.getPosition());
-                }
+                smap.table.showMarker(st.Marker);
             }
         }
 
     },
     resetBounce: function () {//Stop student marker animation after 5 sec
+        if (smap.table.jumpTimer != null) {
+            clearTimeout(smap.table.jumpTimer);
+            smap.table.jumpTimer = null;
+        }
         for (var i = 0; i < smap.students.length; i++) {
             var st = smap.students[i];
             if (st.Marker != null)
@@ -392,6 +388,14 @@
     attachActionFormatter: function (cellvalue, options, rowObject) {
         var res = "<a href='javascript:smap.deleteAttach(" + cellvalue + ")' title='Delete'><span class='glyphicon glyphicon-trash'></span></a>";
         return res;
+    },
+    showMarker: function (marker) {
+        smap.table.resetBounce();
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        smap.table.jumpTimer = window.setTimeout("smap.table.resetBounce();", 5000);
+        if (!smap.mainMap.getBounds().contains(marker.getPosition())) {
+            smap.mainMap.setCenter(Marker.getPosition());
+        }
     }
 
 }

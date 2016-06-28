@@ -69,11 +69,13 @@
                         var stt = smap.stations.getStation(ui.item.Id);
                         smap.mainMap.setCenter(new google.maps.LatLng(stt.StrLat, stt.StrLng));
                         smap.mainMap.setZoom(16);
+                        if (stt.Marker != null) smap.table.showMarker(stt.Marker);
                         break;
                     case "stud":
                         var st = smap.getStudent(ui.item.Id);
                         smap.mainMap.setCenter(new google.maps.LatLng(st.Lat, st.Lng));
                         smap.mainMap.setZoom(16);
+                        if (st.Marker != null) smap.table.showMarker(st.Marker);
                         break;
                 }
                 return false;
