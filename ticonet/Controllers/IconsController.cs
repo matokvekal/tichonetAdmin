@@ -83,9 +83,10 @@ namespace ticonet.Controllers
         /// Icon for station marker
         /// </summary>
         /// <param name="color">Station color</param>
+        /// <param name="type"></param>
         /// <returns></returns>
         [HttpGet]
-        public FileResult StationIcon(string color)
+        public FileResult StationIcon(string color, int type)
         {
             //parsing color
             var clr = color.Replace("#", "");
@@ -104,7 +105,9 @@ namespace ticonet.Controllers
             gr.TextRenderingHint = TextRenderingHint.AntiAlias;
 
             //Draw marker
-            var mask = Image.FromFile(Server.MapPath("~/Content/img/bus-marker-icon.png"));
+            var path = "~/Content/img/bus-marker-icon.png";
+            if (type == 1) path = "~/Content/img/school-marker-icon.png";
+            var mask = Image.FromFile(Server.MapPath(path));
             gr.DrawImage(mask, 0, 0, w, h);
             for (int i = 0; i < h; i++)
             {

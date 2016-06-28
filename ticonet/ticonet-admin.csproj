@@ -201,6 +201,7 @@
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\bus-marker-icon.png" />
     <Content Include="Content\img\false.png" />
+    <Content Include="Content\img\school-marker-icon.png" />
     <Content Include="Content\img\true.png" />
     <Content Include="Content\jquery-ui.min.css" />
     <Content Include="Content\jquery-ui.structure.css" />
@@ -347,6 +348,7 @@
     <Content Include="Views\Shared\_loginPartial.cshtml" />
     <Content Include="Scripts\Map\Map.Table.js" />
     <Content Include="Scripts\Map\Map.Stations.js" />
+    <Content Include="Scripts\Map\Map.UI.js" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -24,6 +24,39 @@
     color: #999999;
 }
 
+#dSearchBar {
+    background-color: #222222;
+    color: #999999;
+    height: 40px;
+    width: 44px;
+    position: absolute;
+    z-index: 998;
+    bottom: 45px;
+    left: 20px;
+    padding: 3px 5px;
+    border-radius: 3px;
+    
+}
+
+#btSearch {
+    font-size: 16pt;
+    cursor: pointer;
+    margin: 4px 2px 2px 7px;
+    padding: 0;
+}
+
+#dSearchForm {
+    display: inline-block;
+    width: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0;
+}
+
+    #dSearchForm input {
+        width: 280px;
+    }
+
 .students-fly {
     position: absolute;
     right: 25px;

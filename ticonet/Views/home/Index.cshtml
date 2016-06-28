@@ -2,7 +2,7 @@
 @using Business_Logic.Helpers
 @using MvcJqGrid
 @section scripts{
-    @Scripts.Render("http://maps.googleapis.com/maps/api/js?key=" + MapHelper.ApiKey)
+    @Scripts.Render("http://maps.googleapis.com/maps/api/js?libraries=places&key=" + MapHelper.ApiKey)
     @Scripts.Render("~/bundles/map");
     <script type="text/javascript">
         $(document).ready(smap.init);
@@ -15,6 +15,20 @@
 @Html.Hidden("hfZoom", (string)ViewBag.Zoom, new { @id = "hfZoom" })
 @Html.Hidden("hfTimeForLoad", (int)ViewBag.TimeForLoad, new { @id = "hfTimeForLoad" })
 <div class="map-canvas" id="map-canvas" style=""></div>
+
+
+<div id="dSearchBar" class="row">
+
+    <div class="glyphicon glyphicon-search col-lg-1 col-md-1 col-sm-1 col-xs-1" aria-hidden="true" id="btSearch"></div>
+
+
+    <div id="dSearchForm" class=" col-lg-11 col-md-11 col-sm-11 col-xs-11">
+        <div class="input-group">
+            <input type="text" class="form-control" id="tbSearch" />
+            <div class="input-group-addon"><span class="glyphicon glyphicon-search" style="cursor: pointer;" aria-hidden="true" id="btGoSearch"></span></div>
+        </div>
+    </div>
+</div>
 
 <div class="students-fly">
     <div class="header" style="padding-left: 10px; border-bottom: 1px solid #999; ">
@@ -52,19 +66,56 @@
 
 
     <form action="/api/stations/Save" id="frmCreate" method="POST" class="form-horizontal">
-        <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">Name</label>
-            <input type="text" name="Name" id="tbName" value="New station" class="text form-control">
-        </div>
-        <div class="form-group">
-            <label for="tbColor" class="col-sm-2 control-label">Color</label>
-            <input type='text' id="tbColor" class="form-contro basic" />
+        <div class="form-group" id="dCSAddrBlock">
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                    <input type="radio" name="CSPosition" checked="checked" id="rCSThis" />
+                </div>
+                <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">This location</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                    <input type="radio" name="CSPosition" style="margin-top: 9px;" id="rCSAddr" />
+                </div>
+                <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+                    <div class="form-group has-feedback" id="dCSControl">
+                        <input type="text" class="form-control input-sm" id="tbCSAddress" style="display: inline-block;">
+                        <span title="Correct address" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" id="spCSSucIcon"></span>
+                        <span title="Address not found" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" id="spCSWarnIcon"></span>
+                    </div>
+                </div>
 
+            </div>
         </div>
+        <div class="form-group row">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="padding-top: 6px;">
+                <span class="control-label">Name</span>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                <input type="text" name="Name" id="tbName" value="New station" class="text form-control input-sm">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="padding-top: 5px;">
+                    <span class="control-label">Color</span>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type='text' id="tbColor" class="form-control basic"/>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="margin-top: 5px;">
+                    <input type="checkbox" id="cbCSSchool"/>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding-top: 6px;">School</div>
+            </div>
+        </div>
+
         <input type="hidden" id="hfStationId" name="Id" />
         <input type="hidden" id="hfCreateColor" name="Color" />
         <input type="hidden" id="hfCreateLat" name="StrLat" />
-        <input type="hidden" id="hfCreateLng" name="StrLng" />
+        <input type="hidden" id="hfCreateLng" name="StrLng"/>
+        <input type="hidden" id="hfCSSelectedLat" name="CStrLat" />
+        <input type="hidden" id="hfCSSelectedLng" name="CStrLng" />
     </form>
 </div>
 <div id="dlgConfirm" title="Confirm action" style="display: none;">
@@ -227,14 +278,14 @@
     <table id="dScheduleGrid"></table>
 </div>
 <div id="dlgTimeTable" title="Time table" style="display: none;">
-    <input type="hidden" id="hfTTLineId"/>
+    <input type="hidden" id="hfTTLineId" />
     <div id="dTTMessage" style="text-align: center;" class="row">
 
     </div>
     <div class="row form-horizontal text-center">
-        <input type="number" id="tbTTHours" class="form-inline" style="width: 50px;"/>
+        <input type="number" id="tbTTHours" class="form-inline" style="width: 50px;" />
         <span>:</span>
-        <input type="number" id="tbTTMinutes" class="form-inline" style="width: 50px;"/>
+        <input type="number" id="tbTTMinutes" class="form-inline" style="width: 50px;" />
         <button class="btn btn-primary btn-xs" onclick="smap.lines.reCalcTimeTable();">Calculate</button>
     </div>
     <div class="row">

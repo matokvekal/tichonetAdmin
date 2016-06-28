@@ -12,9 +12,10 @@
             }
         });
     },
+    SearchBox: null,
     openPopup: function (id, lat, lng) { //Open dialog for create / edit station
         smap.closeConextMenu();
-        var sColor = smap.stations.defaultColor;
+        var sColor = smap.getRandomColor();
         var bSaveName = "";
         if (id == null) { //Add new station
             $("#hfCreateLat").val(lat);
@@ -22,6 +23,32 @@
             $("#hfStationId").val(0);
             $("#tbName").val("New station");
             bSaveName = "Add";
+            $("#dCSAddrBlock").css("display", "block");
+            $("#rCSThis").prop("checked", true);
+            $("#tbCSAddress").val("");
+            $("#cbCSSchool").prop("checked", false);
+
+            //address search box
+            smap.stations.resetSearchBox();
+            smap.stations.SearchBox = new google.maps.places.SearchBox(document.getElementById("tbCSAddress"), {
+                bounds: smap.mainMap.getBounds()
+            });
+            smap.stations.SearchBox.addListener('places_changed', function () {
+                smap.Geocoder.geocode({ 'address': $("#tbCSAddress").val() }, function (results1, status1) {
+                    smap.stations.resetSearchBox();
+
+                    if (status1 == google.maps.GeocoderStatus.OK) {
+                        $("#spCSSucIcon").css("display", "inline");
+                        $("#dCSControl").addClass("has-success");
+                        var loc = results1[0].geometry.location;
+                        $("#hfCSSelectedLat").val(loc.lat());
+                        $("#hfCSSelectedLng").val(loc.lng());
+                    } else {
+                        $("#spCSWarnIcon").css("display", "inline");
+                        $("#dCSControl").addClass("has-warning");
+                    }
+                });
+            });
         } else {
             var st = smap.stations.getStation(id);
             $("#hfStationId").val(id);
@@ -29,17 +56,40 @@
             $("#hfCreateLat").val(st.StrLat);
             $("#hfCreateLng").val(st.StrLng);
             sColor = st.Color;
+            $("#dCSAddrBlock").css("display", "none");
+            $("#rCSThis").prop("checked", true);
+            $("#tbCSAddress").val(st.Address);
+            $("#cbCSSchool").prop("checked", (st.Type == 1));
             bSaveName = "Save";
         }
 
+
+
+
         var dialog = $("#dialog-form").dialog({
             autoOpen: true,
-            height: 200,
             width: 400,
             modal: true,
             buttons: {
                 "Save": function () {
-                    var data = $("#frmCreate").serialize();
+                    var t = 0;
+                    if ($("#cbCSSchool").prop("checked") == true) t = 1;
+                    var lat = $("#hfCreateLat").val();
+                    var lng = $("#hfCreateLng").val();
+                    if ($("#rCSAddr").prop("checked") == true) {
+                        console.log("Pos from ad");
+                        lat = $("#hfCSSelectedLat").val();
+                        lng = $("#hfCSSelectedLng").val();
+                    }
+                    var data = {
+                        Id: $("#hfStationId").val(),
+                        Name: $("#tbName").val(),
+                        Color: $("#hfCreateColor").val(),
+                        StrLat: lat,
+                        StrLng: lng,
+                        Address: $("#tbCSAddress").val(),
+                        Type: t
+                    };
                     $.post("/api/stations/Save", data)
                         .done(function (loader) {
                             var stt = loader.Data.Station;
@@ -86,7 +136,9 @@
             color = color.substring(1, color.length);
 
         }
-        return "/icons/StationIcon?color=" + color;
+        var t = 0;
+        if (station.Type) t = station.Type;
+        return "/icons/StationIcon?color=" + color + "&type=" + t;
     },
     getLines: function (stationId) {
         var res = [];
@@ -483,7 +535,7 @@
                 "Add": function () {
                     var data = $("#frmAddStationTolIne").serialize();
                     $.post("/api/stations/AddToLine", data).done(function (loader) {
-                        
+
                         dialog.dialog("close");
                         smap.lines.updateLine(loader.Line, false);
 
@@ -493,7 +545,7 @@
                         for (var i in loader.Students) {
                             smap.updateStudent(loader.Students[i]);
                         }
-                        
+
                         smap.lines.startReCalcimeTable(loader.Line.Id);
                     });
                 },
@@ -618,5 +670,12 @@
                 smap.stations.fillDeleteFromLinesDialog(loader.Station.Id);
 
         });
+    },
+    resetSearchBox: function () {
+        //reset address search box
+        $("#spCSSucIcon").css("display", "none");
+        $("#spCSWarnIcon").css("display", "none");
+        $("#dCSControl").removeClass("has-success");
+        $("#dCSControl").removeClass("has-warning");
     }
 }

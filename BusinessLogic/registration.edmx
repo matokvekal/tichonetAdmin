@@ -83,6 +83,8 @@
           <Property Name="Longitude" Type="nvarchar" MaxLength="50" />
           <Property Name="StationName" Type="nvarchar(max)" Nullable="false" />
           <Property Name="color" Type="nvarchar" MaxLength="50" />
+          <Property Name="StationType" Type="int" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="512" />
         </EntityType>
         <EntityType Name="StationsToLines">
           <Key>
@@ -692,6 +694,8 @@
           <Property Name="color" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToStations" FromRole="Station" ToRole="StationsToLine" />
           <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToStations" FromRole="Station" ToRole="StudentsToLine" />
+          <Property Name="StationType" Type="Int32" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="StationsToLine">
           <Key>
@@ -953,7 +957,9 @@
     <EntitySetMapping Name="Stations">
       <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Station)">
         <MappingFragment StoreEntitySet="Stations">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="StationType" ColumnName="StationType" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Lattitude" ColumnName="Lattitude" />
           <ScalarProperty Name="Longitude" ColumnName="Longitude" />
           <ScalarProperty Name="StationName" ColumnName="StationName" />
@@ -1152,7 +1158,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="tblDictSystems">
-            <EntityTypeMapping TypeName="BusProjectModel.tblDictSystem">
+            <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.tblDictSystem)">
               <MappingFragment StoreEntitySet="tblDictSystem">
                 <ScalarProperty Name="cantBeChange" ColumnName="cantBeChange" />
                 <ScalarProperty Name="DateCreatedUTC" ColumnName="DateCreatedUTC" />

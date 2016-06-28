@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Business_Logic;
 
 namespace ticonet.Models
@@ -14,6 +15,8 @@ namespace ticonet.Models
             Name = data.StationName;
             StrLat = data.Lattitude;
             StrLng = data.Longitude;
+            Address = data.Address;
+            Type = data.StationType;
         }
         public int Id { get; set; }
         public string Name { get; set; }
@@ -22,6 +25,10 @@ namespace ticonet.Models
         public string StrLat { get; set; }
 
         public string StrLng { get; set; }
+
+        public string Address { get; set; }
+
+        public int Type { get; set; }
 
         public List<StudentToLineModel> Students { get; set; }
     }

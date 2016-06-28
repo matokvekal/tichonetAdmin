@@ -49,7 +49,9 @@ namespace ticonet
                 color = model.Color,
                 StationName = model.Name,
                 Lattitude = lat.ToString(CultureInfo.InvariantCulture),
-                Longitude = lng.ToString(CultureInfo.InvariantCulture)
+                Longitude = lng.ToString(CultureInfo.InvariantCulture),
+                StationType = model.Type,
+                Address = model.Address
             };
             var res = new SaveStationResultModel();
 

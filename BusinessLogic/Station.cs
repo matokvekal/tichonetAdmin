@@ -26,6 +26,8 @@ namespace Business_Logic
         public string Longitude { get; set; }
         public string StationName { get; set; }
         public string color { get; set; }
+        public int StationType { get; set; }
+        public string Address { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StationsToLine> StationsToLines { get; set; }

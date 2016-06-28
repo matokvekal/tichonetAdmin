@@ -43,6 +43,7 @@
         smap.Geocoder = new google.maps.Geocoder();
 
         smap.loadData();
+        smap.UI.init();
         //smap.loadStudents();
         //smap.stations.load();
         $("#tbAttachDate").datepicker();
@@ -222,7 +223,7 @@
             google.maps.event.addListener(student.Marker, "dragend", function (event) {
                 var st = smap.getStudent(student.Id);
                 smap.stations.studentDargEnd(event.latLng, st);
-                
+
                 smap.setMarker(st);
             });
             google.maps.event.addListener(student.Marker, "dragstart", function (event) { smap.stations.showBorders() });
@@ -403,7 +404,7 @@
                         smap.updateStudent(st);
                     }
                 }
-                
+
                 smap.checkDistanceStudents.splice(0, 1);
                 smap.updateDistance();
             });
@@ -516,5 +517,13 @@
                 }
             }
         });
+    },
+    getRandomColor: function () {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
     }
 }
