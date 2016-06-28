@@ -105,9 +105,9 @@ namespace ticonet
                 if (dtList.Length == 3)
                 {
                     date = new DateTime(
-                        Int32.Parse(dtList[2]),
-                        Int32.Parse(dtList[0]),
-                        Int32.Parse(dtList[1]),
+                        int.Parse(dtList[2]),
+                        int.Parse(dtList[0]),
+                        int.Parse(dtList[1]),
                         model.Hours,
                         model.Minutes, 0);
                 }

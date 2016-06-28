@@ -123,7 +123,7 @@
             altRows: false,
             sortable: true,
             altclass: "ui-state-default",
-            colNames: ["", "Number", "Name", "Color", "Active", "Dir", "Students","Duration", ""],
+            colNames: ["", "Number", "Name", "Color", "Active", "Dir", "Students", "Duration", ""],
             colModel: [
                 {
                     name: "show",
@@ -180,22 +180,45 @@
             subGrid: true,
             subGridRowExpanded: function (subgridDivId, rowId) {
                 var subgridTableId = subgridDivId + "_t";
-                $("#" + subgridDivId).html("<table id='" + subgridTableId + "'></table>");
-                $("#" + subgridTableId).jqGrid({
+                $("#" + subgridDivId).html("<table id='" + subgridTableId + "'></table><div id='" + subgridDivId + "_d'></div>");
+                var sbGrd = $("#" + subgridTableId).jqGrid({
                     datatype: 'local',
-                    data: smap.getLine(rowId).Stations,
-                    colNames: ['Position', 'Station', 'Time'],
+                    pager: '#' + subgridDivId + "_d",
+                    rowList: [10, 25, 50],
+                    onSelectRow: function (id) {
+                        smap.table.resetBounce();
+                        var st = smap.stations.getStation(id);
+                        if (st) {
+                            console.log(st);
+                            if (st.Marker != null) {
+                                st.Marker.setAnimation(google.maps.Animation.BOUNCE);
+                                window.setTimeout("smap.table.resetBounce();", 5000);
+                                if (!smap.mainMap.getBounds().contains(st.Marker.getPosition())) {
+                                    smap.mainMap.setCenter(st.Marker.getPosition());
+                                }
+                            }
+                        }
+                    },
+                    colNames: ['Position', 'Station', 'Address', 'Time'],
                     colModel: [
                         { name: 'Position', width: 100, align: 'center' },
-                        { name: 'StationId', width: 200, formatter: smap.table.stationNameFormatter, },
+                        { name: 'StationId', width: 100, formatter: smap.table.stationNameFormatter },
+                        { name: 'Address', width: 100, align: 'center' },
                         { name: 'ArrivalDateString', width: 100, align: 'center' }
                     ]
                 });
+                var lst = smap.getLine(rowId).Stations;
+                for (var x in lst) {
+                    sbGrd.jqGrid('addRowData', lst[x].StationId, lst[x]);
+                }
+                sbGrd.jqGrid('setGridParam', { sortorder: 'asc' });
+                sbGrd.jqGrid("sortGrid", "Position");
             }
 
         });
 
         for (var k = 0; k < smap.lines.list.length; k++) {
+
             $("#grLines").jqGrid('addRowData', smap.lines.list[k].Id, smap.lines.list[k]);
         }
 
@@ -226,6 +249,12 @@
             var st = smap.students[i];
             if (st.Marker != null)
                 st.Marker.setAnimation(null);
+
+        }
+        for (var j = 0; j < smap.stations.list.length; j++) {
+            var stt = smap.stations.list[j];
+            if (stt.Marker != null)
+                stt.Marker.setAnimation(null);
 
         }
     },
