@@ -302,5 +302,37 @@
         smap.lines.durations = null;
 
         //console.log(smap.lines.durations);
+    },
+    lineStationsVisibleSwitch: function (id) {
+        var c = "glyphicon-eye-close";
+        var o = "glyphicon-eye-open";
+        var btn = $("span[rel=lsswitch][ref=" + id + "]");
+        var ln = smap.getLine(id);
+        var h = false; // hide = true, show =false
+        if ($(btn).hasClass(o)) {
+            //hide
+            $(btn).removeClass(o);
+            $(btn).addClass(c);
+            h = true;
+        } else {
+            //show
+            h = false;
+            $(btn).removeClass(c);
+            $(btn).addClass(o);
+        }
+        for (var i1 in ln.Stations) {
+            var st1 = smap.stations.getStation(ln.Stations[i1].StationId);
+            if (h) {
+                if (st1.Type == 0 && st1.Marker != null) {
+                    st1.Marker.setMap(null);
+                    st1.Marker = null;
+                }
+            } else {
+                if (st1.Marker == null) {
+                    smap.stations.setMarker(st1);
+                }
+            }
+
+        }
     }
 }

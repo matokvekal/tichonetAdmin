@@ -299,7 +299,11 @@
         return '<div style="width:46px; height:10px;background-color:' + color + '" title="' + color + '"></div>';
     },
     lineActionsFormatter: function (cellvalue, options, rowObject) {
-        var res = "<a href='javascript:smap.lines.showTimeTable(" + cellvalue + ")' title='Time table'><span class='glyphicon glyphicon-time'></span></a>"
+        var res = "";
+
+        res += "<a href='javascript:smap.lines.lineStationsVisibleSwitch(" + cellvalue + ")' title='Show/hide stations'><span rel='lsswitch' ref='" + cellvalue + "' class='glyphicon glyphicon-eye-open'></span></a>";
+        res += "&nbsp;&nbsp;";
+        res += "<a href='javascript:smap.lines.showTimeTable(" + cellvalue + ")' title='Time table'><span class='glyphicon glyphicon-time'></span></a>";
         res += "&nbsp;&nbsp;";
         res += "<a href='javascript:smap.lines.editLine(" + cellvalue + ")' title='Edit line'><span class='glyphicon glyphicon-pencil'></span></a>";
         res += "&nbsp;&nbsp;";
@@ -397,5 +401,4 @@
             smap.mainMap.setCenter(Marker.getPosition());
         }
     }
-
 }
