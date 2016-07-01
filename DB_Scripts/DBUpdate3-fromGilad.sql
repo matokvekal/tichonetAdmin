@@ -105,3 +105,31 @@ ALTER TABLE dbo.[Lines] ADD
 	[Sut] [bit] NULL,
 	[SutTime] [datetime] NULL;
 GO
+
+alter table [Buses]
+add
+
+
+	[seats] [int] NULL,
+	[price] [float] NULL,
+	[munifacturedate] [date] NULL,
+	[LicensingDueDate] [date] NULL,
+	[insuranceDueDate] [date] NULL,
+	[winterLicenseDueDate] [date] NULL,
+	[brakeTesDueDate] [date] NULL
+GO
+CREATE TABLE [dbo].[tblCalendar](
+	[pk] [int] IDENTITY(1,1) NOT NULL,
+	[date] [date] NULL,
+	[month] [nvarchar](50) NULL,
+	[HebMonth] [nvarchar](50) NULL,
+	[day] [nvarchar](50) NULL,
+	[active] [bit] NULL,
+	[event] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_tblCalendar] PRIMARY KEY CLUSTERED 
+(
+	[pk] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
