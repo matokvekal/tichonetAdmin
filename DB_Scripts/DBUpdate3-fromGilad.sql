@@ -133,3 +133,35 @@ CREATE TABLE [dbo].[tblCalendar](
 ) ON [PRIMARY]
 
 GO
+
+drop table tblstreet
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblStreet](
+	[cityId] [int] NOT NULL,
+	[streetId] [int] NOT NULL,
+	[streetName] [nvarchar](50) NOT NULL,
+	[cityName] [nvarchar](max) NOT NULL,
+ CONSTRAINT [PK_tblStreet_1] PRIMARY KEY CLUSTERED 
+(
+	[cityId] ASC,
+	[streetId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+alter table tblStudent
+
+Add
+	cityId [int] NULL,
+	streetId [Int] NULL
+	
+	go
+alter table tblFamily
+add 
+ 	[PaymentPlanID] [nvarchar](MAX) NULL,
+ 	[PaymentRequestID] [nvarchar](MAX) NULL
+ go
+ 
