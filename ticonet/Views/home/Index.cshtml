@@ -14,6 +14,10 @@
 @Html.Hidden("hfCenterLng", (string)ViewBag.CenterLng, new { @id = "hfCenterLng" })
 @Html.Hidden("hfZoom", (string)ViewBag.Zoom, new { @id = "hfZoom" })
 @Html.Hidden("hfTimeForLoad", (int)ViewBag.TimeForLoad, new { @id = "hfTimeForLoad" })
+@Html.Hidden("hfHiddenLines", (string)ViewBag.HiddenLines, new { @id = "hfHiddenLines" })
+@Html.Hidden("hfHiddenStations", (string)ViewBag.HiddenStations, new { @id = "hfHiddenStations" })
+@Html.Hidden("hfHiddenStudents", (string)ViewBag.HiddenStudents, new { @id = "hfHiddenStudents" })
+@Html.Hidden("hfShowStations", (bool)ViewBag.ShowStations, new { @id = "hfShowStations" })
 <div class="map-canvas" id="map-canvas" style=""></div>
 
 
@@ -33,12 +37,16 @@
 <div class="students-fly">
     <div class="header" style="padding-left: 10px; border-bottom: 1px solid #999; ">
         <h2>
-            <a href="javascript:smap.switchStationsVisible();" title="Show / hide stations without lines">
+            <a href="javascript:smap.switchStationsVisible();" title="Show all stations / hide stations without lines">
                 <span class="glyphicon glyphicon-eye-open" id="btToggleStationsVisible"></span>
             </a>
             <a href="javascript:smap.lines.editLine(0);" title="Add new line" style="margin-left: 5px;">
                 <span class="glyphicon glyphicon-plus"></span>
             </a>
+            <a href="javascript:smap.reloadData();" title="Reload" style="margin-left: 5px;">
+                <span class="glyphicon glyphicon-refresh" id="icoReloadBtn"></span>
+            </a>
+            <a href="javascript:smap.saveState();" title="Save state" style="margin-left: 5px;"><span id="icoSaveBtn" class="glyphicon glyphicon-floppy-disk"></span></a>
             <span style="margin-left: 5px; font-size: 10pt;" id="spStatus"></span>
         </h2>
     </div>
@@ -101,10 +109,10 @@
                     <span class="control-label">Color</span>
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                    <input type='text' id="tbColor" class="form-control basic"/>
+                    <input type='text' id="tbColor" class="form-control basic" />
                 </div>
                 <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="margin-top: 5px;">
-                    <input type="checkbox" id="cbCSSchool"/>
+                    <input type="checkbox" id="cbCSSchool" />
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding-top: 6px;">School</div>
             </div>
@@ -113,7 +121,7 @@
         <input type="hidden" id="hfStationId" name="Id" />
         <input type="hidden" id="hfCreateColor" name="Color" />
         <input type="hidden" id="hfCreateLat" name="StrLat" />
-        <input type="hidden" id="hfCreateLng" name="StrLng"/>
+        <input type="hidden" id="hfCreateLng" name="StrLng" />
         <input type="hidden" id="hfCSSelectedLat" name="CStrLat" />
         <input type="hidden" id="hfCSSelectedLng" name="CStrLng" />
     </form>
@@ -176,15 +184,15 @@
             <label for="ddlAddLine" class="col-xs-3 control-label">Line</label>
             <select id="ddlAddLine" name="LineId" class="text form-control input-sm" style="width: 200px"></select>
         </div>
-        <div class="row form-group">
-            <label for="tbAddLineHours" class="col-xs-3 control-label">Arrival Time</label>
-            <span>
-                <input type="number" id="tbAddLineHours" name="Hours" class="form-control input-sm" style="width: 50px; display: inline;" />
-                <span class="form-control-static" style="margin-left: 5px; margin-right: 5px;">:</span>
-                <input type="number" id="tbAddLineMinutes" name="Minutes" class="form-control input-sm" style="width: 50px; display: inline;" />
+        @*<div class="row form-group">
+                <label for="tbAddLineHours" class="col-xs-3 control-label">Arrival Time</label>
+                <span>
+                    <input type="number" id="tbAddLineHours" name="Hours" class="form-control input-sm" style="width: 50px; display: inline;" />
+                    <span class="form-control-static" style="margin-left: 5px; margin-right: 5px;">:</span>
+                    <input type="number" id="tbAddLineMinutes" name="Minutes" class="form-control input-sm" style="width: 50px; display: inline;" />
 
-            </span>
-        </div>
+                </span>
+            </div>*@
         <div class="row form-group">
             <label for="ddlAddPosition" class="col-xs-3 control-label">Position</label>
             <select id="ddlAddPosition" name="Position" class="text form-control input-sm" style="width: 50px"></select>

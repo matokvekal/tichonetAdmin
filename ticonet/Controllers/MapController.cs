@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Http;
 using Antlr.Runtime;
 using Business_Logic;
 using Business_Logic.Entities;
+using Business_Logic.Helpers;
 using log4net;
 using ticonet.Models;
 
@@ -127,6 +129,29 @@ namespace ticonet.Controllers
                         Stations = ln.StationsToLines.Select(z => new StationToLineModel(z)).ToList()
                     };
                 }
+            }
+            return res;
+        }
+
+        [ActionName("SaveState")]
+        public bool PostSaveState(CurrentStateModel data)
+        {
+            var res = false;
+            try
+            {
+                MapHelper.CenterLat = data.CenterLat;
+                MapHelper.CenterLng = data.CenterLng;
+                MapHelper.Zoom = data.Zoom;
+                MapHelper.HiddenLines = data.HiddenLines;
+                MapHelper.HiddenStations = data.HiddenStations;
+                MapHelper.HiddenStudents = data.HiddenStudents;
+                MapHelper.ShowStationsWithoutLine = data.ShowStationsWithoutLine;
+                res = true;
+            }
+            catch (Exception)
+            {
+                res = false;
+                throw;
             }
             return res;
         }

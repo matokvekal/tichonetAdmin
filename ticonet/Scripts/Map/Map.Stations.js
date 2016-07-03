@@ -362,21 +362,24 @@
         var z = (23 - smap.mainMap.getZoom()) / 4;
         for (var i = 0; i < smap.stations.list.length; i++) {
             //smap.stations.list[i].Marker.setAnimation(google.maps.Animation.BOUNCE);
-            smap.stations.list[i].Marker.Circle = new google.maps.Circle({
-                strokeColor: smap.fixCssColor(smap.stations.list[i].Color),
-                strokeOpacity: 0.8,
-                strokeWeight: 1,
-                fillColor: smap.fixCssColor(smap.stations.list[i].Color),
-                fillOpacity: 0.35,
-                map: smap.mainMap,
-                center: smap.stations.list[i].Marker.getPosition(),
-                radius: z * 30
-            });
+            if (smap.stations.list[i].Marker != null) {
+                smap.stations.list[i].Marker.Circle = new google.maps.Circle({
+                    strokeColor: smap.fixCssColor(smap.stations.list[i].Color),
+                    strokeOpacity: 0.8,
+                    strokeWeight: 1,
+                    fillColor: smap.fixCssColor(smap.stations.list[i].Color),
+                    fillOpacity: 0.35,
+                    map: smap.mainMap,
+                    center: smap.stations.list[i].Marker.getPosition(),
+                    radius: z * 30
+                });
+            }
         }
     },
     studentDargEnd: function (position, student) {// check where was moved studen
         for (var i = 0; i < smap.stations.list.length; i++) {
             var m = smap.stations.list[i].Marker;
+            if (m == null) return;
             var d = google.maps.geometry.spherical.computeDistanceBetween(m.getPosition(), position);
             var r = m.Circle.getRadius();
             if (d <= r) {//marker in circle
@@ -532,7 +535,6 @@
 
         var dialog = $("#dlgAddToLine").dialog({
             autoOpen: true,
-            height: 350,
             width: 420,
             modal: true,
             buttons: {
