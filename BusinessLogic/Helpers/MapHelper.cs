@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Business_Logic.Helpers
 {
@@ -20,7 +22,7 @@ namespace Business_Logic.Helpers
             set
             {
                 SettingsHelper.SetSettingValue("Map", "StartPoint",
-                  string.Format("lat{0};lng{1}", value , CenterLng));
+                  string.Format("lat{0};lng{1}", value, CenterLng));
             }
         }
 
@@ -41,7 +43,7 @@ namespace Business_Logic.Helpers
                 var strValue = SettingsHelper.GetSettingValue("Map", "Zoom");
                 if (string.IsNullOrEmpty(strValue))
                 {
-                    SettingsHelper.SetSettingValue("Map","Zoom", DefaultZoom.ToString());
+                    SettingsHelper.SetSettingValue("Map", "Zoom", DefaultZoom.ToString());
                     return DefaultZoom;
                 }
                 else
@@ -55,6 +57,57 @@ namespace Business_Logic.Helpers
             }
         }
 
+        public static List<int> HiddenLines
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenLines"));
+            }
+            set
+            {
+                SettingsHelper.SetSettingValue("Map", "HiddenLines",
+                    value == null ? "[]" : JsonConvert.SerializeObject(value));
+            }
+        }
+
+        public static List<int> HiddenStations
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenStations"));
+            }
+            set
+            {
+                SettingsHelper.SetSettingValue("Map", "HiddenStations", value == null ? "[]" : JsonConvert.SerializeObject(value));
+            }
+        }
+
+        public static List<int> HiddenStudents
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenStudents"));
+            }
+            set
+            {
+                SettingsHelper.SetSettingValue("Map", "HiddenStudents", value == null ? "[]" : JsonConvert.SerializeObject(value));
+            }
+        }
+
+        public static bool ShowStationsWithoutLine
+        {
+            get
+            {
+                bool res;
+                if (bool.TryParse(SettingsHelper.GetSettingValue("Map", "ShowStationsWithoutLine"), out res))
+                    return res;
+                return true;
+            }
+            set
+            {
+                SettingsHelper.SetSettingValue("Map", "ShowStationsWithoutLine", value.ToString());
+            }
+        }
         public static string ApiKey
         {
             get { return System.Web.Configuration.WebConfigurationManager.AppSettings["GoogleMapsKey"]; }
@@ -62,13 +115,13 @@ namespace Business_Logic.Helpers
 
         private static double[] ReadCenterCoords()
         {
-     
+
             var strValue = SettingsHelper.GetSettingValue("Map", "StartPoint");
             if (String.IsNullOrEmpty(strValue))
             {
                 SettingsHelper.SetSettingValue("Map", "StartPoint",
                     string.Format("lat{0};lng{1}", DefaultLat, DefaultLng));
-                return new double[] {DefaultLat, DefaultLng};
+                return new double[] { DefaultLat, DefaultLng };
             }
             else
             {
@@ -81,8 +134,8 @@ namespace Business_Logic.Helpers
             }
         }
 
-  
-    
+
+
         public static bool IsPointInCircle(double latPoint, double lonPoint, double latCenterCircle, double lonCenterCircle, double radius)
         {
             // set radius in kilometers

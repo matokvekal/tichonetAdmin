@@ -17,6 +17,8 @@
         if ($("#hfCenterLat").length > 0) latCenter = $("#hfCenterLat").val();
         if ($("#hfCenterLng").length > 0) lngCenter = $("#hfCenterLng").val();
         if ($("#hfZoom").length > 0) intZoom = parseInt($("#hfZoom").val());
+        smap.showStationsWithoutLines = ($("#hfShowStations").val().toLowerCase() == "true");
+        smap.showStationsVisibleButton();
 
         //creating map
         var mapOptions = {
@@ -48,29 +50,86 @@
         //smap.stations.load();
         $("#tbAttachDate").datepicker();
     },
+    reloadData: function () {
+        $("#icoReloadBtn").removeClass("glyphicon-refresh");
+        $("#icoReloadBtn").addClass("glyphicon-ban-circle");
+
+        var lns = [];
+        var stts = [];
+        var sts = [];
+        for (var i1 in smap.lines.list) {
+            if (smap.lines.list[i1].show == false) lns.push(smap.lines.list[i1].Id);
+            smap.lines.hideLine(smap.lines.list[i1].Id);
+        }
+        smap.lines.list = [];
+        for (var i2 in smap.stations.list) {
+            var stt = smap.stations.list[i2];
+            if (stt.Marker == null) {
+                stts.push(stt.Id);
+            }
+            else {
+                stt.Marker.setMap(null);
+            }
+        }
+        smap.stations.list = [];
+        for (var i3 in smap.students) {
+            var st = smap.students[i3];
+            if (st.show == false) sts.push(st.Id);
+            if (st.Marker != null) st.Marker.setMap(null);
+        }
+        smap.students = [];
+
+        $("#hfHiddenLines").val(JSON.stringify(lns));
+        $("#hfHiddenStations").val(JSON.stringify(stts));
+        $("#hfHiddenStudents").val(JSON.stringify(sts));
+        //console.log(JSON.stringify(lns));
+        //console.log(JSON.stringify(stts));
+        //console.log(JSON.stringify(sts));
+
+        
+
+        smap.loadData();
+    },
     loadData: function () {
         $.get("/api/Map/State").done(function (loader) {
+
+            var hLines = $.parseJSON($("#hfHiddenLines").val());
+            var hStations = $.parseJSON($("#hfHiddenStations").val());
+            var hStudents = $.parseJSON($("#hfHiddenStudents").val());
+            console.log(hStudents);
+            console.log(smap.students);
             smap.lines.list = loader.Lines;
-            for (var j = 0; j < smap.lines.list.length; j++) {
-                smap.lines.list[j].show = false;
-            }
-            for (var i = 0; i < loader.Stations.length; i++) {
-                var stt = loader.Stations[i];
-                if (smap.stations.getStation(stt.Id) == null) {
+
+            for (var i = 0; i < loader.Stations.length; i++) {//load stations
+                var stt = loader.Stations[i]; // get one station
+                if (smap.stations.getStation(stt.Id) == null) { // if station not on map yet adding
                     smap.stations.list.push(stt);
                 }
-                var lines = smap.stations.getLines(stt.Id);
-                if (smap.showStationsWithoutLines || lines.length > 0)
-                    smap.stations.setMarker(stt);
+                var lines = smap.stations.getLines(stt.Id);// get lines for station
+                var d1 = (smap.showStationsWithoutLines || lines.length > 0);
+                var d2 = hStations.indexOf(stt.Id) == -1;
+                if (d1 && d2) smap.stations.setMarker(stt);
             }
             smap.students = loader.Students;
             for (var k = 0; k < smap.students.length; k++) {
                 var student = smap.students[k];
-                student.show = student.Active;
+                if (hStudents.indexOf(student.Id) == -1) {
+                    student.show = student.Active;
+                } else {
+                    student.show = false;
+                }
+
                 if (student.Lat != null && student.Lng != null) smap.setMarker(student);
+            }
+            for (var j = 0; j < smap.lines.list.length; j++) {
+                smap.lines.list[j].show = (hLines.indexOf(smap.lines.list[j].Id) == -1);
+                if (smap.lines.list[j].show == true) smap.lines.showLine(smap.lines.list[j].Id);
             }
             smap.table.init();
             smap.findLatLngForStudent();
+            $("#icoReloadBtn").removeClass("glyphicon-ban-circle");
+            $("#icoReloadBtn").addClass("glyphicon-refresh");
+
         });
     },
     loadStudents: function () {
@@ -154,6 +213,7 @@
         return "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=S|" + color;
     },
     setMarker: function (student) {//Add or move student marker
+        if (student.show == false) return;
         var myLatlng = new google.maps.LatLng(student.Lat, student.Lng);
         if (student.Marker) {
             //Move marker
@@ -173,7 +233,7 @@
                 student: student
             });
 
-            student.Marker.addListener('dblclick', function (e) {smap.UI.openStudentInfoWindow(student)});
+            student.Marker.addListener('dblclick', function (e) { smap.UI.openStudentInfoWindow(student) });
             google.maps.event.addListener(student.Marker, "rightclick", function (event) { smap.showStudentContextMenu(event.latLng, student); });
             google.maps.event.addListener(student.Marker, "click", function (event) { smap.closeConextMenu(); });
             google.maps.event.addListener(student.Marker, "dragend", function (event) {
@@ -461,5 +521,44 @@
             color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
+    },
+    saveState: function () {
+        var c = smap.mainMap.getCenter();
+        var lns = [];
+        var stts = [];
+        var sts = [];
+        for (var i1 in smap.lines.list) {
+            if (smap.lines.list[i1].show == false) lns.push(smap.lines.list[i1].Id);
+        }
+        for (var i2 in smap.stations.list) {
+            if (smap.stations.list[i2].Marker == null) stts.push(smap.stations.list[i2].Id);
+        }
+        for (var i3 in smap.students) {
+            if (smap.students[i3].show == false) sts.push(smap.students[i3].Id);
+        }
+        var d = {
+            CenterLat: c.lat(),
+            CenterLng: c.lng(),
+            Zoom: smap.mainMap.getZoom(),
+            HiddenLines: lns,
+            HiddenStations: stts,
+            HiddenStudents: sts,
+            ShowStationsWithoutLine: smap.showStationsWithoutLines
+        };
+        $.post("/api/map/SaveState", d, function (loader) {
+            $("#icoSaveBtn").removeClass("glyphicon-floppy-disk");
+            if (loader == true) {
+                $("#icoSaveBtn").addClass("glyphicon-floppy-saved");
+            } else {
+                $("#icoSaveBtn").addClass("glyphicon-floppy-remove");
+            }
+            setTimeout("smap.resetSaveButton();", 2000);
+
+        });
+    },
+    resetSaveButton: function () {
+        $("#icoSaveBtn").removeClass("glyphicon-floppy-remove");
+        $("#icoSaveBtn").removeClass("glyphicon-floppy-saved");
+        $("#icoSaveBtn").addClass("glyphicon-floppy-disk");
     }
 }

@@ -41,8 +41,8 @@
         for (var i = 0; i < line.Stations.length; i++) {
             line.currentStationsList.push(line.Stations[i].StationId);
         }
-
         smap.lines.showSegment(line);
+        line.show = true;
     },
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
@@ -112,9 +112,11 @@
     },
     hideLine: function (id) {
         var line = smap.getLine(id);
-        if (line != null)
+        if (line != null) {
+            line.show = false;
             if (line.gDirectionsDisplay != null)
                 line.gDirectionsDisplay.setMap(null);
+        }
     },
     getColor: function (id) {
         var line = smap.getLine(id);

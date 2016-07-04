@@ -3,6 +3,26 @@
     autoCompleteService: null,
     autoCompleteResultFunction: null,
     init: function () {
+        //Toggle buttons
+        $("#btToggleStudents").click(function () {
+            var cls = $("#btToggleStudents").attr("class");
+            if (cls == "glyphicon glyphicon-chevron-up toggle") {
+                $("#btToggleStudents").attr("class", "glyphicon glyphicon-chevron-down toggle");
+            } else {
+                $("#btToggleStudents").attr("class", "glyphicon glyphicon-chevron-up toggle");
+            }
+            $("#dStudentsTable").toggle();
+        });
+        $("#btToggleLines").click(function () {
+            var cls = $("#btToggleLines").attr("class");
+            if (cls == "glyphicon glyphicon-chevron-up toggle") {
+                $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-down toggle");
+            } else {
+                $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-up toggle");
+            }
+            $("#dLinesTable").toggle();
+        });
+
         $("#btSearch").click(smap.UI.toggleSearchBar);
         $("#btGoSearch").click(function () {
             smap.UI.showAddress($('#tbSearch').val());

@@ -133,3 +133,82 @@ CREATE TABLE [dbo].[tblCalendar](
 ) ON [PRIMARY]
 
 GO
+
+drop table tblstreet
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblStreet](
+	[cityId] [int] NOT NULL,
+	[streetId] [int] NOT NULL,
+	[streetName] [nvarchar](50) NOT NULL,
+	[cityName] [nvarchar](max) NOT NULL,
+ CONSTRAINT [PK_tblStreet_1] PRIMARY KEY CLUSTERED 
+(
+	[cityId] ASC,
+	[streetId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+alter table tblStudent
+
+Add
+	cityId [int] NULL,
+	streetId [Int] NULL
+	
+	go
+alter table tblFamily
+add 
+ 	[PaymentPlanID] [nvarchar](MAX) NULL,
+ 	[PaymentRequestID] [nvarchar](MAX) NULL
+ go
+ drop table TblPayment
+
+/****** Object:  Table [dbo].[tblPayment]    Script Date: 07/03/2016 10:11:26 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblPayment](
+	[pk] [int] IDENTITY(1,1) NOT NULL,
+	[familyId] [int] NULL,
+	[parentId] [nvarchar](50) NULL,
+	[firstNme] [nvarchar](50) NULL,
+	[LastName] [nvarchar](50) NULL,
+	[Email] [nvarchar](100) NULL,
+	[studentId] [nvarchar](50) NULL,
+	[PaymentCode] [int] NULL,
+	[paymentName] [nvarchar](max) NULL,
+	[PaymentSum] [float] NULL,
+	[paymentDay] [datetime] NULL,
+	[paymentCompany] [nvarchar](max) NULL,
+	[paymentOK] [bit] NULL,
+	[PaymentRequestId] [nvarchar](max) NULL,
+	[PaymentPlanID] [nvarchar](max) NULL,
+	[paymentStatus] [int] NULL,
+ CONSTRAINT [PK_tblPayment] PRIMARY KEY CLUSTERED 
+(
+	[pk] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblPaymentCode](
+	[paymentCode] [int] NOT NULL,
+	[paymentName] [nvarchar](max) NULL,
+ CONSTRAINT [PK_tblPaymentCode] PRIMARY KEY CLUSTERED 
+(
+	[paymentCode] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO

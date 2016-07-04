@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Business_Logic.Helpers;
 using System.Globalization;
 using log4net;
+using Newtonsoft.Json;
 
 namespace ticonet.Controllers
 {
@@ -22,6 +23,10 @@ namespace ticonet.Controllers
             ViewBag.CenterLng = MapHelper.CenterLng.ToString(CultureInfo.InvariantCulture);
             ViewBag.Zoom = MapHelper.Zoom.ToString();
             ViewBag.TimeForLoad = BusHelper.TimeForLoad;
+            ViewBag.HiddenLines = JsonConvert.SerializeObject(MapHelper.HiddenLines);
+            ViewBag.HiddenStations = JsonConvert.SerializeObject(MapHelper.HiddenStations);
+            ViewBag.HiddenStudents = JsonConvert.SerializeObject(MapHelper.HiddenStudents);
+            ViewBag.ShowStations = MapHelper.ShowStationsWithoutLine;
             return View();
         }
     }

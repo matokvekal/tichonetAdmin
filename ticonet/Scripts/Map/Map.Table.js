@@ -3,98 +3,86 @@
     linesGrid: null,
     jumpTimer: null,
     init: function () {
-        //Toggle buttons
-        $("#btToggleStudents").click(function () {
-            var cls = $("#btToggleStudents").attr("class");
-            if (cls == "glyphicon glyphicon-chevron-up toggle") {
-                $("#btToggleStudents").attr("class", "glyphicon glyphicon-chevron-down toggle");
-            } else {
-                $("#btToggleStudents").attr("class", "glyphicon glyphicon-chevron-up toggle");
-            }
-            $("#dStudentsTable").toggle();
-        });
-        $("#btToggleLines").click(function () {
-            var cls = $("#btToggleLines").attr("class");
-            if (cls == "glyphicon glyphicon-chevron-up toggle") {
-                $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-down toggle");
-            } else {
-                $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-up toggle");
-            }
-            $("#dLinesTable").toggle();
-        });
+     
 
         //Students table
-        smap.table.studentsGrid = $("#grStudents").jqGrid({
-            datatype: "clientSide",
-            height: '100%',
-            regional: 'il',
-            hidegrid: false,
-            multiselect: false,
-            pager: '#pgStudents',
-            mtype: 'post',
-            rowNum: 10,
-            rowList: [10, 20],
-            viewrecords: true,
-            width: '100%',
-            loadui: 'disable',
-            altRows: false,
-            sortable: true,
-            altclass: "ui-state-default",
-            onSelectRow: smap.table.clickRow,
-            search: {
-                caption: "Search...",
-                Find: "Find",
-                Reset: "Reset",
-                odata: ['contains'],
-                groupOps: [{ op: "AND", text: "all" }],
-                matchText: " match",
-                rulesText: " rules",
-                clearSearch: false
-            },
-            colNames: ["", "Id", "Name", "Shicva", "Class", "Address", "Color", "Line", "Dist"],
-            colModel: [
-                {
-                    name: "show",
-                    index: "show",
-                    align: "center",
-                    edittype: "checkbox",
-                    formatter: smap.table.cboxFormatter,
-                    formatoptions: { disabled: false },
-                    editable: true,
-                    editoptions: { value: "true:false", defaultValue: "true" },
-                    search: false,
-                    sortable: false,
-                    width: 25
+        if (smap.table.studentsGrid == null) {
+            smap.table.studentsGrid = $("#grStudents").jqGrid({
+                datatype: "clientSide",
+                height: '100%',
+                regional: 'il',
+                hidegrid: false,
+                multiselect: false,
+                pager: '#pgStudents',
+                mtype: 'post',
+                rowNum: 10,
+                rowList: [10, 20],
+                viewrecords: true,
+                width: '100%',
+                loadui: 'disable',
+                altRows: false,
+                sortable: true,
+                altclass: "ui-state-default",
+                onSelectRow: smap.table.clickRow,
+                search: {
+                    caption: "Search...",
+                    Find: "Find",
+                    Reset: "Reset",
+                    odata: ['contains'],
+                    groupOps: [{ op: "AND", text: "all" }],
+                    matchText: " match",
+                    rulesText: " rules",
+                    clearSearch: false
                 },
-                {
-                    name: "StudentId",
-                    index: "StudentId",
-                    search: false,
-                    width: 25,
-                    sorttype: "integer",
-                    template: "integer"
-                },
-                {
-                    name: 'Name',
-                    index: 'Name',
-                    clearSearch: false,
-                    sorttype: "text",
-                    width: 100
-                },
-                { name: 'Shicva', index: 'Shicva', clearSearch: false, width: 50 },
-                { name: 'Class', index: 'Class', clearSearch: false, width: 50, align: "center" },
-                { name: 'Address', index: 'Address', clearSearch: false, width: 198 },
-                { name: 'Color', index: 'Color', clearSearch: false, width: 50, search: false, formatter: smap.table.colorFormatter },
-                { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter },
-                { name: 'Id', index: 'Id', clearSearch: false, width: 50, align: "center", search: false, formatter: smap.table.distanceFormatter }
-            ]
-        }).filterToolbar({ searchOnEnter: true, defaultSearch: 'cn' });
+                colNames: ["", "Id", "Name", "Shicva", "Class", "Address", "Color", "Line", "Dist"],
+                colModel: [
+                    {
+                        name: "show",
+                        index: "show",
+                        align: "center",
+                        edittype: "checkbox",
+                        formatter: smap.table.cboxFormatter,
+                        formatoptions: { disabled: false },
+                        editable: true,
+                        editoptions: { value: "true:false", defaultValue: "true" },
+                        search: false,
+                        sortable: false,
+                        width: 25
+                    },
+                    {
+                        name: "StudentId",
+                        index: "StudentId",
+                        search: false,
+                        width: 25,
+                        sorttype: "integer",
+                        template: "integer"
+                    },
+                    {
+                        name: 'Name',
+                        index: 'Name',
+                        clearSearch: false,
+                        sorttype: "text",
+                        width: 100
+                    },
+                    { name: 'Shicva', index: 'Shicva', clearSearch: false, width: 50 },
+                    { name: 'Class', index: 'Class', clearSearch: false, width: 50, align: "center" },
+                    { name: 'Address', index: 'Address', clearSearch: false, width: 198 },
+                    { name: 'Color', index: 'Color', clearSearch: false, width: 50, search: false, formatter: smap.table.colorFormatter },
+                    { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter },
+                    { name: 'Id', index: 'Id', clearSearch: false, width: 50, align: "center", search: false, formatter: smap.table.distanceFormatter }
+                ]
+            }).filterToolbar({ searchOnEnter: true, defaultSearch: 'cn' });
+        } else {
+            smap.table.studentsGrid.jqGrid("clearGridData");
+        }
         //Add students to table
         for (var i = 0; i < smap.students.length; i++)
-            $("#grStudents").jqGrid('addRowData', smap.students[i].Id, smap.students[i]);
+            smap.table.studentsGrid.jqGrid('addRowData', smap.students[i].Id, smap.students[i]);
         //Default sorting
-        $("#grStudents").jqGrid("sortGrid", "Name");
-        $("#grStudents").jqGrid('setGridParam', { sortorder: 'asc' });
+        smap.table.studentsGrid.jqGrid('setGridParam', { sortorder: 'asc' });
+        smap.table.studentsGrid.jqGrid("sortGrid", "Name");
+        smap.table.studentsGrid.jqGrid("sortGrid", "Name");
+
 
         //Check box "Show / hide all"
         $("#grStudents_show").empty();
@@ -108,119 +96,123 @@
         });
 
         //lines table
-        smap.table.linesGrid = $("#grLines").jqGrid({
-            datatype: "clientSide",
-            height: '100%',
-            regional: 'il',
-            hidegrid: false,
-            multiselect: false,
-            pager: '#pgLines',
-            mtype: 'post',
-            rowNum: 10,
-            rowList: [10, 20],
-            viewrecords: true,
-            width: '100%',
-            loadui: 'disable',
-            altRows: false,
-            sortable: true,
-            altclass: "ui-state-default",
-            colNames: ["", "Number", "Name", "Color", "Active", "Dir", "Students", "Duration", ""],
-            colModel: [
-                {
-                    name: "show",
-                    index: "show",
-                    align: "center",
-                    edittype: "checkbox",
-                    formatter: smap.table.cboxFormatterLine,
-                    formatoptions: { disabled: false },
-                    editable: true,
-                    editoptions: { value: "true:false", defaultValue: "true" },
-                    search: false,
-                    sortable: false,
-                    width: 25
-                },
-                {
-                    name: "LineNumber",
-                    index: "LineNumber",
-                    width: 60,
-                    sorttype: "integer",
-                    template: "integer",
-                    align: "center"
-                },
-                {
-                    name: 'Name',
-                    index: 'Name',
-                    sorttype: "text",
-                    width: 110
-                },
-                {
-                    name: 'Color',
-                    index: 'Color',
-                    width: 50,
-                    search: false,
-                    formatter: smap.table.colorFormatter
-                },
-                {
-                    name: "Id",
-                    index: 'Id',
-                    width: 50,
-                    formatter: smap.table.lineActiveFormatter,
-                    align: "center"
-                },
-                { name: 'Direction', index: 'Direction', width: 50, align: "center", formatter: smap.table.directionFormatter },
-                { name: 'StudentsCount', index: 'StudentsCount', width: 75, align: "center" },
-                { name: 'Duration', index: 'Duration', width: 75, align: "center" },
-                {
-                    name: "Id",
-                    index: 'Id',
-                    width: 75,
-                    formatter: smap.table.lineActionsFormatter,
-                    align: "center"
-                }
-            ],
-            subGrid: true,
-            subGridRowExpanded: function (subgridDivId, rowId) {
-                var subgridTableId = subgridDivId + "_t";
-                $("#" + subgridDivId).html("<table id='" + subgridTableId + "'></table><div id='" + subgridDivId + "_d'></div>");
-                var sbGrd = $("#" + subgridTableId).jqGrid({
-                    datatype: 'local',
-                    pager: '#' + subgridDivId + "_d",
-                    rowList: [10, 25, 50],
-                    onSelectRow: function (id) {
-                        smap.table.resetBounce();
-                        var st = smap.stations.getStation(id);
-                        if (st) {
-                            if (st.Marker != null) {
-                                smap.table.showMarker(st.Marker);
-                            }
-                        }
+        if (smap.table.linesGrid == null) {
+            smap.table.linesGrid = $("#grLines").jqGrid({
+                datatype: "clientSide",
+                height: '100%',
+                regional: 'il',
+                hidegrid: false,
+                multiselect: false,
+                pager: '#pgLines',
+                mtype: 'post',
+                rowNum: 10,
+                rowList: [10, 20],
+                viewrecords: true,
+                width: '100%',
+                loadui: 'disable',
+                altRows: false,
+                sortable: true,
+                altclass: "ui-state-default",
+                colNames: ["", "Number", "Name", "Color", "Active", "Dir", "Students", "Duration", ""],
+                colModel: [
+                    {
+                        name: "show",
+                        index: "show",
+                        align: "center",
+                        edittype: "checkbox",
+                        formatter: smap.table.cboxFormatterLine,
+                        formatoptions: { disabled: false },
+                        editable: true,
+                        editoptions: { value: "true:false", defaultValue: "true" },
+                        search: false,
+                        sortable: false,
+                        width: 25
                     },
-                    colNames: ['Position', 'Station', 'Address', 'Time'],
-                    colModel: [
-                        { name: 'Position', width: 100, align: 'center' },
-                        { name: 'StationId', width: 100, formatter: smap.table.stationNameFormatter },
-                        { name: 'Address', width: 100, align: 'center' },
-                        { name: 'ArrivalDateString', width: 100, align: 'center' }
-                    ]
-                });
-                var lst = smap.getLine(rowId).Stations;
-                for (var x in lst) {
-                    sbGrd.jqGrid('addRowData', lst[x].StationId, lst[x]);
+                    {
+                        name: "LineNumber",
+                        index: "LineNumber",
+                        width: 60,
+                        sorttype: "integer",
+                        template: "integer",
+                        align: "center"
+                    },
+                    {
+                        name: 'Name',
+                        index: 'Name',
+                        sorttype: "text",
+                        width: 110
+                    },
+                    {
+                        name: 'Color',
+                        index: 'Color',
+                        width: 50,
+                        search: false,
+                        formatter: smap.table.colorFormatter
+                    },
+                    {
+                        name: "Id",
+                        index: 'Id',
+                        width: 50,
+                        formatter: smap.table.lineActiveFormatter,
+                        align: "center"
+                    },
+                    { name: 'Direction', index: 'Direction', width: 50, align: "center", formatter: smap.table.directionFormatter },
+                    { name: 'StudentsCount', index: 'StudentsCount', width: 75, align: "center" },
+                    { name: 'Duration', index: 'Duration', width: 75, align: "center" },
+                    {
+                        name: "Id",
+                        index: 'Id',
+                        width: 75,
+                        formatter: smap.table.lineActionsFormatter,
+                        align: "center"
+                    }
+                ],
+                subGrid: true,
+                subGridRowExpanded: function (subgridDivId, rowId) {
+                    var subgridTableId = subgridDivId + "_t";
+                    $("#" + subgridDivId).html("<table id='" + subgridTableId + "'></table><div id='" + subgridDivId + "_d'></div>");
+                    var sbGrd = $("#" + subgridTableId).jqGrid({
+                        datatype: 'local',
+                        pager: '#' + subgridDivId + "_d",
+                        rowList: [10, 25, 50],
+                        onSelectRow: function (id) {
+                            smap.table.resetBounce();
+                            var st = smap.stations.getStation(id);
+                            if (st) {
+                                if (st.Marker != null) {
+                                    smap.table.showMarker(st.Marker);
+                                }
+                            }
+                        },
+                        colNames: ['Position', 'Station', 'Address', 'Time'],
+                        colModel: [
+                            { name: 'Position', width: 100, align: 'center' },
+                            { name: 'StationId', width: 100, formatter: smap.table.stationNameFormatter },
+                            { name: 'StationId', width: 250, align: 'center', formatter: smap.table.stationAddressFormatter },
+                            { name: 'ArrivalDateString', width: 100, align: 'center' }
+                        ]
+                    });
+                    var lst = smap.getLine(rowId).Stations;
+                    for (var x in lst) {
+                        sbGrd.jqGrid('addRowData', lst[x].StationId, lst[x]);
+                    }
+                    sbGrd.jqGrid('setGridParam', { sortorder: 'asc' });
+                    sbGrd.jqGrid("sortGrid", "Position");
                 }
-                sbGrd.jqGrid('setGridParam', { sortorder: 'asc' });
-                sbGrd.jqGrid("sortGrid", "Position");
-            }
 
-        });
-
+            });
+        } else {
+            smap.table.linesGrid.jqGrid("clearGridData");
+        }
         for (var k = 0; k < smap.lines.list.length; k++) {
-
-            $("#grLines").jqGrid('addRowData', smap.lines.list[k].Id, smap.lines.list[k]);
+            smap.table.linesGrid.jqGrid('addRowData', smap.lines.list[k].Id, smap.lines.list[k]);
         }
 
         //Default sorting
-        $("#grLines").jqGrid("sortGrid", "LineNumber");
-        $("#grLines").jqGrid('setGridParam', { sortorder: 'asc' });
+        smap.table.linesGrid.jqGrid('setGridParam', { sortorder: 'asc' });
+        smap.table.linesGrid.jqGrid("sortGrid", "LineNumber");
+        smap.table.linesGrid.jqGrid("sortGrid", "LineNumber");
+
 
         //Hide buttons "Clear search"
         $(".ui-search-clear").remove();
@@ -272,6 +264,12 @@
         var station = smap.stations.getStation(cellvalue);
         if (station == null) return "--";
         return station.Name;
+    },
+    stationAddressFormatter: function (cellvalue, options, rowObject) {
+        var station = smap.stations.getStation(cellvalue);
+        if (station == null) return "";
+        if (station.Address == null) return "";
+        return station.Address;
     },
     preSwithMarker: function (id) {
         var sel = $("input[ref=cbSt][rel=" + id + "]").prop("checked");

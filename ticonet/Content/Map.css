@@ -17,6 +17,7 @@
 .student-info-window {
     padding: 0 0 0 20px;
 }
+
 .iw-tab-content {
     border-left: solid 1px #DDDDDD;
     border-right: solid 1px #DDDDDD;
@@ -24,18 +25,19 @@
     padding: 5px;
     width: 300px;
 }
+
 .iw-bus-info {
     margin: 10px 5px 0 5px;
     font-size: 14pt;
     color: #222222;
-      
 }
+
 .iw-bus-info-small {
-    margin: -3px 10px   ;
+    margin: -3px 10px;
     font-size: 8pt;
     color: #666666;
-      
 }
+
 .tbl-family {
     border: none;
     font-size: 10pt;
@@ -53,7 +55,9 @@
     left: 20px;
     padding: 3px 5px;
     border-radius: 3px;
-    
+    /*-webkit-box-shadow: 0 0 3px 1px rgba(0,0,0,0.65);
+    -moz-box-shadow: 0 0 3px 1px rgba(0,0,0,0.65);
+    box-shadow: 0 0 3px 1px rgba(0,0,0,0.65);*/
 }
 
 #btSearch {
@@ -84,6 +88,9 @@
     background-color: #222;
     color: #999;
     direction: ltr;
+    /*-webkit-box-shadow: -1px 1px 3px 1px rgba(0,0,0,0.65);
+    -moz-box-shadow: -1px 1px 3px 1px rgba(0,0,0,0.65);
+    box-shadow: -1px 1px 3px 1px rgba(0,0,0,0.65);*/
 }
 
     .students-fly .header {
@@ -186,6 +193,7 @@
 .header a {
     cursor: pointer;
     color: #999;
+    text-decoration: none;
 }
 
     .header a:hover {
