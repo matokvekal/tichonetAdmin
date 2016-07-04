@@ -61,7 +61,11 @@ namespace Business_Logic.Helpers
         {
             get
             {
-                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenLines"));
+                var hiddenLines = SettingsHelper.GetSettingValue("Map", "HiddenLines");
+                if(hiddenLines!=null)
+                    return JsonConvert.DeserializeObject<List<int>>(hiddenLines);
+                else 
+                    return new List<int>();
             }
             set
             {
@@ -74,7 +78,11 @@ namespace Business_Logic.Helpers
         {
             get
             {
-                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenStations"));
+                var hiddenStations = SettingsHelper.GetSettingValue("Map", "HiddenStations");
+                if (hiddenStations != null)
+                    return JsonConvert.DeserializeObject<List<int>>(hiddenStations);
+                else
+                    return new List<int>();
             }
             set
             {
@@ -86,7 +94,11 @@ namespace Business_Logic.Helpers
         {
             get
             {
-                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenStudents"));
+                var hiddenStudents = SettingsHelper.GetSettingValue("Map", "HiddenStudents");
+                if (hiddenStudents != null)
+                    return JsonConvert.DeserializeObject<List<int>>(hiddenStudents);
+                else
+                    return new List<int>();
             }
             set
             {
