@@ -4,19 +4,26 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Buses">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="BusId" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="PlateNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BusType" Type="int" Nullable="false" />
-          <Property Name="Occupation" Type="int" Nullable="false" />
-          <Property Name="Owner" Type="int" Nullable="false" />
-          <Property Name="GpsSource" Type="int" Nullable="false" />
+          <Property Name="BusId" Type="nvarchar" MaxLength="50" />
+          <Property Name="PlateNumber" Type="nvarchar" MaxLength="50" />
+          <Property Name="BusType" Type="int" />
+          <Property Name="Occupation" Type="int" />
+          <Property Name="Owner" Type="int" />
+          <Property Name="GpsSource" Type="int" />
           <Property Name="GpsCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="seats" Type="int" />
+          <Property Name="price" Type="float" />
+          <Property Name="munifacturedate" Type="date" />
+          <Property Name="LicensingDueDate" Type="date" />
+          <Property Name="insuranceDueDate" Type="date" />
+          <Property Name="winterLicenseDueDate" Type="date" />
+          <Property Name="brakeTesDueDate" Type="date" />
         </EntityType>
         <EntityType Name="BusesToLines">
           <Key>
@@ -50,6 +57,20 @@
           <Property Name="totalStudents" Type="int" />
           <Property Name="PathGeometry" Type="nvarchar(max)" />
           <Property Name="Duration" Type="time" Precision="7" />
+          <Property Name="Sun" Type="bit" />
+          <Property Name="SunTime" Type="datetime" />
+          <Property Name="Mon" Type="bit" />
+          <Property Name="MonTime" Type="datetime" />
+          <Property Name="Tue" Type="bit" />
+          <Property Name="TueTime" Type="datetime" />
+          <Property Name="Wed" Type="bit" />
+          <Property Name="WedTime" Type="datetime" />
+          <Property Name="Thu" Type="bit" />
+          <Property Name="ThuTime" Type="datetime" />
+          <Property Name="Fri" Type="bit" />
+          <Property Name="FriTime" Type="datetime" />
+          <Property Name="Sut" Type="bit" />
+          <Property Name="SutTime" Type="datetime" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -57,22 +78,10 @@
           </Key>
           <Property Name="userId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="userName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="emailConfirm" Type="bit" Nullable="false" />
           <Property Name="passwordUnSecure" Type="nvarchar" MaxLength="50" />
           <Property Name="familyId" Type="int" />
-        </EntityType>
-        <EntityType Name="Schedule">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Date" Type="date" Nullable="false" />
-          <Property Name="Direction" Type="int" Nullable="false" />
-          <Property Name="LineId" Type="int" Nullable="false" />
-          <Property Name="DriverId" Type="int" Nullable="false" />
-          <Property Name="BusId" Type="int" Nullable="false" />
-          <Property Name="FirstStationStartTime" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <EntityType Name="Stations">
           <Key>
@@ -185,9 +194,22 @@
           <Property Name="paymentOk" Type="bit" />
           <Property Name="paymentDateConfirm" Type="date" />
           <Property Name="iAgree" Type="bit" Nullable="false" />
-          <Property Name="subsidy" Type="bit" Nullable="false" />
-          <Property Name="allredyUsed" Type="bit" Nullable="false" />
+          <Property Name="subsidy" Type="bit" />
+          <Property Name="allredyUsed" Type="bit" />
           <Property Name="oneParentOnly" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblSchedule">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="date" />
+          <Property Name="Direction" Type="int" />
+          <Property Name="LineId" Type="int" />
+          <Property Name="DriverId" Type="int" />
+          <Property Name="BusId" Type="int" />
+          <Property Name="leaveTime" Type="datetime2" Precision="7" />
+          <Property Name="arriveTime" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="tblStreet">
           <Key>
@@ -291,48 +313,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Schedule_ToBuses">
-          <End Role="Buses" Type="Self.Buses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Schedule" Type="Self.Schedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Buses">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Schedule">
-              <PropertyRef Name="BusId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Schedule_ToDrivers">
-          <End Role="Drivers" Type="Self.Drivers" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Schedule" Type="Self.Schedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Drivers">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Schedule">
-              <PropertyRef Name="DriverId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Schedule_ToLines">
-          <End Role="Lines" Type="Self.Lines" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Schedule" Type="Self.Schedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lines">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Schedule">
-              <PropertyRef Name="LineId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_StationsToLines_ToLines">
           <End Role="Lines" Type="Self.Lines" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -381,7 +361,6 @@
           <EntitySet Name="Drivers" EntityType="Self.Drivers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Lines" EntityType="Self.Lines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Login" EntityType="Self.Login" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Schedule" EntityType="Self.Schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Stations" EntityType="Self.Stations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StationsToLines" EntityType="Self.StationsToLines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StudentsToLines" EntityType="Self.StudentsToLines" Schema="dbo" store:Type="Tables" />
@@ -389,6 +368,7 @@
           <EntitySet Name="tblCulture" EntityType="Self.tblCulture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblFamily" EntityType="Self.tblFamily" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSchedule" EntityType="Self.tblSchedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblStreet" EntityType="Self.tblStreet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblStudent" EntityType="Self.tblStudent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSystem" EntityType="Self.tblSystem" Schema="dbo" store:Type="Tables" />
@@ -401,18 +381,6 @@
           <AssociationSet Name="FK_BusesToLines_ToLines" Association="Self.FK_BusesToLines_ToLines">
             <End Role="Lines" EntitySet="Lines" />
             <End Role="BusesToLines" EntitySet="BusesToLines" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_ToBuses" Association="Self.FK_Schedule_ToBuses">
-            <End Role="Buses" EntitySet="Buses" />
-            <End Role="Schedule" EntitySet="Schedule" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_ToDrivers" Association="Self.FK_Schedule_ToDrivers">
-            <End Role="Drivers" EntitySet="Drivers" />
-            <End Role="Schedule" EntitySet="Schedule" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_ToLines" Association="Self.FK_Schedule_ToLines">
-            <End Role="Lines" EntitySet="Lines" />
-            <End Role="Schedule" EntitySet="Schedule" />
           </AssociationSet>
           <AssociationSet Name="FK_StationsToLines_ToLines" Association="Self.FK_StationsToLines_ToLines">
             <End Role="Lines" EntitySet="Lines" />
@@ -452,8 +420,8 @@
             <End Role="BusesToLine" EntitySet="BusesToLines" />
           </AssociationSet>
           <AssociationSet Name="FK_Schedule_ToBuses" Association="BusProjectModel.FK_Schedule_ToBuses">
-            <End Role="Bus" EntitySet="Buses" />
-            <End Role="Schedule" EntitySet="Schedules" />
+            <End EntitySet="Buses" Role="Bus" />
+            <End EntitySet="Schedules" Role="Schedule" />
           </AssociationSet>
           <AssociationSet Name="FK_BusesToLines_ToLines" Association="BusProjectModel.FK_BusesToLines_ToLines">
             <End Role="Line" EntitySet="Lines" />
@@ -516,7 +484,7 @@
           </Key>
           <Property Name="userId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="userName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="emailConfirm" Type="Boolean" Nullable="false" />
           <Property Name="passwordUnSecure" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="familyId" Type="Int32" />
@@ -586,8 +554,8 @@
           <Property Name="paymentOk" Type="Boolean" />
           <Property Name="paymentDateConfirm" Type="DateTime" Precision="0" />
           <Property Name="iAgree" Type="Boolean" Nullable="false" />
-          <Property Name="subsidy" Type="Boolean" Nullable="false" />
-          <Property Name="allredyUsed" Type="Boolean" Nullable="false" />
+          <Property Name="subsidy" Type="Boolean" />
+          <Property Name="allredyUsed" Type="Boolean" />
           <Property Name="oneParentOnly" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="tblAlertsQueue">
@@ -618,15 +586,22 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="BusId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PlateNumber" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="BusType" Type="Int32" Nullable="false" />
-          <Property Name="Occupation" Type="Int32" Nullable="false" />
-          <Property Name="Owner" Type="Int32" Nullable="false" />
-          <Property Name="GpsSource" Type="Int32" Nullable="false" />
+          <Property Name="BusId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PlateNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BusType" Type="Int32" />
+          <Property Name="Occupation" Type="Int32" />
+          <Property Name="Owner" Type="Int32" />
+          <Property Name="GpsSource" Type="Int32" />
           <Property Name="GpsCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToBuses" FromRole="Bus" ToRole="BusesToLine" />
           <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToBuses" FromRole="Bus" ToRole="Schedule" />
+          <Property Name="seats" Type="Int32" />
+          <Property Name="price" Type="Double" />
+          <Property Name="munifacturedate" Type="DateTime" Precision="0" />
+          <Property Name="LicensingDueDate" Type="DateTime" Precision="0" />
+          <Property Name="insuranceDueDate" Type="DateTime" Precision="0" />
+          <Property Name="winterLicenseDueDate" Type="DateTime" Precision="0" />
+          <Property Name="brakeTesDueDate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="BusesToLine">
           <Key>
@@ -667,6 +642,20 @@
           <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="Line" ToRole="StudentsToLine" />
           <Property Name="Duration" Type="Time" Precision="7" />
+          <Property Name="Sun" Type="Boolean" />
+          <Property Name="SunTime" Type="DateTime" Precision="3" />
+          <Property Name="Mon" Type="Boolean" />
+          <Property Name="MonTime" Type="DateTime" Precision="3" />
+          <Property Name="Tue" Type="Boolean" />
+          <Property Name="TueTime" Type="DateTime" Precision="3" />
+          <Property Name="Wed" Type="Boolean" />
+          <Property Name="WedTime" Type="DateTime" Precision="3" />
+          <Property Name="Thu" Type="Boolean" />
+          <Property Name="ThuTime" Type="DateTime" Precision="3" />
+          <Property Name="Fri" Type="Boolean" />
+          <Property Name="FriTime" Type="DateTime" Precision="3" />
+          <Property Name="Sut" Type="Boolean" />
+          <Property Name="SutTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Schedule">
           <Key>
@@ -678,7 +667,6 @@
           <Property Name="LineId" Type="Int32" Nullable="false" />
           <Property Name="DriverId" Type="Int32" Nullable="false" />
           <Property Name="BusId" Type="Int32" Nullable="false" />
-          <Property Name="FirstStationStartTime" Type="DateTime" Nullable="false" Precision="7" />
           <NavigationProperty Name="Bus" Relationship="BusProjectModel.FK_Schedule_ToBuses" FromRole="Schedule" ToRole="Bus" />
           <NavigationProperty Name="Driver" Relationship="BusProjectModel.FK_Schedule_ToDrivers" FromRole="Schedule" ToRole="Driver" />
           <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_Schedule_ToLines" FromRole="Schedule" ToRole="Line" />
@@ -736,10 +724,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Schedule_ToBuses">
-          <End Type="BusProjectModel.Bus" Role="Bus" Multiplicity="1">
+          <End Type="BusProjectModel.Bus" Multiplicity="1" Role="Bus">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="BusProjectModel.Schedule" Role="Schedule" Multiplicity="*" />
+          <End Type="BusProjectModel.Schedule" Multiplicity="*" Role="Schedule" />
           <ReferentialConstraint>
             <Principal Role="Bus">
               <PropertyRef Name="Id" />
@@ -907,7 +895,14 @@
     <EntitySetMapping Name="Buses">
       <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Bus)">
         <MappingFragment StoreEntitySet="Buses">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="brakeTesDueDate" ColumnName="brakeTesDueDate" />
+                <ScalarProperty Name="winterLicenseDueDate" ColumnName="winterLicenseDueDate" />
+                <ScalarProperty Name="insuranceDueDate" ColumnName="insuranceDueDate" />
+                <ScalarProperty Name="LicensingDueDate" ColumnName="LicensingDueDate" />
+                <ScalarProperty Name="munifacturedate" ColumnName="munifacturedate" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="seats" ColumnName="seats" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="BusId" ColumnName="BusId" />
           <ScalarProperty Name="PlateNumber" ColumnName="PlateNumber" />
           <ScalarProperty Name="BusType" ColumnName="BusType" />
@@ -942,7 +937,21 @@
     <EntitySetMapping Name="Lines">
       <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Line)">
         <MappingFragment StoreEntitySet="Lines">
-          <ScalarProperty Name="Duration" ColumnName="Duration" />
+          <ScalarProperty Name="SutTime" ColumnName="SutTime" />
+                <ScalarProperty Name="Sut" ColumnName="Sut" />
+                <ScalarProperty Name="FriTime" ColumnName="FriTime" />
+                <ScalarProperty Name="Fri" ColumnName="Fri" />
+                <ScalarProperty Name="ThuTime" ColumnName="ThuTime" />
+                <ScalarProperty Name="Thu" ColumnName="Thu" />
+                <ScalarProperty Name="WedTime" ColumnName="WedTime" />
+                <ScalarProperty Name="Wed" ColumnName="Wed" />
+                <ScalarProperty Name="TueTime" ColumnName="TueTime" />
+                <ScalarProperty Name="Tue" ColumnName="Tue" />
+                <ScalarProperty Name="MonTime" ColumnName="MonTime" />
+                <ScalarProperty Name="Mon" ColumnName="Mon" />
+                <ScalarProperty Name="SunTime" ColumnName="SunTime" />
+                <ScalarProperty Name="Sun" ColumnName="Sun" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="LineName" ColumnName="LineName" />
           <ScalarProperty Name="LineNumber" ColumnName="LineNumber" />
@@ -1015,19 +1024,6 @@
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="userName" ColumnName="userName" />
                 <ScalarProperty Name="userId" ColumnName="userId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Schedules">
-            <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Schedule)">
-              <MappingFragment StoreEntitySet="Schedule">
-                <ScalarProperty Name="FirstStationStartTime" ColumnName="FirstStationStartTime" />
-                <ScalarProperty Name="BusId" ColumnName="BusId" />
-                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
-                <ScalarProperty Name="LineId" ColumnName="LineId" />
-                <ScalarProperty Name="Direction" ColumnName="Direction" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1168,6 +1164,18 @@
                 <ScalarProperty Name="CustomerTranslated" ColumnName="CustomerTranslated" />
                 <ScalarProperty Name="term" ColumnName="term" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Schedules">
+            <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Schedule)">
+              <MappingFragment StoreEntitySet="tblSchedule">
+                <ScalarProperty Name="BusId" ColumnName="BusId" />
+                <ScalarProperty Name="DriverId" ColumnName="DriverId" />
+                <ScalarProperty Name="LineId" ColumnName="LineId" />
+                <ScalarProperty Name="Direction" ColumnName="Direction" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

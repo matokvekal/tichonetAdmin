@@ -3,7 +3,7 @@
 @using MvcJqGrid
 @section scripts{
     @Scripts.Render("http://maps.googleapis.com/maps/api/js?libraries=places&key=" + MapHelper.ApiKey)
-    @Scripts.Render("~/bundles/map");
+    @Scripts.Render("~/bundles/map")
     <script type="text/javascript">
         $(document).ready(smap.init);
     </script>

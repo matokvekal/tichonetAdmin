@@ -20,7 +20,6 @@ namespace Business_Logic
         public int LineId { get; set; }
         public int DriverId { get; set; }
         public int BusId { get; set; }
-        public System.DateTime FirstStationStartTime { get; set; }
     
         public virtual Bus Bus { get; set; }
         public virtual Driver Driver { get; set; }

@@ -39,8 +39,8 @@ namespace Business_Logic
         public Nullable<bool> paymentOk { get; set; }
         public Nullable<System.DateTime> paymentDateConfirm { get; set; }
         public bool iAgree { get; set; }
-        public bool subsidy { get; set; }
-        public bool allredyUsed { get; set; }
+        public Nullable<bool> subsidy { get; set; }
+        public Nullable<bool> allredyUsed { get; set; }
         public bool oneParentOnly { get; set; }
     }
 }

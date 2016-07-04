@@ -24,11 +24,18 @@ namespace Business_Logic
         public int Id { get; set; }
         public string BusId { get; set; }
         public string PlateNumber { get; set; }
-        public int BusType { get; set; }
-        public int Occupation { get; set; }
-        public int Owner { get; set; }
-        public int GpsSource { get; set; }
+        public Nullable<int> BusType { get; set; }
+        public Nullable<int> Occupation { get; set; }
+        public Nullable<int> Owner { get; set; }
+        public Nullable<int> GpsSource { get; set; }
         public string GpsCode { get; set; }
+        public Nullable<int> seats { get; set; }
+        public Nullable<double> price { get; set; }
+        public Nullable<System.DateTime> munifacturedate { get; set; }
+        public Nullable<System.DateTime> LicensingDueDate { get; set; }
+        public Nullable<System.DateTime> insuranceDueDate { get; set; }
+        public Nullable<System.DateTime> winterLicenseDueDate { get; set; }
+        public Nullable<System.DateTime> brakeTesDueDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BusesToLine> BusesToLines { get; set; }

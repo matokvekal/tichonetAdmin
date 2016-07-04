@@ -36,6 +36,17 @@ namespace IdentitySample
                         "~/Scripts/jqGrid/i18n/grid.locale-en.js",
                         "~/Scripts/spectrum.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/insets").Include(
+                        "~/Scripts/Insets/Insets.js",
+                         "~/Scripts/Insets/Insets.Table.js",
+                         "~/Scripts/Insets/Insets.Buses.js",
+                        "~/Scripts/jqGrid/jquery.jqGrid.min.js",
+                        "~/Scripts/jqGrid/plugins/grid.addons.js",
+                        "~/Scripts/jqGrid/plugins/grid.subgrid.js",
+                        "~/Scripts/jqGrid/plugins/jquery.searchFilter.js",
+                        "~/Scripts/jqGrid/i18n/grid.locale-en.js",
+                        "~/Scripts/spectrum.js"));
+
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
