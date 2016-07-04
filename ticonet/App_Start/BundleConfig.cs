@@ -36,10 +36,10 @@ namespace IdentitySample
                         "~/Scripts/jqGrid/i18n/grid.locale-en.js",
                         "~/Scripts/spectrum.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/insets").Include(
-                        "~/Scripts/Insets/Insets.js",
-                         "~/Scripts/Insets/Insets.Table.js",
-                         "~/Scripts/Insets/Insets.Buses.js",
+            bundles.Add(new ScriptBundle("~/bundles/buses").Include(
+                        "~/Scripts/Buses/BusesAuthority.js",
+                         "~/Scripts/Buses/BusesAuthority.Table.js",
+                         "~/Scripts/Buses/BusesAuthority.Items.js",
                         "~/Scripts/jqGrid/jquery.jqGrid.min.js",
                         "~/Scripts/jqGrid/plugins/grid.addons.js",
                         "~/Scripts/jqGrid/plugins/grid.subgrid.js",

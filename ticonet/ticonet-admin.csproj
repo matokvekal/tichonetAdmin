@@ -228,9 +228,9 @@
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\Insets\Insets.js" />
-    <Content Include="Scripts\Insets\Insets.Table.js" />
-    <Content Include="Scripts\Insets\Insets.Buses.js" />
+    <Content Include="Scripts\Buses\BusesAuthority.js" />
+    <Content Include="Scripts\Buses\BusesAuthority.Table.js" />
+    <Content Include="Scripts\Buses\BusesAuthority.Items.js" />
     <Content Include="Scripts\jqGrid\Changes.txt" />
     <Content Include="Scripts\jqGrid\i18n\grid.locale-ar.js" />
     <Content Include="Scripts\jqGrid\i18n\grid.locale-bg.js" />
@@ -316,7 +316,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\InsetsApiController.cs" />
+    <Compile Include="Controllers\BusesController.cs" />
     <Compile Include="Controllers\InsetsController.cs" />
     <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\IconsController.cs" />
@@ -361,7 +361,12 @@
     <Content Include="Scripts\Map\Map.Table.js" />
     <Content Include="Scripts\Map\Map.Stations.js" />
     <Content Include="Scripts\Map\Map.UI.js" />
+    <Content Include="Views\home\Buses.cshtml" />
     <Content Include="Views\Insets\Index.cshtml" />
+    <Content Include="Views\home\Lines.cshtml" />
+    <Content Include="Views\home\Calendar.cshtml" />
+    <Content Include="Views\home\Schedule.cshtml" />
+    <Content Include="Views\home\BusesToLines.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

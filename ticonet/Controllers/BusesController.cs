@@ -9,15 +9,10 @@ using ticonet.Models;
 namespace ticonet.Controllers
 {
     [System.Web.Mvc.Authorize]
-    public class InsetsApiController : ApiController
+    public class BusesController : ApiController
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(InsetsApiController));
-        
-        //public ActionResult Index()
-        //{
-        //    return View();
-        //}
-        
+        private static readonly ILog logger = LogManager.GetLogger(typeof(BusesController));
+
         [System.Web.Mvc.HttpGet]
         public JsonResult GetBuses()
         {

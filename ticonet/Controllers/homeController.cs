@@ -10,12 +10,11 @@ using Newtonsoft.Json;
 
 namespace ticonet.Controllers
 {
+    [Authorize]
     public class homeController : Controller
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(homeController));
 
-        // GET: home
-        [Authorize]
         public ActionResult Index()
         {
 
@@ -29,5 +28,32 @@ namespace ticonet.Controllers
             ViewBag.ShowStations = MapHelper.ShowStationsWithoutLine;
             return View();
         }
+
+
+        public ActionResult Buses()
+        {
+            return View();
+        }
+
+        public ActionResult Lines()
+        {
+            return View();
+        }
+
+        public ActionResult BusesToLines()
+        {
+            return View();
+        }
+
+        public ActionResult Calendar()
+        {
+            return View();
+        }
+
+        public ActionResult Schedule()
+        {
+            return View();
+        }
+
     }
 }
