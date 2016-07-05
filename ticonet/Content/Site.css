@@ -19,6 +19,13 @@ html
     height: calc(100% - 40px - 20px);
     position: relative;
     max-width: none;
+    overflow-y : auto;
+    overflow-x : hidden;
+}
+
+body div.navbar {
+    max-height: 70px;
+    overflow: hidden;
 }
 
 footer p {
@@ -77,3 +84,6 @@ tr  th {
     height: calc(100% - 50px - 65px);
 }
 
+hr.hr-thin {
+    margin: 5px 0 5px 0;
+}

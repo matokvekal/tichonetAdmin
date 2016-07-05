@@ -1,4 +1,5 @@
 ﻿@using System.Web.Optimization
+@using Business_Logic
 @section scripts{
     @Scripts.Render("~/bundles/buses")
     <script type="text/javascript">
@@ -6,19 +7,143 @@
     </script>
 }
 
-<div class="header" style="padding-left: 10px; border-bottom: 1px solid #999; ">
+@*<div class="header" style="padding-left: 10px; border-bottom: 1px solid #999; ">
     <h2>
         <a href="javascript:busesAuthority.items.addBus();" title="Add new bus" style="margin-left: 5px;">
             <span class="glyphicon glyphicon-plus"></span>
         </a>
         <span style="margin-left: 5px; font-size: 10pt;" id="spStatus"></span>
     </h2>
-</div>
+</div>*@
+<br />
 <div class="header">
-    <h2>Buses</h2>
+    <hr class="hr-thin" />
+    <h4>Buses</h4>
     <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleBuses"></div>
+    <hr class="hr-thin" />
 </div>
 <div class="content" id="dBusesTable">
     <table id="grBuses"></table>
     <div id="pgBuses"></div>
 </div>
+<script>
+    $(function() {
+        $("#grBuses").jqGrid({
+            url: '/api' + '@Url.Action("GetBuses", "Buses")',
+            datatype: "json",
+            loadonce: false,
+            height: "100%",
+            autowidth: true,
+            regional: "il",
+            hidegrid: false,
+            multiselect: false,
+            pager: "#pgBuses",
+            mtype: "get",
+            rowNum: 25,
+            rowList: [5, 25, 50, 100],
+            viewrecords: true,
+            ignoreCase: true,
+            loadui: "disable",
+            altRows: false,
+            sortable: true,
+            altclass: "ui-state-default",
+            editurl: '/api' + '@Url.Action("EditBus", "Buses")',
+            sortname: 'BusId',
+            sortorder: "asc",
+            colNames: ["Id", "BusId", "PlateNumber", "Owner", "seats", "price", "munifacturedate", "LicensingDueDate", "insuranceDueDate", "winterLicenseDueDate", "brakeTesDueDate" /*, ""*/],
+            colModel: [
+                { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                { name: 'BusId', index: 'BusId', sorttype: "text", width: 110, editable: true },
+                { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: true },
+                { name: 'Owner', index: 'Owner', sorttype: "text", width: 110, editable: true },
+                { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: true, search: false },
+                { name: 'price', index: 'price', sorttype: "text", width: 110, editable: true, search: false },
+                { name: 'munifacturedate', index: 'munifacturedate', sorttype: "text", width: 110, editable: true, search: false },
+                { name: 'LicensingDueDate', index: 'LicensingDueDate', sorttype: "text", width: 110, editable: true, search: false },
+                { name: 'insuranceDueDate', index: 'insuranceDueDate', sorttype: "text", width: 110, editable: true, search: false },
+                { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', sorttype: "text", width: 110, editable: true, search: false },
+                { name: 'brakeTesDueDate', index: 'brakeTesDueDate', sorttype: "text", width: 110, editable: true, search: false },
+            ],
+        })
+        .navGrid('#pgBuses', {
+                edit: false,
+                add: false,
+                del: true,
+                deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")", //"Delete row",
+                refresh: true,
+                refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
+                search: false,
+                view: false
+            } /*, {}, { closeAfterEdit: true }, { closeAfterAdd: true }*/
+        )
+        .inlineNav('#pgBuses', {
+                addtitle: "@DictExpressionBuilderSystem.Translate("grid.AddNewRow")", //"Add new row",
+                edittitle: "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")", //"Edit selected row",
+                savetitle: "@DictExpressionBuilderSystem.Translate("grid.SaveRow")", //"Save row",
+                canceltitle: "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" //"Cancel row editing"
+            }
+        )
+        .navButtonAdd("#pgBuses", {
+            id: "print",
+            buttonicon: "ui-icon-print",
+            caption: "",
+            title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
+            onClickButton: function () {
+                    var postData = $("#grBuses").jqGrid('getGridParam', 'postData');
+                    //alert(postData);
+                }
+            }
+        )
+        .navButtonAdd("#pgBuses", {
+            id: "toExcel",
+            buttonicon: "ui-icon-disk",
+            caption: "",
+            title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
+            onClickButton: function () {
+                    var postData = $("#grBuses").jqGrid('getGridParam', 'postData');
+                    //alert(postData);
+                    window.location.href = '/api' + "@Url.Action("GetExcel", "Buses")";
+                }
+            }
+        )
+        .editRow(busesAuthority.table.lastSel,
+            {
+                keys: true,
+                oneditfunc: function () {
+                    alert("edited");
+                }
+            })
+        .filterToolbar({
+                stringResult: true,
+                enableClear: false
+                //beforeSearch: function () {
+                //    var postData = $("#grBuses").jqGrid('getGridParam', 'postData');
+                //    return false;
+                //},
+                //afterSearch: function() {
+                //    var postData = $("#grBuses").jqGrid('getGridParam', 'postData');
+                //}
+            }
+        )
+        ;
+        //jQuery("#grBuses").jqGrid('filterToolbar', { stringResult: true, enableClear: false });
+
+
+        //    $("#grBuses").jqGrid('editRow', busesAuthority.table.lastSel,
+        //    {
+        //        keys: true,
+        //        oneditfunc: function () {
+        //            alert("edited");
+        //        }
+        //    });
+
+        //    $("#grBuses").jqGrid('navGrid', '#pgBuses',
+        //    {
+        //    });
+
+        //Hide buttons "Clear search"
+        $(".ui-search-clear").remove();
+
+
+    })
+</script>

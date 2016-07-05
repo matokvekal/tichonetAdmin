@@ -2,14 +2,40 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Business_Logic
 {
     public class tblBusLogic : baseLogic
     {
-        public List<Bus> GetList()
+        public IEnumerable<Bus> Buses
         {
-            return DB.Buses.ToList();
+            get { return DB.Buses; }
+        }
+
+        public List<Bus> GetPaged(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters)
+        {
+            var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
+            var searchFilters = searchModel;
+            if (isSearch && !string.IsNullOrWhiteSpace(filters))
+                searchFilters = JsonConvert.DeserializeAnonymousType(filters, searchModel);
+
+            var sortByProperty = typeof(Bus).GetProperty(sortBy);
+            IEnumerable<Bus> query = DB.Buses;
+
+            if (sortOrder == "desc")
+            {
+                query = query.OrderByDescending(x => sortByProperty.GetValue(x, null));
+            }
+            else
+            {
+                query = query.OrderBy(x => sortByProperty.GetValue(x, null));
+            }
+
+            query = query.Skip(rows*(page - 1))
+                .Take(rows);
+
+            return query.ToList();
         }
         
         public Bus GetBus(int id)
@@ -38,7 +64,7 @@ namespace Business_Logic
             return null;
         }
 
-        public static bool Update(Bus bus)
+        public bool Update(Bus bus)
         {
             var res = false;
             try
