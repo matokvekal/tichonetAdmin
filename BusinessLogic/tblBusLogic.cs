@@ -17,12 +17,25 @@ namespace Business_Logic
         {
             var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
             var searchFilters = searchModel;
-            if (isSearch && !string.IsNullOrWhiteSpace(filters))
-                searchFilters = JsonConvert.DeserializeAnonymousType(filters, searchModel);
 
-            var sortByProperty = typeof(Bus).GetProperty(sortBy);
             IEnumerable<Bus> query = DB.Buses;
 
+            if (isSearch && !string.IsNullOrWhiteSpace(filters))
+            {
+                searchFilters = JsonConvert.DeserializeAnonymousType(filters, searchModel);
+                foreach (var rule in searchFilters.rules)
+                {
+                    var filterByProperty = typeof(Bus).GetProperty(rule.field);
+                    if(filterByProperty.PropertyType == typeof(string))
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
+                    else if (filterByProperty.PropertyType == typeof(int))
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
+                    else 
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
+                }
+            }
+
+            var sortByProperty = typeof(Bus).GetProperty(sortBy);
             if (sortOrder == "desc")
             {
                 query = query.OrderByDescending(x => sortByProperty.GetValue(x, null));
@@ -31,6 +44,8 @@ namespace Business_Logic
             {
                 query = query.OrderBy(x => sortByProperty.GetValue(x, null));
             }
+
+
 
             query = query.Skip(rows*(page - 1))
                 .Take(rows);

@@ -236,9 +236,6 @@
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\Buses\BusesAuthority.js" />
-    <Content Include="Scripts\Buses\BusesAuthority.Table.js" />
-    <Content Include="Scripts\Buses\BusesAuthority.Items.js" />
     <Content Include="Scripts\jqGrid\Changes.txt" />
     <Content Include="Scripts\jqGrid\i18n\grid.locale-ar.js" />
     <Content Include="Scripts\jqGrid\i18n\grid.locale-bg.js" />

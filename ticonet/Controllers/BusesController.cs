@@ -22,7 +22,7 @@ namespace ticonet.Controllers
         private static readonly ILog logger = LogManager.GetLogger(typeof(BusesController));
 
         [System.Web.Mvc.HttpGet]
-        public HttpResponseMessage GetBuses(bool _search, int rows, int page, string sidx, string sord, string filters = "")
+        public HttpResponseMessage GetBuses(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
             var buses = new List<BusModel>();
             var totalRecords = 0;
@@ -64,15 +64,15 @@ namespace ticonet.Controllers
             return new JsonResult {Data = true};
         }
 
-        public HttpResponseMessage GetExcel(bool _search, int rows, int page, string sidx, string sord, string filters = "")
+        public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
-            var buses = new List<BusModel>();
+            var buses = new BusModel[] {};
             var totalRecords = 0;
             using (var logic = new tblBusLogic())
             {
                 totalRecords = logic.Buses.Count();
                 buses = logic.GetPaged(_search, totalRecords, 1, sidx, sord, filters)
-                    .Select(z => new BusModel(z)).ToList();
+                    .Select(z => new BusModel(z)).ToArray();
             }
 
             string Name = "Buses";
@@ -80,20 +80,32 @@ namespace ticonet.Controllers
             var worksheet = workbook.Worksheets.Add($"{Name} Sheet");
             worksheet.Outline.SummaryVLocation = XLOutlineSummaryVLocation.Top;
 
-            //buses
+            worksheet.Cell(1, 1).Value = DictExpressionBuilderSystem.Translate("Bus.BusId");
+            worksheet.Cell(1, 2).Value = DictExpressionBuilderSystem.Translate("Bus.PlateNumber");
+            worksheet.Cell(1, 3).Value = DictExpressionBuilderSystem.Translate("Bus.Owner");
+            worksheet.Cell(1, 4).Value = DictExpressionBuilderSystem.Translate("Bus.seats");
+            worksheet.Cell(1, 5).Value = DictExpressionBuilderSystem.Translate("Bus.price");
+            worksheet.Cell(1, 6).Value = DictExpressionBuilderSystem.Translate("Bus.munifacturedate");
+            worksheet.Cell(1, 7).Value = DictExpressionBuilderSystem.Translate("Bus.LicensingDueDate");
+            worksheet.Cell(1, 8).Value = DictExpressionBuilderSystem.Translate("Bus.insuranceDueDate");
+            worksheet.Cell(1, 9).Value = DictExpressionBuilderSystem.Translate("Bus.winterLicenseDueDate");
+            worksheet.Cell(1, 10).Value = DictExpressionBuilderSystem.Translate("Bus.brakeTesDueDate");
 
-            worksheet.Cell(1, 1).Value = "Test 1";
-            worksheet.Cell(1, 2).Value = 1;
-            worksheet.Cell(2, 1).Value = "Test 2";
-            worksheet.Cell(2, 2).Value = 2;
-            worksheet.Cell(3, 1).Value = "Test 3";
-            worksheet.Cell(3, 2).Value = 3;
-            worksheet.Cell(4, 1).Value = "Test 4";
-            worksheet.Cell(4, 2).Value = 4;
-            worksheet.Rows(2, 4).Group();
-            worksheet.Cell(5, 1).Value = "Total";
-            worksheet.Cell(5, 2).SetFormulaA1("=SUM(B1:B4)"); ;
-            worksheet.CollapseRows(1);
+            for (int i = 0; i < buses.Length; i++)
+            {
+                var row = 2 + i;
+                worksheet.Cell(row, 1).Value = buses[i].BusId;
+                worksheet.Cell(row, 2).Value = buses[i].PlateNumber;
+                worksheet.Cell(row, 3).Value = buses[i].Owner;
+                worksheet.Cell(row, 4).Value = buses[i].seats;
+                worksheet.Cell(row, 5).Value = buses[i].price;
+                worksheet.Cell(row, 6).Value = buses[i].munifacturedate;
+                worksheet.Cell(row, 7).Value = buses[i].LicensingDueDate;
+                worksheet.Cell(row, 8).Value = buses[i].insuranceDueDate;
+                worksheet.Cell(row, 9).Value = buses[i].winterLicenseDueDate;
+                worksheet.Cell(row, 10).Value = buses[i].brakeTesDueDate;
+            }
+
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             worksheet.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.None;
             worksheet.Columns().AdjustToContents();
@@ -110,6 +122,21 @@ namespace ticonet.Controllers
                 result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             }
             return result;
+        }
+
+
+        public BusModel[] GetPrint(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
+        {
+            var buses = new BusModel[] { };
+            var totalRecords = 0;
+            using (var logic = new tblBusLogic())
+            {
+                totalRecords = logic.Buses.Count();
+                buses = logic.GetPaged(_search, totalRecords, 1, sidx, sord, filters)
+                    .Select(z => new BusModel(z)).ToArray();
+            }
+
+            return buses;
         }
     }
 }
