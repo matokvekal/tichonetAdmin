@@ -51,12 +51,15 @@
                     editurl: '/api' + '@Url.Action("EditLine", "Lines")',
                     sortname: 'LineName',
                     sortorder: "asc",
-                    colNames: ["Id", "LineName", "LineNumber", "Direction", "IsActive", "totalStudents", "Duration", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sut", "BusId", ""],
+                    colNames: ["Id", "LineName", "LineNumber", "Direction", "IsActive", "totalStudents", "Duration", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sut", "BusIdDescription", "BusId", ""],
                     colModel: [
                         { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                         { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: true },
                         { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110, editable: true },
-                        { name: 'Direction', index: 'Direction', sorttype: "text", width: 110, editable: true, search: false },
+                        {
+                            name: 'Direction', index: 'Direction', sorttype: "select", width: 110, editable: true, search: false,
+                            edittype: 'select', formatter: 'select', editoptions: { value: { '0': 'To', '1': 'From' } }
+                        },
                         { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                         { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: true },
                         { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
@@ -67,14 +70,60 @@
                         { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                         { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                         { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                        { name: 'BusId', index: 'BusId', sorttype: "text", width: 80, editable: true, search: false },
-                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: { keys: true, editformbutton: true, editbutton: true, delbutton: true } },
+                        { name: 'BusIdDescription', index: 'BusIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                        {
+                            name: 'BusId', index: 'BusId', sorttype: "text", editable: true, search: false, 
+                            edittype: "select",
+                            editoptions: {
+                                dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "Lines")',
+                                postData: function (rowid, value, cmName) {
+                                    return {
+                                        lineId: rowid
+                                    }
+                                },
+                                buildSelect: function(data) {
+                                    var response = jQuery.parseJSON(data);
+                                    var s = '<select>';
+                                    if (response && response.Data.length) {
+                                        for (var i = 0, l = response.Data.length; i < l; i++) {
+                                            var ri = response.Data[i];
+                                            s += '<option value="' + ri.Id + '">' + ri.BusId + '</option>';
+                                        }
+                                    }
+                                    return s + "</select>";
+                                }
+                            }
+                        },
+                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: { keys: true, editformbutton: false, editbutton: true, delbutton: true } },
                     ],
+                    saveAfterSelect: true,
+                    onSelectRow: function (id) {
+                        lastSelection = -1;
+                    },
+                    ondblClickRow: function (rowid, iRow, iCol) {
+                        editRow(rowid);
+                        //$("#grLines").editCell(iRow, iCol, true);
+                    },
+                    loadComplete: function (data) {
+                        var grid = $("#grLines");
+                        var colModel = grid.getGridParam('colModel');
+                        $.each(colModel, function (index, col) {
+                            if (col.edittype === 'select') {
+                                $.each(grid.getDataIDs(), function (index, id) {
+                                    var row = grid.getRowData(id);
+                                    var value = row[col.name];
+                                    var text = row[col.name + "Description"];
+                                    row[col.name] = text;
+                                    grid.setRowData(id, row);
+                                });
+                            }
+                        });
+                    }
                 })
                 .navGrid('#pgLines', {
-                        edit: false,
                         add: false,
-                        del: true,
+                        edit: false,
+                        del: false,
                         deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")", //"Delete row",
                         refresh: true,
                         refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
@@ -83,7 +132,8 @@
                     } /*, {}, { closeAfterEdit: true }, { closeAfterAdd: true }*/
                 )
                 .inlineNav('#pgLines', {
-                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.AddNewRow")", //"Add new row",
+                        add: false,
+                        edit: false,
                         edittitle: "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")", //"Edit selected row",
                         savetitle: "@DictExpressionBuilderSystem.Translate("grid.SaveRow")", //"Save row",
                         canceltitle: "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" //"Cancel row editing"
@@ -153,6 +203,19 @@
 
             //Hide buttons "Clear search"
             $(".ui-search-clear").remove();
+
+            var lastSelection;
+
+            function editRow(id) {
+                if (id && id !== lastSelection) {
+                    var grid = $("#grLines");
+                    grid.jqGrid('restoreRow', lastSelection);
+                    //grid.jqGrid('editRow', id, { keys: true });
+                    jQuery.fn.fmatter.rowactions.call($("#grLines tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                    lastSelection = id;
+                }
+            }
+
         })
     </script>
 }

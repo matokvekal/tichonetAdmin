@@ -302,5 +302,32 @@ namespace Business_Logic
             }
             return res;
         }
+
+        public void SaveChanges()
+        {
+            DB.SaveChanges();
+        }
+
+        public IEnumerable<Bus> GetAvailableBuses(int lineId)
+        {
+            return DB.Buses
+                .Include(x => x.BusesToLines)
+                .Where(x => !x.BusesToLines.Any() || x.BusesToLines.Any(b => b.LineId == lineId))
+                .ToList();
+        } 
+
+        public void AddBusToLine(int lineId, int busId)
+        {
+            var existingBusInLine = DB.BusesToLines.FirstOrDefault(x => x.BusId == busId);
+            if (existingBusInLine == null)
+            {
+                DB.BusesToLines.Add(new BusesToLine
+                {
+                    LineId = lineId,
+                    BusId = busId
+                });
+            }
+            DB.SaveChanges();
+        } 
     }
 }

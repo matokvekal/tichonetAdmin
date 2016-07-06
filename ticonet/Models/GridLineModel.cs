@@ -14,7 +14,7 @@ namespace ticonet.Models
 
         public GridLineModel(Line data)
         {
-            var busToLine = data.BusesToLines.FirstOrDefault();
+            var bus = data.BusesToLines.Select(x => x.Bus).FirstOrDefault();
             Id = data.Id;
             LineName = data.LineName;
             LineNumber = data.LineNumber;
@@ -29,7 +29,8 @@ namespace ticonet.Models
             Thu = data.Thu.HasValue ? data.Thu.Value : false;
             Fri = data.Fri.HasValue ? data.Fri.Value : false;
             Sut = data.Sut.HasValue ? data.Sut.Value : false;
-            BusId = busToLine != null ? busToLine.BusId : 0;
+            BusId = bus != null ? bus.Id : 0;
+            BusIdDescription = string.Empty;
         }
 
         public int Id { get; set; }
@@ -62,27 +63,25 @@ namespace ticonet.Models
 
         public int BusId { get; set; }
 
+        public string BusIdDescription { get; set; }
+
         public string Oper { get; set; }
 
-        public Line ToDbModel()
+        public void UpdateDbModel(Line existingLine)
         {
-            return new Line
-            {
-                Id = Id,
-                LineName = LineName,
-                LineNumber = LineNumber,
-                Direction = Direction,
-                IsActive = IsActive,
-                totalStudents = totalStudents,
-                Duration = Duration,
-                Sun = Sun,
-                Mon = Mon,
-                Tue = Tue,
-                Wed = Wed,
-                Thu = Thu,
-                Fri = Fri,
-                Sut = Sut
-            };
+            existingLine.LineName = LineName;
+            existingLine.LineNumber = LineNumber;
+            existingLine.Direction = Direction;
+            existingLine.IsActive = IsActive;
+            existingLine.totalStudents = totalStudents;
+            // existingLine.Duration = Duration; // Can not be modefied in lines grid
+            existingLine.Sun = Sun;
+            existingLine.Mon = Mon;
+            existingLine.Tue = Tue;
+            existingLine.Wed = Wed;
+            existingLine.Thu = Thu;
+            existingLine.Fri = Fri;
+            existingLine.Sut = Sut;
         }
     }
 }

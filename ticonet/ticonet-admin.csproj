@@ -344,6 +344,7 @@
     <Compile Include="Models\LineActiveSwitchModel.cs" />
     <Compile Include="Models\BusModel.cs" />
     <Compile Include="Models\GridLineModel.cs" />
+    <Compile Include="Models\LineBusModel.cs" />
     <Compile Include="Models\LineModel.cs" />
     <Compile Include="Models\MapStateModel.cs" />
     <Compile Include="Models\SaveStationResultModel.cs" />

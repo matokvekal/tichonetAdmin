@@ -30,6 +30,14 @@ namespace ticonet.Controllers
             {
                 lines = logic.GetPaged(_search, rows, page, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToList();
+                using (var busLogic = new tblBusLogic())
+                {
+                    lines.Where(w => w.BusId > 0).ForEach(x =>
+                    {
+                        var bus = busLogic.GetBus(x.BusId);
+                        x.BusIdDescription = bus != null ? bus.BusId : "";
+                    });
+                }
                 totalRecords = logic.Lines.Count();
             }
             return Request.CreateResponse(
@@ -50,11 +58,17 @@ namespace ticonet.Controllers
             {
                 switch (model.Oper)
                 {
-                    case "add":
-                        logic.SaveLine(model.ToDbModel());
-                        break;
+                    //case "add":
+                    //    logic.SaveLine(model.ToDbModel());
+                    //    break;
                     case "edit":
-                        logic.Update(model.ToDbModel());
+                        var existingLine = logic.GetLine(model.Id);
+                        if (existingLine != null)
+                        {
+                            model.UpdateDbModel(existingLine);
+                            logic.SaveChanges();
+                            logic.AddBusToLine(model.Id, model.BusId);
+                        }
                         break;
                     case "del":
                         logic.DeleteLine(model.Id);
@@ -145,6 +159,18 @@ namespace ticonet.Controllers
             }
 
             return lines;
+        }
+
+        public JsonResult GetAvailableBuses(int lineId)
+        {
+            var buses = new List<LineBusModel>();
+            using (var logic = new LineLogic())
+            {
+                buses = logic.GetAvailableBuses(lineId)
+                    .Select(z => new LineBusModel(z)).ToList();
+            }
+
+            return new JsonResult { Data = buses };
         }
     }
 }
