@@ -14,6 +14,7 @@ namespace ticonet.Models
             //BusType = data.BusType;
             //Occupation = data.Occupation;
             Owner = data.Owner;
+            OwnerDescription = ""; // Owner.HasValue ? "Company #" + Owner.Value.ToString() : "Select Company";
             //GpsSource = data.GpsSource;
             //GpsCode = data.GpsCode;
             seats = data.seats;
@@ -37,6 +38,7 @@ namespace ticonet.Models
 
         //public int? Occupation { get; set; }
 
+        public string OwnerDescription { get; set; }
         public int? Owner { get; set; }
 
         //public int? GpsSource { get; set; }

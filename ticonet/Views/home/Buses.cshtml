@@ -14,6 +14,17 @@
 </div>
 
 
+
+@*<div style="margin-left: 8px;">
+    <div title="Edit selected row" style="float: left; cursor: pointer; display: none;" class="ui-pg-div ui-inline-edit" id="jEditButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'edit');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-pencil"></span></div>
+    <div title="Delete selected row" style="float: left; display: none;" class="ui-pg-div ui-inline-del" id="jDeleteButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'del');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-trash"></span></div>
+    <div title="Save row" style="float: left;" class="ui-pg-div ui-inline-save" id="jSaveButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'save');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-disk"></span></div>
+    <div title="Cancel row editing" style="float: left;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'cancel');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-cancel"></span></div>
+</div>*@
+
+
+
+
 @section scripts{
     @Scripts.Render("~/bundles/jqGrid")
     <script>
@@ -52,45 +63,79 @@
                     editurl: '/api' + '@Url.Action("EditBus", "Buses")',
                     sortname: 'BusId',
                     sortorder: "asc",
-                    colNames: ["Id", "BusId", "PlateNumber", "Owner", "seats", "price", "munifacturedate", "LicensingDueDate", "insuranceDueDate", "winterLicenseDueDate", "brakeTesDueDate", ""],
+                    colNames: ["Id", "BusId", "PlateNumber", "OwnerDescription", "Owner", "seats", "price", "munifacturedate", "LicensingDueDate", "insuranceDueDate", "winterLicenseDueDate", "brakeTesDueDate", ""],
                     colModel: [
                         { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                         { name: 'BusId', index: 'BusId', sorttype: "text", width: 90, editable: true },
                         { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: true },
-                        //{ name: 'Owner', index: 'Owner', sorttype: "text", width: 110, editable: true, edittype: 'select', formatter: 'select', editoptions: { value: function () { return { '1': 'Owner 1', '2': 'Owner 2' } } } },
-
+                        { name: 'OwnerDescription', index: 'OwnerDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                         {
-                            name: 'Owner', index: 'Owner', sorttype: "text", editable: true, edittype: "select", // formatter: "select",
+                            name: 'Owner',
+                            index: 'Owner',
+                            sorttype: "text",
+                            search: false,
+                            editable: true,
+                            edittype: "select",
                             editoptions: {
                                 dataUrl: '/api' + '@Url.Action("GetBusCompanies", "Buses")',
-                                buildSelect: function (data) {
+                                //postData: function (rowid, value, cmName) {
+                                //    return {
+                                //        id: rowid
+                                //    }
+                                //},
+                                buildSelect: function(data) {
                                     var response = jQuery.parseJSON(data);
                                     var s = '<select>';
                                     if (response && response.Data.length) {
-                                        for (var i = 0, l = response.Data.length; i < l ; i++) {
+                                        for (var i = 0, l = response.Data.length; i < l; i++) {
                                             var ri = response.Data[i];
                                             s += '<option value="' + ri.pk + '">' + ri.companyName + '</option>';
                                         }
                                     }
                                     return s + "</select>";
-                                }
-                            }
+                                },
+                            },
                         },
-
                         { name: 'seats', index: 'seats', sorttype: "text", width: 60, editable: true, search: false, formatter: 'integer', sorttype: "int" },
                         { name: 'price', index: 'price', sorttype: "text", width: 80, editable: true, search: false, formatter: 'number', sorttype: "float" },
-                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: { keys: true, editformbutton: true, editbutton: true, delbutton: true } },
+                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 70, align: 'center', search: false, formatter: 'actions', formatoptions: { keys: true, editformbutton: false, editbutton: true, delbutton: true } },
                     ],
+                    saveAfterSelect: true,
+                    addedrow: "last",
+                    //cellEdit: true,
+                    //beforeSelectRow: function (rowid) { return false; },
+                    onSelectRow: function (id) {
+                        lastSelection = -1;
+                    },
+                    ondblClickRow: function(rowid, iRow, iCol) {
+                        editRow(rowid);
+                        //$("#grBuses").editCell(iRow, iCol, true);
+                    },
+                    loadComplete: function (data) {
+                        var grid = $("#grBuses");
+                        var colModel = grid.getGridParam('colModel');
+                        $.each(colModel, function (index, col) {
+                            if (col.edittype === 'select') {
+                                $.each(grid.getDataIDs(), function (index, id) {
+                                    var row = grid.getRowData(id);
+                                    var value = row[col.name];
+                                    var text = row[col.name+"Description"];
+                                    row[col.name] = text;
+                                    grid.setRowData(id, row);
+                                });
+                            }
+                        });
+                    }
                 })
                 .navGrid('#pgBuses', {
                         edit: false,
                         add: false,
-                        del: true,
+                        del: false,
                         deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")", //"Delete row",
                         refresh: true,
                         refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
@@ -99,6 +144,10 @@
                     } /*, {}, { closeAfterEdit: true }, { closeAfterAdd: true }*/
                 )
                 .inlineNav('#pgBuses', {
+                        add: true,
+                        edit: false,
+                        //editParams: { position: "last" },
+                        addParams: { position: "last" },
                         addtitle: "@DictExpressionBuilderSystem.Translate("grid.AddNewRow")", //"Add new row",
                         edittitle: "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")", //"Edit selected row",
                         savetitle: "@DictExpressionBuilderSystem.Translate("grid.SaveRow")", //"Save row",
@@ -169,6 +218,18 @@
 
             //Hide buttons "Clear search"
             $(".ui-search-clear").remove();
-        })
+
+            var lastSelection;
+
+            function editRow(id) {
+                if (id && id !== lastSelection) {
+                    var grid = $("#grBuses");
+                    grid.jqGrid('restoreRow', lastSelection);
+                    //grid.jqGrid('editRow', id, { keys: true });
+                    jQuery.fn.fmatter.rowactions.call($("#grBuses tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                    lastSelection = id;
+                }
+            }
+        });
     </script>
 }
