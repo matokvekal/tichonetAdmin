@@ -16,5 +16,7 @@ namespace Business_Logic
     {
         public int streetId { get; set; }
         public string streetName { get; set; }
+        public int cityId { get; set; }
+        public string cityName { get; set; }
     }
 }

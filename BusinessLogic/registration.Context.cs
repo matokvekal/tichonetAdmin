@@ -36,12 +36,13 @@ namespace Business_Logic
         public virtual DbSet<BusesToLine> BusesToLines { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<Line> Lines { get; set; }
-        public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Station> Stations { get; set; }
         public virtual DbSet<StationsToLine> StationsToLines { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<StudentsToLine> StudentsToLines { get; set; }
         public virtual DbSet<tblSystem> tblSystems { get; set; }
         public virtual DbSet<tblDictSystem> tblDictSystems { get; set; }
+        public virtual DbSet<tblBusCompany> tblBusCompanies { get; set; }
+        public virtual DbSet<tblSchedule> tblSchedules { get; set; }
     }
 }

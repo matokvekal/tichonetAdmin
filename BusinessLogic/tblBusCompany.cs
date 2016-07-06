@@ -12,22 +12,22 @@ namespace Business_Logic
     using System;
     using System.Collections.Generic;
     
-    public partial class Driver
+    public partial class tblBusCompany
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Driver()
+        public tblBusCompany()
         {
-            this.Schedules = new HashSet<tblSchedule>();
+            this.Buses = new HashSet<Bus>();
         }
     
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Company { get; set; }
-        public string CellNumber { get; set; }
-        public string GpsId { get; set; }
+        public int pk { get; set; }
+        public string companyName { get; set; }
+        public string manager { get; set; }
+        public string tel { get; set; }
+        public string cell { get; set; }
+        public string email { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblSchedule> Schedules { get; set; }
+        public virtual ICollection<Bus> Buses { get; set; }
     }
 }

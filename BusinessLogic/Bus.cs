@@ -18,7 +18,7 @@ namespace Business_Logic
         public Bus()
         {
             this.BusesToLines = new HashSet<BusesToLine>();
-            this.Schedules = new HashSet<Schedule>();
+            this.Schedules = new HashSet<tblSchedule>();
         }
     
         public int Id { get; set; }
@@ -39,7 +39,8 @@ namespace Business_Logic
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BusesToLine> BusesToLines { get; set; }
+        public virtual tblBusCompany BusCompany { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Schedule> Schedules { get; set; }
+        public virtual ICollection<tblSchedule> Schedules { get; set; }
     }
 }

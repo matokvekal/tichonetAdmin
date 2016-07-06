@@ -144,6 +144,17 @@
           <Property Name="durationSec" Type="int" />
           <Property Name="totalSend" Type="int" />
         </EntityType>
+        <EntityType Name="tblBusCompany">
+          <Key>
+            <PropertyRef Name="pk" />
+          </Key>
+          <Property Name="pk" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="companyName" Type="nvarchar" MaxLength="50" />
+          <Property Name="manager" Type="nvarchar" MaxLength="50" />
+          <Property Name="tel" Type="nvarchar" MaxLength="50" />
+          <Property Name="cell" Type="nvarchar" MaxLength="50" />
+          <Property Name="email" Type="nvarchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="tblCulture">
           <Key>
             <PropertyRef Name="id" />
@@ -197,6 +208,8 @@
           <Property Name="subsidy" Type="bit" />
           <Property Name="allredyUsed" Type="bit" />
           <Property Name="oneParentOnly" Type="bit" Nullable="false" />
+          <Property Name="PaymentPlanID" Type="nvarchar(max)" />
+          <Property Name="PaymentRequestID" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="tblSchedule">
           <Key>
@@ -213,10 +226,13 @@
         </EntityType>
         <EntityType Name="tblStreet">
           <Key>
+            <PropertyRef Name="cityId" />
             <PropertyRef Name="streetId" />
           </Key>
+          <Property Name="cityId" Type="int" Nullable="false" />
           <Property Name="streetId" Type="int" Nullable="false" />
-          <Property Name="streetName" Type="nvarchar" MaxLength="50" />
+          <Property Name="streetName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="cityName" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="tblStudent">
           <Key>
@@ -253,6 +269,8 @@
           <Property Name="siblingAtSchool" Type="bit" />
           <Property Name="specialRequest" Type="bit" />
           <Property Name="request" Type="nvarchar" MaxLength="250" />
+          <Property Name="cityId" Type="int" />
+          <Property Name="streetId" Type="int" />
         </EntityType>
         <EntityType Name="tblSystem">
           <Key>
@@ -313,6 +331,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_OwnerBusCompany_PK">
+          <End Role="tblBusCompany" Type="Self.tblBusCompany" Multiplicity="0..1" />
+          <End Role="Buses" Type="Self.Buses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblBusCompany">
+              <PropertyRef Name="pk" />
+            </Principal>
+            <Dependent Role="Buses">
+              <PropertyRef Name="Owner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Buses">
+          <End Role="Buses" Type="Self.Buses" Multiplicity="0..1" />
+          <End Role="tblSchedule" Type="Self.tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Buses">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="BusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Drivers">
+          <End Role="Drivers" Type="Self.Drivers" Multiplicity="0..1" />
+          <End Role="tblSchedule" Type="Self.tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Drivers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Lines">
+          <End Role="Lines" Type="Self.Lines" Multiplicity="0..1" />
+          <End Role="tblSchedule" Type="Self.tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Lines">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_StationsToLines_ToLines">
           <End Role="Lines" Type="Self.Lines" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -365,6 +431,7 @@
           <EntitySet Name="StationsToLines" EntityType="Self.StationsToLines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StudentsToLines" EntityType="Self.StudentsToLines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblAlertsQueue" EntityType="Self.tblAlertsQueue" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblBusCompany" EntityType="Self.tblBusCompany" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCulture" EntityType="Self.tblCulture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblFamily" EntityType="Self.tblFamily" Schema="dbo" store:Type="Tables" />
@@ -381,6 +448,22 @@
           <AssociationSet Name="FK_BusesToLines_ToLines" Association="Self.FK_BusesToLines_ToLines">
             <End Role="Lines" EntitySet="Lines" />
             <End Role="BusesToLines" EntitySet="BusesToLines" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OwnerBusCompany_PK" Association="Self.FK_OwnerBusCompany_PK">
+            <End Role="tblBusCompany" EntitySet="tblBusCompany" />
+            <End Role="Buses" EntitySet="Buses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Buses" Association="Self.FK_Schedule_Buses">
+            <End Role="Buses" EntitySet="Buses" />
+            <End Role="tblSchedule" EntitySet="tblSchedule" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Drivers" Association="Self.FK_Schedule_Drivers">
+            <End Role="Drivers" EntitySet="Drivers" />
+            <End Role="tblSchedule" EntitySet="tblSchedule" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Lines" Association="Self.FK_Schedule_Lines">
+            <End Role="Lines" EntitySet="Lines" />
+            <End Role="tblSchedule" EntitySet="tblSchedule" />
           </AssociationSet>
           <AssociationSet Name="FK_StationsToLines_ToLines" Association="Self.FK_StationsToLines_ToLines">
             <End Role="Lines" EntitySet="Lines" />
@@ -411,7 +494,6 @@
           <EntitySet Name="BusesToLines" EntityType="BusProjectModel.BusesToLine" />
           <EntitySet Name="Drivers" EntityType="BusProjectModel.Driver" />
           <EntitySet Name="Lines" EntityType="BusProjectModel.Line" />
-          <EntitySet Name="Schedules" EntityType="BusProjectModel.Schedule" />
           <EntitySet Name="Stations" EntityType="BusProjectModel.Station" />
           <EntitySet Name="StationsToLines" EntityType="BusProjectModel.StationsToLine" />
           <EntitySet Name="Users" EntityType="BusProjectModel.User" />
@@ -419,21 +501,9 @@
             <End Role="Bus" EntitySet="Buses" />
             <End Role="BusesToLine" EntitySet="BusesToLines" />
           </AssociationSet>
-          <AssociationSet Name="FK_Schedule_ToBuses" Association="BusProjectModel.FK_Schedule_ToBuses">
-            <End EntitySet="Buses" Role="Bus" />
-            <End EntitySet="Schedules" Role="Schedule" />
-          </AssociationSet>
           <AssociationSet Name="FK_BusesToLines_ToLines" Association="BusProjectModel.FK_BusesToLines_ToLines">
             <End Role="Line" EntitySet="Lines" />
             <End Role="BusesToLine" EntitySet="BusesToLines" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_ToDrivers" Association="BusProjectModel.FK_Schedule_ToDrivers">
-            <End Role="Driver" EntitySet="Drivers" />
-            <End Role="Schedule" EntitySet="Schedules" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_ToLines" Association="BusProjectModel.FK_Schedule_ToLines">
-            <End Role="Line" EntitySet="Lines" />
-            <End Role="Schedule" EntitySet="Schedules" />
           </AssociationSet>
           <AssociationSet Name="FK_StationsToLines_ToLines" Association="BusProjectModel.FK_StationsToLines_ToLines">
             <End Role="Line" EntitySet="Lines" />
@@ -453,6 +523,24 @@
           <AssociationSet Name="FK_StudentsToLines_ToLines" Association="BusProjectModel.FK_StudentsToLines_ToLines">
             <End Role="Line" EntitySet="Lines" />
             <End Role="StudentsToLine" EntitySet="StudentsToLines" />
+          </AssociationSet>
+          <EntitySet Name="tblBusCompanies" EntityType="BusProjectModel.tblBusCompany" />
+          <AssociationSet Name="FK_OwnerBusCompany_PK" Association="BusProjectModel.FK_OwnerBusCompany_PK">
+            <End Role="tblBusCompany" EntitySet="tblBusCompanies" />
+            <End Role="Bus" EntitySet="Buses" />
+          </AssociationSet>
+          <EntitySet Name="tblSchedules" EntityType="BusProjectModel.tblSchedule" />
+          <AssociationSet Name="FK_Schedule_Buses" Association="BusProjectModel.FK_Schedule_Buses">
+            <End Role="Bus" EntitySet="Buses" />
+            <End Role="tblSchedule" EntitySet="tblSchedules" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Drivers" Association="BusProjectModel.FK_Schedule_Drivers">
+            <End Role="Driver" EntitySet="Drivers" />
+            <End Role="tblSchedule" EntitySet="tblSchedules" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Lines" Association="BusProjectModel.FK_Schedule_Lines">
+            <End Role="Line" EntitySet="Lines" />
+            <End Role="tblSchedule" EntitySet="tblSchedules" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="tblCulture">
@@ -474,9 +562,12 @@
         <EntityType Name="tblStreet">
           <Key>
             <PropertyRef Name="streetId" />
+            <PropertyRef Name="cityId" />
           </Key>
           <Property Name="streetId" Type="Int32" Nullable="false" />
-          <Property Name="streetName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="streetName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="cityId" Type="Int32" Nullable="false" />
+          <Property Name="cityName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -524,6 +615,8 @@
           <Property Name="siblingAtSchool" Type="Boolean" />
           <Property Name="specialRequest" Type="Boolean" />
           <Property Name="request" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="cityId" Type="Int32" />
+          <Property Name="streetId" Type="Int32" />
         </EntityType>
         <EntityType Name="tblFamily">
           <Key>
@@ -557,6 +650,8 @@
           <Property Name="subsidy" Type="Boolean" />
           <Property Name="allredyUsed" Type="Boolean" />
           <Property Name="oneParentOnly" Type="Boolean" Nullable="false" />
+          <Property Name="PaymentPlanID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PaymentRequestID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblAlertsQueue">
           <Key>
@@ -594,7 +689,6 @@
           <Property Name="GpsSource" Type="Int32" />
           <Property Name="GpsCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToBuses" FromRole="Bus" ToRole="BusesToLine" />
-          <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToBuses" FromRole="Bus" ToRole="Schedule" />
           <Property Name="seats" Type="Int32" />
           <Property Name="price" Type="Double" />
           <Property Name="munifacturedate" Type="DateTime" Precision="0" />
@@ -602,6 +696,8 @@
           <Property Name="insuranceDueDate" Type="DateTime" Precision="0" />
           <Property Name="winterLicenseDueDate" Type="DateTime" Precision="0" />
           <Property Name="brakeTesDueDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="BusCompany" Relationship="BusProjectModel.FK_OwnerBusCompany_PK" FromRole="Bus" ToRole="tblBusCompany" />
+          <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_Buses" FromRole="Bus" ToRole="tblSchedule" />
         </EntityType>
         <EntityType Name="BusesToLine">
           <Key>
@@ -623,7 +719,7 @@
           <Property Name="Company" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CellNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="GpsId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToDrivers" FromRole="Driver" ToRole="Schedule" />
+          <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_Drivers" FromRole="Driver" ToRole="tblSchedule" />
         </EntityType>
         <EntityType Name="Line">
           <Key>
@@ -637,7 +733,6 @@
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="totalStudents" Type="Int32" />
           <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="Line" ToRole="BusesToLine" />
-          <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_ToLines" FromRole="Line" ToRole="Schedule" />
           <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
           <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="StudentsToLines" Relationship="BusProjectModel.FK_StudentsToLines_ToLines" FromRole="Line" ToRole="StudentsToLine" />
@@ -656,20 +751,7 @@
           <Property Name="FriTime" Type="DateTime" Precision="3" />
           <Property Name="Sut" Type="Boolean" />
           <Property Name="SutTime" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="Schedule">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Direction" Type="Int32" Nullable="false" />
-          <Property Name="LineId" Type="Int32" Nullable="false" />
-          <Property Name="DriverId" Type="Int32" Nullable="false" />
-          <Property Name="BusId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Bus" Relationship="BusProjectModel.FK_Schedule_ToBuses" FromRole="Schedule" ToRole="Bus" />
-          <NavigationProperty Name="Driver" Relationship="BusProjectModel.FK_Schedule_ToDrivers" FromRole="Schedule" ToRole="Driver" />
-          <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_Schedule_ToLines" FromRole="Schedule" ToRole="Line" />
+          <NavigationProperty Name="Schedules" Relationship="BusProjectModel.FK_Schedule_Lines" FromRole="Line" ToRole="tblSchedule" />
         </EntityType>
         <EntityType Name="Station">
           <Key>
@@ -723,20 +805,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Schedule_ToBuses">
-          <End Type="BusProjectModel.Bus" Multiplicity="1" Role="Bus">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="BusProjectModel.Schedule" Multiplicity="*" Role="Schedule" />
-          <ReferentialConstraint>
-            <Principal Role="Bus">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Schedule">
-              <PropertyRef Name="BusId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_BusesToLines_ToLines">
           <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -747,34 +815,6 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="BusesToLine">
-              <PropertyRef Name="LineId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Schedule_ToDrivers">
-          <End Type="BusProjectModel.Driver" Role="Driver" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="BusProjectModel.Schedule" Role="Schedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Driver">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Schedule">
-              <PropertyRef Name="DriverId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Schedule_ToLines">
-          <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="BusProjectModel.Schedule" Role="Schedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Line">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Schedule">
               <PropertyRef Name="LineId" />
             </Dependent>
           </ReferentialConstraint>
@@ -873,6 +913,82 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="StudentsToLine">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="tblBusCompany">
+          <Key>
+            <PropertyRef Name="pk" />
+          </Key>
+          <Property Name="pk" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="companyName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="manager" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="tel" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="cell" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Buses" Relationship="BusProjectModel.FK_OwnerBusCompany_PK" FromRole="tblBusCompany" ToRole="Bus" />
+        </EntityType>
+        <Association Name="FK_OwnerBusCompany_PK">
+          <End Type="BusProjectModel.tblBusCompany" Role="tblBusCompany" Multiplicity="0..1" />
+          <End Type="BusProjectModel.Bus" Role="Bus" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblBusCompany">
+              <PropertyRef Name="pk" />
+            </Principal>
+            <Dependent Role="Bus">
+              <PropertyRef Name="Owner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="tblSchedule">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="Direction" Type="Int32" />
+          <Property Name="LineId" Type="Int32" />
+          <Property Name="DriverId" Type="Int32" />
+          <Property Name="BusId" Type="Int32" />
+          <Property Name="leaveTime" Type="DateTime" Precision="7" />
+          <Property Name="arriveTime" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Bus" Relationship="BusProjectModel.FK_Schedule_Buses" FromRole="tblSchedule" ToRole="Bus" />
+          <NavigationProperty Name="Driver" Relationship="BusProjectModel.FK_Schedule_Drivers" FromRole="tblSchedule" ToRole="Driver" />
+          <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_Schedule_Lines" FromRole="tblSchedule" ToRole="Line" />
+        </EntityType>
+        <Association Name="FK_Schedule_Buses">
+          <End Type="BusProjectModel.Bus" Role="Bus" Multiplicity="0..1" />
+          <End Type="BusProjectModel.tblSchedule" Role="tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bus">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="BusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Drivers">
+          <End Type="BusProjectModel.Driver" Role="Driver" Multiplicity="0..1" />
+          <End Type="BusProjectModel.tblSchedule" Role="tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Lines">
+          <End Type="BusProjectModel.Line" Role="Line" Multiplicity="0..1" />
+          <End Type="BusProjectModel.tblSchedule" Role="tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Line">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
               <PropertyRef Name="LineId" />
             </Dependent>
           </ReferentialConstraint>
@@ -1063,6 +1179,8 @@
           <EntitySetMapping Name="tblStreets">
             <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.tblStreet)">
               <MappingFragment StoreEntitySet="tblStreet">
+                <ScalarProperty Name="cityName" ColumnName="cityName" />
+                <ScalarProperty Name="cityId" ColumnName="cityId" />
                 <ScalarProperty Name="streetName" ColumnName="streetName" />
                 <ScalarProperty Name="streetId" ColumnName="streetId" />
               </MappingFragment>
@@ -1071,6 +1189,8 @@
           <EntitySetMapping Name="tblStudents">
             <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.tblStudent)">
               <MappingFragment StoreEntitySet="tblStudent">
+                <ScalarProperty Name="streetId" ColumnName="streetId" />
+                <ScalarProperty Name="cityId" ColumnName="cityId" />
                 <ScalarProperty Name="request" ColumnName="request" />
                 <ScalarProperty Name="specialRequest" ColumnName="specialRequest" />
                 <ScalarProperty Name="siblingAtSchool" ColumnName="siblingAtSchool" />
@@ -1108,6 +1228,8 @@
           <EntitySetMapping Name="tblFamilies">
             <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.tblFamily)">
               <MappingFragment StoreEntitySet="tblFamily">
+                <ScalarProperty Name="PaymentRequestID" ColumnName="PaymentRequestID" />
+                <ScalarProperty Name="PaymentPlanID" ColumnName="PaymentPlanID" />
                 <ScalarProperty Name="oneParentOnly" ColumnName="oneParentOnly" />
                 <ScalarProperty Name="allredyUsed" ColumnName="allredyUsed" />
                 <ScalarProperty Name="subsidy" ColumnName="subsidy" />
@@ -1167,9 +1289,23 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Schedules">
-            <EntityTypeMapping TypeName="IsTypeOf(BusProjectModel.Schedule)">
+          <EntitySetMapping Name="tblBusCompanies">
+            <EntityTypeMapping TypeName="BusProjectModel.tblBusCompany">
+              <MappingFragment StoreEntitySet="tblBusCompany">
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="cell" ColumnName="cell" />
+                <ScalarProperty Name="tel" ColumnName="tel" />
+                <ScalarProperty Name="manager" ColumnName="manager" />
+                <ScalarProperty Name="companyName" ColumnName="companyName" />
+                <ScalarProperty Name="pk" ColumnName="pk" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSchedules">
+            <EntityTypeMapping TypeName="BusProjectModel.tblSchedule">
               <MappingFragment StoreEntitySet="tblSchedule">
+                <ScalarProperty Name="arriveTime" ColumnName="arriveTime" />
+                <ScalarProperty Name="leaveTime" ColumnName="leaveTime" />
                 <ScalarProperty Name="BusId" ColumnName="BusId" />
                 <ScalarProperty Name="DriverId" ColumnName="DriverId" />
                 <ScalarProperty Name="LineId" ColumnName="LineId" />

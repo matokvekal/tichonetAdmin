@@ -18,9 +18,9 @@ namespace Business_Logic
         public Line()
         {
             this.BusesToLines = new HashSet<BusesToLine>();
-            this.Schedules = new HashSet<Schedule>();
             this.StationsToLines = new HashSet<StationsToLine>();
             this.StudentsToLines = new HashSet<StudentsToLine>();
+            this.Schedules = new HashSet<tblSchedule>();
         }
     
         public int Id { get; set; }
@@ -50,10 +50,10 @@ namespace Business_Logic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BusesToLine> BusesToLines { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Schedule> Schedules { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StationsToLine> StationsToLines { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StudentsToLine> StudentsToLines { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<tblSchedule> Schedules { get; set; }
     }
 }

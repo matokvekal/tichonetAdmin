@@ -12,14 +12,16 @@ namespace Business_Logic
     using System;
     using System.Collections.Generic;
     
-    public partial class Schedule
+    public partial class tblSchedule
     {
         public int Id { get; set; }
-        public System.DateTime Date { get; set; }
-        public int Direction { get; set; }
-        public int LineId { get; set; }
-        public int DriverId { get; set; }
-        public int BusId { get; set; }
+        public Nullable<System.DateTime> Date { get; set; }
+        public Nullable<int> Direction { get; set; }
+        public Nullable<int> LineId { get; set; }
+        public Nullable<int> DriverId { get; set; }
+        public Nullable<int> BusId { get; set; }
+        public Nullable<System.DateTime> leaveTime { get; set; }
+        public Nullable<System.DateTime> arriveTime { get; set; }
     
         public virtual Bus Bus { get; set; }
         public virtual Driver Driver { get; set; }

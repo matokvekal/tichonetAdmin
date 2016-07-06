@@ -42,5 +42,7 @@ namespace Business_Logic
         public Nullable<bool> subsidy { get; set; }
         public Nullable<bool> allredyUsed { get; set; }
         public bool oneParentOnly { get; set; }
+        public string PaymentPlanID { get; set; }
+        public string PaymentRequestID { get; set; }
     }
 }

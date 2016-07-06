@@ -16,15 +16,11 @@
         <EntityTypeShape EntityType="BusProjectModel.BusesToLine" Width="1.5" PointX="14" PointY="1.625" />
         <EntityTypeShape EntityType="BusProjectModel.Driver" Width="1.5" PointX="14.75" PointY="8.5" />
         <EntityTypeShape EntityType="BusProjectModel.Line" Width="1.5" PointX="11.75" PointY="4.125" />
-        <EntityTypeShape EntityType="BusProjectModel.Schedule" Width="1.5" PointX="17" PointY="3.75" />
-        <EntityTypeShape EntityType="BusProjectModel.Station" Width="1.5" PointX="11.75" PointY="17.625" />
+        <EntityTypeShape EntityType="BusProjectModel.Station" Width="1.5" PointX="11.75" PointY="18.25" />
         <EntityTypeShape EntityType="BusProjectModel.StationsToLine" Width="1.5" PointX="14" PointY="4.5" />
         <EntityTypeShape EntityType="BusProjectModel.User" Width="1.5" PointX="8.75" PointY="13.75" />
         <AssociationConnector Association="BusProjectModel.FK_BusesToLines_ToBuses" />
-        <AssociationConnector Association="BusProjectModel.FK_Schedule_ToBuses" />
         <AssociationConnector Association="BusProjectModel.FK_BusesToLines_ToLines" />
-        <AssociationConnector Association="BusProjectModel.FK_Schedule_ToDrivers" />
-        <AssociationConnector Association="BusProjectModel.FK_Schedule_ToLines" />
         <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToLines" />
         <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToStations" />
         <EntityTypeShape EntityType="BusProjectModel.StudentsToLine" Width="1.5" PointX="15.625" PointY="11.75" />
@@ -32,6 +28,12 @@
         <EntityTypeShape EntityType="BusProjectModel.tblSystem" Width="1.5" PointX="5.375" PointY="9.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblDictSystem" Width="1.5" PointX="3.375" PointY="0.75" />
         <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToLines" />
+        <EntityTypeShape EntityType="BusProjectModel.tblBusCompany" Width="1.5" PointX="9.5" PointY="17.125" />
+        <AssociationConnector Association="BusProjectModel.FK_OwnerBusCompany_PK" />
+        <EntityTypeShape EntityType="BusProjectModel.tblSchedule" Width="1.5" PointX="18" PointY="9.25" />
+        <AssociationConnector Association="BusProjectModel.FK_Schedule_Buses" />
+        <AssociationConnector Association="BusProjectModel.FK_Schedule_Drivers" />
+        <AssociationConnector Association="BusProjectModel.FK_Schedule_Lines" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

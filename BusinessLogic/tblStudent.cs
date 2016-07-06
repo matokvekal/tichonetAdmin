@@ -45,5 +45,7 @@ namespace Business_Logic
         public Nullable<bool> siblingAtSchool { get; set; }
         public Nullable<bool> specialRequest { get; set; }
         public string request { get; set; }
+        public Nullable<int> cityId { get; set; }
+        public Nullable<int> streetId { get; set; }
     }
 }

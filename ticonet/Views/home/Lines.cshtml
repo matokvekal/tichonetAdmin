@@ -1,1 +1,157 @@
-﻿
+﻿@using System.Web.Optimization
+@using Business_Logic
+
+<br />
+<div class="header">
+    <hr class="hr-thin" />
+    <h4>Lines</h4>
+    <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleLines"></div>
+    <hr class="hr-thin" />
+</div>
+<div class="content" id="dLinesTable">
+    <table id="grLines"></table>
+    <div id="pgLines"></div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqGrid")
+    <script>
+        var printWindow = null;
+        $(function() {
+            //Toggle buttons
+            $("#btToggleLines").click(function() {
+                var cls = $("#btToggleLines").attr("class");
+                if (cls == "glyphicon glyphicon-chevron-up toggle") {
+                    $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-down toggle");
+                } else {
+                    $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-up toggle");
+                }
+                $("#dLinesTable").toggle();
+            });
+
+            $("#grLines").jqGrid({
+                    url: '/api' + '@Url.Action("GetLines", "Lines")',
+                    datatype: "json",
+                    loadonce: false,
+                    height: "100%",
+                    autowidth: true,
+                    regional: "il",
+                    hidegrid: false,
+                    multiselect: false,
+                    pager: "#pgLines",
+                    mtype: "get",
+                    rowNum: 25,
+                    rowList: [5, 25, 50, 100],
+                    viewrecords: true,
+                    ignoreCase: true,
+                    loadui: "disable",
+                    altRows: false,
+                    sortable: true,
+                    altclass: "ui-state-default",
+                    editurl: '/api' + '@Url.Action("EditLine", "Lines")',
+                    sortname: 'LineName',
+                    sortorder: "asc",
+                    colNames: ["Id", "LineName", "LineNumber", "Direction", "IsActive", "totalStudents", "Duration", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sut", "BusId"/*, ""*/],
+                    colModel: [
+                        { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                        { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: true },
+                        { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110, editable: true },
+                        { name: 'Direction', index: 'Direction', sorttype: "text", width: 110, editable: true },
+                        { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 110, editable: true },
+                        { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: true },
+                        { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: true },
+                        { name: 'Sun', index: 'Sun', sorttype: "text", width: 110, editable: true, search: false },
+                        { name: 'Mon', index: 'Mon', sorttype: "text", width: 110, editable: true, search: false },
+                        { name: 'Tue', index: 'Tue', sorttype: "text", width: 110, editable: true, search: false },
+                        { name: 'Wed', index: 'Wed', sorttype: "text", width: 110, editable: true, search: false },
+                        { name: 'Thu', index: 'Thu', sorttype: "text", width: 110, editable: true, search: false },
+                        { name: 'Fri', index: 'Fri', sorttype: "text", width: 110, editable: true, search: false },
+                        { name: 'Sut', index: 'Sut', sorttype: "text", width: 110, editable: true, search: false },
+                        { name: 'BusId', index: 'BusId', sorttype: "text", width: 110, editable: true, search: false },
+                    ],
+                })
+                .navGrid('#pgLines', {
+                        edit: false,
+                        add: false,
+                        del: true,
+                        deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")", //"Delete row",
+                        refresh: true,
+                        refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
+                        search: false,
+                        view: false
+                    } /*, {}, { closeAfterEdit: true }, { closeAfterAdd: true }*/
+                )
+                .inlineNav('#pgLines', {
+                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.AddNewRow")", //"Add new row",
+                        edittitle: "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")", //"Edit selected row",
+                        savetitle: "@DictExpressionBuilderSystem.Translate("grid.SaveRow")", //"Save row",
+                        canceltitle: "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" //"Cancel row editing"
+                    }
+                )
+                .navButtonAdd("#pgLines", {
+                        id: "print",
+                        buttonicon: "ui-icon-print",
+                        caption: "",
+                        title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
+                        onClickButton: function() {
+                            var postData = $("#grLines").jqGrid('getGridParam', 'postData');
+                            var urlGetExcel = '/api' + "@Url.Action("GetPrint", "Lines")";
+                            var url = urlGetExcel + "?" + $.param(postData);
+                            if (printWindow == null || printWindow.closed) {
+                                printWindow = window.open('', '', 'height=600,width=1000');
+                            } else {
+                                printWindow.focus();
+                            }
+                            $.ajax({
+                                url: url,
+                                type: 'GET',
+                                dataType: 'json',
+                                contentType: 'application/json; charset=utf-8',
+                                success: function(data) {
+                                    if (printWindow != undefined) {
+                                        printWindow.document.clear();
+                                        printWindow.document.write('<html><head><title>Lines</title>');
+                                        printWindow.document.write('</head><body >');
+                                        printWindow.document.write('<div class="page">');
+                                        printWindow.document.write('<div class="subpage">');
+
+                                        //TODO Draw Lines Table
+                                        printWindow.document.write('test');
+                                        printWindow.document.write(data);
+
+                                        printWindow.document.write('</div>');
+                                        printWindow.document.write('</div>');
+                                        printWindow.document.write('</body></html>');
+                                        printWindow.document.close();
+                                        printWindow.print();
+                                    }
+                                }
+                            });
+
+                        }
+                    }
+                )
+                .navButtonAdd("#pgLines", {
+                        id: "toExcel",
+                        buttonicon: "ui-icon-disk",
+                        caption: "",
+                        title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
+                        onClickButton: function() {
+                            var postData = $("#grLines").jqGrid('getGridParam', 'postData');
+                            var urlGetExcel = '/api' + "@Url.Action("GetExcel", "Lines")";
+                            var url = urlGetExcel + "?" + $.param(postData);
+                            window.location.href = url;
+                        }
+                    }
+                )
+                .filterToolbar({
+                        stringResult: true,
+                        enableClear: false
+                    }
+                );
+
+            //Hide buttons "Clear search"
+            $(".ui-search-clear").remove();
+        })
+    </script>
+}

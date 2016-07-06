@@ -321,6 +321,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\LinesController.cs" />
     <Compile Include="Controllers\BusesController.cs" />
     <Compile Include="Controllers\InsetsController.cs" />
     <Compile Include="Controllers\homeController.cs" />
@@ -341,6 +342,7 @@
     <Compile Include="Models\EditLineResultModel.cs" />
     <Compile Include="Models\LineActiveSwitchModel.cs" />
     <Compile Include="Models\BusModel.cs" />
+    <Compile Include="Models\GridLineModel.cs" />
     <Compile Include="Models\LineModel.cs" />
     <Compile Include="Models\MapStateModel.cs" />
     <Compile Include="Models\SaveStationResultModel.cs" />
@@ -372,6 +374,7 @@
     <Content Include="Views\home\Calendar.cshtml" />
     <Content Include="Views\home\Schedule.cshtml" />
     <Content Include="Views\home\BusesToLines.cshtml" />
+    <Content Include="Views\Shared\_SideNav.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,17 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Business_Logic.Entities;
 using Business_Logic.Helpers;
+using Newtonsoft.Json;
 
 namespace Business_Logic
 {
     public class LineLogic : baseLogic
     {
+        public IEnumerable<Line> Lines
+        {
+            get { return DB.Lines; }
+        }
+
         public List<Line> GetList()
         {
             return DB.Lines.ToList();
+        }
+
+        public List<Line> GetPaged(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters)
+        {
+            var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
+            var searchFilters = searchModel;
+
+            IEnumerable<Line> query = DB.Lines;
+
+            if (isSearch && !string.IsNullOrWhiteSpace(filters))
+            {
+                searchFilters = JsonConvert.DeserializeAnonymousType(filters, searchModel);
+                foreach (var rule in searchFilters.rules)
+                {
+                    var filterByProperty = typeof(Line).GetProperty(rule.field);
+                    if (filterByProperty.PropertyType == typeof(string))
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
+                    else if (filterByProperty.PropertyType == typeof(int))
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
+                    else
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
+                }
+            }
+
+            var sortByProperty = typeof(Line).GetProperty(sortBy);
+            if (sortOrder == "desc")
+            {
+                query = query.OrderByDescending(x => sortByProperty.GetValue(x, null));
+            }
+            else
+            {
+                query = query.OrderBy(x => sortByProperty.GetValue(x, null));
+            }
+            
+            query = query.Skip(rows * (page - 1))
+                .Take(rows);
+
+            return query.ToList();
         }
 
         public List<StationsToLine> GetStations(int lineId)
@@ -85,6 +130,39 @@ namespace Business_Logic
             catch (Exception e)
             {
                 Console.WriteLine(e);
+            }
+            return res;
+        }
+
+        public Line SaveLine(Line line)
+        {
+            try
+            {
+                BusProjectEntities db = new BusProjectEntities();
+                db.Lines.Add(line);
+                db.SaveChanges();
+                return line;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return null;
+        }
+
+        public bool Update(Line line)
+        {
+            var res = false;
+            try
+            {
+                BusProjectEntities db = new BusProjectEntities();
+                db.Entry(line).State = EntityState.Modified;
+                db.SaveChanges();
+                res = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
             return res;
         }
