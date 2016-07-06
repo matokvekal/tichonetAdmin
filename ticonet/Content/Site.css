@@ -28,10 +28,15 @@ body div.navbar {
     /*overflow: hidden;*/
 }
 
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+    background: #aaa;
+}
+
 ul.dropdown-menu {
     color: #999;
     background-color: #222;
 }
+
 .dropdown-menu>li>a {
     color: #999;
 }

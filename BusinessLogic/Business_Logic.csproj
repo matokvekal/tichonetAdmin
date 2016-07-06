@@ -135,6 +135,7 @@
     <Compile Include="tblStudent.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblBusCompanyLogic.cs" />
     <Compile Include="tblSystem.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>

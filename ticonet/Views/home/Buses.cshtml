@@ -52,19 +52,39 @@
                     editurl: '/api' + '@Url.Action("EditBus", "Buses")',
                     sortname: 'BusId',
                     sortorder: "asc",
-                    colNames: ["Id", "BusId", "PlateNumber", "Owner", "seats", "price", "munifacturedate", "LicensingDueDate", "insuranceDueDate", "winterLicenseDueDate", "brakeTesDueDate" /*, ""*/],
+                    colNames: ["Id", "BusId", "PlateNumber", "Owner", "seats", "price", "munifacturedate", "LicensingDueDate", "insuranceDueDate", "winterLicenseDueDate", "brakeTesDueDate", ""],
                     colModel: [
                         { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                        { name: 'BusId', index: 'BusId', sorttype: "text", width: 110, editable: true },
+                        { name: 'BusId', index: 'BusId', sorttype: "text", width: 90, editable: true },
                         { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: true },
-                        { name: 'Owner', index: 'Owner', sorttype: "text", width: 110, editable: true },
-                        { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: true, search: false },
-                        { name: 'price', index: 'price', sorttype: "text", width: 110, editable: true, search: false },
-                        { name: 'munifacturedate', index: 'munifacturedate', sorttype: "text", width: 110, editable: true, search: false },
-                        { name: 'LicensingDueDate', index: 'LicensingDueDate', sorttype: "text", width: 110, editable: true, search: false },
-                        { name: 'insuranceDueDate', index: 'insuranceDueDate', sorttype: "text", width: 110, editable: true, search: false },
-                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', sorttype: "text", width: 110, editable: true, search: false },
-                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', sorttype: "text", width: 110, editable: true, search: false },
+                        //{ name: 'Owner', index: 'Owner', sorttype: "text", width: 110, editable: true, edittype: 'select', formatter: 'select', editoptions: { value: function () { return { '1': 'Owner 1', '2': 'Owner 2' } } } },
+
+                        {
+                            name: 'Owner', index: 'Owner', sorttype: "text", editable: true, edittype: "select", // formatter: "select",
+                            editoptions: {
+                                dataUrl: '/api' + '@Url.Action("GetBusCompanies", "Buses")',
+                                buildSelect: function (data) {
+                                    var response = jQuery.parseJSON(data);
+                                    var s = '<select>';
+                                    if (response && response.Data.length) {
+                                        for (var i = 0, l = response.Data.length; i < l ; i++) {
+                                            var ri = response.Data[i];
+                                            s += '<option value="' + ri.pk + '">' + ri.companyName + '</option>';
+                                        }
+                                    }
+                                    return s + "</select>";
+                                }
+                            }
+                        },
+
+                        { name: 'seats', index: 'seats', sorttype: "text", width: 60, editable: true, search: false, formatter: 'integer', sorttype: "int" },
+                        { name: 'price', index: 'price', sorttype: "text", width: 80, editable: true, search: false, formatter: 'number', sorttype: "float" },
+                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: { keys: true, editformbutton: true, editbutton: true, delbutton: true } },
                     ],
                 })
                 .navGrid('#pgBuses', {

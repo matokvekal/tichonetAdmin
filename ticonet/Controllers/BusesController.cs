@@ -41,7 +41,7 @@ namespace ticonet.Controllers
                     records = totalRecords,
                     rows = buses
                 });
-            }
+        }
         
         [System.Web.Mvc.HttpPost]
         public JsonResult EditBus(BusModel model)
@@ -138,5 +138,18 @@ namespace ticonet.Controllers
 
             return buses;
         }
+
+        public JsonResult GetBusCompanies()
+        {
+            var busCompanies = new List<BusCompanyModel>();
+            using (var logic = new tblBusCompanyLogic())
+            {
+                busCompanies = logic.GetBusCompanies()
+                    .Select(z => new BusCompanyModel(z)).ToList();
+            }
+
+            return new JsonResult { Data = busCompanies };
+        }
+
     }
 }
