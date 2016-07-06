@@ -30,11 +30,16 @@
                     <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Home"), "Index", "Home")</li>
                     <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Insets"), "Index", "Insets")</li>
 
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Buses"), "Buses", "Home")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Lines"), "Lines", "Home")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.BusesToLines"), "BusesToLines", "Home")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Calendar"), "Calendar", "Home")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Schedule"), "Schedule", "Home")</li>
+                    <li class="dropdown">
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">@DictExpressionBuilderSystem.Translate("menu.BusSchedule")<b class="caret"></b></a>
+                        <ul role="menu" class="dropdown-menu">
+                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Buses"), "Buses", "Home")</li>
+                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Lines"), "Lines", "Home")</li>
+                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.BusesToLines"), "BusesToLines", "Home")</li>
+                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Calendar"), "Calendar", "Home")</li>
+                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Schedule"), "Schedule", "Home")</li>
+                        </ul>
+                    </li>
 
                     <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.reports"), "Index", "reports")</li>
                     <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.accountancy"), "Index", "accountancy")</li>
