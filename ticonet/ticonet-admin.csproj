@@ -339,6 +339,7 @@
     <Compile Include="Models\AttachStudentModel.cs" />
     <Compile Include="Models\AttachStudentResultModel.cs" />
     <Compile Include="Models\BusCompanyModel.cs" />
+    <Compile Include="Models\GridLineBusModel.cs" />
     <Compile Include="Models\SelectItemModel.cs" />
     <Compile Include="Models\CurrentStateModel.cs" />
     <Compile Include="Models\EditLineResultModel.cs" />
@@ -377,7 +378,6 @@
     <Content Include="Views\home\Calendar.cshtml" />
     <Content Include="Views\home\Schedule.cshtml" />
     <Content Include="Views\home\BusesToLines.cshtml" />
-    <Content Include="Views\Shared\_SideNav.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -30,14 +30,18 @@ namespace ticonet.Controllers
             {
                 lines = logic.GetPaged(_search, rows, page, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToList();
-                using (var busLogic = new tblBusLogic())
-                {
-                    lines.Where(w => w.BusId > 0).ForEach(x =>
-                    {
-                        var bus = busLogic.GetBus(x.BusId);
-                        x.BusIdDescription = bus != null ? bus.BusId : "";
-                    });
-                }
+                //using (var busLogic = new tblBusLogic())
+                //{
+                //    lines.Where(w => w.BusId > 0).ForEach(x =>
+                //    {
+                //        var bus = busLogic.GetBus(x.BusId);
+                //        x.BusIdDescription = bus != null ? bus.BusId : string.Empty;
+                //        x.PlateNumber = string.Empty;
+                //        x.BusCompanyName = string.Empty;
+                //        x.seats = null;
+
+                //    });
+                //}
                 totalRecords = logic.Lines.Count();
             }
             return Request.CreateResponse(
@@ -172,7 +176,7 @@ namespace ticonet.Controllers
                     {
                         Value = z.Id.ToString(),
                         Text = z.BusId,
-                        Title = string.Format("{0} ({1})", z.BusId, z.BusCompany!=null?z.BusCompany.companyName:string.Empty)
+                        Title = string.Format("{0} ({1} - {2} - {3})", z.BusId, z.PlateNumber, z.BusCompany!=null?z.BusCompany.companyName:string.Empty, z.seats.HasValue? z.seats.Value.ToString(): string.Empty)
                     }).ToList());
             }
 

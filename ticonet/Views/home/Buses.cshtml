@@ -17,8 +17,10 @@
 @section scripts{
     @Scripts.Render("~/bundles/jqGrid")
     <script>
-        var printWindow = null;
-        $(function() {
+        $(function () {
+            var printWindow = null;
+            var grid = $("#grBuses");
+            var pagerID = "#pgBuses";
             //Toggle buttons
             $("#btToggleBuses").click(function() {
                 var cls = $("#btToggleBuses").attr("class");
@@ -30,7 +32,7 @@
                 $("#dBusesTable").toggle();
             });
 
-            $("#grBuses").jqGrid({
+            grid.jqGrid({
                     url: '/api' + '@Url.Action("GetBuses", "Buses")',
                     datatype: "json",
                     loadonce: false,
@@ -39,7 +41,7 @@
                     regional: "il",
                     hidegrid: false,
                     multiselect: false,
-                    pager: "#pgBuses",
+                    pager: pagerID,
                     mtype: "get",
                     rowNum: 25,
                     rowList: [5, 25, 50, 100],
@@ -52,7 +54,21 @@
                     editurl: '/api' + '@Url.Action("EditBus", "Buses")',
                     sortname: 'BusId',
                     sortorder: "asc",
-                    colNames: ["Id", "BusId", "PlateNumber", "OwnerDescription", "Owner", "seats", "price", "munifacturedate", "LicensingDueDate", "insuranceDueDate", "winterLicenseDueDate", "brakeTesDueDate", ""],
+                    colNames: [
+                        "Id",
+                        "BusId",
+                        "PlateNumber",
+                        "OwnerDescription",
+                        "Owner",
+                        "seats",
+                        "price",
+                        "munifacturedate",
+                        "LicensingDueDate",
+                        "insuranceDueDate",
+                        "winterLicenseDueDate",
+                        "brakeTesDueDate",
+                        ""
+                    ],
                     colModel: [
                         { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                         { name: 'BusId', index: 'BusId', sorttype: "text", width: 90, editable: true },
@@ -67,11 +83,6 @@
                             edittype: "select",
                             editoptions: {
                                 dataUrl: '/api' + '@Url.Action("GetBusCompanies", "Buses")',
-                                //postData: function (rowid, value, cmName) {
-                                //    return {
-                                //        id: rowid
-                                //    }
-                                //},
                                 buildSelect: function(data) {
                                     var response = jQuery.parseJSON(data);
                                     var s = '<select>';
@@ -87,11 +98,11 @@
                         },
                         { name: 'seats', index: 'seats', sorttype: "text", width: 60, editable: true, search: false, formatter: 'integer', sorttype: "int" },
                         { name: 'price', index: 'price', sorttype: "text", width: 80, editable: true, search: false, formatter: 'number', sorttype: "float" },
-                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'text', editable: true, edittype: 'text', formatoptions: { defaultValue: "" }, editoptions: { defaultValue: "", size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
                         {
                             name: 'ActionsBtn',
                             index: 'ActionsBtn',
@@ -103,10 +114,13 @@
                                 keys: true,
                                 editformbutton: false,
                                 editbutton: true,
-                                delbutton: true
+                                delbutton: true,
                             }
                         },
                     ],
+                    //afterComplete: function () {
+                    //    grid.jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
+                    //},
                     saveAfterSelect: true,
                     //addedrow: "last",
                     //cellEdit: true,
@@ -116,7 +130,7 @@
                     },
                     ondblClickRow: function(rowid, iRow, iCol) {
                         editRow(rowid);
-                        //$("#grBuses").editCell(iRow, iCol, true);
+                        //grid.editCell(iRow, iCol, true);
                     },
                     loadComplete: function(data) {
                         $("div.ui-inline-edit").attr("title", "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")");
@@ -124,7 +138,6 @@
                         $("div.ui-inline-save").attr("title", "@DictExpressionBuilderSystem.Translate("grid.SaveRow")");
                         $("div.ui-inline-cancel").attr("title", "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")");
 
-                        var grid = $("#grBuses");
                         var colModel = grid.getGridParam('colModel');
                         $.each(colModel, function(index, col) {
                             if (col.edittype === 'select') {
@@ -139,7 +152,7 @@
                         });
                     }
                 })
-                .navGrid('#pgBuses', {
+                .navGrid(pagerID, {
                         edit: false,
                         add: false,
                         del: false,
@@ -150,7 +163,7 @@
                         view: false
                     } /*, {}, { closeAfterEdit: true }, { closeAfterAdd: true }*/
                 )
-                .inlineNav('#pgBuses', {
+                .inlineNav(pagerID, {
                         add: true,
                         edit: false,
                         //editParams: { position: "last" },
@@ -161,13 +174,13 @@
                         canceltitle: "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" //"Cancel row editing"
                     }
                 )
-                .navButtonAdd("#pgBuses", {
+                .navButtonAdd(pagerID, {
                         id: "print",
                         buttonicon: "ui-icon-print",
                         caption: "",
                         title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
                         onClickButton: function() {
-                            var postData = $("#grBuses").jqGrid('getGridParam', 'postData');
+                            var postData = grid.jqGrid('getGridParam', 'postData');
                             var urlGetExcel = '/api' + "@Url.Action("GetPrint", "Buses")";
                             var url = urlGetExcel + "?" + $.param(postData);
                             if (printWindow == null || printWindow.closed) {
@@ -204,13 +217,13 @@
                         }
                     }
                 )
-                .navButtonAdd("#pgBuses", {
+                .navButtonAdd(pagerID, {
                         id: "toExcel",
                         buttonicon: "ui-icon-disk",
                         caption: "",
                         title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
                         onClickButton: function() {
-                            var postData = $("#grBuses").jqGrid('getGridParam', 'postData');
+                            var postData = grid.jqGrid('getGridParam', 'postData');
                             var urlGetExcel = '/api' + "@Url.Action("GetExcel", "Buses")";
                             var url = urlGetExcel + "?" + $.param(postData);
                             window.location.href = url;
@@ -226,29 +239,20 @@
             //Hide buttons "Clear search"
             $(".ui-search-clear").remove();
 
-
-            @*<div style="margin-left: 8px;">
-                <div title="Edit selected row" style="float: left; cursor: pointer; display: none;" class="ui-pg-div ui-inline-edit" id="jEditButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'edit');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-pencil"></span></div>
-                <div title="Delete selected row" style="float: left; display: none;" class="ui-pg-div ui-inline-del" id="jDeleteButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'del');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-trash"></span></div>
-                <div title="Save row" style="float: left;" class="ui-pg-div ui-inline-save" id="jSaveButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'save');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-disk"></span></div>
-                <div title="Cancel row editing" style="float: left;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'cancel');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-cancel"></span></div>
-            </div>*@
-
             var lastSelection;
 
             function editRow(id) {
                 if (id && id !== lastSelection) {
-                    var grid = $("#grBuses");
                     grid.jqGrid('restoreRow', lastSelection);
                     //grid.jqGrid('editRow', id, { keys: true });
-                    jQuery.fn.fmatter.rowactions.call($("#grBuses tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                    //$.fn.fmatter.rowactions.call($("#grBuses tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                    rowactions.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
                     lastSelection = id;
                 }
             }
 
             function datecheck(value, colname) {
                 if (value) {
-                    //TODO check Date
                     var pattern = "(0[1-9]|1[012])(/)(0[1-9]|[12][0-9]|3[01])(/)(19|20)\\d\\d";
                     var regCheck = new RegExp(pattern);
                     if (!regCheck.test(value)) {
@@ -257,6 +261,77 @@
                 }
                 return [true, ""];
             }
+
+            var rowactions = function (b) {
+                var a = $;
+                var c = a(this).closest("tr.jqgrow"),
+                    d = c.attr("id"),
+                    e = a(this).closest("table.ui-jqgrid-btable").attr("id").replace(/_frozen([^_]*)$/, "$1"),
+                    f = a("#" + e),
+                    g = f[0],
+                    h = g.p,
+                    i = h.colModel[a.jgrid.getCellIndex(this)],
+                    j = i.frozen ? a("tr#" + d + " td:eq(" + a.jgrid.getCellIndex(this) + ") > div", f) : a(this).parent(),
+                    k = {
+                        extraparam: {}
+                    },
+                    l = function(b, c) {
+                        a.isFunction(k.afterSave) && k.afterSave.call(g, b, c);
+                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                        f.trigger("reloadGrid");
+                    },
+                    m = function(b) {
+                        a.isFunction(k.afterRestore) && k.afterRestore.call(g, b);
+                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                    };
+                void 0 !== i.formatoptions && (k = a.extend(k, i.formatoptions));
+                void 0 !== h.editOptions && (k.editOptions = h.editOptions);
+                void 0 !== h.delOptions && (k.delOptions = h.delOptions);
+                c.hasClass("jqgrid-new-row") && (k.extraparam[h.prmNames.oper] = h.prmNames.addoper);
+                var n = {
+                    keys: k.keys,
+                    oneditfunc: k.onEdit,
+                    successfunc: k.onSuccess,
+                    url: k.url,
+                    extraparam: k.extraparam,
+                    aftersavefunc: l,
+                    errorfunc: k.onError,
+                    afterrestorefunc: m,
+                    restoreAfterError: k.restoreAfterError,
+                    mtype: k.mtype,
+                    reloadAfterSubmit: true
+                };
+                switch (b) {
+                case "edit":
+                    f.jqGrid("editRow", d, n);
+                    j.find("div.ui-inline-edit,div.ui-inline-del").hide();
+                    j.find("div.ui-inline-save,div.ui-inline-cancel").show();
+                    f.triggerHandler("jqGridAfterGridComplete");
+                    break;
+                case "save":
+                    f.jqGrid("saveRow", d, n);
+                    j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                    j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                    f.triggerHandler("jqGridAfterGridComplete");
+                    break;
+                case "cancel":
+                    f.jqGrid("restoreRow", d, m);
+                    j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                    j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                    f.triggerHandler("jqGridAfterGridComplete");
+                    break;
+                case "del":
+                    f.jqGrid("delGridRow", d, k.delOptions);
+                    break;
+                case "formedit":
+                    f.jqGrid("setSelection", d);
+                    f.jqGrid("editGridRow", d, k.editOptions);
+                }
+            };
+
+
         });
     </script>
 }

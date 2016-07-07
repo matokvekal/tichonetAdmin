@@ -30,14 +30,14 @@ namespace ticonet.Controllers
             {
                 buses = logic.GetPaged(_search, rows, page, sidx, sord, filters)
                     .Select(z => new BusModel(z)).ToList();
-                using (var busCompanyLogic = new tblBusCompanyLogic())
-                {
-                    buses.Where(w=>w.Owner.HasValue).ForEach(x =>
-                    {
-                        var busCompanies = busCompanyLogic.GetBusCompanyById(x.Owner.Value);
-                        x.OwnerDescription = busCompanies!=null? busCompanies.companyName : string.Empty;
-                    });
-                }
+                //using (var busCompanyLogic = new tblBusCompanyLogic())
+                //{
+                //    buses.Where(w=>w.Owner.HasValue).ForEach(x =>
+                //    {
+                //        var busCompanies = busCompanyLogic.GetBusCompanyById(x.Owner.Value);
+                //        x.OwnerDescription = busCompanies!=null? busCompanies.companyName : string.Empty;
+                //    });
+                //}
                 totalRecords = logic.Buses.Count();
             }
             return Request.CreateResponse(

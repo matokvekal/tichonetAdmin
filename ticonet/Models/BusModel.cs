@@ -31,7 +31,7 @@ namespace ticonet.Models
             //BusType = data.BusType;
             //Occupation = data.Occupation;
             Owner = data.Owner;
-            OwnerDescription = string.Empty;
+            OwnerDescription = data.BusCompany != null ? data.BusCompany.companyName : string.Empty;
             //GpsSource = data.GpsSource;
             //GpsCode = data.GpsCode;
             seats = data.seats;

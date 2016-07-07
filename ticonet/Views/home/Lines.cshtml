@@ -16,8 +16,10 @@
 @section scripts{
     @Scripts.Render("~/bundles/jqGrid")
     <script>
-        var printWindow = null;
         $(function() {
+            var printWindow = null;
+            var grid = $("#grLines");
+            var pagerID = "#pgLines";
             //Toggle buttons
             $("#btToggleLines").click(function() {
                 var cls = $("#btToggleLines").attr("class");
@@ -29,16 +31,17 @@
                 $("#dLinesTable").toggle();
             });
 
-            $("#grLines").jqGrid({
+            grid.jqGrid({
                     url: '/api' + '@Url.Action("GetLines", "Lines")',
                     datatype: "json",
                     loadonce: false,
+                    reloadAfterSubmit: true,
                     height: "100%",
                     autowidth: true,
                     regional: "il",
                     hidegrid: false,
                     multiselect: false,
-                    pager: "#pgLines",
+                    pager: pagerID,
                     mtype: "get",
                     rowNum: 25,
                     rowList: [5, 25, 50, 100],
@@ -51,7 +54,28 @@
                     editurl: '/api' + '@Url.Action("EditLine", "Lines")',
                     sortname: 'LineName',
                     sortorder: "asc",
-                    colNames: ["Id", "LineName", "LineNumber", "Direction", "IsActive", "totalStudents", "Duration", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sut", "BusIdDescription", "BusId", ""],
+                    colNames: [
+                        "Id",
+                        "LineName",
+                        "LineNumber",
+                        "Direction",
+                        "IsActive",
+                        "totalStudents",
+                        "Duration",
+                        "Sun",
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sut",
+                        "BusIdDescription",
+                        "BusId",
+                        "PlateNumber",
+                        "BusCompanyName",
+                        "seats",
+                        ""
+                    ],
                     colModel: [
                         { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                         { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: true },
@@ -105,7 +129,11 @@
                                 }
                             }
                         },
-                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: {
+                        { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: false, search: false },
+                        { name: 'BusCompanyName', index: 'BusCompanyName', sorttype: "text", width: 110, editable: false, search: false },
+                        { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false },
+                        {
+                            name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: {
                             keys: true,
                             editformbutton: false,
                             editbutton: true,
@@ -113,12 +141,16 @@
                         } },
                     ],
                     saveAfterSelect: true,
+                    afterSubmit: function () {
+                        $(this).jqGrid("setGridParam", {datatype: 'json'});
+                        return [true];
+                    },
                     onSelectRow: function(id) {
                         lastSelection = -1;
                     },
                     ondblClickRow: function(rowid, iRow, iCol) {
                         editRow(rowid);
-                        //$("#grLines").editCell(iRow, iCol, true);
+                        //grid.editCell(iRow, iCol, true);
                     },
                     loadComplete: function(data) {
                         $("div.ui-inline-edit").attr("title", "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")");
@@ -126,7 +158,6 @@
                         $("div.ui-inline-save").attr("title", "@DictExpressionBuilderSystem.Translate("grid.SaveRow")");
                         $("div.ui-inline-cancel").attr("title", "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")");
 
-                        var grid = $("#grLines");
                         var colModel = grid.getGridParam('colModel');
                         $.each(colModel, function(index, col) {
                             if (col.edittype === 'select') {
@@ -141,7 +172,7 @@
                         });
                     }
                 })
-                .navGrid('#pgLines', {
+                .navGrid(pagerID, {
                         add: false,
                         edit: false,
                         del: false,
@@ -152,7 +183,7 @@
                         view: false
                     } /*, {}, { closeAfterEdit: true }, { closeAfterAdd: true }*/
                 )
-                .inlineNav('#pgLines', {
+                .inlineNav(pagerID, {
                         add: false,
                         edit: false,
                         edittitle: "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")", //"Edit selected row",
@@ -160,13 +191,13 @@
                         canceltitle: "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" //"Cancel row editing"
                     }
                 )
-                .navButtonAdd("#pgLines", {
+                .navButtonAdd(pagerID, {
                         id: "print",
                         buttonicon: "ui-icon-print",
                         caption: "",
                         title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
                         onClickButton: function() {
-                            var postData = $("#grLines").jqGrid('getGridParam', 'postData');
+                            var postData = grid.jqGrid('getGridParam', 'postData');
                             var urlGetExcel = '/api' + "@Url.Action("GetPrint", "Lines")";
                             var url = urlGetExcel + "?" + $.param(postData);
                             if (printWindow == null || printWindow.closed) {
@@ -203,13 +234,13 @@
                         }
                     }
                 )
-                .navButtonAdd("#pgLines", {
+                .navButtonAdd(pagerID, {
                         id: "toExcel",
                         buttonicon: "ui-icon-disk",
                         caption: "",
                         title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
                         onClickButton: function() {
-                            var postData = $("#grLines").jqGrid('getGridParam', 'postData');
+                            var postData = grid.jqGrid('getGridParam', 'postData');
                             var urlGetExcel = '/api' + "@Url.Action("GetExcel", "Lines")";
                             var url = urlGetExcel + "?" + $.param(postData);
                             window.location.href = url;
@@ -229,13 +260,83 @@
 
             function editRow(id) {
                 if (id && id !== lastSelection) {
-                    var grid = $("#grLines");
                     grid.jqGrid('restoreRow', lastSelection);
                     //grid.jqGrid('editRow', id, { keys: true });
-                    jQuery.fn.fmatter.rowactions.call($("#grLines tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                    //jQuery.fn.fmatter.rowactions.call($("#grLines tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                    rowactions.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
                     lastSelection = id;
                 }
             }
+
+
+            var rowactions = function (b) {
+                var a = $;
+                var c = a(this).closest("tr.jqgrow"),
+                    d = c.attr("id"),
+                    e = a(this).closest("table.ui-jqgrid-btable").attr("id").replace(/_frozen([^_]*)$/, "$1"),
+                    f = a("#" + e),
+                    g = f[0],
+                    h = g.p,
+                    i = h.colModel[a.jgrid.getCellIndex(this)],
+                    j = i.frozen ? a("tr#" + d + " td:eq(" + a.jgrid.getCellIndex(this) + ") > div", f) : a(this).parent(),
+                    k = {
+                        extraparam: {}
+                    },
+                    l = function (b, c) {
+                        a.isFunction(k.afterSave) && k.afterSave.call(g, b, c);
+                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                        f.trigger("reloadGrid");
+                    },
+                    m = function (b) {
+                        a.isFunction(k.afterRestore) && k.afterRestore.call(g, b);
+                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                    };
+                void 0 !== i.formatoptions && (k = a.extend(k, i.formatoptions));
+                void 0 !== h.editOptions && (k.editOptions = h.editOptions);
+                void 0 !== h.delOptions && (k.delOptions = h.delOptions);
+                c.hasClass("jqgrid-new-row") && (k.extraparam[h.prmNames.oper] = h.prmNames.addoper);
+                var n = {
+                    keys: k.keys,
+                    oneditfunc: k.onEdit,
+                    successfunc: k.onSuccess,
+                    url: k.url,
+                    extraparam: k.extraparam,
+                    aftersavefunc: l,
+                    errorfunc: k.onError,
+                    afterrestorefunc: m,
+                    restoreAfterError: k.restoreAfterError,
+                    mtype: k.mtype,
+                    reloadAfterSubmit: true
+                };
+                switch (b) {
+                    case "edit":
+                        f.jqGrid("editRow", d, n);
+                        j.find("div.ui-inline-edit,div.ui-inline-del").hide();
+                        j.find("div.ui-inline-save,div.ui-inline-cancel").show();
+                        f.triggerHandler("jqGridAfterGridComplete");
+                        break;
+                    case "save":
+                        f.jqGrid("saveRow", d, n);
+                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                        f.triggerHandler("jqGridAfterGridComplete");
+                        break;
+                    case "cancel":
+                        f.jqGrid("restoreRow", d, m);
+                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
+                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
+                        f.triggerHandler("jqGridAfterGridComplete");
+                        break;
+                    case "del":
+                        f.jqGrid("delGridRow", d, k.delOptions);
+                        break;
+                    case "formedit":
+                        f.jqGrid("setSelection", d);
+                        f.jqGrid("editGridRow", d, k.editOptions);
+                }
+            };
 
         });
     </script>

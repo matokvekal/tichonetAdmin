@@ -5,14 +5,14 @@ using Business_Logic;
 
 namespace ticonet.Models
 {
-    public class GridLineModel
+    public class GridLineBusModel
     {
 
-        public GridLineModel()
+        public GridLineBusModel()
         {
         }
 
-        public GridLineModel(Line data)
+        public GridLineBusModel(Line data)
         {
             var bus = data.BusesToLines.Select(x => x.Bus).FirstOrDefault();
             Id = data.Id;
@@ -29,11 +29,8 @@ namespace ticonet.Models
             Thu = data.Thu.HasValue ? data.Thu.Value : false;
             Fri = data.Fri.HasValue ? data.Fri.Value : false;
             Sut = data.Sut.HasValue ? data.Sut.Value : false;
-            BusId = bus != null ? bus.Id : (int)0;
-            BusIdDescription = bus != null ? bus.BusId : string.Empty;
-            PlateNumber = bus != null ? bus.PlateNumber : string.Empty;
-            BusCompanyName = bus != null ? (bus.BusCompany!=null? bus.BusCompany.companyName: string.Empty) : string.Empty;
-            seats = bus != null ? bus.seats : (int?)null;
+            BusId = bus != null ? bus.Id : 0;
+            BusIdDescription = string.Empty;
         }
 
         public int Id { get; set; }
@@ -67,13 +64,6 @@ namespace ticonet.Models
         public int BusId { get; set; }
 
         public string BusIdDescription { get; set; }
-
-        public string PlateNumber { get; set; }
-
-        public string BusCompanyName { get; set; }
-
-        public int? seats { get; set; }
-
 
         public string Oper { get; set; }
 
