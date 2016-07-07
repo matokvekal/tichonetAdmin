@@ -67,7 +67,7 @@ namespace ticonet.Controllers
                         {
                             model.UpdateDbModel(existingLine);
                             logic.SaveChanges();
-                            logic.AddBusToLine(model.Id, model.BusId);
+                            logic.UpdateBusToLine(model.Id, model.BusId);
                         }
                         break;
                     case "del":
@@ -163,11 +163,17 @@ namespace ticonet.Controllers
 
         public JsonResult GetAvailableBuses(int lineId)
         {
-            var buses = new List<LineBusModel>();
+            var buses = new List<SelectItemModel>();
+            buses.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty});
             using (var logic = new LineLogic())
             {
-                buses = logic.GetAvailableBuses(lineId)
-                    .Select(z => new LineBusModel(z)).ToList();
+                buses.AddRange(logic.GetAvailableBuses(lineId)
+                    .Select(z => new SelectItemModel
+                    {
+                        Value = z.Id.ToString(),
+                        Text = z.BusId,
+                        Title = string.Format("{0} ({1})", z.BusId, z.BusCompany!=null?z.BusCompany.companyName:string.Empty)
+                    }).ToList());
             }
 
             return new JsonResult { Data = buses };

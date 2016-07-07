@@ -1,11 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Business_Logic;
 
 namespace ticonet.Models
 {
     public class BusModel
     {
+        string DateToString(DateTime? dt)
+        {
+            return (dt.HasValue? dt.Value.ToString("MM/dd/yyyy"):"") ;
+        }
+        DateTime? StringToDate(string s)
+        {
+            DateTime? dtNull = null;
+            if (!string.IsNullOrWhiteSpace(s))
+            {
+                DateTime dt =  new DateTime();
+                if(DateTime.TryParseExact(s, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                    dtNull = (DateTime?)dt;
+            }
+            return dtNull;
+        }
+
         public BusModel(Bus data)
         {
             Id = data.Id;
@@ -19,11 +36,11 @@ namespace ticonet.Models
             //GpsCode = data.GpsCode;
             seats = data.seats;
             price = data.price;
-            munifacturedate = data.munifacturedate;
-            LicensingDueDate = data.LicensingDueDate;
-            insuranceDueDate = data.insuranceDueDate;
-            winterLicenseDueDate = data.winterLicenseDueDate;
-            brakeTesDueDate = data.brakeTesDueDate;
+            munifacturedate = DateToString(data.munifacturedate);
+            LicensingDueDate = DateToString(data.LicensingDueDate);
+            insuranceDueDate = DateToString(data.insuranceDueDate);
+            winterLicenseDueDate = DateToString(data.winterLicenseDueDate);
+            brakeTesDueDate = DateToString(data.brakeTesDueDate);
         }
 
         public BusModel() { }
@@ -49,15 +66,15 @@ namespace ticonet.Models
 
         public double? price { get; set; }
 
-        public DateTime? munifacturedate { get; set; }
+        public string munifacturedate { get; set; }
 
-        public DateTime? LicensingDueDate { get; set; }
+        public string LicensingDueDate { get; set; }
 
-        public DateTime? insuranceDueDate { get; set; }
+        public string insuranceDueDate { get; set; }
 
-        public DateTime? winterLicenseDueDate { get; set; }
+        public string winterLicenseDueDate { get; set; }
 
-        public DateTime? brakeTesDueDate { get; set; }
+        public string brakeTesDueDate { get; set; }
 
         public string Oper { get; set; }
 
@@ -76,11 +93,11 @@ namespace ticonet.Models
                 //GpsCode = GpsCode,
                 seats = seats,
                 price = price,
-                munifacturedate = munifacturedate,
-                LicensingDueDate = LicensingDueDate,
-                insuranceDueDate = insuranceDueDate,
-                winterLicenseDueDate = winterLicenseDueDate,
-                brakeTesDueDate = brakeTesDueDate
+                munifacturedate = StringToDate(munifacturedate),
+                LicensingDueDate = StringToDate(LicensingDueDate),
+                insuranceDueDate = StringToDate(insuranceDueDate),
+                winterLicenseDueDate = StringToDate(winterLicenseDueDate),
+                brakeTesDueDate = StringToDate(brakeTesDueDate)
             };
         }
     }

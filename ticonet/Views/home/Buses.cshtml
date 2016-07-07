@@ -14,17 +14,6 @@
 </div>
 
 
-
-@*<div style="margin-left: 8px;">
-    <div title="Edit selected row" style="float: left; cursor: pointer; display: none;" class="ui-pg-div ui-inline-edit" id="jEditButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'edit');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-pencil"></span></div>
-    <div title="Delete selected row" style="float: left; display: none;" class="ui-pg-div ui-inline-del" id="jDeleteButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'del');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-trash"></span></div>
-    <div title="Save row" style="float: left;" class="ui-pg-div ui-inline-save" id="jSaveButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'save');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-disk"></span></div>
-    <div title="Cancel row editing" style="float: left;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'cancel');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-cancel"></span></div>
-</div>*@
-
-
-
-
 @section scripts{
     @Scripts.Render("~/bundles/jqGrid")
     <script>
@@ -89,7 +78,7 @@
                                     if (response && response.Data.length) {
                                         for (var i = 0, l = response.Data.length; i < l; i++) {
                                             var ri = response.Data[i];
-                                            s += '<option value="' + ri.pk + '">' + ri.companyName + '</option>';
+                                            s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
                                         }
                                     }
                                     return s + "</select>";
@@ -98,12 +87,19 @@
                         },
                         { name: 'seats', index: 'seats', sorttype: "text", width: 60, editable: true, search: false, formatter: 'integer', sorttype: "int" },
                         { name: 'price', index: 'price', sorttype: "text", width: 80, editable: true, search: false, formatter: 'number', sorttype: "float" },
-                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'date', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 70, align: 'center', search: false, formatter: 'actions', formatoptions: { keys: true, editformbutton: false, editbutton: true, delbutton: true } },
+                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        {
+                            name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: {
+                                keys: true,
+                                editformbutton: false,
+                                editbutton: true,
+                                delbutton: true
+                            }
+                        },
                     ],
                     saveAfterSelect: true,
                     //addedrow: "last",
@@ -117,6 +113,11 @@
                         //$("#grBuses").editCell(iRow, iCol, true);
                     },
                     loadComplete: function (data) {
+                        $("div.ui-inline-edit").attr("title","@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")");
+                        $("div.ui-inline-del").attr("title", "@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")");
+                        $("div.ui-inline-save").attr("title", "@DictExpressionBuilderSystem.Translate("grid.SaveRow")");
+                        $("div.ui-inline-cancel").attr("title", "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")");
+
                         var grid = $("#grBuses");
                         var colModel = grid.getGridParam('colModel');
                         $.each(colModel, function (index, col) {
@@ -218,6 +219,14 @@
 
             //Hide buttons "Clear search"
             $(".ui-search-clear").remove();
+
+
+            @*<div style="margin-left: 8px;">
+                <div title="Edit selected row" style="float: left; cursor: pointer; display: none;" class="ui-pg-div ui-inline-edit" id="jEditButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'edit');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-pencil"></span></div>
+                <div title="Delete selected row" style="float: left; display: none;" class="ui-pg-div ui-inline-del" id="jDeleteButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'del');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-trash"></span></div>
+                <div title="Save row" style="float: left;" class="ui-pg-div ui-inline-save" id="jSaveButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'save');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-disk"></span></div>
+                <div title="Cancel row editing" style="float: left;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_1" onclick="jQuery.fn.fmatter.rowactions.call(this, 'cancel');" onmouseover="jQuery(this).addClass('ui-state-hover');" onmouseout="jQuery(this).removeClass('ui-state-hover');"><span class="ui-icon ui-icon-cancel"></span></div>
+            </div>*@
 
             var lastSelection;
 

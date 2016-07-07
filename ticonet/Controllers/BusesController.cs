@@ -149,11 +149,17 @@ namespace ticonet.Controllers
 
         public JsonResult GetBusCompanies()
         {
-            var busCompanies = new List<BusCompanyModel>();
+            var busCompanies = new List<SelectItemModel>();
+            busCompanies.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty });
             using (var logic = new tblBusCompanyLogic())
             {
-                busCompanies = logic.GetBusCompanies()
-                    .Select(z => new BusCompanyModel(z)).ToList();
+                busCompanies.AddRange(logic.GetBusCompanies()
+                    .Select(z => new SelectItemModel
+                    {
+                        Value = z.pk.ToString(),
+                        Text = z.companyName,
+                        Title = string.Format("{0} ({1} - {2})", z.companyName, z.manager, z.tel)
+                    }).ToList());
             }
 
             return new JsonResult { Data = busCompanies };

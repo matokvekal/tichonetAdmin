@@ -339,6 +339,7 @@
     <Compile Include="Models\AttachStudentModel.cs" />
     <Compile Include="Models\AttachStudentResultModel.cs" />
     <Compile Include="Models\BusCompanyModel.cs" />
+    <Compile Include="Models\SelectItemModel.cs" />
     <Compile Include="Models\CurrentStateModel.cs" />
     <Compile Include="Models\EditLineResultModel.cs" />
     <Compile Include="Models\LineActiveSwitchModel.cs" />

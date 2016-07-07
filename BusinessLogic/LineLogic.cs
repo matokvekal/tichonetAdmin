@@ -316,10 +316,17 @@ namespace Business_Logic
                 .ToList();
         } 
 
-        public void AddBusToLine(int lineId, int busId)
+        public void UpdateBusToLine(int lineId, int busId)
         {
-            var existingBusInLine = DB.BusesToLines.FirstOrDefault(x => x.BusId == busId);
-            if (existingBusInLine == null)
+            var existingBusInLine = DB.BusesToLines.FirstOrDefault(x => x.LineId == lineId);
+            if (existingBusInLine != null)
+            {
+                if (busId == 0)
+                    DB.BusesToLines.Remove(existingBusInLine);
+                else
+                    existingBusInLine.BusId = busId;
+            }
+            else if (busId != 0)
             {
                 DB.BusesToLines.Add(new BusesToLine
                 {

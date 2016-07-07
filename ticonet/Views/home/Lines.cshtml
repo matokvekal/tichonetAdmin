@@ -57,11 +57,18 @@
                         { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: true },
                         { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110, editable: true },
                         {
-                            name: 'Direction', index: 'Direction', sorttype: "select", width: 110, editable: true, search: false,
-                            edittype: 'select', formatter: 'select', editoptions: { value: { '0': 'To', '1': 'From' } }
+                            name: 'Direction',
+                            index: 'Direction',
+                            sorttype: "select",
+                            width: 110,
+                            editable: true,
+                            search: false,
+                            edittype: 'select',
+                            formatter: 'select',
+                            editoptions: { value: { '0': 'To', '1': 'From' } }
                         },
                         { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                        { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: true },
+                        { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: false },
                         { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
                         { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                         { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
@@ -72,11 +79,15 @@
                         { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                         { name: 'BusIdDescription', index: 'BusIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                         {
-                            name: 'BusId', index: 'BusId', sorttype: "text", editable: true, search: false, 
+                            name: 'BusId',
+                            index: 'BusId',
+                            sorttype: "text",
+                            editable: true,
+                            search: false,
                             edittype: "select",
                             editoptions: {
                                 dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "Lines")',
-                                postData: function (rowid, value, cmName) {
+                                postData: function(rowid, value, cmName) {
                                     return {
                                         lineId: rowid
                                     }
@@ -87,29 +98,39 @@
                                     if (response && response.Data.length) {
                                         for (var i = 0, l = response.Data.length; i < l; i++) {
                                             var ri = response.Data[i];
-                                            s += '<option value="' + ri.Id + '">' + ri.BusId + '</option>';
+                                            s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
                                         }
                                     }
                                     return s + "</select>";
                                 }
                             }
                         },
-                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: { keys: true, editformbutton: false, editbutton: true, delbutton: true } },
+                        { name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: {
+                            keys: true,
+                            editformbutton: false,
+                            editbutton: true,
+                            delbutton: true
+                        } },
                     ],
                     saveAfterSelect: true,
-                    onSelectRow: function (id) {
+                    onSelectRow: function(id) {
                         lastSelection = -1;
                     },
-                    ondblClickRow: function (rowid, iRow, iCol) {
+                    ondblClickRow: function(rowid, iRow, iCol) {
                         editRow(rowid);
                         //$("#grLines").editCell(iRow, iCol, true);
                     },
-                    loadComplete: function (data) {
+                    loadComplete: function(data) {
+                        $("div.ui-inline-edit").attr("title", "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")");
+                        $("div.ui-inline-del").attr("title", "@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")");
+                        $("div.ui-inline-save").attr("title", "@DictExpressionBuilderSystem.Translate("grid.SaveRow")");
+                        $("div.ui-inline-cancel").attr("title", "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")");
+
                         var grid = $("#grLines");
                         var colModel = grid.getGridParam('colModel');
-                        $.each(colModel, function (index, col) {
+                        $.each(colModel, function(index, col) {
                             if (col.edittype === 'select') {
-                                $.each(grid.getDataIDs(), function (index, id) {
+                                $.each(grid.getDataIDs(), function(index, id) {
                                     var row = grid.getRowData(id);
                                     var value = row[col.name];
                                     var text = row[col.name + "Description"];
@@ -216,6 +237,6 @@
                 }
             }
 
-        })
+        });
     </script>
 }

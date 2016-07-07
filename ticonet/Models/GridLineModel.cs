@@ -73,7 +73,7 @@ namespace ticonet.Models
             existingLine.LineNumber = LineNumber;
             existingLine.Direction = Direction;
             existingLine.IsActive = IsActive;
-            existingLine.totalStudents = totalStudents;
+            // existingLine.totalStudents = totalStudents; // Can not be modefied in lines grid
             // existingLine.Duration = Duration; // Can not be modefied in lines grid
             existingLine.Sun = Sun;
             existingLine.Mon = Mon;
