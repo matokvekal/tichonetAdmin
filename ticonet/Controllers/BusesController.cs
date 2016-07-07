@@ -35,7 +35,7 @@ namespace ticonet.Controllers
                     buses.Where(w=>w.Owner.HasValue).ForEach(x =>
                     {
                         var busCompanies = busCompanyLogic.GetBusCompanyById(x.Owner.Value);
-                        x.OwnerDescription = busCompanies!=null? busCompanies.companyName : "";
+                        x.OwnerDescription = busCompanies!=null? busCompanies.companyName : string.Empty;
                     });
                 }
                 totalRecords = logic.Buses.Count();

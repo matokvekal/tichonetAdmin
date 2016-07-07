@@ -87,13 +87,19 @@
                         },
                         { name: 'seats', index: 'seats', sorttype: "text", width: 60, editable: true, search: false, formatter: 'integer', sorttype: "int" },
                         { name: 'price', index: 'price', sorttype: "text", width: 80, editable: true, search: false, formatter: 'number', sorttype: "float" },
-                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
-                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy' }); } }, editrules: { date: false }, search: false },
+                        { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: null }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
                         {
-                            name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: {
+                            name: 'ActionsBtn',
+                            index: 'ActionsBtn',
+                            width: 50,
+                            align: 'center',
+                            search: false,
+                            formatter: 'actions',
+                            formatoptions: {
                                 keys: true,
                                 editformbutton: false,
                                 editbutton: true,
@@ -105,27 +111,27 @@
                     //addedrow: "last",
                     //cellEdit: true,
                     //beforeSelectRow: function (rowid) { return false; },
-                    onSelectRow: function (id) {
+                    onSelectRow: function(id) {
                         lastSelection = -1;
                     },
                     ondblClickRow: function(rowid, iRow, iCol) {
                         editRow(rowid);
                         //$("#grBuses").editCell(iRow, iCol, true);
                     },
-                    loadComplete: function (data) {
-                        $("div.ui-inline-edit").attr("title","@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")");
+                    loadComplete: function(data) {
+                        $("div.ui-inline-edit").attr("title", "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")");
                         $("div.ui-inline-del").attr("title", "@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")");
                         $("div.ui-inline-save").attr("title", "@DictExpressionBuilderSystem.Translate("grid.SaveRow")");
                         $("div.ui-inline-cancel").attr("title", "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")");
 
                         var grid = $("#grBuses");
                         var colModel = grid.getGridParam('colModel');
-                        $.each(colModel, function (index, col) {
+                        $.each(colModel, function(index, col) {
                             if (col.edittype === 'select') {
-                                $.each(grid.getDataIDs(), function (index, id) {
+                                $.each(grid.getDataIDs(), function(index, id) {
                                     var row = grid.getRowData(id);
                                     var value = row[col.name];
-                                    var text = row[col.name+"Description"];
+                                    var text = row[col.name + "Description"];
                                     row[col.name] = text;
                                     grid.setRowData(id, row);
                                 });
@@ -238,6 +244,18 @@
                     jQuery.fn.fmatter.rowactions.call($("#grBuses tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
                     lastSelection = id;
                 }
+            }
+
+            function datecheck(value, colname) {
+                if (value) {
+                    //TODO check Date
+                    var pattern = "(0[1-9]|1[012])(/)(0[1-9]|[12][0-9]|3[01])(/)(19|20)\\d\\d";
+                    var regCheck = new RegExp(pattern);
+                    if (!regCheck.test(value)) {
+                        return [false, "@DictExpressionBuilderSystem.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
+                    }
+                }
+                return [true, ""];
             }
         });
     </script>

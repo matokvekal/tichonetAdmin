@@ -9,7 +9,7 @@ namespace ticonet.Models
     {
         string DateToString(DateTime? dt)
         {
-            return (dt.HasValue? dt.Value.ToString("MM/dd/yyyy"):"") ;
+            return (dt.HasValue? dt.Value.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture) :"") ;
         }
         DateTime? StringToDate(string s)
         {
