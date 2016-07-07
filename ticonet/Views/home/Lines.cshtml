@@ -1,22 +1,32 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
 
-<br />
-<div class="header">
-    <hr class="hr-thin" />
-    <h4>Lines</h4>
-    <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleLines"></div>
-    <hr class="hr-thin" />
-</div>
+<style>
+    .ui-state-highlight {
+        border: none !important;
+        background: none !important;
+    }
+</style>
 <div class="content" id="dLinesTable">
     <table id="grLines"></table>
     <div id="pgLines"></div>
 </div>
 
 @section scripts{
-    @Scripts.Render("~/bundles/jqGrid")
+    @Scripts.Render("~/bundles/jqGridExtend")
     <script>
         $(function() {
+            var lineActionsFormatter = function (cellvalue, options, rowObject) {
+                var res = "";
+                res += '<div style="margin-left: 8px;">';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+                res += '</div>';
+                return res;
+            };
+
             var printWindow = null;
             var grid = $("#grLines");
             var pagerID = "#pgLines";
@@ -32,6 +42,7 @@
             });
 
             grid.jqGrid({
+                    caption: "Lines",
                     url: '/api' + '@Url.Action("GetLines", "Lines")',
                     datatype: "json",
                     loadonce: false,
@@ -130,15 +141,33 @@
                             }
                         },
                         { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: false, search: false },
-                        { name: 'BusCompanyName', index: 'BusCompanyName', sorttype: "text", width: 110, editable: false, search: false },
+                        {
+                            name: 'BusCompanyName', index: 'BusCompanyName', sorttype: "text", width: 110, editable: false, search: true,
+                            stype: "select",
+                            searchoptions: {
+                                dataUrl: '/api' + '@Url.Action("GetCompaniesFilter", "Lines")',
+                                buildSelect: function (data) {
+                                    var response = jQuery.parseJSON(data);
+                                    var s = '<select>';
+                                    if (response && response.Data.length) {
+                                        for (var i = 0, l = response.Data.length; i < l; i++) {
+                                            var ri = response.Data[i];
+                                            s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                        }
+                                    }
+                                    return s + "</select>";
+                                }
+                            }
+                        },
                         { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false },
                         {
-                            name: 'ActionsBtn', index: 'ActionsBtn', width: 50, align: 'center', search: false, formatter: 'actions', formatoptions: {
-                            keys: true,
-                            editformbutton: false,
-                            editbutton: true,
-                            delbutton: true
-                        } },
+                            name: 'ActionsBtn',
+                            index: 'ActionsBtn',
+                            width: 80,
+                            align: 'center',
+                            search: false,
+                            formatter: lineActionsFormatter,
+                        },
                     ],
                     saveAfterSelect: true,
                     afterSubmit: function () {
@@ -153,11 +182,6 @@
                         //grid.editCell(iRow, iCol, true);
                     },
                     loadComplete: function(data) {
-                        $("div.ui-inline-edit").attr("title", "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")");
-                        $("div.ui-inline-del").attr("title", "@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")");
-                        $("div.ui-inline-save").attr("title", "@DictExpressionBuilderSystem.Translate("grid.SaveRow")");
-                        $("div.ui-inline-cancel").attr("title", "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")");
-
                         var colModel = grid.getGridParam('colModel');
                         $.each(colModel, function(index, col) {
                             if (col.edittype === 'select') {
@@ -261,82 +285,10 @@
             function editRow(id) {
                 if (id && id !== lastSelection) {
                     grid.jqGrid('restoreRow', lastSelection);
-                    //grid.jqGrid('editRow', id, { keys: true });
-                    //jQuery.fn.fmatter.rowactions.call($("#grLines tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
-                    rowactions.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                    $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
                     lastSelection = id;
                 }
             }
-
-
-            var rowactions = function (b) {
-                var a = $;
-                var c = a(this).closest("tr.jqgrow"),
-                    d = c.attr("id"),
-                    e = a(this).closest("table.ui-jqgrid-btable").attr("id").replace(/_frozen([^_]*)$/, "$1"),
-                    f = a("#" + e),
-                    g = f[0],
-                    h = g.p,
-                    i = h.colModel[a.jgrid.getCellIndex(this)],
-                    j = i.frozen ? a("tr#" + d + " td:eq(" + a.jgrid.getCellIndex(this) + ") > div", f) : a(this).parent(),
-                    k = {
-                        extraparam: {}
-                    },
-                    l = function (b, c) {
-                        a.isFunction(k.afterSave) && k.afterSave.call(g, b, c);
-                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
-                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-                        f.trigger("reloadGrid");
-                    },
-                    m = function (b) {
-                        a.isFunction(k.afterRestore) && k.afterRestore.call(g, b);
-                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
-                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-                    };
-                void 0 !== i.formatoptions && (k = a.extend(k, i.formatoptions));
-                void 0 !== h.editOptions && (k.editOptions = h.editOptions);
-                void 0 !== h.delOptions && (k.delOptions = h.delOptions);
-                c.hasClass("jqgrid-new-row") && (k.extraparam[h.prmNames.oper] = h.prmNames.addoper);
-                var n = {
-                    keys: k.keys,
-                    oneditfunc: k.onEdit,
-                    successfunc: k.onSuccess,
-                    url: k.url,
-                    extraparam: k.extraparam,
-                    aftersavefunc: l,
-                    errorfunc: k.onError,
-                    afterrestorefunc: m,
-                    restoreAfterError: k.restoreAfterError,
-                    mtype: k.mtype,
-                    reloadAfterSubmit: true
-                };
-                switch (b) {
-                    case "edit":
-                        f.jqGrid("editRow", d, n);
-                        j.find("div.ui-inline-edit,div.ui-inline-del").hide();
-                        j.find("div.ui-inline-save,div.ui-inline-cancel").show();
-                        f.triggerHandler("jqGridAfterGridComplete");
-                        break;
-                    case "save":
-                        f.jqGrid("saveRow", d, n);
-                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
-                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-                        f.triggerHandler("jqGridAfterGridComplete");
-                        break;
-                    case "cancel":
-                        f.jqGrid("restoreRow", d, m);
-                        j.find("div.ui-inline-edit,div.ui-inline-del").show();
-                        j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-                        f.triggerHandler("jqGridAfterGridComplete");
-                        break;
-                    case "del":
-                        f.jqGrid("delGridRow", d, k.delOptions);
-                        break;
-                    case "formedit":
-                        f.jqGrid("setSelection", d);
-                        f.jqGrid("editGridRow", d, k.editOptions);
-                }
-            };
 
         });
     </script>

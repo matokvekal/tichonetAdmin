@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Web.Helpers;
 using System.Web.Http;
-using System.Web.Http.Results;
 using System.Web.Mvc;
 using Business_Logic;
 using ClosedXML.Excel;
 using log4net;
 using ticonet.Models;
+using Business_Logic.Enums;
 
 namespace ticonet.Controllers
 {
@@ -30,18 +29,6 @@ namespace ticonet.Controllers
             {
                 lines = logic.GetPaged(_search, rows, page, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToList();
-                //using (var busLogic = new tblBusLogic())
-                //{
-                //    lines.Where(w => w.BusId > 0).ForEach(x =>
-                //    {
-                //        var bus = busLogic.GetBus(x.BusId);
-                //        x.BusIdDescription = bus != null ? bus.BusId : string.Empty;
-                //        x.PlateNumber = string.Empty;
-                //        x.BusCompanyName = string.Empty;
-                //        x.seats = null;
-
-                //    });
-                //}
                 totalRecords = logic.Lines.Count();
             }
             return Request.CreateResponse(
@@ -60,12 +47,12 @@ namespace ticonet.Controllers
         {
             using (var logic = new LineLogic())
             {
-                switch (model.Oper)
+                switch ((GridOperation)Enum.Parse(typeof(GridOperation), model.Oper, true))
                 {
-                    //case "add":
+                    //case GridOperation.add:
                     //    logic.SaveLine(model.ToDbModel());
                     //    break;
-                    case "edit":
+                    case GridOperation.edit:
                         var existingLine = logic.GetLine(model.Id);
                         if (existingLine != null)
                         {
@@ -74,7 +61,7 @@ namespace ticonet.Controllers
                             logic.UpdateBusToLine(model.Id, model.BusId);
                         }
                         break;
-                    case "del":
+                    case GridOperation.del:
                         logic.DeleteLine(model.Id);
                         break;
                 }
@@ -111,25 +98,31 @@ namespace ticonet.Controllers
             worksheet.Cell(1, 11).Value = DictExpressionBuilderSystem.Translate("Line.Thu");
             worksheet.Cell(1, 12).Value = DictExpressionBuilderSystem.Translate("Line.Fri");
             worksheet.Cell(1, 13).Value = DictExpressionBuilderSystem.Translate("Line.Sut");
-            worksheet.Cell(1, 14).Value = DictExpressionBuilderSystem.Translate("Line.BusId");
+            worksheet.Cell(1, 14).Value = DictExpressionBuilderSystem.Translate("Bus.BusId");
+            worksheet.Cell(1, 15).Value = DictExpressionBuilderSystem.Translate("Bus.PlateNumber");
+            worksheet.Cell(1, 16).Value = DictExpressionBuilderSystem.Translate("BusCompany.Name");
+            worksheet.Cell(1, 17).Value = DictExpressionBuilderSystem.Translate("Bus.seats");
 
             for (int i = 0; i < lines.Length; i++)
             {
                 var row = 2 + i;
-                worksheet.Cell(row, 1).Value = lines[i].LineName;
-                worksheet.Cell(row, 2).Value = lines[i].LineNumber;
-                worksheet.Cell(row, 3).Value = lines[i].Direction;
-                worksheet.Cell(row, 4).Value = lines[i].IsActive;
-                worksheet.Cell(row, 5).Value = lines[i].totalStudents;
-                worksheet.Cell(row, 6).Value = lines[i].Duration;
-                worksheet.Cell(row, 7).Value = lines[i].Sun;
-                worksheet.Cell(row, 8).Value = lines[i].Mon;
-                worksheet.Cell(row, 9).Value = lines[i].Tue;
-                worksheet.Cell(row, 10).Value = lines[i].Wed;
-                worksheet.Cell(row, 11).Value = lines[i].Thu;
-                worksheet.Cell(row, 12).Value = lines[i].Fri;
-                worksheet.Cell(row, 13).Value = lines[i].Sut;
-                worksheet.Cell(row, 14).Value = lines[i].BusId;
+                worksheet.Cell(row, 1).SetValue<string>(lines[i].LineName);
+                worksheet.Cell(row, 2).SetValue<string>(lines[i].LineNumber);
+                worksheet.Cell(row, 3).SetValue<string>(lines[i].Direction == 0? "To": "From");
+                worksheet.Cell(row, 4).SetValue<bool>(lines[i].IsActive);
+                worksheet.Cell(row, 5).SetValue<int>(lines[i].totalStudents);
+                worksheet.Cell(row, 6).SetValue<string>(Convert.ToString(lines[i].Duration));
+                worksheet.Cell(row, 7).SetValue<bool>(lines[i].Sun);
+                worksheet.Cell(row, 8).SetValue<bool>(lines[i].Mon);
+                worksheet.Cell(row, 9).SetValue<bool>(lines[i].Tue);
+                worksheet.Cell(row, 10).SetValue<bool>(lines[i].Wed);
+                worksheet.Cell(row, 11).SetValue<bool>(lines[i].Thu);
+                worksheet.Cell(row, 12).SetValue<bool>(lines[i].Fri);
+                worksheet.Cell(row, 13).SetValue<bool>(lines[i].Sut);
+                worksheet.Cell(row, 14).SetValue<string>(lines[i].BusIdDescription);
+                worksheet.Cell(row, 15).SetValue<string>(lines[i].PlateNumber);
+                worksheet.Cell(row, 16).SetValue<string>(lines[i].BusCompanyName);
+                worksheet.Cell(row, 17).SetValue<int?>(lines[i].seats);
             }
 
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
@@ -181,6 +174,25 @@ namespace ticonet.Controllers
             }
 
             return new JsonResult { Data = buses };
+        }
+
+        public JsonResult GetCompaniesFilter()
+        {
+            var companies = new List<SelectItemModel>();
+            companies.Add(new SelectItemModel { Value = "", Text = DictExpressionBuilderSystem.Translate("Search.All")});
+            using (var logic = new LineLogic())
+            {
+                var getCompanies = logic.GetCompaniesFilter();
+                companies.AddRange(getCompanies
+                    .Where(w=> w != null)
+                    .Select(z => new SelectItemModel
+                    {
+                        Value = z.pk.ToString(),
+                        Text = z.companyName
+                    }).ToList());
+            }
+
+            return new JsonResult { Data = companies };
         }
     }
 }

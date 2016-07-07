@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Web.Helpers;
 using System.Web.Http;
-using System.Web.Http.Results;
 using System.Web.Mvc;
 using Business_Logic;
+using Business_Logic.Enums;
 using ClosedXML.Excel;
 using log4net;
 using ticonet.Models;
@@ -30,14 +29,6 @@ namespace ticonet.Controllers
             {
                 buses = logic.GetPaged(_search, rows, page, sidx, sord, filters)
                     .Select(z => new BusModel(z)).ToList();
-                //using (var busCompanyLogic = new tblBusCompanyLogic())
-                //{
-                //    buses.Where(w=>w.Owner.HasValue).ForEach(x =>
-                //    {
-                //        var busCompanies = busCompanyLogic.GetBusCompanyById(x.Owner.Value);
-                //        x.OwnerDescription = busCompanies!=null? busCompanies.companyName : string.Empty;
-                //    });
-                //}
                 totalRecords = logic.Buses.Count();
             }
             return Request.CreateResponse(
@@ -56,15 +47,15 @@ namespace ticonet.Controllers
         {
             using (var logic = new tblBusLogic())
             {
-                switch (model.Oper)
+                switch ((GridOperation)Enum.Parse(typeof(GridOperation), model.Oper, true))
                 {
-                    case "add":
+                    case GridOperation.add:
                         logic.SaveBus(model.ToDbModel());
                         break;
-                    case "edit":
+                    case GridOperation.edit:
                         logic.Update(model.ToDbModel());
                         break;
-                    case "del":
+                    case GridOperation.del:
                         logic.DeleteBus(model.Id);
                         break;
                 }
@@ -90,7 +81,7 @@ namespace ticonet.Controllers
 
             worksheet.Cell(1, 1).Value = DictExpressionBuilderSystem.Translate("Bus.BusId");
             worksheet.Cell(1, 2).Value = DictExpressionBuilderSystem.Translate("Bus.PlateNumber");
-            worksheet.Cell(1, 3).Value = DictExpressionBuilderSystem.Translate("Bus.Owner");
+            worksheet.Cell(1, 3).Value = DictExpressionBuilderSystem.Translate("BusCompany.Name");
             worksheet.Cell(1, 4).Value = DictExpressionBuilderSystem.Translate("Bus.seats");
             worksheet.Cell(1, 5).Value = DictExpressionBuilderSystem.Translate("Bus.price");
             worksheet.Cell(1, 6).Value = DictExpressionBuilderSystem.Translate("Bus.munifacturedate");
@@ -102,16 +93,16 @@ namespace ticonet.Controllers
             for (int i = 0; i < buses.Length; i++)
             {
                 var row = 2 + i;
-                worksheet.Cell(row, 1).Value = buses[i].BusId;
-                worksheet.Cell(row, 2).Value = buses[i].PlateNumber;
-                worksheet.Cell(row, 3).Value = buses[i].Owner;
-                worksheet.Cell(row, 4).Value = buses[i].seats;
-                worksheet.Cell(row, 5).Value = buses[i].price;
-                worksheet.Cell(row, 6).Value = buses[i].munifacturedate;
-                worksheet.Cell(row, 7).Value = buses[i].LicensingDueDate;
-                worksheet.Cell(row, 8).Value = buses[i].insuranceDueDate;
-                worksheet.Cell(row, 9).Value = buses[i].winterLicenseDueDate;
-                worksheet.Cell(row, 10).Value = buses[i].brakeTesDueDate;
+                worksheet.Cell(row, 1).SetValue<string>(buses[i].BusId);
+                worksheet.Cell(row, 2).SetValue<string>(buses[i].PlateNumber);
+                worksheet.Cell(row, 3).SetValue<string>(buses[i].OwnerDescription);
+                worksheet.Cell(row, 4).SetValue<int?>(buses[i].seats);
+                worksheet.Cell(row, 5).SetValue<double?>(buses[i].price);
+                worksheet.Cell(row, 6).SetValue<string>(buses[i].munifacturedate);
+                worksheet.Cell(row, 7).SetValue<string>(buses[i].LicensingDueDate);
+                worksheet.Cell(row, 8).SetValue<string>(buses[i].insuranceDueDate);
+                worksheet.Cell(row, 9).SetValue<string>(buses[i].winterLicenseDueDate);
+                worksheet.Cell(row, 10).SetValue<string>(buses[i].brakeTesDueDate);
             }
 
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;

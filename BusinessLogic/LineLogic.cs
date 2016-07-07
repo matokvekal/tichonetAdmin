@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using Business_Logic.Entities;
 using Business_Logic.Helpers;
 using Newtonsoft.Json;
@@ -34,9 +35,17 @@ namespace Business_Logic
                 foreach (var rule in searchFilters.rules)
                 {
                     var filterByProperty = typeof(Line).GetProperty(rule.field);
-                    if (filterByProperty.PropertyType == typeof(string))
+                    if (rule.field == "BusCompanyName")
+                    {
+                        int id;
+                        int.TryParse(rule.data, out id);
+                        query = query.AsQueryable()
+                            .Include(x => x.BusesToLines)
+                            .Where(x => x.BusesToLines.Select(l => l.Bus).Any(b => b.BusCompany != null && b.BusCompany.pk == id));
+                    }
+                    else if (filterByProperty.PropertyType == typeof (string))
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
-                    else if (filterByProperty.PropertyType == typeof(int))
+                    else if (filterByProperty.PropertyType == typeof (int))
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
                     else
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
@@ -335,6 +344,17 @@ namespace Business_Logic
                 });
             }
             DB.SaveChanges();
-        } 
+        }
+
+        public IEnumerable<tblBusCompany> GetCompaniesFilter()
+        {
+            return DB.Buses
+                .Include(x => x.BusesToLines)
+                .Include(x => x.BusCompany)
+                .Where(x => x.BusesToLines.Any() && x.BusCompany != null)
+                .Select(x => x.BusCompany)
+                .Distinct()
+                .ToList();
+        }
     }
 }

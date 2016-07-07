@@ -36,13 +36,14 @@ namespace IdentitySample
                         "~/Scripts/jqGrid/i18n/grid.locale-en.js",
                         "~/Scripts/spectrum.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/jqGrid").Include(
+            bundles.Add(new ScriptBundle("~/bundles/jqGridExtend").Include(
                         "~/Scripts/jqGrid/jquery.jqGrid.min.js",
                         "~/Scripts/jqGrid/plugins/grid.addons.js",
                         "~/Scripts/jqGrid/plugins/grid.subgrid.js",
                         "~/Scripts/jqGrid/plugins/jquery.searchFilter.js",
                         "~/Scripts/jqGrid/i18n/grid.locale-en.js",
-                        "~/Scripts/spectrum.js"));
+                        "~/Scripts/spectrum.js",
+                        "~/Scripts/jqGridExtend/jqGridExtend.js"));
 
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're

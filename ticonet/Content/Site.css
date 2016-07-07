@@ -139,3 +139,7 @@ hr.hr-thin {
 #wrapper.active #sidebar-wrapper {
     left: 50px;
 }
+
+td.ui-search-input > select {
+    width: 100%;
+}

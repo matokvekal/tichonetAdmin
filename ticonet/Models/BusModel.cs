@@ -1,28 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Business_Logic;
+﻿using Business_Logic;
+using Business_Logic.Helpers;
 
 namespace ticonet.Models
 {
     public class BusModel
     {
-        string DateToString(DateTime? dt)
-        {
-            return (dt.HasValue? dt.Value.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture) :"") ;
-        }
-        DateTime? StringToDate(string s)
-        {
-            DateTime? dtNull = null;
-            if (!string.IsNullOrWhiteSpace(s))
-            {
-                DateTime dt =  new DateTime();
-                if(DateTime.TryParseExact(s, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
-                    dtNull = (DateTime?)dt;
-            }
-            return dtNull;
-        }
-
         public BusModel(Bus data)
         {
             Id = data.Id;
@@ -36,11 +18,11 @@ namespace ticonet.Models
             //GpsCode = data.GpsCode;
             seats = data.seats;
             price = data.price;
-            munifacturedate = DateToString(data.munifacturedate);
-            LicensingDueDate = DateToString(data.LicensingDueDate);
-            insuranceDueDate = DateToString(data.insuranceDueDate);
-            winterLicenseDueDate = DateToString(data.winterLicenseDueDate);
-            brakeTesDueDate = DateToString(data.brakeTesDueDate);
+            munifacturedate = DateHelper.DateToString(data.munifacturedate);
+            LicensingDueDate = DateHelper.DateToString(data.LicensingDueDate);
+            insuranceDueDate = DateHelper.DateToString(data.insuranceDueDate);
+            winterLicenseDueDate = DateHelper.DateToString(data.winterLicenseDueDate);
+            brakeTesDueDate = DateHelper.DateToString(data.brakeTesDueDate);
         }
 
         public BusModel() { }
@@ -93,11 +75,11 @@ namespace ticonet.Models
                 //GpsCode = GpsCode,
                 seats = seats,
                 price = price,
-                munifacturedate = StringToDate(munifacturedate),
-                LicensingDueDate = StringToDate(LicensingDueDate),
-                insuranceDueDate = StringToDate(insuranceDueDate),
-                winterLicenseDueDate = StringToDate(winterLicenseDueDate),
-                brakeTesDueDate = StringToDate(brakeTesDueDate)
+                munifacturedate = DateHelper.StringToDate(munifacturedate),
+                LicensingDueDate = DateHelper.StringToDate(LicensingDueDate),
+                insuranceDueDate = DateHelper.StringToDate(insuranceDueDate),
+                winterLicenseDueDate = DateHelper.StringToDate(winterLicenseDueDate),
+                brakeTesDueDate = DateHelper.StringToDate(brakeTesDueDate)
             };
         }
     }

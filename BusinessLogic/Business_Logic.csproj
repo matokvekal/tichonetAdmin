@@ -79,6 +79,7 @@
     <Compile Include="Enums\ColorMode.cs" />
     <Compile Include="Enums\ConflictActions.cs" />
     <Compile Include="Enums\FlagsUserRoles.cs" />
+    <Compile Include="Enums\GridOperation.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\AccountManager.cs" />
     <Compile Include="Helpers\BusHelper.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Helpers\MapHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\StringCipher.cs" />
+    <Compile Include="Helpers\DateHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Line.cs">
       <DependentUpon>registration.tt</DependentUpon>
