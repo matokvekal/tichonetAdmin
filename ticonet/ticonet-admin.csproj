@@ -322,6 +322,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BusesToLinesController.cs" />
     <Compile Include="Controllers\LinesController.cs" />
     <Compile Include="Controllers\BusesController.cs" />
     <Compile Include="Controllers\InsetsController.cs" />

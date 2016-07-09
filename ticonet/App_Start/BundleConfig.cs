@@ -41,7 +41,7 @@ namespace IdentitySample
                         "~/Scripts/jqGrid/plugins/grid.addons.js",
                         "~/Scripts/jqGrid/plugins/grid.subgrid.js",
                         "~/Scripts/jqGrid/plugins/jquery.searchFilter.js",
-                        "~/Scripts/jqGrid/i18n/grid.locale-en.js",
+                        "~/Scripts/jqGrid/i18n/grid.locale-he.js",
                         "~/Scripts/spectrum.js",
                         "~/Scripts/jqGridExtend/jqGridExtend.js"));
 

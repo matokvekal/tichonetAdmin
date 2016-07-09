@@ -1,1 +1,280 @@
-﻿
+﻿@using System.Web.Optimization
+@using Business_Logic
+
+<style>
+    .ui-state-highlight {
+        border: none !important;
+        background: none !important;
+    }
+</style>
+<div class="content" id="dBusesToLinesTable">
+    <table id="grBusesToLines"></table>
+    <div id="pgBusesToLines"></div>
+</div>
+
+<!--Div for render grid for Print-->
+<div hidden="true" id="printGrid"><table id="grPrint"></table></div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqGridExtend")
+    <script>
+        $(function() {
+            var lineActionsFormatter = function (cellvalue, options, rowObject) {
+                var res = "";
+                    res += '<div style="margin-left: 8px;">';
+                    res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                    //res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                    res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                    res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+                    res += '</div>';
+                return res;
+            };
+
+            var printWindow = null;
+            var grid = $("#grBusesToLines");
+            var pagerID = "#pgBusesToLines";
+            //Toggle buttons
+            $("#btToggleBusesToLines").click(function () {
+                var cls = $("#btToggleBusesToLines").attr("class");
+                if (cls == "glyphicon glyphicon-chevron-up toggle") {
+                    $("#btToggleBusesToLines").attr("class", "glyphicon glyphicon-chevron-down toggle");
+                } else {
+                    $("#btToggleBusesToLines").attr("class", "glyphicon glyphicon-chevron-up toggle");
+                }
+                $("#dBusesToLinesTable").toggle();
+            });
+
+            grid.jqGrid({
+                caption: "@DictExpressionBuilderSystem.Translate("BusToLine.GridCaption")",
+                url: '/api' + '@Url.Action("GetLines", "BusesToLines")',
+                datatype: "json",
+                loadonce: false,
+                reloadAfterSubmit: true,
+                height: "100%",
+                autowidth: true,
+                regional: "il",
+                hidegrid: false,
+                multiselect: false,
+                pager: pagerID,
+                mtype: "get",
+                rowNum: 25,
+                rowList: [5, 25, 50, 100],
+                viewrecords: true,
+                ignoreCase: true,
+                loadui: "disable",
+                altRows: false,
+                sortable: true,
+                altclass: "ui-state-default",
+                editurl: '/api' + '@Url.Action("EditLine", "BusesToLines")',
+                sortname: 'LineName',
+                sortorder: "asc",
+                colNames: [
+                    '@DictExpressionBuilderSystem.Translate("Line.Id")',
+                    '@DictExpressionBuilderSystem.Translate("Line.LineName")',
+                    '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
+                    '@DictExpressionBuilderSystem.Translate("Line.Direction")',
+                    '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
+                    '@DictExpressionBuilderSystem.Translate("Line.totalStudents")',
+                    '@DictExpressionBuilderSystem.Translate("Line.Duration")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
+                    '@DictExpressionBuilderSystem.Translate("BusCompany.BusCompanyName")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                    ""
+                ],
+            colModel: [
+                { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: false },
+                { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110, editable: false },
+                {
+                    name: 'Direction',
+                    index: 'Direction',
+                    sorttype: "select",
+                    width: 110,
+                    editable: false,
+                    search: false,
+                    edittype: 'select',
+                    formatter: 'select',
+                    editoptions: { value: { '0': 'To', '1': 'From' } }
+                },
+                { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: false },
+                { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
+                { name: 'BusIdDescription', index: 'BusIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                {
+                    name: 'BusId',
+                    index: 'BusId',
+                    sorttype: "text",
+                    editable: true,
+                    search: false,
+                    edittype: "select",
+                    editoptions: {
+                        dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "BusesToLines")',
+                        postData: function(rowid, value, cmName) {
+                            return {
+                                lineId: rowid
+                            }
+                        },
+                        buildSelect: function(data) {
+                            var response = jQuery.parseJSON(data);
+                            var s = '<select>';
+                            if (response && response.Data.length) {
+                                for (var i = 0, l = response.Data.length; i < l; i++) {
+                                    var ri = response.Data[i];
+                                    s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                }
+                            }
+                            return s + "</select>";
+                        }
+                    }
+                },
+                { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: false, search: false },
+                {
+                    name: 'BusCompanyName', index: 'BusCompanyName', sorttype: "text", width: 110, editable: false, search: true,
+                    stype: "select",
+                    searchoptions: {
+                        dataUrl: '/api' + '@Url.Action("GetCompaniesFilter", "BusesToLines")',
+                        buildSelect: function (data) {
+                            var response = jQuery.parseJSON(data);
+                            var s = '<select>';
+                            if (response && response.Data.length) {
+                                for (var i = 0, l = response.Data.length; i < l; i++) {
+                                    var ri = response.Data[i];
+                                    s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                }
+                            }
+                            return s + "</select>";
+                        }
+                    }
+                },
+                { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false },
+                {
+                    name: 'ActionsBtn',
+                    index: 'ActionsBtn',
+                    width: 80,
+                    align: 'center',
+                    search: false,
+                    formatter: lineActionsFormatter,
+                },
+            ],
+                saveAfterSelect: true,
+                //addedrow: "last",
+                beforeSelectRow: function (rowid) {
+                    restore(rowid);
+                    return false;
+                },
+                ondblClickRow: function (rowid, iRow, iCol) {
+                    editRow(rowid);
+                },
+                loadComplete: function (data) {
+                var colModel = grid.getGridParam('colModel');
+                $.each(colModel, function(index, col) {
+                    if (col.edittype === 'select') {
+                        $.each(grid.getDataIDs(), function(index, id) {
+                            var row = grid.getRowData(id);
+                            var value = row[col.name];
+                            var text = row[col.name + "Description"];
+                            row[col.name] = text;
+                            grid.setRowData(id, row);
+                        });
+                    }
+                });
+            }
+        })
+            .navGrid(pagerID, {
+                add: false,
+                edit: false,
+                del: false,
+                refresh: true,
+                refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
+                search: false,
+                view: false,
+                closeAfterAdd: true
+            }
+            )
+            .navButtonAdd(pagerID, {
+                id: "print",
+                buttonicon: "ui-icon-print",
+                caption: "",
+                title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
+                onClickButton: function() {
+                    var postData = grid.jqGrid('getGridParam', 'postData');
+                    var urlGetExcel = '/api' + "@Url.Action("GetPrint", "BusesToLines")";
+                    var url = urlGetExcel + "?" + $.param(postData);
+                    if (printWindow == null || printWindow.closed) {
+                        printWindow = window.open('', '', 'height=600,width=1000');
+                    } else {
+                        printWindow.focus();
+                    }
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function(data) {
+                            if (printWindow != undefined) {
+                                printWindow.document.clear();
+                                printWindow.document.write('<html><head><title>BusesToLines</title>');
+                                printWindow.document.write('</head><body >');
+                                printWindow.document.write('<div class="page">');
+                                printWindow.document.write('<div class="subpage">');
+
+                                //TODO Draw BusesToLines Table
+                                printWindow.document.write('test');
+                                printWindow.document.write(data);
+
+                                printWindow.document.write('</div>');
+                                printWindow.document.write('</div>');
+                                printWindow.document.write('</body></html>');
+                                printWindow.document.close();
+                                printWindow.print();
+                            }
+                        }
+                    });
+
+                }
+            }
+            )
+            .navButtonAdd(pagerID, {
+                id: "toExcel",
+                buttonicon: "ui-icon-disk",
+                caption: "",
+                title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
+                onClickButton: function() {
+                    var postData = grid.jqGrid('getGridParam', 'postData');
+                    var urlGetExcel = '/api' + "@Url.Action("GetExcel", "BusesToLines")";
+                    var url = urlGetExcel + "?" + $.param(postData);
+                    window.location.href = url;
+                }
+            }
+            )
+            .filterToolbar({
+                stringResult: true,
+                enableClear: false
+            }
+            );
+
+        //Hide buttons "Clear search"
+        $(".ui-search-clear").remove();
+
+        var lastSelection;
+
+        function restore(id) {
+            if (id && id !== lastSelection) {
+                $("div.ui-inline-edit,div.ui-inline-del", grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
+                $("div.ui-inline-save,div.ui-inline-cancel", grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
+                grid.triggerHandler("jqGridAfterGridComplete");
+
+                grid.jqGrid('restoreRow', lastSelection);
+                lastSelection = id;
+            }
+        }
+
+        function editRow(id) {
+            $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+        }
+
+        });
+    </script>
+}

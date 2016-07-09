@@ -43,6 +43,10 @@
         };
         switch (b) {
             case "edit":
+                //$("div.ui-inline-edit,div.ui-inline-del", f).show();
+                //$("div.ui-inline-save,div.ui-inline-cancel", f).hide();
+                //f.triggerHandler("jqGridAfterGridComplete");
+
                 f.jqGrid("editRow", d, n);
                 j.find("div.ui-inline-edit,div.ui-inline-del").hide();
                 j.find("div.ui-inline-save,div.ui-inline-cancel").show();

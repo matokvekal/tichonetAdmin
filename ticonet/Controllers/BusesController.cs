@@ -131,7 +131,7 @@ namespace ticonet.Controllers
             using (var logic = new tblBusLogic())
             {
                 totalRecords = logic.Buses.Count();
-                buses = logic.GetPaged(_search, totalRecords, 1, sidx, sord, filters)
+                buses = logic.GetPaged(_search, totalRecords, page, sidx, sord, filters)
                     .Select(z => new BusModel(z)).ToArray();
             }
 

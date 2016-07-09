@@ -12,7 +12,8 @@
     <div id="pgBuses"></div>
 </div>
 
-
+<!--Div for render grid for Print-->
+<div hidden="true" id="printGrid"><table id="grPrint"></table></div>
 
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
@@ -68,18 +69,18 @@
                     sortname: 'BusId',
                     sortorder: "asc",
                     colNames: [
-                        "Id",
-                        "BusId",
-                        "PlateNumber",
-                        "OwnerDescription",
-                        "Owner",
-                        "seats",
-                        "price",
-                        "munifacturedate",
-                        "LicensingDueDate",
-                        "insuranceDueDate",
-                        "winterLicenseDueDate",
-                        "brakeTesDueDate",
+                        '@DictExpressionBuilderSystem.Translate("Bus.Id")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
+                        '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
+                        '@DictExpressionBuilderSystem.Translate("BusCompany.Id")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.price")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.munifacturedate")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.LicensingDueDate")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.insuranceDueDate")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.winterLicenseDueDate")',
+                        '@DictExpressionBuilderSystem.Translate("Bus.brakeTesDueDate")',
                         ""
                     ],
                     colModel: [
@@ -125,19 +126,14 @@
                             formatter: lineActionsFormatter,
                         },
                     ],
-                    //afterComplete: function () {
-                    //    grid.jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
-                    //},
                     saveAfterSelect: true,
                     //addedrow: "last",
-                    //cellEdit: true,
-                    //beforeSelectRow: function (rowid) { return false; },
-                    onSelectRow: function (id) {
-                        lastSelection = -1;
+                    beforeSelectRow: function(rowid) {
+                        restore(rowid);
+                        return false;
                     },
                     ondblClickRow: function (rowid, iRow, iCol) {
                         editRow(rowid);
-                        //grid.editCell(iRow, iCol, true);
                     },
                     loadComplete: function (data) {
                         var colModel = grid.getGridParam('colModel');
@@ -157,23 +153,14 @@
                 .navGrid(pagerID, {
                         edit: false,
                         add: true,
+                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.CreateNewRow")", //"Create new row",
                         del: false,
                         deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")", //"Delete row",
                         refresh: true,
                         refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
                         search: false,
-                        view: false
-                    } /*, {}, { closeAfterEdit: true }, { closeAfterAdd: true }*/
-                )
-                .inlineNav(pagerID, {
-                        add: false,
-                        edit: false,
-                        //editParams: { position: "last" },
-                        //addParams: { position: "last" },
-                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.AddNewRow")", //"Add new row",
-                        edittitle: "@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")", //"Edit selected row",
-                        savetitle: "@DictExpressionBuilderSystem.Translate("grid.SaveRow")", //"Save row",
-                        canceltitle: "@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" //"Cancel row editing"
+                        view: false,
+                        closeAfterAdd: true
                     }
                 )
                 .navButtonAdd(pagerID, {
@@ -197,16 +184,42 @@
                                 contentType: 'application/json; charset=utf-8',
                                 success: function (data) {
                                     if (printWindow != undefined) {
+                                        $("#grPrint").jqGrid({
+                                            datatype: "local",
+                                            data: data,
+                                            colNames: [
+                                                '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
+                                                '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.price")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.munifacturedate")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.LicensingDueDate")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.insuranceDueDate")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.winterLicenseDueDate")',
+                                                '@DictExpressionBuilderSystem.Translate("Bus.brakeTesDueDate")',
+                                            ],
+                                            colModel: [
+                                                { name: "BusId" },
+                                                { name: "PlateNumber" },
+                                                { name: "OwnerDescription" },
+                                                { name: "seats" },
+                                                { name: "price" },
+                                                { name: "munifacturedate" },
+                                                { name: "LicensingDueDate" },
+                                                { name: "insuranceDueDate" },
+                                                { name: "winterLicenseDueDate" },
+                                                { name: "brakeTesDueDate" },
+                                            ],
+                                            height: "auto",
+                                            caption: "Employees"
+                                        });
                                         printWindow.document.clear();
                                         printWindow.document.write('<html><head><title>Buses</title>');
                                         printWindow.document.write('</head><body >');
                                         printWindow.document.write('<div class="page">');
                                         printWindow.document.write('<div class="subpage">');
-
-                                        //TODO Draw Buses Table
-                                        printWindow.document.write('test');
-                                        printWindow.document.write(data);
-
+                                        printWindow.document.write($("#printGrid").html());
                                         printWindow.document.write('</div>');
                                         printWindow.document.write('</div>');
                                         printWindow.document.write('</body></html>');
@@ -243,12 +256,24 @@
 
             var lastSelection;
 
-            function editRow(id) {
+            function restore(id) {
                 if (id && id !== lastSelection) {
+                    $("div.ui-inline-edit,div.ui-inline-del", grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
+                    $("div.ui-inline-save,div.ui-inline-cancel", grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
+                    grid.triggerHandler("jqGridAfterGridComplete");
+
                     grid.jqGrid('restoreRow', lastSelection);
-                    $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
                     lastSelection = id;
                 }
+            }
+
+            function editRow(id) {
+                $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                //if (id && id !== lastSelection) {
+                //    grid.jqGrid('restoreRow', lastSelection);
+                //    $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
+                //    lastSelection = id;
+                //}
             }
 
             function datecheck(value, colname) {
