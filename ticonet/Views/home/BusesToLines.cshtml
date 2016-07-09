@@ -1,19 +1,13 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
 
-<style>
-    .ui-state-highlight {
-        border: none !important;
-        background: none !important;
-    }
-</style>
-<div class="content" id="dBusesToLinesTable">
+<div class="content jqgrid-extended" id="dBusesToLinesTable">
     <table id="grBusesToLines"></table>
     <div id="pgBusesToLines"></div>
 </div>
 
 <!--Div for render grid for Print-->
-<div hidden="true" id="printGrid"><table id="grPrint"></table></div>
+<div hidden id="printBusesToLinesGrid"><table id="grPrintBusesToLines"></table></div>
 
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
@@ -32,17 +26,8 @@
 
             var printWindow = null;
             var grid = $("#grBusesToLines");
+            var gridExtend = Object.assign({}, jqGridExtend);
             var pagerID = "#pgBusesToLines";
-            //Toggle buttons
-            $("#btToggleBusesToLines").click(function () {
-                var cls = $("#btToggleBusesToLines").attr("class");
-                if (cls == "glyphicon glyphicon-chevron-up toggle") {
-                    $("#btToggleBusesToLines").attr("class", "glyphicon glyphicon-chevron-down toggle");
-                } else {
-                    $("#btToggleBusesToLines").attr("class", "glyphicon glyphicon-chevron-up toggle");
-                }
-                $("#dBusesToLinesTable").toggle();
-            });
 
             grid.jqGrid({
                 caption: "@DictExpressionBuilderSystem.Translate("BusToLine.GridCaption")",
@@ -79,7 +64,7 @@
                     '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
                     '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
                     '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
-                    '@DictExpressionBuilderSystem.Translate("BusCompany.BusCompanyName")',
+                    '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
                     '@DictExpressionBuilderSystem.Translate("Bus.seats")',
                     ""
                 ],
@@ -158,28 +143,16 @@
                     formatter: lineActionsFormatter,
                 },
             ],
-                saveAfterSelect: true,
-                //addedrow: "last",
-                beforeSelectRow: function (rowid) {
-                    restore(rowid);
-                    return false;
-                },
-                ondblClickRow: function (rowid, iRow, iCol) {
-                    editRow(rowid);
-                },
-                loadComplete: function (data) {
-                var colModel = grid.getGridParam('colModel');
-                $.each(colModel, function(index, col) {
-                    if (col.edittype === 'select') {
-                        $.each(grid.getDataIDs(), function(index, id) {
-                            var row = grid.getRowData(id);
-                            var value = row[col.name];
-                            var text = row[col.name + "Description"];
-                            row[col.name] = text;
-                            grid.setRowData(id, row);
-                        });
-                    }
-                });
+            saveAfterSelect: true,
+            beforeSelectRow: function(rowid) {
+                gridExtend.fn.restore(rowid);
+                return false;
+            },
+            ondblClickRow: function (rowid, iRow, iCol) {
+                gridExtend.fn.editRow(rowid);
+            },
+            loadComplete: function (data) {
+                gridExtend.fn.populateDescription(data);
             }
         })
             .navGrid(pagerID, {
@@ -187,7 +160,7 @@
                 edit: false,
                 del: false,
                 refresh: true,
-                refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
+                refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")",
                 search: false,
                 view: false,
                 closeAfterAdd: true
@@ -197,13 +170,13 @@
                 id: "print",
                 buttonicon: "ui-icon-print",
                 caption: "",
-                title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
+                title: "@DictExpressionBuilderSystem.Translate("grid.Print")",
                 onClickButton: function() {
                     var postData = grid.jqGrid('getGridParam', 'postData');
                     var urlGetExcel = '/api' + "@Url.Action("GetPrint", "BusesToLines")";
                     var url = urlGetExcel + "?" + $.param(postData);
                     if (printWindow == null || printWindow.closed) {
-                        printWindow = window.open('', '', 'height=600,width=1000');
+                        printWindow = window.open('', '', 'height=' + $(window).height() + ',width=' + $(window).width());
                     } else {
                         printWindow.focus();
                     }
@@ -214,16 +187,43 @@
                         contentType: 'application/json; charset=utf-8',
                         success: function(data) {
                             if (printWindow != undefined) {
+                                $("#grPrintBusesToLines").jqGrid({
+                                    datatype: "local",
+                                    data: data,
+                                    height: "auto",
+                                    autowidth: true,
+                                    colNames: [
+                                        '@DictExpressionBuilderSystem.Translate("Line.LineName")',
+                                        '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
+                                        '@DictExpressionBuilderSystem.Translate("Line.Direction")',
+                                        '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
+                                        '@DictExpressionBuilderSystem.Translate("Line.totalStudents")',
+                                        '@DictExpressionBuilderSystem.Translate("Line.Duration")',
+                                        '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
+                                        '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
+                                        '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
+                                        '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                                    ],
+                                    colModel: [
+                                        { name: "LineName" },
+                                        { name: "LineNumber" },
+                                        { name: "Direction" },
+                                        { name: "IsActive" },
+                                        { name: "totalStudents" },
+                                        { name: "Duration" },
+                                        { name: "BusIdDescription" },
+                                        { name: "PlateNumber" },
+                                        { name: "BusCompanyName" },
+                                        { name: "seats" },
+                                    ],
+                                });
                                 printWindow.document.clear();
-                                printWindow.document.write('<html><head><title>BusesToLines</title>');
+                                printWindow.document.write('<html><head><title>@DictExpressionBuilderSystem.Translate("BusToLine.GridCaption")</title>');
+                                //printWindow.document.write('<style type=\"text/css\"> table th, table td { border:1px solid #000; padding:0; margin:0; } </style>');
                                 printWindow.document.write('</head><body >');
                                 printWindow.document.write('<div class="page">');
                                 printWindow.document.write('<div class="subpage">');
-
-                                //TODO Draw BusesToLines Table
-                                printWindow.document.write('test');
-                                printWindow.document.write(data);
-
+                                printWindow.document.write($("#printBusesToLinesGrid").html());
                                 printWindow.document.write('</div>');
                                 printWindow.document.write('</div>');
                                 printWindow.document.write('</body></html>');
@@ -240,7 +240,7 @@
                 id: "toExcel",
                 buttonicon: "ui-icon-disk",
                 caption: "",
-                title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
+                title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")",
                 onClickButton: function() {
                     var postData = grid.jqGrid('getGridParam', 'postData');
                     var urlGetExcel = '/api' + "@Url.Action("GetExcel", "BusesToLines")";
@@ -255,25 +255,7 @@
             }
             );
 
-        //Hide buttons "Clear search"
-        $(".ui-search-clear").remove();
-
-        var lastSelection;
-
-        function restore(id) {
-            if (id && id !== lastSelection) {
-                $("div.ui-inline-edit,div.ui-inline-del", grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
-                $("div.ui-inline-save,div.ui-inline-cancel", grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
-                grid.triggerHandler("jqGridAfterGridComplete");
-
-                grid.jqGrid('restoreRow', lastSelection);
-                lastSelection = id;
-            }
-        }
-
-        function editRow(id) {
-            $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
-        }
+            gridExtend.fn.init(grid);
 
         });
     </script>

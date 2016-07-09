@@ -39,14 +39,10 @@
             restoreAfterError: k.restoreAfterError,
             mtype: k.mtype,
             keys: true,
-            reloadAfterSubmit: true
+            reloadAfterSubmit: true,
         };
         switch (b) {
             case "edit":
-                //$("div.ui-inline-edit,div.ui-inline-del", f).show();
-                //$("div.ui-inline-save,div.ui-inline-cancel", f).hide();
-                //f.triggerHandler("jqGridAfterGridComplete");
-
                 f.jqGrid("editRow", d, n);
                 j.find("div.ui-inline-edit,div.ui-inline-del").hide();
                 j.find("div.ui-inline-save,div.ui-inline-cancel").show();
@@ -74,3 +70,43 @@
     }
 });
 
+
+var jqGridExtend;
+(function (jqGridExtend) {
+    jqGridExtend.lastSelection = -1;
+    jqGridExtend.grid = {};
+    jqGridExtend.fn = {
+        init: function(grid) {
+            jqGridExtend.grid = grid;
+            //Hide buttons "Clear search"
+            $(".ui-search-clear").remove();
+            jqGridExtend.lastSelection = -1;
+        },
+        restore: function(id) {
+            if (id && id !== jqGridExtend.lastSelection) {
+                $("div.ui-inline-edit,div.ui-inline-del", jqGridExtend.grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
+                $("div.ui-inline-save,div.ui-inline-cancel", jqGridExtend.grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
+                jqGridExtend.grid.triggerHandler("jqGridAfterGridComplete");
+                jqGridExtend.grid.jqGrid("restoreRow", jqGridExtend.lastSelection);
+                jqGridExtend.lastSelection = id;
+            }
+        },
+        editRow: function(id) {
+            $.fn.rowActionsExtended.call(jqGridExtend.grid.find("tbody").find("#" + id + " div.ui-inline-edit"), "edit");
+        },
+        populateDescription: function(data) {
+            var colModel = jqGridExtend.grid.getGridParam("colModel");
+            $.each(colModel, function (index, col) {
+                if (col.edittype === "select") {
+                    $.each(jqGridExtend.grid.getDataIDs(), function (index, id) {
+                        var row = jqGridExtend.grid.getRowData(id);
+                        var value = row[col.name];
+                        var text = row[col.name + "Description"];
+                        row[col.name] = text;
+                        jqGridExtend.grid.setRowData(id, row);
+                    });
+                }
+            });
+        },
+    };
+})(jqGridExtend || (jqGridExtend = {}));

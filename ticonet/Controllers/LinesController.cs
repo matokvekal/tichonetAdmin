@@ -151,7 +151,7 @@ namespace ticonet.Controllers
             using (var logic = new LineLogic())
             {
                 totalRecords = logic.Lines.Count();
-                lines = logic.GetPaged(_search, totalRecords, 1, sidx, sord, filters)
+                lines = logic.GetPaged(_search, totalRecords, page, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToArray();
             }
 

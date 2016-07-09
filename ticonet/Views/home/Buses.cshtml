@@ -1,19 +1,13 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
 
-<style>
-.ui-state-highlight{
-     border:none!important;
-    background:none!important;
-}
-</style>
-<div class="content" id="dBusesTable">
+<div class="content jqgrid-extended" id="dBusesTable">
     <table id="grBuses"></table>
     <div id="pgBuses"></div>
 </div>
 
 <!--Div for render grid for Print-->
-<div hidden="true" id="printGrid"><table id="grPrint"></table></div>
+<div hidden id="printBusesGrid"><table id="grPrintBuses"></table></div>
 
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
@@ -33,20 +27,11 @@
 
             var printWindow = null;
             var grid = $("#grBuses");
+            var gridExtend = Object.assign({}, jqGridExtend);
             var pagerID = "#pgBuses";
-            //Toggle buttons
-            $("#btToggleBuses").click(function () {
-                var cls = $("#btToggleBuses").attr("class");
-                if (cls == "glyphicon glyphicon-chevron-up toggle") {
-                    $("#btToggleBuses").attr("class", "glyphicon glyphicon-chevron-down toggle");
-                } else {
-                    $("#btToggleBuses").attr("class", "glyphicon glyphicon-chevron-up toggle");
-                }
-                $("#dBusesTable").toggle();
-            });
 
             grid.jqGrid({
-                    caption: "Buses",
+                    caption: "@DictExpressionBuilderSystem.Translate("Bus.GridCaption")",
                     url: '/api' + '@Url.Action("GetBuses", "Buses")',
                     datatype: "json",
                     loadonce: false,
@@ -85,7 +70,7 @@
                     ],
                     colModel: [
                         { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                        { name: 'BusId', index: 'BusId', sorttype: "text", width: 90, editable: true },
+                        { name: 'BusId', index: 'BusId', sorttype: "text", width: 90, editable: true, editrules:{ required:true } },
                         { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: true },
                         { name: 'OwnerDescription', index: 'OwnerDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                         {
@@ -127,53 +112,43 @@
                         },
                     ],
                     saveAfterSelect: true,
-                    //addedrow: "last",
                     beforeSelectRow: function(rowid) {
-                        restore(rowid);
+                        gridExtend.fn.restore(rowid);
                         return false;
                     },
                     ondblClickRow: function (rowid, iRow, iCol) {
-                        editRow(rowid);
+                        gridExtend.fn.editRow(rowid);
                     },
                     loadComplete: function (data) {
-                        var colModel = grid.getGridParam('colModel');
-                        $.each(colModel, function (index, col) {
-                            if (col.edittype === 'select') {
-                                $.each(grid.getDataIDs(), function (index, id) {
-                                    var row = grid.getRowData(id);
-                                    var value = row[col.name];
-                                    var text = row[col.name + "Description"];
-                                    row[col.name] = text;
-                                    grid.setRowData(id, row);
-                                });
-                            }
-                        });
+                        gridExtend.fn.populateDescription(data);
                     }
                 })
                 .navGrid(pagerID, {
                         edit: false,
                         add: true,
-                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.CreateNewRow")", //"Create new row",
+                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.CreateNewRow")",
                         del: false,
-                        deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")", //"Delete row",
+                        deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")",
                         refresh: true,
-                        refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
+                        refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")",
                         search: false,
                         view: false,
-                        closeAfterAdd: true
+                        closeAfterAdd: true,
+                        closeAfterEdit: true,
+                        reloadAfterSubmit: true,
                     }
                 )
                 .navButtonAdd(pagerID, {
                         id: "print",
                         buttonicon: "ui-icon-print",
                         caption: "",
-                        title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
+                        title: "@DictExpressionBuilderSystem.Translate("grid.Print")",
                         onClickButton: function () {
                             var postData = grid.jqGrid('getGridParam', 'postData');
                             var urlGetExcel = '/api' + "@Url.Action("GetPrint", "Buses")";
                             var url = urlGetExcel + "?" + $.param(postData);
                             if (printWindow == null || printWindow.closed) {
-                                printWindow = window.open('', '', 'height=600,width=1000');
+                                printWindow = window.open('', '', 'height=' + $(window).height() + ',width=' + $(window).width());
                             } else {
                                 printWindow.focus();
                             }
@@ -184,9 +159,11 @@
                                 contentType: 'application/json; charset=utf-8',
                                 success: function (data) {
                                     if (printWindow != undefined) {
-                                        $("#grPrint").jqGrid({
+                                        $("#grPrintBuses").jqGrid({
                                             datatype: "local",
                                             data: data,
+                                            height: "auto",
+                                            autowidth: true,
                                             colNames: [
                                                 '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
                                                 '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
@@ -211,15 +188,15 @@
                                                 { name: "winterLicenseDueDate" },
                                                 { name: "brakeTesDueDate" },
                                             ],
-                                            height: "auto",
-                                            caption: "Employees"
+                                            @*caption: "@DictExpressionBuilderSystem.Translate("Bus.GridCaption")"*@
                                         });
                                         printWindow.document.clear();
-                                        printWindow.document.write('<html><head><title>Buses</title>');
+                                        printWindow.document.write('<html><head><title>@DictExpressionBuilderSystem.Translate("Bus.GridCaption")</title>');
+                                        //printWindow.document.write('<style type=\"text/css\"> table th, table td { border:1px solid #000; padding:0; margin:0; } </style>');
                                         printWindow.document.write('</head><body >');
                                         printWindow.document.write('<div class="page">');
                                         printWindow.document.write('<div class="subpage">');
-                                        printWindow.document.write($("#printGrid").html());
+                                        printWindow.document.write($("#printBusesGrid").html());
                                         printWindow.document.write('</div>');
                                         printWindow.document.write('</div>');
                                         printWindow.document.write('</body></html>');
@@ -236,7 +213,7 @@
                         id: "toExcel",
                         buttonicon: "ui-icon-disk",
                         caption: "",
-                        title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
+                        title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")",
                         onClickButton: function () {
                             var postData = grid.jqGrid('getGridParam', 'postData');
                             var urlGetExcel = '/api' + "@Url.Action("GetExcel", "Buses")";
@@ -251,30 +228,7 @@
                     }
                 );
 
-            //Hide buttons "Clear search"
-            $(".ui-search-clear").remove();
-
-            var lastSelection;
-
-            function restore(id) {
-                if (id && id !== lastSelection) {
-                    $("div.ui-inline-edit,div.ui-inline-del", grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
-                    $("div.ui-inline-save,div.ui-inline-cancel", grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
-                    grid.triggerHandler("jqGridAfterGridComplete");
-
-                    grid.jqGrid('restoreRow', lastSelection);
-                    lastSelection = id;
-                }
-            }
-
-            function editRow(id) {
-                $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
-                //if (id && id !== lastSelection) {
-                //    grid.jqGrid('restoreRow', lastSelection);
-                //    $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
-                //    lastSelection = id;
-                //}
-            }
+            gridExtend.fn.init(grid);
 
             function datecheck(value, colname) {
                 if (value) {

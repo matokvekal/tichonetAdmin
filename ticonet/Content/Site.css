@@ -118,7 +118,7 @@ hr.hr-thin {
     height: 237mm;
     outline: 2cm #FFEAEA solid;
 }
-    
+  
 @page {
     size: A4;
     margin: 0;
@@ -142,4 +142,16 @@ hr.hr-thin {
 
 td.ui-search-input > select {
     width: 100%;
+}
+
+
+div.jqgrid-extended .ui-state-highlight{
+     border:none!important;
+    background:none!important;
+}
+
+form.FormGrid table.EditTable td.DataTD input,
+form.FormGrid table.EditTable td.DataTD select{
+    border: 1px #999 solid;
+    border-radius: 5px;
 }

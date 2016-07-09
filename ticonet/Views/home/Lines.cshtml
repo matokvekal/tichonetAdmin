@@ -1,19 +1,13 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
 
-<style>
-    .ui-state-highlight {
-        border: none !important;
-        background: none !important;
-    }
-</style>
-<div class="content" id="dLinesTable">
+<div class="content jqgrid-extended" id="dLinesTable">
     <table id="grLines"></table>
     <div id="pgLines"></div>
 </div>
 
 <!--Div for render grid for Print-->
-<div hidden="true" id="printGrid"><table id="grPrint"></table></div>
+<div hidden id="printLinesGrid"><table id="grPrintLines"></table></div>
 
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
@@ -32,17 +26,8 @@
 
             var printWindow = null;
             var grid = $("#grLines");
+            var gridExtend = Object.assign({}, jqGridExtend);
             var pagerID = "#pgLines";
-            //Toggle buttons
-            $("#btToggleLines").click(function() {
-                var cls = $("#btToggleLines").attr("class");
-                if (cls == "glyphicon glyphicon-chevron-up toggle") {
-                    $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-down toggle");
-                } else {
-                    $("#btToggleLines").attr("class", "glyphicon glyphicon-chevron-up toggle");
-                }
-                $("#dLinesTable").toggle();
-            });
 
             grid.jqGrid({
                 caption: "@DictExpressionBuilderSystem.Translate("Line.GridCaption")",
@@ -173,27 +158,15 @@
                     },
                 ],
                 saveAfterSelect: true,
-                //addedrow: "last",
                 beforeSelectRow: function (rowid) {
-                    restore(rowid);
+                    gridExtend.fn.restore(rowid);
                     return false;
                 },
                 ondblClickRow: function (rowid, iRow, iCol) {
-                    editRow(rowid);
+                    gridExtend.fn.editRow(rowid);
                 },
                 loadComplete: function (data) {
-                    var colModel = grid.getGridParam('colModel');
-                    $.each(colModel, function(index, col) {
-                        if (col.edittype === 'select') {
-                            $.each(grid.getDataIDs(), function(index, id) {
-                                var row = grid.getRowData(id);
-                                var value = row[col.name];
-                                var text = row[col.name + "Description"];
-                                row[col.name] = text;
-                                grid.setRowData(id, row);
-                            });
-                        }
-                    });
+                    gridExtend.fn.populateDescription(data);
                 }
             })
                 .navGrid(pagerID, {
@@ -201,7 +174,7 @@
                     edit: false,
                     del: false,
                     refresh: true,
-                    refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")", //"Reload",
+                    refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")",
                     search: false,
                     view: false,
                     closeAfterAdd: true
@@ -211,13 +184,13 @@
                     id: "print",
                     buttonicon: "ui-icon-print",
                     caption: "",
-                    title: "@DictExpressionBuilderSystem.Translate("grid.Print")", //"Print"
+                    title: "@DictExpressionBuilderSystem.Translate("grid.Print")",
                     onClickButton: function() {
                         var postData = grid.jqGrid('getGridParam', 'postData');
                         var urlGetExcel = '/api' + "@Url.Action("GetPrint", "Lines")";
                         var url = urlGetExcel + "?" + $.param(postData);
                         if (printWindow == null || printWindow.closed) {
-                            printWindow = window.open('', '', 'height=600,width=1000');
+                            printWindow = window.open('', '', 'height=' + $(window).height() + ',width=' + $(window).width());
                         } else {
                             printWindow.focus();
                         }
@@ -228,16 +201,56 @@
                             contentType: 'application/json; charset=utf-8',
                             success: function(data) {
                                 if (printWindow != undefined) {
+                                    $("#grPrintLines").jqGrid({
+                                        datatype: "local",
+                                        data: data,
+                                        colNames: [
+                                            '@DictExpressionBuilderSystem.Translate("Line.LineName")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Direction")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.totalStudents")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Duration")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Sun")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Mon")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Tue")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Wed")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Thu")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Fri")',
+                                            '@DictExpressionBuilderSystem.Translate("Line.Sut")',
+                                            '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
+                                            '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
+                                            '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
+                                            '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                                        ],
+                                        colModel: [
+                                            { name: "LineName" },
+                                            { name: "LineNumber" },
+                                            { name: "Direction" },
+                                            { name: "IsActive" },
+                                            { name: "totalStudents" },
+                                            { name: "Duration" },
+                                            { name: "Sun" },
+                                            { name: "Mon" },
+                                            { name: "Tue" },
+                                            { name: "Wed" },
+                                            { name: "Thu" },
+                                            { name: "Fri" },
+                                            { name: "Sut" },
+                                            { name: "BusIdDescription" },
+                                            { name: "PlateNumber" },
+                                            { name: "BusCompanyName" },
+                                            { name: "seats" },
+                                        ],
+                                        height: "auto",
+                                    });
                                     printWindow.document.clear();
-                                    printWindow.document.write('<html><head><title>Lines</title>');
+                                    printWindow.document.write('<html><head><title>@DictExpressionBuilderSystem.Translate("Line.GridCaption")</title>');
+                                    //printWindow.document.write('<style type=\"text/css\"> table th, table td { border:1px solid #000; padding:0; margin:0; } </style>');
                                     printWindow.document.write('</head><body >');
                                     printWindow.document.write('<div class="page">');
                                     printWindow.document.write('<div class="subpage">');
-
-                                    //TODO Draw Lines Table
-                                    printWindow.document.write('test');
-                                    printWindow.document.write(data);
-
+                                    printWindow.document.write($("#printLinesGrid").html());
                                     printWindow.document.write('</div>');
                                     printWindow.document.write('</div>');
                                     printWindow.document.write('</body></html>');
@@ -254,7 +267,7 @@
                     id: "toExcel",
                     buttonicon: "ui-icon-disk",
                     caption: "",
-                    title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")", //"To Excel"
+                    title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")",
                     onClickButton: function() {
                         var postData = grid.jqGrid('getGridParam', 'postData');
                         var urlGetExcel = '/api' + "@Url.Action("GetExcel", "Lines")";
@@ -269,25 +282,7 @@
                 }
                 );
 
-            //Hide buttons "Clear search"
-            $(".ui-search-clear").remove();
-
-            var lastSelection;
-
-            function restore(id) {
-                if (id && id !== lastSelection) {
-                    $("div.ui-inline-edit,div.ui-inline-del", grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
-                    $("div.ui-inline-save,div.ui-inline-cancel", grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
-                    grid.triggerHandler("jqGridAfterGridComplete");
-
-                    grid.jqGrid('restoreRow', lastSelection);
-                    lastSelection = id;
-                }
-            }
-
-            function editRow(id) {
-                $.fn.rowActionsExtended.call(grid.find("tbody").find("#" + id + " div.ui-inline-edit"), 'edit');
-            }
+            gridExtend.fn.init(grid);
 
         });
     </script>
