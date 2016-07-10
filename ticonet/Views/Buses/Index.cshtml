@@ -32,7 +32,7 @@
 
             grid.jqGrid({
                     caption: "@DictExpressionBuilderSystem.Translate("Bus.GridCaption")",
-                    url: '/api' + '@Url.Action("GetBuses", "Buses")',
+                    url: '/api' + '@Url.Action("GetBuses", "BusesApi")',
                     datatype: "json",
                     loadonce: false,
                     height: "100%",
@@ -50,7 +50,7 @@
                     altRows: false,
                     sortable: true,
                     altclass: "ui-state-default",
-                    editurl: '/api' + '@Url.Action("EditBus", "Buses")',
+                    editurl: '/api' + '@Url.Action("EditBus", "BusesApi")',
                     sortname: 'BusId',
                     sortorder: "asc",
                     colNames: [
@@ -81,7 +81,7 @@
                             editable: true,
                             edittype: "select",
                             editoptions: {
-                                dataUrl: '/api' + '@Url.Action("GetBusCompanies", "Buses")',
+                                dataUrl: '/api' + '@Url.Action("GetBusCompanies", "BusesApi")',
                                 buildSelect: function (data) {
                                     var response = jQuery.parseJSON(data);
                                     var s = '<select>';
@@ -145,7 +145,7 @@
                         title: "@DictExpressionBuilderSystem.Translate("grid.Print")",
                         onClickButton: function () {
                             var postData = grid.jqGrid('getGridParam', 'postData');
-                            var urlGetExcel = '/api' + "@Url.Action("GetPrint", "Buses")";
+                            var urlGetExcel = '/api' + "@Url.Action("GetPrint", "BusesApi")";
                             var url = urlGetExcel + "?" + $.param(postData);
                             if (printWindow == null || printWindow.closed) {
                                 printWindow = window.open('', '', 'height=' + $(window).height() + ',width=' + $(window).width());
@@ -216,7 +216,7 @@
                         title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")",
                         onClickButton: function () {
                             var postData = grid.jqGrid('getGridParam', 'postData');
-                            var urlGetExcel = '/api' + "@Url.Action("GetExcel", "Buses")";
+                            var urlGetExcel = '/api' + "@Url.Action("GetExcel", "BusesApi")";
                             var url = urlGetExcel + "?" + $.param(postData);
                             window.location.href = url;
                         }

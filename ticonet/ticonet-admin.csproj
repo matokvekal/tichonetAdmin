@@ -322,9 +322,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ScheduleController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\BusesToLinesController.cs" />
     <Compile Include="Controllers\LinesController.cs" />
+    <Compile Include="Controllers\BusesToLinesApiController.cs" />
     <Compile Include="Controllers\BusesController.cs" />
+    <Compile Include="Controllers\LinesApiController.cs" />
+    <Compile Include="Controllers\BusesApiController.cs" />
     <Compile Include="Controllers\InsetsController.cs" />
     <Compile Include="Controllers\homeController.cs" />
     <Compile Include="Controllers\IconsController.cs" />
@@ -374,12 +379,12 @@
     <Content Include="Scripts\Map\Map.Table.js" />
     <Content Include="Scripts\Map\Map.Stations.js" />
     <Content Include="Scripts\Map\Map.UI.js" />
-    <Content Include="Views\home\Buses.cshtml" />
+    <Content Include="Views\Buses\Index.cshtml" />
     <Content Include="Views\Insets\Index.cshtml" />
-    <Content Include="Views\home\Lines.cshtml" />
-    <Content Include="Views\home\Calendar.cshtml" />
-    <Content Include="Views\home\Schedule.cshtml" />
-    <Content Include="Views\home\BusesToLines.cshtml" />
+    <Content Include="Views\Lines\Index.cshtml" />
+    <Content Include="Views\Calendar\Index.cshtml" />
+    <Content Include="Views\Schedule\Index.cshtml" />
+    <Content Include="Views\BusesToLines\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

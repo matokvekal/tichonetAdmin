@@ -92,6 +92,7 @@
     <Compile Include="Line.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="BusToLineLogic.cs" />
     <Compile Include="tblBusCompany.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>

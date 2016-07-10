@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace ticonet.Controllers
 {
     [Authorize]
-    public class BusesController : Controller
+    public class CalendarController : Controller
     {
         public ActionResult Index()
         {

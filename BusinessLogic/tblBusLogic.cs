@@ -101,9 +101,10 @@ namespace Business_Logic
             var res = false;
             try
             {
-                var busToLine = DB.BusesToLines.Where(z => z.BusId == id);
-                DB.BusesToLines.RemoveRange(busToLine);
-                DB.SaveChanges();
+                using (var busToLineLogic = new BusToLineLogic())
+                {
+                    busToLineLogic.RemoveByBus(id);
+                }
                 var bus = DB.Buses.FirstOrDefault(z => z.Id == id);
                 DB.Buses.Remove(bus);
                 DB.SaveChanges();

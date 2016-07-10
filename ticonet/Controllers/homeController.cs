@@ -28,32 +28,5 @@ namespace ticonet.Controllers
             ViewBag.ShowStations = MapHelper.ShowStationsWithoutLine;
             return View();
         }
-
-
-        public ActionResult Buses()
-        {
-            return View();
-        }
-
-        public ActionResult Lines()
-        {
-            return View();
-        }
-
-        public ActionResult BusesToLines()
-        {
-            return View();
-        }
-
-        public ActionResult Calendar()
-        {
-            return View();
-        }
-
-        public ActionResult Schedule()
-        {
-            return View();
-        }
-
     }
 }
