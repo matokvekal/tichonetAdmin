@@ -212,3 +212,78 @@ CREATE TABLE [dbo].[tblPaymentCode](
 ) ON [PRIMARY]
 
 GO
+
+ALTER TABLE [dbo].[tblFamily]
+Add
+
+	[registrationStatus] [bit] 
+GO
+
+update tblfamily 
+set [registrationStatus]=0
+
+go
+ALTER TABLE [dbo].[tblFamily]ALTER COLUMN [registrationStatus] [bit] NOT NULL
+go
+
+drop table tblPayment
+go
+
+drop table tblPaymentCode
+go
+
+CREATE TABLE [dbo].[tblPaymentOrders](
+	[PaymentOrderId] [int] IDENTITY(1,1) NOT NULL,
+	[FamilyId] [int] NULL,
+	[StudentId] [nvarchar](50) NULL,
+	[StudentPk] [int] NULL,
+	[FirstName] [nvarchar](100) NULL,
+	[LastNeme] [nvarchar](100) NULL,
+	[Email] [nvarchar](100) NULL,
+	[cellPhone] [nvarchar](100) NULL,
+	[schoolId] [int] NULL,
+	[AutorisationCode] [nvarchar](100) NULL,
+	[Amount] [decimal](18, 2) NULL,
+	[CCGateway] [nvarchar](50) NULL,
+	[OrderDate] [datetime] NULL,
+	[CardToken] [nvarchar](50) NULL,
+	[CardExp] [nvarchar](50) NULL,
+	[PersonalId] [nvarchar](50) NULL,
+	[CardMask] [nvarchar](50) NULL,
+	[TxId] [nvarchar](50) NULL,
+	[Status] [int] NOT NULL,
+	[PaymentDate] [datetime] NULL,
+	[PaymentRequestId] [int] NULL,
+ CONSTRAINT [PK_tblPaymentOrders] PRIMARY KEY CLUSTERED 
+(
+	[PaymentOrderId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+USE [BusProject]
+GO
+
+/****** Object:  Table [dbo].[tblBusCompany]    Script Date: 07/06/2016 14:34:35 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblBusCompany](
+	[pk] [int] IDENTITY(1,1) NOT NULL,
+	[companyName] [nvarchar](50) NULL,
+	[manager] [nvarchar](50) NULL,
+	[tel] [nvarchar](50) NULL,
+	[cell] [nvarchar](50) NULL,
+	[email] [nvarchar](50) NULL,
+ CONSTRAINT [PK_tblBusCompany] PRIMARY KEY CLUSTERED 
+(
+	[pk] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
