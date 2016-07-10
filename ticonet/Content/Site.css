@@ -155,3 +155,7 @@ form.FormGrid table.EditTable td.DataTD select{
     border: 1px #999 solid;
     border-radius: 5px;
 }
+
+#ui-datepicker-div.ui-datepicker {
+    border: 1px #999 solid;
+}
