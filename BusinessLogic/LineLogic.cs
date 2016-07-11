@@ -94,6 +94,7 @@ namespace Business_Logic
 
         public Line SaveLine(int id, string number, string name, string color, int direction)
         {
+            color = color.CssToNumeric();
             Line res = null;
             try
             {
@@ -145,6 +146,7 @@ namespace Business_Logic
 
         public Line SaveLine(Line line)
         {
+            line.CssToNumeric();
             try
             {
                 BusProjectEntities db = new BusProjectEntities();
@@ -161,6 +163,7 @@ namespace Business_Logic
 
         public bool Update(Line line)
         {
+            line.CssToNumeric();
             var res = false;
             try
             {
@@ -178,6 +181,7 @@ namespace Business_Logic
 
         public void UpdateStationsColor(Line line, string oldColor)
         {
+            line.CssToNumeric();
             foreach (var stId in DB.StationsToLines.Where(z => z.LineId == line.Id).Select(z => z.StationId))
             {
                 var station = DB.Stations.FirstOrDefault(z => z.Id == stId);

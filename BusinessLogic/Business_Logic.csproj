@@ -84,6 +84,7 @@
     <Compile Include="Helpers\AccountManager.cs" />
     <Compile Include="Helpers\BusHelper.cs" />
     <Compile Include="Helpers\CryptographyHelper.cs" />
+    <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\MapHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\StringCipher.cs" />
