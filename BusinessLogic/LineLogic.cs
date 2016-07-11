@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using Business_Logic.Entities;
 using Business_Logic.Helpers;
@@ -105,9 +104,9 @@ namespace Business_Logic
                 var oldColor = itm.HexColor;
                 itm.LineNumber = number;
                 itm.LineName = name;
-                var updateColors = itm.HexColor != color;
+                var updateColors = itm.HexColor != MapHelper.FixColor(color);
                 var updateDirections = itm.Direction != direction;
-                itm.HexColor = color;
+                itm.HexColor = MapHelper.FixColor( color);
                 itm.Direction = direction;
                 if (itm.Id == 0)
                 {
