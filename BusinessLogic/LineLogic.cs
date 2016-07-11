@@ -52,7 +52,7 @@ namespace Business_Logic
                 itm.LineName = name;
                 var updateColors = itm.HexColor != MapHelper.FixColor(color);
                 var updateDirections = itm.Direction != direction;
-                itm.HexColor = MapHelper.FixColor(color);
+                itm.HexColor = MapHelper.FixColor( color);
                 itm.Direction = direction;
                 if (itm.Id == 0)
                 {
@@ -176,7 +176,7 @@ namespace Business_Logic
                     {
                         fst = stations.First().ArrivalDate;
                     }
-
+                
                 }
                 else
                 {
