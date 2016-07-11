@@ -61,11 +61,7 @@ namespace Business_Logic.Helpers
         {
             get
             {
-                var hiddenLines = SettingsHelper.GetSettingValue("Map", "HiddenLines");
-                if(hiddenLines!=null)
-                    return JsonConvert.DeserializeObject<List<int>>(hiddenLines);
-                else 
-                    return new List<int>();
+                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenLines"));
             }
             set
             {
@@ -78,11 +74,7 @@ namespace Business_Logic.Helpers
         {
             get
             {
-                var hiddenStations = SettingsHelper.GetSettingValue("Map", "HiddenStations");
-                if (hiddenStations != null)
-                    return JsonConvert.DeserializeObject<List<int>>(hiddenStations);
-                else
-                    return new List<int>();
+                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenStations"));
             }
             set
             {
@@ -94,11 +86,7 @@ namespace Business_Logic.Helpers
         {
             get
             {
-                var hiddenStudents = SettingsHelper.GetSettingValue("Map", "HiddenStudents");
-                if (hiddenStudents != null)
-                    return JsonConvert.DeserializeObject<List<int>>(hiddenStudents);
-                else
-                    return new List<int>();
+                return JsonConvert.DeserializeObject<List<int>>(SettingsHelper.GetSettingValue("Map", "HiddenStudents"));
             }
             set
             {
@@ -171,6 +159,12 @@ namespace Business_Logic.Helpers
 
             // return distance in kilometers
             return EarthRadiusInKilometers * Math.Sqrt(dTheta * dTheta + cos_mean_t * cos_mean_t * dLambda * dLambda);
+        }
+
+        public static string FixColor(string color)
+        {
+            if (!color.StartsWith("#")) return "#" + color.Trim().ToUpper();
+            return color.Trim().ToUpper();
         }
     }
 }
