@@ -34,6 +34,7 @@
         <AssociationConnector Association="BusProjectModel.FK_Schedule_Buses" />
         <AssociationConnector Association="BusProjectModel.FK_Schedule_Drivers" />
         <AssociationConnector Association="BusProjectModel.FK_Schedule_Lines" />
+        <EntityTypeShape EntityType="BusProjectModel.tblCalendar" Width="1.5" PointX="5.375" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

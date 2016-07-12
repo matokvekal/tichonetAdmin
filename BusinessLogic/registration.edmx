@@ -155,6 +155,18 @@
           <Property Name="cell" Type="nvarchar" MaxLength="50" />
           <Property Name="email" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="tblCalendar">
+          <Key>
+            <PropertyRef Name="pk" />
+          </Key>
+          <Property Name="pk" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="date" Type="date" />
+          <Property Name="month" Type="nvarchar" MaxLength="50" />
+          <Property Name="HebMonth" Type="nvarchar" MaxLength="50" />
+          <Property Name="day" Type="nvarchar" MaxLength="50" />
+          <Property Name="active" Type="bit" />
+          <Property Name="event" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="tblCulture">
           <Key>
             <PropertyRef Name="id" />
@@ -331,54 +343,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_OwnerBusCompany_PK">
-          <End Role="tblBusCompany" Type="Self.tblBusCompany" Multiplicity="0..1" />
-          <End Role="Buses" Type="Self.Buses" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="tblBusCompany">
-              <PropertyRef Name="pk" />
-            </Principal>
-            <Dependent Role="Buses">
-              <PropertyRef Name="Owner" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Schedule_Buses">
-          <End Role="Buses" Type="Self.Buses" Multiplicity="0..1" />
-          <End Role="tblSchedule" Type="Self.tblSchedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Buses">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="tblSchedule">
-              <PropertyRef Name="BusId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Schedule_Drivers">
-          <End Role="Drivers" Type="Self.Drivers" Multiplicity="0..1" />
-          <End Role="tblSchedule" Type="Self.tblSchedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Drivers">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="tblSchedule">
-              <PropertyRef Name="DriverId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Schedule_Lines">
-          <End Role="Lines" Type="Self.Lines" Multiplicity="0..1" />
-          <End Role="tblSchedule" Type="Self.tblSchedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Lines">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="tblSchedule">
-              <PropertyRef Name="LineId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_StationsToLines_ToLines">
           <End Role="Lines" Type="Self.Lines" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -432,6 +396,7 @@
           <EntitySet Name="StudentsToLines" EntityType="Self.StudentsToLines" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblAlertsQueue" EntityType="Self.tblAlertsQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblBusCompany" EntityType="Self.tblBusCompany" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCalendar" EntityType="Self.tblCalendar" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCulture" EntityType="Self.tblCulture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblFamily" EntityType="Self.tblFamily" Schema="dbo" store:Type="Tables" />
@@ -448,22 +413,6 @@
           <AssociationSet Name="FK_BusesToLines_ToLines" Association="Self.FK_BusesToLines_ToLines">
             <End Role="Lines" EntitySet="Lines" />
             <End Role="BusesToLines" EntitySet="BusesToLines" />
-          </AssociationSet>
-          <AssociationSet Name="FK_OwnerBusCompany_PK" Association="Self.FK_OwnerBusCompany_PK">
-            <End Role="tblBusCompany" EntitySet="tblBusCompany" />
-            <End Role="Buses" EntitySet="Buses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_Buses" Association="Self.FK_Schedule_Buses">
-            <End Role="Buses" EntitySet="Buses" />
-            <End Role="tblSchedule" EntitySet="tblSchedule" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_Drivers" Association="Self.FK_Schedule_Drivers">
-            <End Role="Drivers" EntitySet="Drivers" />
-            <End Role="tblSchedule" EntitySet="tblSchedule" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Schedule_Lines" Association="Self.FK_Schedule_Lines">
-            <End Role="Lines" EntitySet="Lines" />
-            <End Role="tblSchedule" EntitySet="tblSchedule" />
           </AssociationSet>
           <AssociationSet Name="FK_StationsToLines_ToLines" Association="Self.FK_StationsToLines_ToLines">
             <End Role="Lines" EntitySet="Lines" />
@@ -542,6 +491,7 @@
             <End Role="Line" EntitySet="Lines" />
             <End Role="tblSchedule" EntitySet="tblSchedules" />
           </AssociationSet>
+          <EntitySet Name="tblCalendars" EntityType="BusProjectModel.tblCalendar" />
           </EntityContainer>
         <EntityType Name="tblCulture">
           <Key>
@@ -993,6 +943,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="tblCalendar">
+          <Key>
+            <PropertyRef Name="pk" />
+          </Key>
+          <Property Name="pk" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="date" Type="DateTime" Precision="0" />
+          <Property Name="month" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="HebMonth" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="day" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="active" Type="Boolean" />
+          <Property Name="event" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1312,6 +1274,19 @@
                 <ScalarProperty Name="Direction" ColumnName="Direction" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCalendars">
+            <EntityTypeMapping TypeName="BusProjectModel.tblCalendar">
+              <MappingFragment StoreEntitySet="tblCalendar">
+                <ScalarProperty Name="event" ColumnName="event" />
+                <ScalarProperty Name="active" ColumnName="active" />
+                <ScalarProperty Name="day" ColumnName="day" />
+                <ScalarProperty Name="HebMonth" ColumnName="HebMonth" />
+                <ScalarProperty Name="month" ColumnName="month" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="pk" ColumnName="pk" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

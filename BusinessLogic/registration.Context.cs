@@ -44,5 +44,6 @@ namespace Business_Logic
         public virtual DbSet<tblDictSystem> tblDictSystems { get; set; }
         public virtual DbSet<tblBusCompany> tblBusCompanies { get; set; }
         public virtual DbSet<tblSchedule> tblSchedules { get; set; }
+        public virtual DbSet<tblCalendar> tblCalendars { get; set; }
     }
 }

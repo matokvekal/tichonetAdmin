@@ -97,6 +97,10 @@
     <Compile Include="tblBusCompany.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblCalendar.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblCalendarLogic.cs" />
     <Compile Include="tblBusLogic.cs" />
     <Compile Include="LineLogic.cs" />
     <Compile Include="localization\DBpartialClass.cs" />

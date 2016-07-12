@@ -76,13 +76,15 @@ var jqGridExtend;
     jqGridExtend.lastSelection = -1;
     jqGridExtend.grid = {};
     jqGridExtend.fn = {
-        init: function(grid) {
-            jqGridExtend.grid = grid;
+        init: function () {
             //Hide buttons "Clear search"
             $(".ui-search-clear").remove();
             jqGridExtend.lastSelection = -1;
         },
-        restore: function(id) {
+        setGrid: function (grid) {
+            jqGridExtend.grid = grid;
+        },
+        restore: function (id) {
             if (id && id !== jqGridExtend.lastSelection) {
                 $("div.ui-inline-edit,div.ui-inline-del", jqGridExtend.grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
                 $("div.ui-inline-save,div.ui-inline-cancel", jqGridExtend.grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();

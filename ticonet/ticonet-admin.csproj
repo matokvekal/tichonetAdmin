@@ -236,6 +236,7 @@
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\datepicker-he.js" />
     <Content Include="Scripts\jqGridExtend\jqGridExtend.js" />
     <Content Include="Scripts\jqGrid\Changes.txt" />
     <Content Include="Scripts\jqGrid\i18n\grid.locale-ar.js" />
@@ -322,6 +323,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CalendarApiController.cs" />
     <Compile Include="Controllers\ScheduleController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\BusesToLinesController.cs" />
@@ -346,6 +348,7 @@
     <Compile Include="Models\AttachStudentModel.cs" />
     <Compile Include="Models\AttachStudentResultModel.cs" />
     <Compile Include="Models\BusCompanyModel.cs" />
+    <Compile Include="Models\EventModel.cs" />
     <Compile Include="Models\GridLineBusModel.cs" />
     <Compile Include="Models\SelectItemModel.cs" />
     <Compile Include="Models\CurrentStateModel.cs" />

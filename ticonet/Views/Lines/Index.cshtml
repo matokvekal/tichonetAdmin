@@ -27,6 +27,7 @@
             var printWindow = null;
             var grid = $("#grLines");
             var gridExtend = Object.assign({}, jqGridExtend);
+            gridExtend.fn.setGrid(grid);
             var pagerID = "#pgLines";
 
             grid.jqGrid({
@@ -282,7 +283,7 @@
                 }
                 );
 
-            gridExtend.fn.init(grid);
+            gridExtend.fn.init();
 
         });
     </script>

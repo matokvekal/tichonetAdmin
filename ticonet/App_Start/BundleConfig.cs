@@ -10,6 +10,7 @@ namespace IdentitySample
             bundles.Add(new ScriptBundle("~/bundles/mainScripts").Include(
                         "~/Scripts/jquery-1.10.2.min.js",
                         "~/Scripts/jquery-ui.min.js",
+                        "~/Scripts/datepicker-he.js",
                         "~/Scripts/bootstrap.min.js",
                         "~/Scripts/jquery.validate.min.js",
                         "~/Scripts/jquery.validate.unobtrusive.min.js",

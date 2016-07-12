@@ -28,6 +28,7 @@
             var printWindow = null;
             var grid = $("#grBuses");
             var gridExtend = Object.assign({}, jqGridExtend);
+            gridExtend.fn.setGrid(grid);
             var pagerID = "#pgBuses";
 
             grid.jqGrid({
@@ -228,7 +229,7 @@
                     }
                 );
 
-            gridExtend.fn.init(grid);
+            gridExtend.fn.init();
 
             function datecheck(value, colname) {
                 if (value) {
