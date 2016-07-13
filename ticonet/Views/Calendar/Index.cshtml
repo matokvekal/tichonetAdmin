@@ -31,6 +31,7 @@
             var gridExtend = Object.assign({}, jqGridExtend);
             gridExtend.fn.setGrid(grid);
             var pagerID = "#pgCalendar";
+            var calendarHighlitedDays;
 
             grid.jqGrid({
                 caption: "@DictExpressionBuilderSystem.Translate("Calendar.GridCaption")",
@@ -206,6 +207,7 @@
                 return [true, ""];
             }
             
+
             $("#calendar-datepicker").datepicker({
                 regional: $.datepicker.regional["he"],
                 dateFormat: 'mm/dd/yy',
@@ -214,8 +216,40 @@
                         postData: { filters: '{"groupOp":"AND","rules":[{"field":"date","op":"eq","data":"' + dateText + '"}]}' },
                         search:true
                     }).trigger('reloadGrid');
+                },
+                onChangeMonthYear: function (year, month, widget) {
+                    calendarHighlitedDays = null;
+                    highlightEvens(month, year);
+                },
+                beforeShowDay: function (date) {
+                    if (calendarHighlitedDays != null && calendarHighlitedDays.includes(date.getDate())) {
+                        return [true, 'ui-state-highlight'];
+                    }
+                    return [true, ''];
                 }
             });
+
+            highlightEvens($('#calendar-datepicker').datepicker('getDate').getMonth() + 1, $('#calendar-datepicker').datepicker('getDate').getFullYear());
+
+            function highlightEvens(month, year) {
+                $.ajax({
+                    url: '/api' + '@Url.Action("GetDaysWithEvents", "CalendarApi")',
+                    type: 'GET',
+                    data: 'month=' + month + '&year=' + year,
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        calendarHighlitedDays = data;
+                        if (data) {
+                            var days = $('#calendar-datepicker .ui-datepicker-calendar tbody td a');
+                            for (var i = 0; i < data.length; i++) {
+                                var day = days.filter(function (index) { return $(this).text() === data[i].toString(); });
+                                day.closest('td').addClass('ui-state-highlight');
+                            }
+                        }
+                    }
+                });
+            }
 
         });
     </script>

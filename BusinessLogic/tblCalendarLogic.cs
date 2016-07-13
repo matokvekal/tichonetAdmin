@@ -113,5 +113,27 @@ namespace Business_Logic
             }
             return res;
         }
+
+        public int[] GetDaysWithEvents(int month, int year)
+        {
+            try
+            {
+                BusProjectEntities db = new BusProjectEntities();
+                var days = db.tblCalendars
+                    .Where(x => x.date.HasValue)
+                    .Where(x => x.date.Value.Month == month && x.date.Value.Year == year)
+                    .ToList()
+                    .Select(x => x.date.Value.Date.Day)
+                    .Distinct()
+                    .ToArray();
+                
+                return days;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return null;
+        }
     }
 }

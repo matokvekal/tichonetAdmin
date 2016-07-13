@@ -82,7 +82,7 @@ namespace ticonet.Controllers
 
             string Name = "BusesToLines";
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add($"{Name} Sheet");
+            var worksheet = workbook.Worksheets.Add(Name + " Sheet");
             worksheet.Outline.SummaryVLocation = XLOutlineSummaryVLocation.Top;
 
             worksheet.Cell(1, 1).Value = DictExpressionBuilderSystem.Translate("Line.LineName");
@@ -122,7 +122,7 @@ namespace ticonet.Controllers
                 result.Content = new ByteArrayContent(memoryStream.GetBuffer());
                 result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
                 {
-                    FileName = $"{Name}.xlsx"
+                    FileName = Name + ".xlsx"
                 };
                 result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             }
