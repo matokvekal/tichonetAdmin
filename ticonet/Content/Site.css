@@ -1,52 +1,12 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
-    /*direction:rtl;*/
-    height: 100%;
-    color: #bbb;
-    background-color: #222;
-}
-html
-{
-    /*direction:rtl;*/
-     height: 100%;
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
-    height: calc(100% - 40px - 20px);
-    position: relative;
-    max-width: none;
-    overflow-y : auto;
-    overflow-x : hidden;
-}
-
-body div.navbar {
-    /*max-height: 70px;*/
-    /*overflow: hidden;*/
-}
-
-.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
-    background: #aaa;
-}
-
-ul.dropdown-menu {
-    color: #999;
-    background-color: #222;
-}
-
-.dropdown-menu>li>a {
-    color: #999;
-}
-
-footer p {
-    text-align: center;
-}
-
-footer hr {
-    margin: 10px 0 10px 0;
 }
 
 /* Set width on the form input elements since they're 100% wide by default */
@@ -56,102 +16,27 @@ textarea {
     max-width: 280px;
 }
 
-label{
-        direction:rtl;
-        width:180px;
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
 }
 
-tr td span{
-      font-size:13px;
-        direction:rtl ;
-        text-align:right;
+.field-validation-valid {
+    display: none;
 }
 
-tr  th {
-      font-size:15px;
-        direction:rtl ;
-        text-align:right;
+input.input-validation-error {
+    border: 1px solid #b94a48;
 }
 
-.AdminloginForm {
-    margin:0 auto;
-    outline: 1px solid;
-    left: 50%;
-    top: 50%;
-    padding:10px;
-    position: absolute;
-    -webkit-transform: translate3d(-50%, -50%, 0);
-    -moz-transform: translate3d(-50%, -50%, 0);
-    transform: translate3d(-50%, -50%, 0);
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
 }
 
-.AdminloginForm .check-box{
-    width: 18px;
-    height: 18px;
-    line-height: 18px;
-    top: 3px;
-    border: 2px solid #37a000;
-} 
-
-#dBusesTable {
-    height: calc(100% - 50px - 65px);
+.validation-summary-errors {
+    color: #b94a48;
 }
 
-hr.hr-thin {
-    margin: 5px 0 5px 0;
-}
-
-
-.page {
-    width: 21cm;
-    min-height: 29.7cm;
-    padding: 2cm;
-    margin: 1cm auto;
-    border: 1px #D3D3D3 solid;
-    border-radius: 5px;
-    background: white;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-.subpage {
-    padding: 1cm;
-    border: 1px silver solid;
-    height: 237mm;
-    outline: 2cm #FFEAEA solid;
-}
-  
-@page {
-    size: A4;
-    margin: 0;
-}
-@media print {
-    .page {
-        margin: 0;
-        border: initial;
-        border-radius: initial;
-        width: initial;
-        min-height: initial;
-        box-shadow: initial;
-        background: initial;
-        page-break-after: always;
-    }
-}
-
-#wrapper.active #sidebar-wrapper {
-    left: 50px;
-}
-
-td.ui-search-input > select {
-    width: 100%;
-}
-
-
-div.jqgrid-extended .ui-state-highlight{
-     border:none!important;
-    background:none!important;
-}
-
-form.FormGrid table.EditTable td.DataTD input,
-form.FormGrid table.EditTable td.DataTD select{
-    border: 1px #999 solid;
-    border-radius: 5px;
+.validation-summary-valid {
+    display: none;
 }

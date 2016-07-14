@@ -1,59 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Business_Logic.Helpers;
-using System.Globalization;
-using log4net;
-using Newtonsoft.Json;
+﻿using System.Web.Mvc;
 
-namespace ticonet.Controllers
+namespace IdentitySample.Controllers
 {
-    [Authorize]
-    public class homeController : Controller
+    public class HomeController : Controller
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(homeController));
-
         public ActionResult Index()
         {
-
-            ViewBag.CenterLat = MapHelper.CenterLat.ToString(CultureInfo.InvariantCulture);
-            ViewBag.CenterLng = MapHelper.CenterLng.ToString(CultureInfo.InvariantCulture);
-            ViewBag.Zoom = MapHelper.Zoom.ToString();
-            ViewBag.TimeForLoad = BusHelper.TimeForLoad;
-            ViewBag.HiddenLines = JsonConvert.SerializeObject(MapHelper.HiddenLines);
-            ViewBag.HiddenStations = JsonConvert.SerializeObject(MapHelper.HiddenStations);
-            ViewBag.HiddenStudents = JsonConvert.SerializeObject(MapHelper.HiddenStudents);
-            ViewBag.ShowStations = MapHelper.ShowStationsWithoutLine;
             return View();
         }
 
-
-        public ActionResult Buses()
+        [Authorize]
+        public ActionResult About()
         {
+            ViewBag.Message = "Your app description page.";
+
             return View();
         }
 
-        public ActionResult Lines()
+        public ActionResult Contact()
         {
+            ViewBag.Message = "Your contact page.";
+
             return View();
         }
-
-        public ActionResult BusesToLines()
-        {
-            return View();
-        }
-
-        public ActionResult Calendar()
-        {
-            return View();
-        }
-
-        public ActionResult Schedule()
-        {
-            return View();
-        }
-
     }
 }
