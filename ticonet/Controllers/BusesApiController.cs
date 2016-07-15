@@ -76,7 +76,7 @@ namespace ticonet.Controllers
 
             string Name = "Buses";
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add(string.Format("{0} Sheet",Name));
+            var worksheet = workbook.Worksheets.Add(Name + " Sheet");
             worksheet.Outline.SummaryVLocation = XLOutlineSummaryVLocation.Top;
 
             worksheet.Cell(1, 1).Value = DictExpressionBuilderSystem.Translate("Bus.BusId");
@@ -116,7 +116,7 @@ namespace ticonet.Controllers
                 result.Content = new ByteArrayContent(memoryStream.GetBuffer());
                 result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
                 {
-                    FileName = string.Format("{0}.xlsx", Name)
+                    FileName = Name + ".xlsx"
                 };
                 result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             }

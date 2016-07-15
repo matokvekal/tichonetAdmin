@@ -43,9 +43,9 @@ namespace Business_Logic
                             .Include(x => x.BusesToLines)
                             .Where(x => x.BusesToLines.Select(l => l.Bus).Any(b => b.BusCompany != null && b.BusCompany.pk == id));
                     }
-                    else if (filterByProperty.PropertyType == typeof(string))
+                    else if (filterByProperty.PropertyType == typeof (string))
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
-                    else if (filterByProperty.PropertyType == typeof(int))
+                    else if (filterByProperty.PropertyType == typeof (int))
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
                     else
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
@@ -61,7 +61,7 @@ namespace Business_Logic
             {
                 query = query.OrderBy(x => sortByProperty.GetValue(x, null));
             }
-
+            
             query = query.Skip(rows * (page - 1))
                 .Take(rows);
 
@@ -268,7 +268,7 @@ namespace Business_Logic
                     {
                         fst = stations.First().ArrivalDate;
                     }
-
+                
                 }
                 else
                 {
@@ -327,7 +327,7 @@ namespace Business_Logic
                 .Include(x => x.BusesToLines)
                 .Where(x => !x.BusesToLines.Any() || x.BusesToLines.Any(b => b.LineId == lineId))
                 .ToList();
-        }
+        } 
 
         public void UpdateBusToLine(int lineId, int busId)
         {

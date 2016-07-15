@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Business_Logic
 {
-    public class tblYearsLogic:baseLogic
+    public class tblYearsLogic: baseLogic
     {
         public static List<tblYear> GetYears()
         {

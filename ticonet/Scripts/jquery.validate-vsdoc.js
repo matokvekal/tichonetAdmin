@@ -1,3 +1,17 @@
+﻿/* NUGET: BEGIN LICENSE TEXT
+ *
+ * Microsoft grants you the right to use these script files for the sole
+ * purpose of either: (i) interacting through your browser with the Microsoft
+ * website or online service, subject to the applicable licensing or use
+ * terms; or (ii) using the files as included with a Microsoft product subject
+ * to that product's license terms. Microsoft reserves all other rights to the
+ * files not expressly granted by Microsoft, whether by implication, estoppel
+ * or otherwise. Insofar as a script file is dual licensed under GPL,
+ * Microsoft neither took the code under GPL nor distributes it thereunder but
+ * under the terms set out in this paragraph. All notices and licenses
+ * below are for informational purposes only.
+ *
+ * NUGET: END LICENSE TEXT */
 /*
 * This file has been commented to support Visual Studio Intellisense.
 * You should not use this file at runtime inside the browser--it is only
@@ -315,7 +329,7 @@ $.extend($.validator, {
 	},
 
 	messages: {
-		required: "This field is required.",
+		required: "זהו שדה חובה.",
 		remote: "Please fix this field.",
 		email: "Please enter a valid email address.",
 		url: "Please enter a valid URL.",

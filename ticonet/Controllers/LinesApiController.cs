@@ -40,8 +40,8 @@ namespace ticonet.Controllers
                     records = totalRecords,
                     rows = lines
                 });
-        }
-
+            }
+        
         [System.Web.Mvc.HttpPost]
         public JsonResult EditLine(GridLineModel model)
         {
@@ -69,12 +69,12 @@ namespace ticonet.Controllers
                         break;
                 }
             }
-            return new JsonResult { Data = true };
+            return new JsonResult {Data = true};
         }
 
         public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
-            var lines = new GridLineModel[] { };
+            var lines = new GridLineModel[] {};
             var totalRecords = 0;
             using (var logic = new LineLogic())
             {
@@ -85,8 +85,7 @@ namespace ticonet.Controllers
 
             string Name = "Lines";
             var workbook = new XLWorkbook();
-            //var worksheet = workbook.Worksheets.Add($"{Name} Sheet");string.Format("{0}.xlsx",Name) string.Format("{0} Sheet",Name)
-            var worksheet = workbook.Worksheets.Add(string.Format("{0} Sheet", Name));
+            var worksheet = workbook.Worksheets.Add(Name + " Sheet");
             worksheet.Outline.SummaryVLocation = XLOutlineSummaryVLocation.Top;
 
             worksheet.Cell(1, 1).Value = DictExpressionBuilderSystem.Translate("Line.LineName");
@@ -112,7 +111,7 @@ namespace ticonet.Controllers
                 var row = 2 + i;
                 worksheet.Cell(row, 1).SetValue<string>(lines[i].LineName);
                 worksheet.Cell(row, 2).SetValue<string>(lines[i].LineNumber);
-                worksheet.Cell(row, 3).SetValue<string>(lines[i].Direction == 0 ? "To" : "From");
+                worksheet.Cell(row, 3).SetValue<string>(lines[i].Direction == 0? "To": "From");
                 worksheet.Cell(row, 4).SetValue<bool>(lines[i].IsActive);
                 worksheet.Cell(row, 5).SetValue<int>(lines[i].totalStudents);
                 worksheet.Cell(row, 6).SetValue<string>(Convert.ToString(lines[i].Duration));
@@ -140,8 +139,7 @@ namespace ticonet.Controllers
                 result.Content = new ByteArrayContent(memoryStream.GetBuffer());
                 result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
                 {
-                    //   FileName = $"{Name}.xlsx"  string.Format("{0}.xlsx",Name) string.Format("{0} Sheet",Name)
-                    FileName = string.Format("{0}.xlsx", Name)
+                    FileName = Name + ".xlsx"
                 };
                 result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             }
@@ -166,7 +164,7 @@ namespace ticonet.Controllers
         public JsonResult GetAvailableBuses(int lineId)
         {
             var buses = new List<SelectItemModel>();
-            buses.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty });
+            buses.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty});
             using (var logic = new LineLogic())
             {
                 buses.AddRange(logic.GetAvailableBuses(lineId)
@@ -174,7 +172,7 @@ namespace ticonet.Controllers
                     {
                         Value = z.Id.ToString(),
                         Text = z.BusId,
-                        Title = string.Format("{0} ({1} - {2} - {3})", z.BusId, z.PlateNumber, z.BusCompany != null ? z.BusCompany.companyName : string.Empty, z.seats.HasValue ? z.seats.Value.ToString() : string.Empty)
+                        Title = string.Format("{0} ({1} - {2} - {3})", z.BusId, z.PlateNumber, z.BusCompany!=null?z.BusCompany.companyName:string.Empty, z.seats.HasValue? z.seats.Value.ToString(): string.Empty)
                     }).ToList());
             }
 
@@ -184,12 +182,12 @@ namespace ticonet.Controllers
         public JsonResult GetCompaniesFilter()
         {
             var companies = new List<SelectItemModel>();
-            companies.Add(new SelectItemModel { Value = "", Text = DictExpressionBuilderSystem.Translate("Search.All") });
+            companies.Add(new SelectItemModel { Value = "", Text = DictExpressionBuilderSystem.Translate("Search.All")});
             using (var logic = new LineLogic())
             {
                 var getCompanies = logic.GetCompaniesFilter();
                 companies.AddRange(getCompanies
-                    .Where(w => w != null)
+                    .Where(w=> w != null)
                     .Select(z => new SelectItemModel
                     {
                         Value = z.pk.ToString(),

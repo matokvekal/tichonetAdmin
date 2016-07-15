@@ -41,7 +41,7 @@ namespace ticonet.Controllers
                     rows = events
                 });
         }
-
+        
         [System.Web.Mvc.HttpPost]
         public JsonResult EditEvent(EventModel model)
         {
@@ -66,12 +66,12 @@ namespace ticonet.Controllers
                     //    break;
                 }
             }
-            return new JsonResult { Data = true };
+            return new JsonResult {Data = true};
         }
 
         public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
-            var events = new EventModel[] { };
+            var events = new EventModel[] {};
             var totalRecords = 0;
             using (var logic = new tblCalendarLogic())
             {

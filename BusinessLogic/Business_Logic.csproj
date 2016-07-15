@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,6 +47,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
@@ -65,7 +67,6 @@
     <Compile Include="BusesToLine.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
-    <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Constants\GeneralConstants.cs" />
     <Compile Include="DictSystemLogic.cs" />
     <Compile Include="Driver.cs">
@@ -83,16 +84,26 @@
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\AccountManager.cs" />
     <Compile Include="Helpers\BusHelper.cs" />
-    <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\CryptographyHelper.cs" />
-    <Compile Include="Helpers\DateHelper.cs" />
+    <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\MapHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\StringCipher.cs" />
+    <Compile Include="Helpers\DateHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Line.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="BusToLineLogic.cs" />
+    <Compile Include="tblScheduleLogic.cs" />
+    <Compile Include="tblBusCompany.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblCalendar.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblCalendarLogic.cs" />
+    <Compile Include="tblBusLogic.cs" />
     <Compile Include="LineLogic.cs" />
     <Compile Include="localization\DBpartialClass.cs" />
     <Compile Include="localization\expresionBuilder.cs" />
@@ -114,14 +125,6 @@
     <Compile Include="tblAlertsQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
-    <Compile Include="tblBusCompany.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="tblBusCompanyLogic.cs" />
-    <Compile Include="tblCalendar.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="tblCalendarLogic.cs" />
     <Compile Include="tblCulture.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -142,6 +145,7 @@
     <Compile Include="tblStudent.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblBusCompanyLogic.cs" />
     <Compile Include="tblSystem.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -168,7 +172,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>registration.edmx</DependentUpon>
     </Compile>
-    <Compile Include="tlbBusLogic.cs" />
     <Compile Include="User.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>

@@ -27,13 +27,13 @@ namespace Business_Logic
                 foreach (var rule in searchFilters.rules)
                 {
                     var filterByProperty = typeof(tblCalendar).GetProperty(rule.field);
-                    if (filterByProperty.PropertyType == typeof(string))
+                    if(filterByProperty.PropertyType == typeof(string))
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
                     else if (filterByProperty.PropertyType == typeof(int))
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
                     else if (filterByProperty.PropertyType == typeof(DateTime?))
                         query = query.Where(x => (DateTime?)filterByProperty.GetValue(x, null) == DateHelper.StringToDate(rule.data));
-                    else
+                    else 
                         query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
                 }
             }
@@ -41,19 +41,19 @@ namespace Business_Logic
             var sortByProperty = typeof(tblCalendar).GetProperty(sortBy);
             if (sortByProperty != null)
             {
-                query = sortOrder == "desc"
-                    ? query.OrderByDescending(x => sortByProperty.GetValue(x, null))
+                query = sortOrder == "desc" 
+                    ? query.OrderByDescending(x => sortByProperty.GetValue(x, null)) 
                     : query.OrderBy(x => sortByProperty.GetValue(x, null));
             }
 
 
 
-            query = query.Skip(rows * (page - 1))
+            query = query.Skip(rows*(page - 1))
                 .Take(rows);
 
             return query.ToList();
         }
-
+        
         public tblCalendar GetEvent(int id)
         {
             return DB.tblCalendars.FirstOrDefault(z => z.pk == id);
@@ -126,7 +126,7 @@ namespace Business_Logic
                     .Select(x => x.date.Value.Date.Day)
                     .Distinct()
                     .ToArray();
-
+                
                 return days;
             }
             catch (Exception ex)

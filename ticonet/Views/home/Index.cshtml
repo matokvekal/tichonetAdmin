@@ -1,232 +1,303 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@using System.Web.Optimization
+@using Business_Logic.Helpers
+@using MvcJqGrid
+@section scripts{
+    @Scripts.Render("http://maps.googleapis.com/maps/api/js?libraries=places&key=" + MapHelper.ApiKey)
+    @Scripts.Render("~/bundles/map")
+    <script type="text/javascript">
+        $(document).ready(smap.init);
+    </script>
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET Identity</h1>
-    <p class="lead">ASP.NET Identity is the membership system for ASP.NET apps. Following are the features of ASP.NET Identity in this sample application.</p>
-    <p><a href="http://www.asp.net/identity" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+
+@Html.Hidden("hfCenterLat", (string)ViewBag.CenterLat, new { @id = "hfCenterLat" })
+@Html.Hidden("hfCenterLng", (string)ViewBag.CenterLng, new { @id = "hfCenterLng" })
+@Html.Hidden("hfZoom", (string)ViewBag.Zoom, new { @id = "hfZoom" })
+@Html.Hidden("hfTimeForLoad", (int)ViewBag.TimeForLoad, new { @id = "hfTimeForLoad" })
+@Html.Hidden("hfHiddenLines", (string)ViewBag.HiddenLines, new { @id = "hfHiddenLines" })
+@Html.Hidden("hfHiddenStations", (string)ViewBag.HiddenStations, new { @id = "hfHiddenStations" })
+@Html.Hidden("hfHiddenStudents", (string)ViewBag.HiddenStudents, new { @id = "hfHiddenStudents" })
+@Html.Hidden("hfShowStations", (bool)ViewBag.ShowStations, new { @id = "hfShowStations" })
+<div class="map-canvas" id="map-canvas" style=""></div>
+
+
+<div id="dSearchBar" class="row">
+
+    <div class="glyphicon glyphicon-search col-lg-1 col-md-1 col-sm-1 col-xs-1" aria-hidden="true" id="btSearch"></div>
+
+
+    <div id="dSearchForm" class=" col-lg-11 col-md-11 col-sm-11 col-xs-11">
+        <div class="input-group">
+            <input type="text" class="form-control" id="tbSearch" />
+            <div class="input-group-addon"><span class="glyphicon glyphicon-search" style="cursor: pointer;" aria-hidden="true" id="btGoSearch"></span></div>
+        </div>
+    </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <dl>
-            <dt>Initialize ASP.NET Identity</dt>
-            <dd>
-                You can initialize ASP.NET Identity when the application starts. Since ASP.NET Identity is Entity Framework based in this sample,
-                you can create DatabaseInitializer which is configured to get called each time the app starts.
-                <strong>Please look in App_Start\IdentityConfig.cs</strong>
-                This code shows the following
-                <ul>
-                    <li>When should the Initializer run and when should the database be created</li>
-                    <li>Create Admin user</li>
-                    <li>Create Admin role</li>
-                    <li>Add Admin user to Admin role</li>
-                </ul>
-            </dd>
-        </dl>
+<div class="students-fly">
+    <div class="header" style="padding-left: 10px; border-bottom: 1px solid #999; ">
+        <h2>
+            <a href="javascript:smap.switchStationsVisible();" title="Show all stations / hide stations without lines">
+                <span class="glyphicon glyphicon-eye-open" id="btToggleStationsVisible"></span>
+            </a>
+            <a href="javascript:smap.lines.editLine(0);" title="Add new line" style="margin-left: 5px;">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+            <a href="javascript:smap.reloadData();" title="Reload" style="margin-left: 5px;">
+                <span class="glyphicon glyphicon-refresh" id="icoReloadBtn"></span>
+            </a>
+            <a href="javascript:smap.saveState();" title="Save state" style="margin-left: 5px;"><span id="icoSaveBtn" class="glyphicon glyphicon-floppy-disk"></span></a>
+            <span style="margin-left: 5px; font-size: 10pt;" id="spStatus"></span>
+        </h2>
     </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Add profile data for the user</dt>
-            <dd>
-                <a href="http://blogs.msdn.com/b/webdev/archive/2013/10/16/customizing-profile-information-in-asp-net-identity-in-vs-2013-templates.aspx">Please follow this tutorial.</a>
-
-                <ul>
-                    <li>Add profile information in the Users Table</li>
-                    <li>Look in Models\IdentityModels.cs for examples</li>
-                </ul>
-            </dd>
-        </dl>
+    <div class="header">
+        <h2>Lines</h2>
+        <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleLines"></div>
     </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Validation</dt>
-            <dd>
-                When you create a User using a username or password, the Identity system performs validation on the username and password, and the passwords are hashed before they are
-                stored in the database. You can customize the validation by changing some of the properties of the validators such as Turn alphanumeric on/off, set minimum password length
-                or you can write your own custom validators and register them with the UserManager.
-            </dd>
-        </dl>
+    <div class="content" id="dLinesTable">
+        <table id="grLines"></table>
+        <div id="pgLines"></div>
     </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Register a user and login</dt>
-            <dd>
-                Click @Html.ActionLink("Register", "Register", "Account") and see the code in AccountController.cs and Register Action.
-                Click @Html.ActionLink("Log in", "Login", "Account") and see the code in AccountController.cs and Login Action.
-            </dd>
-        </dl>
+    <div class="header">
+        <h2>Students</h2>
+        <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleStudents"></div>
     </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Social Logins</dt>
-            <dd>
-                You can the support so that users can login using their Facebook, Google, Twitter, Microsoft Account and more.
-            </dd>
-            <dd>
-                <ul>
-                    <li>
-                        <a href="http://www.windowsazure.com/en-us/documentation/articles/web-sites-dotnet-deploy-aspnet-mvc-app-membership-oauth-sql-database/">Add Social Logins</a>
-                    </li>
-                    <li>
-                        <a href="http://blogs.msdn.com/b/webdev/archive/2013/10/16/get-more-information-from-social-providers-used-in-the-vs-2013-project-templates.aspx">Get more data about the user when they login suing Facebook</a>
-                    </li>
-                </ul>
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Basic User Management</dt>
-            <dd>
-                Do Create, Update, List and Delete Users.
-                Assign a Role to a User.
-                Only Users In Role Admin can access this page. This uses the [Authorize(Roles = "Admin")] on the UserAdmin controller.
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Basic Role Management</dt>
-            <dd>
-                Do Create, Update, List and Delete Roles.
-                Only Users In Role Admin can access this page. This authorization is doen by using the [Authorize(Roles = "Admin")] on the RolesAdmin controller.
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Account Confirmation</dt>
-            <dd>
-                When you register a new account, you will be sent an email confirmation.
-                You can use an email service such as <a href="http://www.windowsazure.com/en-us/documentation/articles/sendgrid-dotnet-how-to-send-email/">SendGrid</a> which integrate nicely with Windows Azure and requires no configuration or
-                set up an SMTP server to send email.
-                You can send email using the EmailService which is registered in App_Start\IdentityConfig.cs
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Two-Factor Authentication</dt>
-            <dd>
-                This sample shows how you can use Two-Factor authentication. This sample has a SMS and email service registered where you can send SMS or email for sending the security code.
-                You can add more two-factor authentication factors such as QR codes and plug them into ASP.NET Identity.
-                <ul>
-                    <li>
-                        You can use a SMS using <a href="https://www.twilio.com/">Twilio</a> or use any means of sending SMS. Please <a href="https://www.twilio.com/docs/quickstart/csharp/sms/sending-via-rest">read</a> for more details on using Twilio.
-                        You can send SMS using the SmsService which is registered in App_Start\IdentityConfig.cs
-                    </li>
-                    <li>
-                        You can use an email service such as <a href="http://www.windowsazure.com/en-us/documentation/articles/sendgrid-dotnet-how-to-send-email/">SendGrid</a> or
-                        set up an SMTP server to send email.
-                        You can send email using the EmailService which is registered in App_Start\IdentityConfig.cs
-                    </li>
-
-                    <li>
-                        When you login, you can add a phone number by clicking the Manage page.
-                    </li>
-                    <li>
-                        Once you add a phone number and have the Phone service hooked to send a SMS, you will get a code through SMS to confirm your phone number.
-                    </li>
-                    <li>
-                        In the Manage page, you can turn on Two-Factor authentication.
-                    </li>
-                    <li>
-                        When you logout and login, after you enter the username and password, you will get an option of how to get the security code to use for two-factor authentication.
-                    </li>
-                    <li>
-                        You can copy the code from your SMS or email and enter in the form to login.
-                    </li>
-                    <li>
-                        The sample also shows how to protect against Brute force attacks against two-factor codes. When you enter a code incorrectly for 5 times then you will be
-                        lockedout for 5 min before you can enter a new code. These settings can be configured in App_Start\IdentityConfig.cs by setting  DefaultAccountLockoutTimeSpan and MaxFailedAccessAttemptsBeforeLockout on the UserManager.
-                    </li>
-                    <li>
-                        If the machine you are browsing this website is your own machine, you can choose to check the "Remember Me" option after you enter the code.
-                        This option will remember you forever on this machine and will not ask you for the two-factor authentication, the next time when you login to the website.
-                        You can change your "Remember Me" settings for two-factor authentication in the Manage page.
-                    </li>
-                </ul>
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Account Lockout</dt>
-            <dd>
-                Provide a way to Lockout out the user if the user enters their password or two-factor codes incorrectly.
-                The number of invalid attempts and the timespan for the users are locked out can be configured.
-                A developer can optionally turn off Account Lockout for certain user accounts should they need to.
-            </dd>
-            <ul>
-                <li>Account LockOut settings can be configured in the UserManager in IdentityConfig.cs</li>
-            </ul>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Security Token provider</dt>
-            <dd>
-                Support a way to regenerate the Security Token for the user in cases when the User changes there password or any other security related information such as removing an associated login(such as Facebook, Google, Microsoft Account etc).
-                This is needed to ensure that any tokens generated with the old password are invalidated. In the sample project, if you change the users password then a new token is generated for the user and any previous tokens are invalidated.
-                This feature provides an extra layer of security to your application since when you change your password, you will be logged out from everywhere (all other browsers) where you have logged into this application.
-            </dd>
-            <dd>
-                <ul>
-                    <li>The provider is registered when you add CookieAuthentication in StartupAuth to your application.</li>
-                </ul>
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Password Reset</dt>
-            <dd>
-                Allows the user to reset their passwords if they have forgotten their password. In this sample users need to confirm their email before they can reset their passwords.
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Custom Storage providers</dt>
-            <dd>
-                You can extend ASP.NET Identity to write your own custom storage provider for storing the ASP.NET Identity system and user data
-                in a persistance system of your choice such as MondoDb, RavenDb, Azure Table Storage etc.
-            </dd>
-            <dd>
-                <ul>
-                    <li>
-                        <a href="http://www.asp.net/identity/overview/extensibility/overview-of-custom-storage-providers-for-aspnet-identity">
-                            learn more on how to implement your own storage provider
-                        </a>
-                    </li>
-                </ul>
-            </dd>
-        </dl>
-    </div>
-    <div class="col-md-4">
-        <dl>
-            <dt>Documentation</dt>
-            <dd>
-                <ul>
-                    <li>
-                        Tutorials: <a href="www.asp.net/identity">www.asp.net/identity</a>
-                    </li>
-                    <li>
-                        StackOverflow: <a href="http://stackoverflow.com/questions/tagged/asp.net-identity">http://stackoverflow.com/questions/tagged/asp.net-identity</a>
-                    </li>
-                    <li>
-                        Twitter: #identity #aspnet
-                    </li>
-                    <li>
-                        <a href="http://curah.microsoft.com/55636/aspnet-identity">ASP.NET Identity on curah</a>
-                    </li>
-                    <li>
-                        Have bugs or suggestions for ASP.NET Identity <a href="http://aspnetidentity.codeplex.com/">http://aspnetidentity.codeplex.com/</a>
-                    </li>
-                </ul>
-            </dd>
-        </dl>
+    <div class="content" id="dStudentsTable">
+        <table id="grStudents"></table>
+        <div id="pgStudents"></div>
     </div>
 </div>
+
+@*Dialogs*@
+
+<div id="dialog-form" title="Add / Edit station" style="display: none; overflow: hidden;">
+
+
+    <form action="/api/stations/Save" id="frmCreate" method="POST" class="form-horizontal">
+        <div class="form-group" id="dCSAddrBlock">
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                    <input type="radio" name="CSPosition" checked="checked" id="rCSThis" />
+                </div>
+                <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">This location</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                    <input type="radio" name="CSPosition" style="margin-top: 9px;" id="rCSAddr" />
+                </div>
+                <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
+                    <div class="form-group has-feedback" id="dCSControl">
+                        <input type="text" class="form-control input-sm" id="tbCSAddress" style="display: inline-block;">
+                        <span title="Correct address" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" id="spCSSucIcon"></span>
+                        <span title="Address not found" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" id="spCSWarnIcon"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="padding-top: 6px;">
+                <span class="control-label">Name</span>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                <input type="text" name="Name" id="tbName" value="New station" class="text form-control input-sm">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="padding-top: 5px;">
+                    <span class="control-label">Color</span>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type='text' id="tbColor" class="form-control basic" />
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="margin-top: 5px;">
+                    <input type="checkbox" id="cbCSSchool" />
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding-top: 6px;">School</div>
+            </div>
+        </div>
+
+        <input type="hidden" id="hfStationId" name="Id" />
+        <input type="hidden" id="hfCreateColor" name="Color" />
+        <input type="hidden" id="hfCreateLat" name="StrLat" />
+        <input type="hidden" id="hfCreateLng" name="StrLng" />
+        <input type="hidden" id="hfCSSelectedLat" name="CStrLat" />
+        <input type="hidden" id="hfCSSelectedLng" name="CStrLng" />
+    </form>
+</div>
+<div id="dlgConfirm" title="Confirm action" style="display: none;">
+    <div id="dConfirmMessage" class="message"></div>
+    <input type="hidden" id="hfCurrentId" />
+</div>
+<div id="dlgAttach" title="Attach student to station" style="display: none;">
+    <form id="frmAttach">
+        <div class="message" id="dConfirmAttach"></div>
+        <div id="dAttachDist" class="message">
+            <img src="/Content/img/ajax-loader.gif" />
+        </div>
+        <div id="dAttachLines" rel="AttachLines" class="form-group row message">
+            <label for="ddlAttachLines" class="col-xs-3 col-lg-3 col-md-3 col-sm-3 control-label">Line</label>
+            <select id="ddlAttachLines" name="LineId" style="width: 200px;" class="form-control" onchange="smap.stations.attachStudentLineSelected();"></select>
+        </div>
+        <div class="form-group row message">
+            <label for="dAttachColor" class="col-xs-3 col-lg-3 col-md-3 col-sm-3 control-label">Color</label>
+            <div id="dAttachColor" style="text-align: left;" class="col-xs-9 col-lg-9 col-md-9 col-sm-9">
+                <input type="radio" name="UseColor" value="0" id="rAttachLeave" />
+                <span>Leave</span>
+                <div class="color-indicator-small" id="ciAttachLeave"></div>
+                <br />
+                <input type="radio" name="UseColor" value="1" id="rAttachStation" />
+                <span>Station</span>
+                <div class="color-indicator-small" id="ciAttachStation"></div>
+
+                <div rel="AttachLines">
+                    <input type="radio" name="UseColor" value="2" id="rAttachLine" />
+
+                    <span>Line</span>
+                    <div class="color-indicator-small" id="ciAttachLine"></div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row message" id="dAttachMultiline" style="display: none;">
+            <div class="row"><span id="sAttachMName"></span> already attached to station <span id="sAttachMStation"></span></div>
+            <div class="row message" style="text-align: left;">
+                <input type="radio" name="ConflictAction" id="rAttachReplace" value="0" /> <span>Replace default route</span><br />
+                <input type="radio" name="ConflictAction" id="rAttachSchedule" value="1" onchange="smap.stations.dateVisibleSwitch" /><span>Schedule route for</span>
+            </div>
+            <div class="row message">
+                <input type="text" id="tbAttachDate" style="width: 150px;" name="StrDate" />
+                <input type="number" id="tbAttachHours" style="width: 40px; margin-left: 20px;" name="Hours" />
+                <span>:</span>
+                <input type="number" id="tbAttachMinutes" style="width: 40px;" name="Minutes" />
+            </div>
+        </div>
+        <input type="hidden" id="hfAttachStudentId" name="StudentId" />
+        <input type="hidden" id="hfAttachStationId" name="StationId" />
+        <input type="hidden" id="hfAttachDistance" name="Distance" />
+    </form>
+</div>
+<div id="dlgAddToLine" title="Add station to line" style="display: none;">
+    <form id="frmAddStationTolIne">
+        <input type="hidden" name="StationId" id="hfAddStationId" />
+        <div class="form-group">
+            <label for="ddlAddLine" class="col-xs-3 control-label">Line</label>
+            <select id="ddlAddLine" name="LineId" class="text form-control input-sm" style="width: 200px"></select>
+        </div>
+        @*<div class="row form-group">
+                <label for="tbAddLineHours" class="col-xs-3 control-label">Arrival Time</label>
+                <span>
+                    <input type="number" id="tbAddLineHours" name="Hours" class="form-control input-sm" style="width: 50px; display: inline;" />
+                    <span class="form-control-static" style="margin-left: 5px; margin-right: 5px;">:</span>
+                    <input type="number" id="tbAddLineMinutes" name="Minutes" class="form-control input-sm" style="width: 50px; display: inline;" />
+
+                </span>
+            </div>*@
+        <div class="row form-group">
+            <label for="ddlAddPosition" class="col-xs-3 control-label">Position</label>
+            <select id="ddlAddPosition" name="Position" class="text form-control input-sm" style="width: 50px"></select>
+        </div>
+
+        <div class="row form-group">
+
+            <label for="ddlAddLine" class="col-xs-3 col-sm-3 col-md-3 col-lg-3 control-label">Color</label>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <input type="radio" name="ChangeColor" value="false" id="rAddStation" />
+                <span style="margin-left: 5px; margin-right: 5px;">Leave</span>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <div class="color-indicator" id="dAddStation"></div>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xs-offset-3  col-lg-offset-3 col-sm-offset-3 col-md-offset-3">
+                <input type="radio" name="ChangeColor" value="true" id="rAddLine" />
+                <span style="margin-left: 5px; margin-right: 5px;">Line</span>
+
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <div class="color-indicator" id="dAddLine"></div>
+            </div>
+        </div>
+
+
+    </form>
+</div>
+<div id="dlgEditToLine" title="Edit station on line" style="display: none;">
+    <div id="tabLines"></div>
+    <form id="frmEditToLine">
+        <div class="row form-group">
+            <label for="tbAddLineHours" class="col-xs-3 control-label">Arrival Time</label>
+            <span>
+                <input type="number" id="tbEditLineHours" name="Hours" class="form-control input-sm" style="width: 50px; display: inline;" />
+                <span class="form-control-static" style="margin-left: 5px; margin-right: 5px;">:</span>
+                <input type="number" id="tbEditLineMinutes" name="Minutes" class="form-control input-sm" style="width: 50px; display: inline;" />
+
+            </span>
+        </div>
+        <div class="row form-group">
+            <label for="ddlEditPosition" class="col-xs-3 control-label">Position</label>
+            <select id="ddlEditPosition" name="Position" class="text form-control input-sm" style="width: 50px"></select>
+
+        </div>
+        <div class="row form-group">
+            <label for="cbEditLineColor" class="col-xs-4 control-label">Use line color </label>
+            <input type="checkbox" name="StrChangeColor" id="cbEditLineColor">
+        </div>
+        <input type="hidden" id="hfEditToLineStationId" name="StationId" />
+        <input type="hidden" id="hfEditToLineLineId" name="LineId" />
+    </form>
+</div>
+<div id="dlgDeleteFromLine" title="Delete station from line" style="display: none;">
+    <div id="dDeleteLines">
+
+    </div>
+    <input type="hidden" id="hfDeleteFromLineStationId" />
+</div>
+<div id="dlgAddLine" title="Add new line" style="display: none;">
+    <form id="frmEditLine">
+        <input type="hidden" id="hfEditLineId" name="Id" />
+        <input type="hidden" id="hfEditLineColor" name="Color" />
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="tbEditLineNumber">Number</label>
+            <input type="text" id="tbEditLineNumber" name="LineNumber" class="form-control" />
+        </div>
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="tbEditLineName">Name</label>
+            <input type="text" id="tbEditLineName" name="Name" class="form-control" />
+        </div>
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="tbEditLineColor">Color</label>
+            <input type="text" id="tbEditLineColor" class="form-control" />
+        </div>
+        <div class="row form-group">
+            <label class="col-lg-3 col-md-3 col-sm-3 col-xs-3 control-label" for="ddlEditLineDirection">Direction</label>
+            <select id="ddlEditLineDirection" name="Direction" class="form-control">
+                <option value="0">TO</option>
+                <option value="1">FROM</option>
+            </select>
+        </div>
+    </form>
+</div>
+<div id="dlgSchedule" title="Student's stations" style="display: none;">
+    <input type="hidden" id="hfAttachListStationId" />
+    <h2 id="dAttachName"></h2>
+    <table id="dScheduleGrid"></table>
+</div>
+<div id="dlgTimeTable" title="Time table" style="display: none;">
+    <input type="hidden" id="hfTTLineId" />
+    <div id="dTTMessage" style="text-align: center;" class="row">
+
+    </div>
+    <div class="row form-horizontal text-center">
+        <input type="number" id="tbTTHours" class="form-inline" style="width: 50px;" />
+        <span>:</span>
+        <input type="number" id="tbTTMinutes" class="form-inline" style="width: 50px;" />
+        <button class="btn btn-primary btn-xs" onclick="smap.lines.reCalcTimeTable();">Calculate</button>
+    </div>
+    <div class="row">
+        <table id="tblTTGrid"></table>
+    </div>
+</div>
+@*End Dialogs*@
