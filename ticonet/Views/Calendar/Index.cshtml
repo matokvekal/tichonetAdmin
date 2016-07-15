@@ -1,14 +1,16 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
 
-<div id="calendar-datepicker"></div>
-<div class="content jqgrid-extended" id="dCalendarTable">
-    <table id="grCalendar"></table>
-    <div id="pgCalendar"></div>
-</div>
+<div class="content inline-block" style="height: calc(100% - 30px); width: 100%; display: inline-block; margin: 20px 0 0 0; padding: 0;">
+    <div id="calendar-datepicker"></div>
+    <div class="content jqgrid-extended" id="dCalendarTable">
+        <table id="grCalendar"></table>
+        <div id="pgCalendar"></div>
+    </div>
 
-<!--Div for render grid for Print-->
-<div hidden id="printCalendarGrid"><table id="grPrintCalendar"></table></div>
+    <!--Div for render grid for Print-->
+    <div hidden id="printCalendarGrid"><table id="grPrintCalendar"></table></div>
+</div>
 
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")

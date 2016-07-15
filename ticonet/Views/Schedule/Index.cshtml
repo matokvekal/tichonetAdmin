@@ -4,8 +4,8 @@
 <div class="content inline-block" style="height: calc(100% - 30px); width: 100%; display: inline-block; margin: 20px 0 0 0; padding: 0;">
     <div style="margin: 0; padding: 0; height: 100%; width: calc(100% - 500px); float: left; border: solid silver thin; overflow: hidden;">
         <div style="margin: 0; padding: 0; height: 70px; width: 400px; float: right; border: solid silver thin;">
-            <p>@DictExpressionBuilderSystem.Translate("Schedule.DateFrom"): <input type="text" id="dateFrom"></p>
-            <p>@DictExpressionBuilderSystem.Translate("Schedule.DateTo"): <input type="text" id="dateTo"></p>
+            <p><input type="text" id="dateFrom"> :@DictExpressionBuilderSystem.Translate("Schedule.DateFrom")</p>
+            <p><input type="text" id="dateTo"> :@DictExpressionBuilderSystem.Translate("Schedule.DateTo")</p>
         </div>
         <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right; border: solid silver thin;">
             CheckBoxes ArriveTime, LeaveTime, All WeeksDays
@@ -16,21 +16,17 @@
         </div>
 
         <div style="margin: 0; padding: 0; height: calc(100% - 150px); width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
-            <div style="margin: 0; padding: 0; height: 2000px; width: 100%; float: right; border: solid silver thin;">
-                <div class="content jqgrid-extended" id="dScheduleTable">
-                    <table id="grSchedule"></table>
-                    <div id="pgSchedule"></div>
-                </div>
+            <div class="content jqgrid-extended" id="dScheduleTable">
+                <table id="grSchedule"></table>
+                <div id="pgSchedule"></div>
             </div>
         </div>
     </div>
     <div style="margin: 0; padding: 0; height: 100%; width: 500px; float: left; border: solid silver thin; overflow: hidden;">
         <div style="margin: 0; padding: 0; height: 100%; width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
-            <div style="margin: 0; padding: 0; width: 100%; float: right; border: solid silver thin;">
-                <div class="content jqgrid-extended" id="dLinesTable">
-                    <table id="grLines"></table>
-                    @*<div id="pgLines"></div>*@
-                </div>
+            <div class="content jqgrid-extended" id="dLinesTable">
+                <table id="grLines"></table>
+                @*<div id="pgLines"></div>*@
             </div>
         </div>
     </div>
