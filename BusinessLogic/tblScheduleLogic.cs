@@ -41,15 +41,13 @@ namespace Business_Logic
             }
 
             var sortByProperty = typeof(tblSchedule).GetProperty(sortBy);
-            if (sortOrder == "desc")
+            if (sortByProperty != null)
             {
-                query = query.OrderByDescending(x => sortByProperty.GetValue(x, null));
+                query = sortOrder == "desc"
+                    ? query.OrderByDescending(x => sortByProperty.GetValue(x, null))
+                    : query.OrderBy(x => sortByProperty.GetValue(x, null));
             }
-            else
-            {
-                query = query.OrderBy(x => sortByProperty.GetValue(x, null));
-            }
-            
+
             query = query.Skip(rows * (page - 1))
                 .Take(rows);
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using Business_Logic.Entities;
+using Business_Logic.Dtos;
 using Business_Logic.Helpers;
 using Newtonsoft.Json;
 
@@ -24,48 +25,42 @@ namespace Business_Logic
 
         public List<Line> GetPaged(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters)
         {
-            var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
-            var searchFilters = searchModel;
-
-            IEnumerable<Line> query = DB.Lines;
-
-            if (isSearch && !string.IsNullOrWhiteSpace(filters))
-            {
-                searchFilters = JsonConvert.DeserializeAnonymousType(filters, searchModel);
-                foreach (var rule in searchFilters.rules)
-                {
-                    var filterByProperty = typeof(Line).GetProperty(rule.field);
-                    if (rule.field == "BusCompanyName")
-                    {
-                        int id;
-                        int.TryParse(rule.data, out id);
-                        query = query.AsQueryable()
-                            .Include(x => x.BusesToLines)
-                            .Where(x => x.BusesToLines.Select(l => l.Bus).Any(b => b.BusCompany != null && b.BusCompany.pk == id));
-                    }
-                    else if (filterByProperty.PropertyType == typeof (string))
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
-                    else if (filterByProperty.PropertyType == typeof (int))
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
-                    else
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
-                }
-            }
+            IEnumerable<Line> query = GetFilteredAll(isSearch, filters);
 
             var sortByProperty = typeof(Line).GetProperty(sortBy);
-            if (sortOrder == "desc")
+            if (sortByProperty != null)
             {
-                query = query.OrderByDescending(x => sortByProperty.GetValue(x, null));
-            }
-            else
-            {
-                query = query.OrderBy(x => sortByProperty.GetValue(x, null));
+                query = sortOrder == "desc" 
+                    ? query.OrderByDescending(x => sortByProperty.GetValue(x, null)) 
+                    : query.OrderBy(x => sortByProperty.GetValue(x, null));
             }
             
             query = query.Skip(rows * (page - 1))
                 .Take(rows);
 
             return query.ToList();
+        }
+
+        public TotalDto GetTotal(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters)
+        {
+            TotalDto total = new TotalDto()
+            {
+                Students = 0,
+                Seats = 0
+            };
+
+            IEnumerable<Line> query = GetFilteredAll(isSearch, filters);
+
+            Line[] filteredAll = query.ToArray();
+            foreach (var line in filteredAll)
+            {
+                total.Students += line.totalStudents.HasValue ? line.totalStudents.Value : 0;
+                var busesToLines = line.BusesToLines.FirstOrDefault();
+                if (busesToLines!=null)
+                    total.Seats += busesToLines.Bus.seats.HasValue ? busesToLines.Bus.seats.Value : 0;
+            }
+
+            return total;
         }
 
         public List<StationsToLine> GetStations(int lineId)
@@ -360,5 +355,47 @@ namespace Business_Logic
                 .Distinct()
                 .ToList();
         }
+
+
+
+
+
+
+
+
+
+        private IEnumerable<Line> GetFilteredAll(bool isSearch, string filters)
+        {
+            var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
+            var searchFilters = searchModel;
+
+            IEnumerable<Line> query = DB.Lines;
+
+            if (isSearch && !string.IsNullOrWhiteSpace(filters))
+            {
+                searchFilters = JsonConvert.DeserializeAnonymousType(filters, searchModel);
+                foreach (var rule in searchFilters.rules)
+                {
+                    var filterByProperty = typeof(Line).GetProperty(rule.field);
+                    if (rule.field == "BusCompanyName")
+                    {
+                        int id;
+                        int.TryParse(rule.data, out id);
+                        query = query.AsQueryable()
+                            .Include(x => x.BusesToLines)
+                            .Where(x => x.BusesToLines.Select(l => l.Bus).Any(b => b.BusCompany != null && b.BusCompany.pk == id));
+                    }
+                    else if (filterByProperty.PropertyType == typeof(string))
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
+                    else if (filterByProperty.PropertyType == typeof(int))
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
+                    else
+                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
+                }
+            }
+
+            return query;
+        }
+
     }
 }

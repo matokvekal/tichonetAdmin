@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Business_Logic;
+using Business_Logic.Enums;
 
 namespace ticonet.Models
 {
@@ -18,7 +19,7 @@ namespace ticonet.Models
             Id = data.Id;
             LineName = data.LineName;
             LineNumber = data.LineNumber;
-            Direction = data.Direction;
+            Direction = (LineDirection)data.Direction;
             IsActive = data.IsActive;
             totalStudents = data.totalStudents ?? 0;
             Duration = data.Duration;
@@ -42,7 +43,7 @@ namespace ticonet.Models
 
         public string LineNumber { get; set; }
 
-        public int Direction { get; set; }
+        public LineDirection Direction { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -81,7 +82,7 @@ namespace ticonet.Models
         {
             existingLine.LineName = LineName;
             existingLine.LineNumber = LineNumber;
-            existingLine.Direction = Direction;
+            existingLine.Direction = (int)Direction;
             existingLine.IsActive = IsActive;
             // existingLine.totalStudents = totalStudents; // Can not be modefied in lines grid
             // existingLine.Duration = Duration; // Can not be modefied in lines grid

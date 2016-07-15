@@ -1,5 +1,6 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
+@using Business_Logic.Enums
 
 <div class="content jqgrid-extended" id="dBusesToLinesTable">
     <table id="grBusesToLines"></table>
@@ -54,6 +55,7 @@
                 editurl: '/api' + '@Url.Action("EditLine", "BusesToLinesApi")',
                 sortname: 'LineName',
                 sortorder: "asc",
+                footerrow: true,
                 colNames: [
                     '@DictExpressionBuilderSystem.Translate("Line.Id")',
                     '@DictExpressionBuilderSystem.Translate("Line.LineName")',
@@ -82,7 +84,11 @@
                     search: false,
                     edittype: 'select',
                     formatter: 'select',
-                    editoptions: { value: { '0': 'To', '1': 'From' } }
+                    editoptions: { value: {
+                            '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
+                            '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
+                            '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                        } }
                 },
                 { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                 { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: false },
@@ -97,6 +103,9 @@
                     edittype: "select",
                     editoptions: {
                         dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "BusesToLinesApi")',
+                        dataInit: function(elem) {
+                            $(elem).width('94%');  // set the width for dropdown
+                        },
                         postData: function(rowid, value, cmName) {
                             return {
                                 lineId: rowid
@@ -108,7 +117,7 @@
                             if (response && response.Data.length) {
                                 for (var i = 0, l = response.Data.length; i < l; i++) {
                                     var ri = response.Data[i];
-                                    s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                    s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Title + '</option>';
                                 }
                             }
                             return s + "</select>";
@@ -154,6 +163,9 @@
             },
             loadComplete: function (data) {
                 gridExtend.fn.populateDescription(data);
+                var totalSeats = grid.jqGrid('getCol', 'seats', false, 'sum');
+                var totalStudents = grid.jqGrid('getCol', 'totalStudents', false, 'sum');
+                grid.footerData('set', { LineName: '@DictExpressionBuilderSystem.Translate("grid.Total")', totalStudents: totalStudents, seats: totalSeats });
             }
         })
             .navGrid(pagerID, {
@@ -208,7 +220,16 @@
                                     colModel: [
                                         { name: "LineName" },
                                         { name: "LineNumber" },
-                                        { name: "Direction" },
+                                        {
+                                            name: "Direction", formatter: 'select',
+                                            editoptions: {
+                                                value: {
+                                                    '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
+                                                    '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
+                                                    '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                                                }
+                                            }
+                                        },
                                         { name: "IsActive" },
                                         { name: "totalStudents" },
                                         { name: "Duration" },

@@ -111,7 +111,7 @@ namespace ticonet.Controllers
                 var row = 2 + i;
                 worksheet.Cell(row, 1).SetValue<string>(lines[i].LineName);
                 worksheet.Cell(row, 2).SetValue<string>(lines[i].LineNumber);
-                worksheet.Cell(row, 3).SetValue<string>(lines[i].Direction == 0? "To": "From");
+                worksheet.Cell(row, 3).SetValue<string>(DictExpressionBuilderSystem.Translate("General." + lines[i].Direction));
                 worksheet.Cell(row, 4).SetValue<bool>(lines[i].IsActive);
                 worksheet.Cell(row, 5).SetValue<int>(lines[i].totalStudents);
                 worksheet.Cell(row, 6).SetValue<string>(Convert.ToString(lines[i].Duration));
@@ -172,7 +172,7 @@ namespace ticonet.Controllers
                     {
                         Value = z.Id.ToString(),
                         Text = z.BusId,
-                        Title = string.Format("{0} ({1} - {2} - {3})", z.BusId, z.PlateNumber, z.BusCompany!=null?z.BusCompany.companyName:string.Empty, z.seats.HasValue? z.seats.Value.ToString(): string.Empty)
+                        Title = string.Format("{0} ({1} - {2} - {3} - {4})", z.Id, z.BusId, z.PlateNumber, z.BusCompany!=null?z.BusCompany.companyName:string.Empty, z.seats.HasValue? z.seats.Value.ToString(): string.Empty)
                     }).ToList());
             }
 

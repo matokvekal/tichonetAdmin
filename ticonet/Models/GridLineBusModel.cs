@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Business_Logic;
+using Business_Logic.Enums;
 
 namespace ticonet.Models
 {
@@ -18,7 +19,7 @@ namespace ticonet.Models
             Id = data.Id;
             LineName = data.LineName;
             LineNumber = data.LineNumber;
-            Direction = data.Direction;
+            Direction = (LineDirection)data.Direction;
             IsActive = data.IsActive;
             totalStudents = data.totalStudents ?? 0;
             Duration = data.Duration;
@@ -35,7 +36,7 @@ namespace ticonet.Models
 
         public string LineNumber { get; set; }
 
-        public int Direction { get; set; }
+        public LineDirection Direction { get; set; }
 
         public bool IsActive { get; set; }
 

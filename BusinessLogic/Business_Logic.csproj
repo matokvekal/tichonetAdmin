@@ -80,6 +80,7 @@
     <Compile Include="Enums\ColorMode.cs" />
     <Compile Include="Enums\ConflictActions.cs" />
     <Compile Include="Enums\FlagsUserRoles.cs" />
+    <Compile Include="Enums\LineDirection.cs" />
     <Compile Include="Enums\GridOperation.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\AccountManager.cs" />
@@ -95,6 +96,7 @@
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="BusToLineLogic.cs" />
+    <Compile Include="Dtos\TotalDto.cs" />
     <Compile Include="tblScheduleLogic.cs" />
     <Compile Include="tblBusCompany.cs">
       <DependentUpon>registration.tt</DependentUpon>
@@ -205,6 +207,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

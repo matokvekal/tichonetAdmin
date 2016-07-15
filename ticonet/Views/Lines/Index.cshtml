@@ -1,5 +1,6 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
+@using Business_Logic.Enums
 
 <div class="content jqgrid-extended" id="dLinesTable">
     <table id="grLines"></table>
@@ -15,12 +16,12 @@
         $(function() {
             var lineActionsFormatter = function (cellvalue, options, rowObject) {
                 var res = "";
-                    res += '<div style="margin-left: 8px;">';
-                    res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
-                    res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
-                    res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
-                    res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
-                    res += '</div>';
+                res += '<div style="margin-left: 8px;">';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+                res += '</div>';
                 return res;
             };
 
@@ -54,6 +55,7 @@
                 editurl: '/api' + '@Url.Action("EditLine", "LinesApi")',
                 sortname: 'LineName',
                 sortorder: "asc",
+                footerrow: true,
                 colNames: [
                     '@DictExpressionBuilderSystem.Translate("Line.Id")',
                     '@DictExpressionBuilderSystem.Translate("Line.LineName")',
@@ -75,7 +77,7 @@
                     '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
                     '@DictExpressionBuilderSystem.Translate("Bus.seats")',
                     ""
-            ],
+                ],
                 colModel: [
                     { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                     { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: true },
@@ -89,7 +91,11 @@
                         search: false,
                         edittype: 'select',
                         formatter: 'select',
-                        editoptions: { value: { '0': 'To', '1': 'From' } }
+                        editoptions: { value: {
+                            '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
+                            '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
+                            '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                        } }
                     },
                     { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                     { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: false },
@@ -111,6 +117,9 @@
                         edittype: "select",
                         editoptions: {
                             dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "LinesApi")',
+                            dataInit: function (elem) {
+                                $(elem).width('94%');  // set the width for dropdown
+                            },
                             postData: function(rowid, value, cmName) {
                                 return {
                                     lineId: rowid
@@ -122,7 +131,7 @@
                                 if (response && response.Data.length) {
                                     for (var i = 0, l = response.Data.length; i < l; i++) {
                                         var ri = response.Data[i];
-                                        s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                        s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Title + '</option>';
                                     }
                                 }
                                 return s + "</select>";
@@ -168,6 +177,9 @@
                 },
                 loadComplete: function (data) {
                     gridExtend.fn.populateDescription(data);
+                    var totalSeats = grid.jqGrid('getCol', 'seats', false, 'sum');
+                    var totalStudents = grid.jqGrid('getCol', 'totalStudents', false, 'sum');
+                    grid.footerData('set', { LineName: '@DictExpressionBuilderSystem.Translate("grid.Total")', totalStudents: totalStudents, seats: totalSeats });
                 }
             })
                 .navGrid(pagerID, {
@@ -179,7 +191,7 @@
                     search: false,
                     view: false,
                     closeAfterAdd: true
-            }
+                }
                 )
                 .navButtonAdd(pagerID, {
                     id: "print",
@@ -227,7 +239,16 @@
                                         colModel: [
                                             { name: "LineName" },
                                             { name: "LineNumber" },
-                                            { name: "Direction" },
+                                            {
+                                                name: "Direction", formatter: 'select',
+                                                editoptions: {
+                                                    value: {
+                                                        '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
+                                                        '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
+                                                        '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                                                    }
+                                                }
+                                            },
                                             { name: "IsActive" },
                                             { name: "totalStudents" },
                                             { name: "Duration" },
@@ -282,7 +303,7 @@
                     enableClear: false
                 }
                 );
-
+            
             gridExtend.fn.init();
 
         });
