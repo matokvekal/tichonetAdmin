@@ -376,7 +376,6 @@ namespace Business_Logic
                 searchFilters = JsonConvert.DeserializeAnonymousType(filters, searchModel);
                 foreach (var rule in searchFilters.rules)
                 {
-                    var filterByProperty = typeof(Line).GetProperty(rule.field);
                     if (rule.field == "BusCompanyName")
                     {
                         int id;
@@ -385,12 +384,21 @@ namespace Business_Logic
                             .Include(x => x.BusesToLines)
                             .Where(x => x.BusesToLines.Select(l => l.Bus).Any(b => b.BusCompany != null && b.BusCompany.pk == id));
                     }
-                    else if (filterByProperty.PropertyType == typeof(string))
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
-                    else if (filterByProperty.PropertyType == typeof(int))
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
                     else
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
+                    {
+                        var filterByProperty = typeof(Line).GetProperty(rule.field);
+                        if (filterByProperty != null)
+                        {
+                            query = query.Where(x => filterByProperty.GetValue(x, null) != null);
+
+                            if (filterByProperty.PropertyType == typeof(string))
+                                query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
+                            else if (filterByProperty.PropertyType == typeof(int))
+                                query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
+                            else
+                                query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
+                        }
+                    }
                 }
             }
 

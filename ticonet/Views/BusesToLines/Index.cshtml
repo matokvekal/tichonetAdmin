@@ -163,9 +163,19 @@
             },
             loadComplete: function (data) {
                 gridExtend.fn.populateDescription(data);
-                var totalSeats = grid.jqGrid('getCol', 'seats', false, 'sum');
-                var totalStudents = grid.jqGrid('getCol', 'totalStudents', false, 'sum');
-                grid.footerData('set', { LineName: '@DictExpressionBuilderSystem.Translate("grid.Total")', totalStudents: totalStudents, seats: totalSeats });
+
+                var postData = grid.jqGrid('getGridParam', 'postData');
+                var urlGetTotal = '/api' + "@Url.Action("GetTotal", "BusesToLinesApi")";
+                var url = urlGetTotal + "?" + $.param(postData);
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        grid.footerData('set', { LineName: '@DictExpressionBuilderSystem.Translate("grid.Total")', totalStudents: data.Data.Students, seats: data.Data.Seats });
+                    }
+                });
             }
         })
             .navGrid(pagerID, {

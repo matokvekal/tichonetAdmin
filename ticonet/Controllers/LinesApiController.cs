@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Mvc;
 using Business_Logic;
+using Business_Logic.Dtos;
 using ClosedXML.Excel;
 using log4net;
 using ticonet.Models;
@@ -40,8 +41,19 @@ namespace ticonet.Controllers
                     records = totalRecords,
                     rows = lines
                 });
+        }
+
+        [System.Web.Mvc.HttpGet]
+        public JsonResult GetTotal(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
+        {
+            var total = new TotalDto();
+            using (var logic = new LineLogic())
+            {
+                total = logic.GetTotal(_search, rows, page, sidx, sord, filters);
             }
-        
+            return new JsonResult { Data = total };
+        }
+
         [System.Web.Mvc.HttpPost]
         public JsonResult EditLine(GridLineModel model)
         {

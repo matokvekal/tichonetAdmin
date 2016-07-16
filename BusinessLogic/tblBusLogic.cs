@@ -26,12 +26,16 @@ namespace Business_Logic
                 foreach (var rule in searchFilters.rules)
                 {
                     var filterByProperty = typeof(Bus).GetProperty(rule.field);
-                    if(filterByProperty.PropertyType == typeof(string))
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
-                    else if (filterByProperty.PropertyType == typeof(int))
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
-                    else 
-                        query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
+                    if (filterByProperty != null)
+                    {
+                        query = query.Where(x => filterByProperty.GetValue(x, null) != null);
+                        if (filterByProperty.PropertyType == typeof(string))
+                            query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
+                        else if (filterByProperty.PropertyType == typeof(int))
+                            query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
+                        else
+                            query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
+                    }
                 }
             }
 
