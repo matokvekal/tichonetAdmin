@@ -163,3 +163,8 @@ div#ui-datepicker-div.ui-datepicker, div#calendar-datepicker > div.ui-datepicker
     z-index: 9999 !important;   
 }
 
+.ui-slider, 
+.ui-slider .ui-slider-handle {
+    border: 1px #999 solid;
+}
+

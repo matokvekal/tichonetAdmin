@@ -18,11 +18,11 @@ namespace ticonet.Models
             //GpsCode = data.GpsCode;
             seats = data.seats;
             price = data.price;
-            munifacturedate = DateHelper.DateToString(data.munifacturedate);
-            LicensingDueDate = DateHelper.DateToString(data.LicensingDueDate);
-            insuranceDueDate = DateHelper.DateToString(data.insuranceDueDate);
-            winterLicenseDueDate = DateHelper.DateToString(data.winterLicenseDueDate);
-            brakeTesDueDate = DateHelper.DateToString(data.brakeTesDueDate);
+            munifacturedate = DateTimeHelper.DateToString(data.munifacturedate);
+            LicensingDueDate = DateTimeHelper.DateToString(data.LicensingDueDate);
+            insuranceDueDate = DateTimeHelper.DateToString(data.insuranceDueDate);
+            winterLicenseDueDate = DateTimeHelper.DateToString(data.winterLicenseDueDate);
+            brakeTesDueDate = DateTimeHelper.DateToString(data.brakeTesDueDate);
         }
 
         public BusModel() { }
@@ -75,11 +75,11 @@ namespace ticonet.Models
                 //GpsCode = GpsCode,
                 seats = seats,
                 price = price,
-                munifacturedate = DateHelper.StringToDate(munifacturedate),
-                LicensingDueDate = DateHelper.StringToDate(LicensingDueDate),
-                insuranceDueDate = DateHelper.StringToDate(insuranceDueDate),
-                winterLicenseDueDate = DateHelper.StringToDate(winterLicenseDueDate),
-                brakeTesDueDate = DateHelper.StringToDate(brakeTesDueDate)
+                munifacturedate = DateTimeHelper.StringToDate(munifacturedate),
+                LicensingDueDate = DateTimeHelper.StringToDate(LicensingDueDate),
+                insuranceDueDate = DateTimeHelper.StringToDate(insuranceDueDate),
+                winterLicenseDueDate = DateTimeHelper.StringToDate(winterLicenseDueDate),
+                brakeTesDueDate = DateTimeHelper.StringToDate(brakeTesDueDate)
             };
         }
     }

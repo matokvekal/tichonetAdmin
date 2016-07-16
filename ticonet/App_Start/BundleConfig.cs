@@ -11,6 +11,8 @@ namespace IdentitySample
                         "~/Scripts/jquery-1.10.2.min.js",
                         "~/Scripts/jquery-ui.min.js",
                         "~/Scripts/datepicker-he.js",
+                        "~/Scripts/jquery-ui-timepicker-addon.min.js",
+                        "~/Scripts/jquery-ui-timepicker-he.js",
                         "~/Scripts/bootstrap.min.js",
                         "~/Scripts/jquery.validate.min.js",
                         "~/Scripts/jquery.validate.unobtrusive.min.js",
@@ -65,6 +67,7 @@ namespace IdentitySample
                       "~/Content/jquery-ui.min.css",
                       "~/Content/jquery-ui.structure.min.css",
                       "~/Content/jquery-ui.theme.min.css",
+                      "~/Content/jquery-ui-timepicker-addon.min.css",
                       "~/Scripts/jqGrid/plugins/searchFilter.css"));
         }
     }

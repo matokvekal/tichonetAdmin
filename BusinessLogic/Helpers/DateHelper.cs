@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Business_Logic.Helpers
 {
-    public class DateHelper
+    public class DateTimeHelper
     {
         public static string DateToString(DateTime? dt)
         {
@@ -21,6 +21,23 @@ namespace Business_Logic.Helpers
             {
                 DateTime dt = new DateTime();
                 if (DateTime.TryParseExact(s, "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                    dtNull = (DateTime?)dt;
+            }
+            return dtNull;
+        }
+
+        public static string TimeToString(DateTime? dt)
+        {
+            return (dt.HasValue ? dt.Value.ToString("HH:mm", CultureInfo.InvariantCulture) : "");
+        }
+
+        public static DateTime? StringToTime(string s)
+        {
+            DateTime? dtNull = null;
+            if (!string.IsNullOrWhiteSpace(s))
+            {
+                DateTime dt = new DateTime();
+                if (DateTime.TryParseExact(s, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                     dtNull = (DateTime?)dt;
             }
             return dtNull;

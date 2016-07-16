@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Dtos\TotalDto.cs" />
+    <Compile Include="DriverLogic.cs" />
     <Compile Include="tblScheduleLogic.cs" />
     <Compile Include="tblBusCompany.cs">
       <DependentUpon>registration.tt</DependentUpon>

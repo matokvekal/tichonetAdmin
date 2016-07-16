@@ -12,6 +12,7 @@ using ClosedXML.Excel;
 using log4net;
 using ticonet.Models;
 using Business_Logic.Enums;
+using Business_Logic.Helpers;
 
 namespace ticonet.Controllers
 {
@@ -83,6 +84,60 @@ namespace ticonet.Controllers
                 }
             }
             return new JsonResult { Data = true };
+        }
+        
+        public JsonResult GetScheduleLines()
+        {
+            var lines = new List<SelectItemModel>();
+            lines.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty });
+            using (var logic = new LineLogic())
+            {
+                lines.AddRange(logic.GetList()
+                    .Select(z => new SelectItemModel
+                    {
+                        Value = z.Id.ToString(),
+                        Text = z.LineName,
+                        Title = string.Format("{0} ({1} - {2})", z.LineName, z.LineNumber, DictExpressionBuilderSystem.Translate("General." + (LineDirection)z.Direction))
+                    }).ToList());
+            }
+
+            return new JsonResult { Data = lines };
+        }
+        
+        public JsonResult GetScheduleDrivers()
+        {
+            var drivers = new List<SelectItemModel>();
+            drivers.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty });
+            using (var logic = new DriverLogic())
+            {
+                drivers.AddRange(logic.GetList()
+                    .Select(z => new SelectItemModel
+                    {
+                        Value = z.Id.ToString(),
+                        Text = z.FirstName + " " + z.LastName,
+                        Title = string.Format("{0} - {1}", z.GpsId, z.Company)
+                    }).ToList());
+            }
+
+            return new JsonResult { Data = drivers };
+        }
+
+        [System.Web.Mvc.HttpGet]
+        public IEnumerable<ScheduleItemModel> GenerateSchedule(GenerateScheduleParamsModel model)
+        {
+            return new List<ScheduleItemModel>
+            {
+                new ScheduleItemModel
+                {
+                    Date = DateTimeHelper.DateToString(DateTime.Now),
+                    Direction = LineDirection.To,
+                    LineId = 4,
+                    DriverId = 3,
+                    BusId = 4,
+                    leaveTime = "14:00",
+                    arriveTime = "16:00"
+                }
+            };
         }
 
         //public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
