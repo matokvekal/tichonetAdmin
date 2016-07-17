@@ -72,6 +72,7 @@ namespace Business_Logic
         {
             try
             {
+                UpdateLineBus(scheduleItem.LineId, scheduleItem.BusId);
                 BusProjectEntities db = new BusProjectEntities();
                 db.tblSchedules.Add(scheduleItem);
                 db.SaveChanges();
@@ -89,6 +90,7 @@ namespace Business_Logic
             var res = false;
             try
             {
+                UpdateLineBus(scheduleItem.LineId, scheduleItem.BusId);
                 BusProjectEntities db = new BusProjectEntities();
                 db.Entry(scheduleItem).State = EntityState.Modified;
                 db.SaveChanges();
@@ -121,6 +123,14 @@ namespace Business_Logic
         public void SaveChanges()
         {
             DB.SaveChanges();
+        }
+
+        private void UpdateLineBus(int? lineId, int? busId)
+        {
+            using (var logic = new BusToLineLogic())
+            {
+                logic.UpdateBusToLine(lineId ?? 0, busId ?? 0);
+            }
         }
     }
 }

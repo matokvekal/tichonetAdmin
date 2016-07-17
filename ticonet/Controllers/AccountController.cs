@@ -25,7 +25,7 @@ namespace ticonet
             public bool ConfirmedEmail { get; set; }
         }
 
-                [AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult Login()
         {
             return View();

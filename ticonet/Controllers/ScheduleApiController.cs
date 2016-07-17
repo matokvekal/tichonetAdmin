@@ -122,6 +122,38 @@ namespace ticonet.Controllers
             return new JsonResult { Data = drivers };
         }
 
+        public JsonResult GetAvailableBuses(int? lineId = null, int? scheduleId = null)
+        {
+            var buses = new List<SelectItemModel>();
+            Line scheduleLine = null;
+            buses.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty });
+            if (scheduleId.HasValue)
+            {
+                using (var logic = new tblScheduleLogic())
+                {
+                    var scheduleItem = logic.GetItem(scheduleId.Value);
+                    if (scheduleItem != null)
+                    {
+                        scheduleLine = scheduleItem.Line;
+                    }
+                }
+            }
+            var lineIdRes = scheduleLine != null ? scheduleLine.Id : lineId ?? 0;
+            using (var logic = new LineLogic())
+            {
+                buses.AddRange(logic.GetAvailableBuses(lineIdRes)
+                    .Select(z => new SelectItemModel
+                    {
+                        Value = z.Id.ToString(),
+                        Text = string.Format("{0} ({1} - {2})", z.Id, z.BusId, z.PlateNumber),
+                        Title = string.Format("{0} ({1} - {2} - {3} - {4})", z.Id, z.BusId, z.PlateNumber, z.BusCompany != null ? z.BusCompany.companyName : string.Empty, z.seats.HasValue ? z.seats.Value.ToString() : string.Empty),
+                        Selected = z.BusesToLines.Any() && z.BusesToLines.First().LineId == lineIdRes
+                    }).ToList());
+            }
+
+            return new JsonResult { Data = buses };
+        }
+
         [System.Web.Mvc.HttpGet]
         public IEnumerable<ScheduleItemModel> GenerateSchedule(GenerateScheduleParamsModel model)
         {

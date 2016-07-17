@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,11 +32,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\Ticonet-Registration\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\Ticonet-Registration\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -66,7 +67,6 @@
     <Compile Include="BusesToLine.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
-    <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Constants\GeneralConstants.cs" />
     <Compile Include="DictSystemLogic.cs" />
     <Compile Include="Driver.cs">
@@ -80,20 +80,42 @@
     <Compile Include="Enums\ColorMode.cs" />
     <Compile Include="Enums\ConflictActions.cs" />
     <Compile Include="Enums\FlagsUserRoles.cs" />
+    <Compile Include="Enums\LineDirection.cs" />
     <Compile Include="Enums\GridOperation.cs" />
     <Compile Include="Enums\UserRole.cs" />
     <Compile Include="Helpers\AccountManager.cs" />
     <Compile Include="Helpers\BusHelper.cs" />
-    <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\CryptographyHelper.cs" />
-    <Compile Include="Helpers\DateHelper.cs" />
+    <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\MapHelper.cs" />
     <Compile Include="Helpers\SettingsHelper.cs" />
     <Compile Include="Helpers\StringCipher.cs" />
+    <Compile Include="Helpers\DateHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Line.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="BusToLineLogic.cs" />
+    <Compile Include="Dtos\TotalDto.cs" />
+    <Compile Include="DriverLogic.cs" />
+    <Compile Include="Student.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblMessageQueue.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblPaymentOrder.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblScheduleLogic.cs" />
+    <Compile Include="tblBusCompany.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblCalendar.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
+    <Compile Include="tblCalendarLogic.cs" />
+    <Compile Include="tblBusLogic.cs" />
     <Compile Include="LineLogic.cs" />
     <Compile Include="localization\DBpartialClass.cs" />
     <Compile Include="localization\expresionBuilder.cs" />
@@ -108,9 +130,6 @@
     <Compile Include="StationsToLine.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
-    <Compile Include="Student.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
     <Compile Include="StudentsToLine.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -118,14 +137,6 @@
     <Compile Include="tblAlertsQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
-    <Compile Include="tblBusCompany.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="tblBusCompanyLogic.cs" />
-    <Compile Include="tblCalendar.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="tblCalendarLogic.cs" />
     <Compile Include="tblCulture.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -133,12 +144,6 @@
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="tblFamily.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="tblMessageQueue.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="tblPaymentOrder.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="tblSchedule.cs">
@@ -152,6 +157,7 @@
     <Compile Include="tblStudent.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblBusCompanyLogic.cs" />
     <Compile Include="tblSystem.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -178,8 +184,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>registration.edmx</DependentUpon>
     </Compile>
-    <Compile Include="tblBusLogic.cs" />
-    <Compile Include="TotalDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="registration.edmx">
@@ -210,6 +214,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

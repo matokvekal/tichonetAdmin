@@ -533,6 +533,18 @@
             <End Role="Bus" EntitySet="Buses" />
             <End Role="tblBusCompany" EntitySet="tblBusCompanies" />
           </AssociationSet>
+          <AssociationSet Name="LinetblSchedule" Association="BusProjectModel.LinetblSchedule">
+            <End Role="Line" EntitySet="Lines" />
+            <End Role="tblSchedule" EntitySet="tblSchedules" />
+          </AssociationSet>
+          <AssociationSet Name="DrivertblSchedule" Association="BusProjectModel.DrivertblSchedule">
+            <End Role="Driver" EntitySet="Drivers" />
+            <End Role="tblSchedule" EntitySet="tblSchedules" />
+          </AssociationSet>
+          <AssociationSet Name="BustblSchedule" Association="BusProjectModel.BustblSchedule">
+            <End Role="Bus" EntitySet="Buses" />
+            <End Role="tblSchedule" EntitySet="tblSchedules" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Bus">
           <Key>
@@ -555,6 +567,7 @@
           <Property Name="brakeTesDueDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToBuses" FromRole="Bus" ToRole="BusesToLine" />
           <NavigationProperty Name="BusCompany" Relationship="BusProjectModel.BustblBusCompany" FromRole="Bus" ToRole="tblBusCompany" />
+          <NavigationProperty Name="tblSchedules" Relationship="BusProjectModel.BustblSchedule" FromRole="Bus" ToRole="tblSchedule" />
         </EntityType>
         <EntityType Name="BusesToLine">
           <Key>
@@ -576,6 +589,7 @@
           <Property Name="Company" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CellNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="GpsId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblSchedules" Relationship="BusProjectModel.DrivertblSchedule" FromRole="Driver" ToRole="tblSchedule" />
         </EntityType>
         <EntityType Name="Line">
           <Key>
@@ -606,6 +620,7 @@
           <Property Name="SutTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="Line" ToRole="BusesToLine" />
           <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
+          <NavigationProperty Name="tblSchedules" Relationship="BusProjectModel.LinetblSchedule" FromRole="Line" ToRole="tblSchedule" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -839,6 +854,9 @@
           <Property Name="BusId" Type="Int32" />
           <Property Name="leaveTime" Type="DateTime" Precision="7" />
           <Property Name="arriveTime" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Line" Relationship="BusProjectModel.LinetblSchedule" FromRole="tblSchedule" ToRole="Line" />
+          <NavigationProperty Name="Driver" Relationship="BusProjectModel.DrivertblSchedule" FromRole="tblSchedule" ToRole="Driver" />
+          <NavigationProperty Name="Bus" Relationship="BusProjectModel.BustblSchedule" FromRole="tblSchedule" ToRole="Bus" />
         </EntityType>
         <EntityType Name="tblStreet">
           <Key>
@@ -988,6 +1006,42 @@
             </Principal>
             <Dependent Role="Bus">
               <PropertyRef Name="Owner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="LinetblSchedule">
+          <End Type="BusProjectModel.Line" Role="Line" Multiplicity="0..1" />
+          <End Type="BusProjectModel.tblSchedule" Role="tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Line">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="DrivertblSchedule">
+          <End Type="BusProjectModel.Driver" Role="Driver" Multiplicity="0..1" />
+          <End Type="BusProjectModel.tblSchedule" Role="tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="DriverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="BustblSchedule">
+          <End Type="BusProjectModel.Bus" Role="Bus" Multiplicity="0..1" />
+          <End Type="BusProjectModel.tblSchedule" Role="tblSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bus">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSchedule">
+              <PropertyRef Name="BusId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>

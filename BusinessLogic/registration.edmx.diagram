@@ -5,7 +5,7 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="5eb064808b9a463988f1eb5850d30659" Name="Diagram1" ZoomLevel="64">
-        <EntityTypeShape EntityType="BusProjectModel.Bus" Width="1.5" PointX="0.75" PointY="16.75" />
+        <EntityTypeShape EntityType="BusProjectModel.Bus" Width="1.5" PointX="0.75" PointY="16.375" />
         <EntityTypeShape EntityType="BusProjectModel.BusesToLine" Width="1.5" PointX="3" PointY="11.875" />
         <EntityTypeShape EntityType="BusProjectModel.Driver" Width="1.5" PointX="5.75" PointY="0.75" />
         <EntityTypeShape EntityType="BusProjectModel.Line" Width="1.5" PointX="0.75" PointY="10" />
@@ -22,7 +22,7 @@
         <EntityTypeShape EntityType="BusProjectModel.tblFamily" Width="1.5" PointX="11.75" PointY="0.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblMessageQueue" Width="1.5" PointX="5.75" PointY="11.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblPaymentOrder" Width="1.5" PointX="7.75" PointY="11.75" />
-        <EntityTypeShape EntityType="BusProjectModel.tblSchedule" Width="1.5" PointX="11.75" PointY="8.75" />
+        <EntityTypeShape EntityType="BusProjectModel.tblSchedule" Width="1.5" PointX="14" PointY="9.25" />
         <EntityTypeShape EntityType="BusProjectModel.tblStreet" Width="1.5" PointX="9.75" PointY="12.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblStudent" Width="1.5" PointX="11.75" PointY="12.75" />
         <EntityTypeShape EntityType="BusProjectModel.tblSystem" Width="1.5" PointX="13.75" PointY="0.75" />
@@ -33,6 +33,9 @@
         <AssociationConnector Association="BusProjectModel.FK_StationsToLines_ToStations" />
         <AssociationConnector Association="BusProjectModel.FK_StudentsToLines_ToStations" />
         <AssociationConnector Association="BusProjectModel.BustblBusCompany" />
+        <AssociationConnector Association="BusProjectModel.LinetblSchedule" />
+        <AssociationConnector Association="BusProjectModel.DrivertblSchedule" />
+        <AssociationConnector Association="BusProjectModel.BustblSchedule" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

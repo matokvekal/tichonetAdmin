@@ -172,7 +172,7 @@ namespace ticonet
                 
                 using (var logic = new StationsLogic())
                 {
-                    if ( logic.UpdateDistance(model.StudentId, model.StationId, model.Distance));
+                    if ( logic.UpdateDistance(model.StudentId, model.StationId, model.Distance))
                     {
                         var att = logic.GetAttachInfo(model.StudentId, model.StationId);
                         if (att.Count > 0) res = new StudentToLineModel(att[0]);
