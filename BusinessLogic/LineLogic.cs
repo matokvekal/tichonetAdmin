@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using Business_Logic.Entities;
@@ -27,12 +28,11 @@ namespace Business_Logic
         {
             IEnumerable<Line> query = GetFilteredAll(isSearch, filters);
 
-            var sortByProperty = typeof(Line).GetProperty(sortBy);
-            if (sortByProperty != null)
+            if (!string.IsNullOrEmpty(sortBy))
             {
                 query = sortOrder == "desc" 
-                    ? query.OrderByDescending(x => sortByProperty.GetValue(x, null)) 
-                    : query.OrderBy(x => sortByProperty.GetValue(x, null));
+                    ? query.OrderByDescending(GetSortField(sortBy)) 
+                    : query.OrderBy(GetSortField(sortBy));
             }
             
             query = query.Skip(rows * (page - 1))
@@ -355,15 +355,7 @@ namespace Business_Logic
                 .Distinct()
                 .ToList();
         }
-
-
-
-
-
-
-
-
-
+        
         private IEnumerable<Line> GetFilteredAll(bool isSearch, string filters)
         {
             var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
@@ -405,5 +397,30 @@ namespace Business_Logic
             return query;
         }
 
+        private Func<Line, object> GetSortField(string sortBy)
+        {
+            var sortByProperty = typeof(Line).GetProperty(sortBy);
+            if (sortByProperty != null)
+            {
+                return line => sortByProperty.GetValue(line, null);
+            }
+            if (sortBy == "BusId")
+            {
+                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.BusId;
+            }
+            if (sortBy == "PlateNumber")
+            {
+                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.PlateNumber;
+            }
+            if (sortBy == "seats")
+            {
+                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.seats;
+            }
+            if (sortBy == "BusCompanyName")
+            {
+                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus() }).First().Bus.BusCompany.IfNotNull(c => c.companyName);
+            }
+            return line => line.Id;
+        }
     }
 }
