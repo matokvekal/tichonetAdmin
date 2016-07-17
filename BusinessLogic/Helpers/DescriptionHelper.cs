@@ -4,7 +4,9 @@
     {
         public static string GetBusDescription(Bus bus)
         {
-            return string.Format("{0} ({1} - {2} - {3} - {4} - {5})",
+            return string.Format("{0} " +
+                "                                                                                                  "
+                + " ({1} - {2} - {3} - {4} - {5})",
                 bus.Id,
                 bus.BusId,
                 bus.PlateNumber,

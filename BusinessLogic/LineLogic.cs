@@ -404,21 +404,20 @@ namespace Business_Logic
             {
                 return line => sortByProperty.GetValue(line, null);
             }
-            if (sortBy == "BusId")
+            switch (sortBy)
             {
-                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.BusId;
-            }
-            if (sortBy == "PlateNumber")
-            {
-                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.PlateNumber;
-            }
-            if (sortBy == "seats")
-            {
-                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.seats;
-            }
-            if (sortBy == "BusCompanyName")
-            {
-                return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus() }).First().Bus.BusCompany.IfNotNull(c => c.companyName);
+                case "Bus":
+                    return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.Id;
+                case "BusId":
+                    return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.BusId;
+                case "PlateNumber":
+                    return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.PlateNumber;
+                case "seats":
+                    return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus()}).First().Bus.seats;
+                case "price":
+                    return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine { Bus = new Bus() }).First().Bus.price;
+                case "BusCompanyName":
+                    return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus() }).First().Bus.BusCompany.IfNotNull(c => c.companyName);
             }
             return line => line.Id;
         }
