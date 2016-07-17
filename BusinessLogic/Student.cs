@@ -15,20 +15,38 @@ namespace Business_Logic
 using System;
     using System.Collections.Generic;
     
-public partial class Driver
+public partial class Student
 {
 
     public int Id { get; set; }
+
+    public string UserNameEmail { get; set; }
+
+    public string Password { get; set; }
 
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
 
-    public string Company { get; set; }
+    public string City { get; set; }
 
-    public string CellNumber { get; set; }
+    public string Street { get; set; }
 
-    public string GpsId { get; set; }
+    public string House { get; set; }
+
+    public string CellPhone { get; set; }
+
+    public string FatherName { get; set; }
+
+    public string FatherCellPhone { get; set; }
+
+    public string MotherName { get; set; }
+
+    public string MotherCellPhone { get; set; }
+
+    public string FatherEmail { get; set; }
+
+    public string MotherEmail { get; set; }
 
 }
 
