@@ -299,7 +299,7 @@ CREATE TABLE [dbo].[tblCalendar](
 	[HebDate] [nvarchar](50) NULL,
 	[day] [nvarchar](50) NULL,
 	[active] [bit] NULL,
-	[event] [nvarchar](50) NOT NULL,
+	[event] [nvarchar](50)  NULL,
  CONSTRAINT [PK_tblCalander] PRIMARY KEY CLUSTERED 
 (
 	[pk] ASC
