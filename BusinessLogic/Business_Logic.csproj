@@ -178,7 +178,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>registration.edmx</DependentUpon>
     </Compile>
-    <Compile Include="tlbBusLogic.cs" />
+    <Compile Include="tblBusLogic.cs" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="registration.edmx">
