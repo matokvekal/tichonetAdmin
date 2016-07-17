@@ -35,7 +35,7 @@ namespace Business_Logic
                         else if (filterByProperty.PropertyType == typeof(int))
                             query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
                         else if (filterByProperty.PropertyType == typeof(DateTime?))
-                            query = query.Where(x => (DateTime?)filterByProperty.GetValue(x, null) == DateTimeHelper.StringToDate(rule.data));
+                            query = query.Where(x => (DateTime?)filterByProperty.GetValue(x, null) == DateHelper.StringToDate(rule.data));
                         else
                             query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
                     }

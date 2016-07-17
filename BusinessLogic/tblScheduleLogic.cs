@@ -18,12 +18,25 @@ namespace Business_Logic
             return DB.tblSchedules.ToList();
         }
 
-        public List<tblSchedule> GetPaged(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters)
+        public List<tblSchedule> GetPaged(IEnumerable<int> linesIds, DateTime? dateFrom, DateTime? dateTo, bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters)
         {
             var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
             var searchFilters = searchModel;
 
             IEnumerable<tblSchedule> query = DB.tblSchedules;
+
+            if (linesIds != null)
+            {
+                query = query.Where(x => linesIds.Any(l => l == x.LineId));
+            }
+            if (dateFrom.HasValue)
+            {
+                query = query.Where(x => x.Date.HasValue && x.Date.Value >= dateFrom.Value);
+            }
+            if (dateTo.HasValue)
+            {
+                query = query.Where(x => x.Date.HasValue && x.Date.Value <= dateTo.Value);
+            }
 
             if (isSearch && !string.IsNullOrWhiteSpace(filters))
             {

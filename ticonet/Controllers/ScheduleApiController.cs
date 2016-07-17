@@ -44,13 +44,18 @@ namespace ticonet.Controllers
         }
 
         [System.Web.Mvc.HttpGet]
-        public HttpResponseMessage GetSchedule(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
+        public HttpResponseMessage GetSchedule(string linesIds, string dateFrom, string dateTo, bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
             var items = new List<ScheduleItemModel>();
             var totalRecords = 0;
+            var linesIdsList = linesIds != null 
+                ? linesIds.Split(',').Select(int.Parse)
+                : null;
+            var dateFromDt = DateHelper.StringToDate(dateFrom);
+            var dateToDt = DateHelper.StringToDate(dateTo);
             using (var logic = new tblScheduleLogic())
             {
-                items = logic.GetPaged(_search, rows, page, sidx, sord, filters)
+                items = logic.GetPaged(linesIdsList, dateFromDt, dateToDt, _search, rows, page, sidx, sord, filters)
                     .Select(z => new ScheduleItemModel(z)).ToList();
                 totalRecords = logic.Schedule.Count();
             }
@@ -161,7 +166,7 @@ namespace ticonet.Controllers
             {
                 new ScheduleItemModel
                 {
-                    Date = DateTimeHelper.DateToString(DateTime.Now),
+                    Date = DateHelper.DateToString(DateTime.Now),
                     Direction = LineDirection.To,
                     LineId = 4,
                     DriverId = 3,

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Business_Logic.Helpers
 {
-    public class DateTimeHelper
+    public class DateHelper
     {
         public static string DateToString(DateTime? dt)
         {

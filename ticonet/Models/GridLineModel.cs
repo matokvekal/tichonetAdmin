@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Business_Logic;
 using Business_Logic.Enums;
+using Business_Logic.Helpers;
 
 namespace ticonet.Models
 {
@@ -30,11 +31,13 @@ namespace ticonet.Models
             Thu = data.Thu.HasValue ? data.Thu.Value : false;
             Fri = data.Fri.HasValue ? data.Fri.Value : false;
             Sut = data.Sut.HasValue ? data.Sut.Value : false;
-            BusId = bus != null ? bus.Id : (int)0;
-            BusIdDescription = bus != null ? bus.BusId : string.Empty;
+            Bus = bus != null ? bus.Id : (int)0;
+            BusDescription = bus != null ? DescriptionHelper.GetBusDescription(bus) : string.Empty;
+            BusId = bus != null ? bus.BusId : string.Empty;
             PlateNumber = bus != null ? bus.PlateNumber : string.Empty;
             BusCompanyName = bus != null ? (bus.BusCompany!=null? bus.BusCompany.companyName: string.Empty) : string.Empty;
             seats = bus != null ? bus.seats : (int?)null;
+            price = bus != null ? bus.price : (double?)null;
         }
 
         public int Id { get; set; }
@@ -65,15 +68,17 @@ namespace ticonet.Models
 
         public bool Sut { get; set; }
 
-        public int BusId { get; set; }
+        public int Bus { get; set; }
+        public string BusDescription { get; set; }
 
-        public string BusIdDescription { get; set; }
+        public string BusId { get; set; }
 
         public string PlateNumber { get; set; }
 
         public string BusCompanyName { get; set; }
 
         public int? seats { get; set; }
+        public double? price { get; set; }
 
 
         public string Oper { get; set; }

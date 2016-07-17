@@ -10,7 +10,7 @@ namespace ticonet.Models
         public EventModel(tblCalendar data)
         {
             pk = data.pk;
-            date = DateTimeHelper.DateToString(data.date);
+            date = DateHelper.DateToString(data.date);
             month = data.month;
             HebMonth = data.HebMonth;
             day = data.day;

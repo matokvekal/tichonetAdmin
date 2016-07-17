@@ -10,12 +10,12 @@ namespace ticonet.Models
         public ScheduleItemModel(tblSchedule data)
         {
             Id = data.Id;
-            Date = DateTimeHelper.DateToString(data.Date);
+            Date = DateHelper.DateToString(data.Date);
             Direction = (LineDirection?)data.Direction;
             DriverId = data.DriverId;
             BusId = data.BusId;
-            leaveTime = DateTimeHelper.TimeToString(data.leaveTime);
-            arriveTime = DateTimeHelper.TimeToString(data.arriveTime);
+            leaveTime = DateHelper.TimeToString(data.leaveTime);
+            arriveTime = DateHelper.TimeToString(data.arriveTime);
             LineId = data.LineId;
             LineIdDescription = data.Line != null ? data.Line.LineName : string.Empty;
             DriverIdDescription = data.Driver != null ? data.Driver.FirstName + " " + data.Driver.LastName : string.Empty;
@@ -58,9 +58,9 @@ namespace ticonet.Models
                 LineId = LineId,
                 DriverId = DriverId,
                 BusId = BusId,
-                Date = DateTimeHelper.StringToDate(Date),
-                leaveTime = DateTimeHelper.StringToTime(leaveTime),
-                arriveTime = DateTimeHelper.StringToTime(arriveTime)
+                Date = DateHelper.StringToDate(Date),
+                leaveTime = DateHelper.StringToTime(leaveTime),
+                arriveTime = DateHelper.StringToTime(arriveTime)
             };
         }
 

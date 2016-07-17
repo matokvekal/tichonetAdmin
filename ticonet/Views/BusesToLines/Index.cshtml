@@ -64,11 +64,13 @@
                     '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
                     '@DictExpressionBuilderSystem.Translate("Line.totalStudents")',
                     '@DictExpressionBuilderSystem.Translate("Line.Duration")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.BusDescription")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.Id")',
                     '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
                     '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
                     '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
                     '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.price")',
                     ""
                 ],
             colModel: [
@@ -93,10 +95,10 @@
                 { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                 { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: false },
                 { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
-                { name: 'BusIdDescription', index: 'BusIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                { name: 'BusDescription', index: 'BusDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                 {
-                    name: 'BusId',
-                    index: 'BusId',
+                    name: 'Bus',
+                    index: 'Bus',
                     sorttype: "text",
                     editable: true,
                     search: false,
@@ -124,6 +126,7 @@
                         }
                     }
                 },
+                { name: 'BusId', index: 'BusId', sorttype: "text", width: 110, editable: false, search: false },
                 { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: false, search: false },
                 {
                     name: 'BusCompanyName', index: 'BusCompanyName', sorttype: "text", width: 110, editable: false, search: true,
@@ -144,6 +147,7 @@
                     }
                 },
                 { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false },
+                { name: 'price', index: 'price', sorttype: "text", width: 110, editable: false, search: false },
                 {
                     name: 'ActionsBtn',
                     index: 'ActionsBtn',

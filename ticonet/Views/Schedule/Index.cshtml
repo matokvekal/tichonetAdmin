@@ -46,8 +46,29 @@
     <script>
         $(function () {
             //var pagerID = "#pgLines";
+            var linesGrid = $("#grLines"),
+                dateFrom = $('#dateFrom'),
+                dateTo = $('#dateTo');
 
-            $("#grLines").jqGrid({
+
+            var printWindow = null;
+            var scheduleGrid = $("#grSchedule");
+            var scheduleGridExtend = Object.assign({}, jqGridExtend);
+            scheduleGridExtend.fn.setGrid(scheduleGrid);
+            var schedulePagerID = "#pgSchedule";
+
+            dateFrom.datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { scheduleGrid.jqGrid().trigger('reloadGrid'); this.focus(); }, onClose: function () { this.focus(); } })
+                .datepicker('setDate', new Date())
+                .on("input change", function (e) {
+                    scheduleGrid.jqGrid().trigger('reloadGrid');
+                });
+            dateTo.datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { scheduleGrid.jqGrid().trigger('reloadGrid'); this.focus(); }, onClose: function () { this.focus(); } })
+                .datepicker('setDate', 7)
+                .on("input change", function (e) {
+                    scheduleGrid.jqGrid().trigger('reloadGrid');
+                });
+
+            linesGrid.jqGrid({
                 caption: '@DictExpressionBuilderSystem.Translate("Line.GridCaption")',
                 url: '/api' + '@Url.Action("GetLines", "ScheduleApi")',
                 datatype: "json",
@@ -165,6 +186,9 @@
                     },
                     { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false }*@
                 ],
+                onSelectRow: function (id) {
+                    scheduleGrid.jqGrid().trigger('reloadGrid');
+                }
             })
             @*.navGrid(pagerID, {
                 add: false,
@@ -190,15 +214,11 @@
                 return res;
             };
 
-            var printWindow = null;
-            var scheduleGrid = $("#grSchedule");
-            var scheduleGridExtend = Object.assign({}, jqGridExtend);
-            scheduleGridExtend.fn.setGrid(scheduleGrid);
-            var schedulePagerID = "#pgSchedule";
 
             scheduleGrid.jqGrid({
                 caption: "@DictExpressionBuilderSystem.Translate("Schedule.GridCaption")",
                 url: '/api' + '@Url.Action("GetSchedule", "ScheduleApi")',
+                postData: getScheduleGridParams(),
                 datatype: "json",
                 loadonce: false,
                 reloadAfterSubmit: true,
@@ -503,11 +523,6 @@
                 return s;
             }
 
-            $('#dateFrom').datepicker({ dateFormat: 'mm/dd/yy', onSelect: function() { this.focus(); }, onClose: function() { this.focus(); } })
-                .datepicker('setDate', new Date());
-            $('#dateTo').datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } })
-                .datepicker('setDate', 7);
-
             function datecheck(value, colname) {
                 if (value) {
                     var pattern = "(0[1-9]|1[012])(/)(0[1-9]|[12][0-9]|3[01])(/)(19|20)\\d\\d";
@@ -528,6 +543,14 @@
                     }
                 }
                 return [true, ""];
+            }
+
+            function getScheduleGridParams() {
+                return {
+                    linesIds: function () { return linesGrid.jqGrid('getGridParam', 'selarrrow').join() },
+                    dateFrom: function () { return dateFrom.val() },
+                    dateTo: function () { return dateTo.val() }
+                }
             }
 
             $("#dlgUpdateLines").dialog({

@@ -13,6 +13,7 @@ using ClosedXML.Excel;
 using log4net;
 using ticonet.Models;
 using Business_Logic.Enums;
+using Business_Logic.Helpers;
 
 namespace ticonet.Controllers
 {
@@ -72,7 +73,7 @@ namespace ticonet.Controllers
                             logic.SaveChanges();
                             using (var busesToLinesLogic = new BusToLineLogic())
                             {
-                                busesToLinesLogic.UpdateBusToLine(model.Id, model.BusId);
+                                busesToLinesLogic.UpdateBusToLine(model.Id, model.Bus);
                             }
                         }
                         break;
@@ -113,10 +114,12 @@ namespace ticonet.Controllers
             worksheet.Cell(1, 11).Value = DictExpressionBuilderSystem.Translate("Line.Thu");
             worksheet.Cell(1, 12).Value = DictExpressionBuilderSystem.Translate("Line.Fri");
             worksheet.Cell(1, 13).Value = DictExpressionBuilderSystem.Translate("Line.Sut");
+            worksheet.Cell(1, 14).Value = DictExpressionBuilderSystem.Translate("Bus.Id");
             worksheet.Cell(1, 14).Value = DictExpressionBuilderSystem.Translate("Bus.BusId");
             worksheet.Cell(1, 15).Value = DictExpressionBuilderSystem.Translate("Bus.PlateNumber");
             worksheet.Cell(1, 16).Value = DictExpressionBuilderSystem.Translate("BusCompany.Name");
             worksheet.Cell(1, 17).Value = DictExpressionBuilderSystem.Translate("Bus.seats");
+            worksheet.Cell(1, 17).Value = DictExpressionBuilderSystem.Translate("Bus.price");
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -134,10 +137,12 @@ namespace ticonet.Controllers
                 worksheet.Cell(row, 11).SetValue<bool>(lines[i].Thu);
                 worksheet.Cell(row, 12).SetValue<bool>(lines[i].Fri);
                 worksheet.Cell(row, 13).SetValue<bool>(lines[i].Sut);
-                worksheet.Cell(row, 14).SetValue<string>(lines[i].BusIdDescription);
+                worksheet.Cell(row, 14).SetValue<int>(lines[i].Bus);
+                worksheet.Cell(row, 15).SetValue<string>(lines[i].BusId);
                 worksheet.Cell(row, 15).SetValue<string>(lines[i].PlateNumber);
                 worksheet.Cell(row, 16).SetValue<string>(lines[i].BusCompanyName);
                 worksheet.Cell(row, 17).SetValue<int?>(lines[i].seats);
+                worksheet.Cell(row, 17).SetValue<double?>(lines[i].price);
             }
 
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
@@ -180,12 +185,13 @@ namespace ticonet.Controllers
             using (var logic = new LineLogic())
             {
                 buses.AddRange(logic.GetAvailableBuses(lineId)
+                    .ToList()
                     .Select(z => new SelectItemModel
                     {
                         Value = z.Id.ToString(),
-                        Text = z.BusId,
-                        Title = string.Format("{0} ({1} - {2} - {3} - {4})", z.Id, z.BusId, z.PlateNumber, z.BusCompany!=null?z.BusCompany.companyName:string.Empty, z.seats.HasValue? z.seats.Value.ToString(): string.Empty)
-                    }).ToList());
+                        Text = DescriptionHelper.GetBusDescription(z),
+                        Title = DescriptionHelper.GetBusDescription(z)
+                    }));
             }
 
             return new JsonResult { Data = buses };
@@ -209,5 +215,6 @@ namespace ticonet.Controllers
 
             return new JsonResult { Data = companies };
         }
+
     }
 }

@@ -71,11 +71,13 @@
                     '@DictExpressionBuilderSystem.Translate("Line.Thu")',
                     '@DictExpressionBuilderSystem.Translate("Line.Fri")',
                     '@DictExpressionBuilderSystem.Translate("Line.Sut")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.BusDescription")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.Id")',
                     '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
                     '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
                     '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
                     '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                    '@DictExpressionBuilderSystem.Translate("Bus.price")',
                     ""
                 ],
                 colModel: [
@@ -107,10 +109,10 @@
                     { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                     { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                     { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'BusIdDescription', index: 'BusIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                    { name: 'BusDescription', index: 'BusDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                     {
-                        name: 'BusId',
-                        index: 'BusId',
+                        name: 'Bus',
+                        index: 'Bus',
                         sorttype: "text",
                         editable: true,
                         search: false,
@@ -138,6 +140,7 @@
                             }
                         }
                     },
+                    { name: 'BusId', index: 'BusId', sorttype: "text", width: 110, editable: false, search: false },
                     { name: 'PlateNumber', index: 'PlateNumber', sorttype: "text", width: 110, editable: false, search: false },
                     {
                         name: 'BusCompanyName', index: 'BusCompanyName', sorttype: "text", width: 110, editable: false, search: true,
@@ -150,6 +153,7 @@
                                 if (response && response.Data.length) {
                                     for (var i = 0, l = response.Data.length; i < l; i++) {
                                         var ri = response.Data[i];
+                                        //' + (ri.Value == 2 ? 'selected ' : '') + '
                                         s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
                                     }
                                 }
@@ -158,6 +162,7 @@
                         }
                     },
                     { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false },
+                    { name: 'price', index: 'price', sorttype: "text", width: 110, editable: false, search: false },
                     {
                         name: 'ActionsBtn',
                         index: 'ActionsBtn',

@@ -13,6 +13,7 @@ using ClosedXML.Excel;
 using log4net;
 using ticonet.Models;
 using Business_Logic.Enums;
+using Business_Logic.Helpers;
 
 namespace ticonet.Controllers
 {
@@ -70,7 +71,7 @@ namespace ticonet.Controllers
                         {
                             //model.UpdateDbModel(existingLine);
                             //logic.SaveChanges();
-                            logic.UpdateBusToLine(model.Id, model.BusId);
+                            logic.UpdateBusToLine(model.Id, model.Bus);
                         }
                         break;
                     case GridOperation.del:
@@ -103,10 +104,12 @@ namespace ticonet.Controllers
             worksheet.Cell(1, 4).Value = DictExpressionBuilderSystem.Translate("Line.IsActive");
             worksheet.Cell(1, 5).Value = DictExpressionBuilderSystem.Translate("Line.totalStudents");
             worksheet.Cell(1, 6).Value = DictExpressionBuilderSystem.Translate("Line.Duration");
+            worksheet.Cell(1, 7).Value = DictExpressionBuilderSystem.Translate("Bus.Id");
             worksheet.Cell(1, 7).Value = DictExpressionBuilderSystem.Translate("Bus.BusId");
             worksheet.Cell(1, 8).Value = DictExpressionBuilderSystem.Translate("Bus.PlateNumber");
             worksheet.Cell(1, 9).Value = DictExpressionBuilderSystem.Translate("BusCompany.Name");
             worksheet.Cell(1, 10).Value = DictExpressionBuilderSystem.Translate("Bus.seats");
+            worksheet.Cell(1, 10).Value = DictExpressionBuilderSystem.Translate("Bus.price");
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -117,10 +120,12 @@ namespace ticonet.Controllers
                 worksheet.Cell(row, 4).SetValue<bool>(lines[i].IsActive);
                 worksheet.Cell(row, 5).SetValue<int>(lines[i].totalStudents);
                 worksheet.Cell(row, 6).SetValue<string>(Convert.ToString(lines[i].Duration));
-                worksheet.Cell(row, 7).SetValue<string>(lines[i].BusIdDescription);
+                worksheet.Cell(row, 7).SetValue<int>(lines[i].Bus);
+                worksheet.Cell(row, 7).SetValue<string>(lines[i].BusId);
                 worksheet.Cell(row, 8).SetValue<string>(lines[i].PlateNumber);
                 worksheet.Cell(row, 9).SetValue<string>(lines[i].BusCompanyName);
                 worksheet.Cell(row, 10).SetValue<int?>(lines[i].seats);
+                worksheet.Cell(row, 10).SetValue<double?>(lines[i].price);
             }
 
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
@@ -166,8 +171,8 @@ namespace ticonet.Controllers
                     .Select(z => new SelectItemModel
                     {
                         Value = z.Id.ToString(),
-                        Text = z.BusId,
-                        Title = string.Format("{0} ({1} - {2} - {3} - {4})", z.Id, z.BusId, z.PlateNumber, z.BusCompany!=null?z.BusCompany.companyName:string.Empty, z.seats.HasValue? z.seats.Value.ToString(): string.Empty)
+                        Text = DescriptionHelper.GetBusDescription(z),
+                        Title = DescriptionHelper.GetBusDescription(z)
                     }).ToList());
             }
 
