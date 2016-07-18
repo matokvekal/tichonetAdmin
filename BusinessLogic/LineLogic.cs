@@ -46,7 +46,8 @@ namespace Business_Logic
             TotalDto total = new TotalDto()
             {
                 Students = 0,
-                Seats = 0
+                Seats = 0,
+                Price = 0
             };
 
             IEnumerable<Line> query = GetFilteredAll(isSearch, filters);
@@ -56,8 +57,11 @@ namespace Business_Logic
             {
                 total.Students += line.totalStudents.HasValue ? line.totalStudents.Value : 0;
                 var busesToLines = line.BusesToLines.FirstOrDefault();
-                if (busesToLines!=null)
+                if (busesToLines != null)
+                {
                     total.Seats += busesToLines.Bus.seats.HasValue ? busesToLines.Bus.seats.Value : 0;
+                    total.Price += busesToLines.Bus.price.HasValue ? busesToLines.Bus.price.Value : 0;
+                }
             }
 
             return total;

@@ -27,8 +27,7 @@
 
             var printWindow = null;
             var grid = $("#grBusesToLines");
-            var gridExtend = Object.assign({}, jqGridExtend);
-            gridExtend.fn.setGrid(grid);
+            var gridExtend = new jqGridExtend(grid);
             var pagerID = "#pgBusesToLines";
 
             grid.jqGrid({
@@ -100,6 +99,7 @@
                     name: 'Bus',
                     index: 'Bus',
                     sorttype: "text",
+                    width: 80,
                     editable: true,
                     search: false,
                     edittype: "select",
@@ -159,14 +159,14 @@
             ],
             saveAfterSelect: true,
             beforeSelectRow: function(rowid) {
-                gridExtend.fn.restore(rowid);
+                gridExtend.restore(rowid);
                 return false;
             },
             ondblClickRow: function (rowid, iRow, iCol) {
-                gridExtend.fn.editRow(rowid);
+                gridExtend.editRow(rowid);
             },
             loadComplete: function (data) {
-                gridExtend.fn.populateDescription(data);
+                gridExtend.populateDescription(data);
 
                 var postData = grid.jqGrid('getGridParam', 'postData');
                 var urlGetTotal = '/api' + "@Url.Action("GetTotal", "BusesToLinesApi")";
@@ -177,7 +177,7 @@
                     dataType: 'json',
                     contentType: 'application/json; charset=utf-8',
                     success: function (data) {
-                        grid.footerData('set', { LineName: '@DictExpressionBuilderSystem.Translate("grid.Total")', totalStudents: data.Data.Students, seats: data.Data.Seats });
+                        grid.footerData('set', { LineName: '@DictExpressionBuilderSystem.Translate("grid.Total")', totalStudents: data.Data.Students, seats: data.Data.Seats, price: data.Data.Price });
                     }
                 });
             }
@@ -291,7 +291,7 @@
             }
             );
 
-            gridExtend.fn.init();
+            gridExtend.init();
 
         });
     </script>

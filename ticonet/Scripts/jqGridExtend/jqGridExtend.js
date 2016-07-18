@@ -70,45 +70,44 @@
     }
 });
 
-
-var jqGridExtend;
-(function (jqGridExtend) {
-    jqGridExtend.lastSelection = -1;
-    jqGridExtend.grid = {};
-    jqGridExtend.fn = {
-        init: function () {
-            //Hide buttons "Clear search"
-            $(".ui-search-clear").remove();
-            jqGridExtend.lastSelection = -1;
-        },
-        setGrid: function (grid) {
-            jqGridExtend.grid = grid;
-        },
-        restore: function (id) {
-            if (id && id !== jqGridExtend.lastSelection) {
-                $("div.ui-inline-edit,div.ui-inline-del", jqGridExtend.grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
-                $("div.ui-inline-save,div.ui-inline-cancel", jqGridExtend.grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
-                jqGridExtend.grid.triggerHandler("jqGridAfterGridComplete");
-                jqGridExtend.grid.jqGrid("restoreRow", jqGridExtend.lastSelection);
-                jqGridExtend.lastSelection = id;
-            }
-        },
-        editRow: function(id) {
-            $.fn.rowActionsExtended.call(jqGridExtend.grid.find("tbody").find("#" + id + " div.ui-inline-edit"), "edit");
-        },
-        populateDescription: function(data) {
-            var colModel = jqGridExtend.grid.getGridParam("colModel");
-            $.each(colModel, function (index, col) {
-                if (col.edittype === "select") {
-                    $.each(jqGridExtend.grid.getDataIDs(), function (index, id) {
-                        var row = jqGridExtend.grid.getRowData(id);
-                        var value = row[col.name];
-                        var text = row[col.name + "Description"];
-                        row[col.name] = text;
-                        jqGridExtend.grid.setRowData(id, row);
-                    });
-                }
-            });
-        },
+//var gridExtend = new jqGridExtend(gridSelector);
+var jqGridExtend = (function () {
+    function jqGridExtend(gridSelector) {
+        this.lastSelection = -1;
+        this.grid = gridSelector;
+    }
+    jqGridExtend.prototype.init = function () {
+        //Hide buttons "Clear search"
+        $(".ui-search-clear").remove();
+        this.lastSelection = -1;
     };
-})(jqGridExtend || (jqGridExtend = {}));
+    jqGridExtend.prototype.restore = function (id) {
+        if (id && id !== this.lastSelection) {
+            $("div.ui-inline-edit,div.ui-inline-del", this.grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
+            $("div.ui-inline-save,div.ui-inline-cancel", this.grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
+            this.grid.triggerHandler("jqGridAfterGridComplete");
+            this.grid.jqGrid("restoreRow", this.lastSelection);
+            this.lastSelection = id;
+        }
+    };
+    jqGridExtend.prototype.editRow = function (id) {
+        $.fn.rowActionsExtended.call($(this.grid.find("tbody").find("#" + id + " div.ui-inline-edit")), "edit");
+    };
+    jqGridExtend.prototype.populateDescription = function (data) {
+        var colModel = this.grid.getGridParam("colModel");
+        var grid = this.grid;
+        $.each(colModel, function (index, col) {
+            if (col.edittype === "select") {
+                $.each(grid.getDataIDs(), function (index, id) {
+                    var row = grid.getRowData(id);
+                    var value = row[col.name];
+                    var text = row[col.name + "Description"];
+                    row[col.name] = text;
+                    grid.setRowData(id, row);
+                });
+            }
+        });
+    };
+    return jqGridExtend;
+}());
+

@@ -27,8 +27,7 @@
 
             var printWindow = null;
             var grid = $("#grBuses");
-            var gridExtend = Object.assign({}, jqGridExtend);
-            gridExtend.fn.setGrid(grid);
+            var gridExtend = new jqGridExtend(grid);
             var pagerID = "#pgBuses";
 
             grid.jqGrid({
@@ -99,10 +98,10 @@
                         { name: 'seats', index: 'seats', sorttype: "text", width: 60, editable: true, search: false, formatter: 'integer', sorttype: "int" },
                         { name: 'price', index: 'price', sorttype: "text", width: 80, editable: true, search: false, formatter: 'number', sorttype: "float" },
                         { name: 'munifacturedate', index: 'munifacturedate', width: 80, align: 'left', sortable: true, formatter: 'text', editable: true, edittype: 'text', formatoptions: { defaultValue: "" }, editoptions: { defaultValue: "", size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'LicensingDueDate', index: 'LicensingDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ regional: $.datepicker.regional["he"], dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'insuranceDueDate', index: 'insuranceDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ regional: $.datepicker.regional["he"], dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'winterLicenseDueDate', index: 'winterLicenseDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ regional: $.datepicker.regional["he"], dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        { name: 'brakeTesDueDate', index: 'brakeTesDueDate', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ regional: $.datepicker.regional["he"], dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
                         {
                             name: 'ActionsBtn',
                             index: 'ActionsBtn',
@@ -114,14 +113,14 @@
                     ],
                     saveAfterSelect: true,
                     beforeSelectRow: function(rowid) {
-                        gridExtend.fn.restore(rowid);
+                        gridExtend.restore(rowid);
                         return false;
                     },
                     ondblClickRow: function (rowid, iRow, iCol) {
-                        gridExtend.fn.editRow(rowid);
+                        gridExtend.editRow(rowid);
                     },
                     loadComplete: function (data) {
-                        gridExtend.fn.populateDescription(data);
+                        gridExtend.populateDescription(data);
                     }
                 })
                 .navGrid(pagerID, {
@@ -229,7 +228,7 @@
                     }
                 );
 
-            gridExtend.fn.init();
+            gridExtend.init();
 
             function datecheck(value, colname) {
                 if (value) {

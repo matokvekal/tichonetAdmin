@@ -30,8 +30,7 @@
 
             var printWindow = null;
             var grid = $("#grCalendar");
-            var gridExtend = Object.assign({}, jqGridExtend);
-            gridExtend.fn.setGrid(grid);
+            var gridExtend = new jqGridExtend(grid);
             var pagerID = "#pgCalendar";
             var calendarHighlitedDays;
 
@@ -89,14 +88,14 @@
                 ],
                 saveAfterSelect: true,
                 beforeSelectRow: function (rowid) {
-                    gridExtend.fn.restore(rowid);
+                    gridExtend.restore(rowid);
                     return false;
                 },
                 ondblClickRow: function (rowid, iRow, iCol) {
-                    gridExtend.fn.editRow(rowid);
+                    gridExtend.editRow(rowid);
                 },
                 loadComplete: function (data) {
-                    gridExtend.fn.populateDescription(data);
+                    gridExtend.populateDescription(data);
                 }
             })
                 .navGrid(pagerID, {
@@ -196,7 +195,7 @@
                 }
                 );
 
-            gridExtend.fn.init();
+            gridExtend.init();
 
             function datecheck(value, colname) {
                 if (value) {
