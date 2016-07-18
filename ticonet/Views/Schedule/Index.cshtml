@@ -9,7 +9,15 @@
             <p><input type="text" id="dateTo"> :@DictExpressionBuilderSystem.Translate("Schedule.DateTo")</p>
         </div>
         <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right; border: solid silver thin;">
-            CheckBoxes ArriveTime, LeaveTime, All WeeksDays
+            <input type="checkbox" value="true" name="ArriveTime" checked> @DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")&nbsp;
+            <input type="checkbox" value="true" name="LeaveTime" checked> @DictExpressionBuilderSystem.Translate("Schedule.LeaveTime")<br />
+            <input type="checkbox" value="true" name="Sun" checked> @DictExpressionBuilderSystem.Translate("Schedule.Sun")&nbsp;
+            <input type="checkbox" value="true" name="Mon" checked> @DictExpressionBuilderSystem.Translate("Schedule.Mon")&nbsp;
+            <input type="checkbox" value="true" name="Tue" checked> @DictExpressionBuilderSystem.Translate("Schedule.Tue")&nbsp;
+            <input type="checkbox" value="true" name="Wed" checked> @DictExpressionBuilderSystem.Translate("Schedule.Wed")&nbsp;
+            <input type="checkbox" value="true" name="Thu" checked> @DictExpressionBuilderSystem.Translate("Schedule.Thu")&nbsp;
+            <input type="checkbox" value="true" name="Fri" checked> @DictExpressionBuilderSystem.Translate("Schedule.Fri")&nbsp;
+            <input type="checkbox" value="true" name="Sut" checked> @DictExpressionBuilderSystem.Translate("Schedule.Sut")
         </div>
         <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right; border: solid silver thin;">
             <button><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
@@ -44,27 +52,45 @@
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
     <script>
-        $(function () {
+        $(function() {
             //var pagerID = "#pgLines";
             var linesGrid = $("#grLines"),
                 dateFrom = $('#dateFrom'),
                 dateTo = $('#dateTo');
 
-
             var printWindow = null;
+
             var scheduleGrid = $("#grSchedule");
             var scheduleGridExtend = Object.assign({}, jqGridExtend);
             scheduleGridExtend.fn.setGrid(scheduleGrid);
             var schedulePagerID = "#pgSchedule";
 
-            dateFrom.datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { scheduleGrid.jqGrid().trigger('reloadGrid'); this.focus(); }, onClose: function () { this.focus(); } })
+            var generatedScheduleGrid = $("#grGeneratedSchedule");
+            var generatedScheduleGridExtend = Object.assign({}, jqGridExtend);
+            generatedScheduleGridExtend.fn.setGrid(generatedScheduleGrid);
+
+            dateFrom.datepicker({
+                    dateFormat: 'mm/dd/yy',
+                    onSelect: function() {
+                        scheduleGrid.jqGrid().trigger('reloadGrid');
+                        this.focus();
+                    },
+                    onClose: function() { this.focus(); }
+                })
                 .datepicker('setDate', new Date())
-                .on("input change", function (e) {
+                .on("input change", function(e) {
                     scheduleGrid.jqGrid().trigger('reloadGrid');
                 });
-            dateTo.datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { scheduleGrid.jqGrid().trigger('reloadGrid'); this.focus(); }, onClose: function () { this.focus(); } })
+            dateTo.datepicker({
+                    dateFormat: 'mm/dd/yy',
+                    onSelect: function() {
+                        scheduleGrid.jqGrid().trigger('reloadGrid');
+                        this.focus();
+                    },
+                    onClose: function() { this.focus(); }
+                })
                 .datepicker('setDate', 7)
-                .on("input change", function (e) {
+                .on("input change", function(e) {
                     scheduleGrid.jqGrid().trigger('reloadGrid');
                 });
 
@@ -121,9 +147,9 @@
                         formatter: 'select',
                         editoptions: {
                             value: {
-                                '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
-                                '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
-                                '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                                '@((int) LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
+                                '@((int) LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
+                                '@((int) LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
                             }
                         }
                     },
@@ -186,7 +212,7 @@
                     },
                     { name: 'seats', index: 'seats', sorttype: "text", width: 110, editable: false, search: false }*@
                 ],
-                onSelectRow: function (id) {
+                onSelectRow: function(id) {
                     scheduleGrid.jqGrid().trigger('reloadGrid');
                 }
             })
@@ -203,7 +229,7 @@
 
             // ---------------------- Schedule grid ----------------------------
 
-            var lineActionsFormatter = function (cellvalue, options, rowObject) {
+            var lineActionsFormatter = function(cellvalue, options, rowObject) {
                 var res = "";
                 res += '<div style="margin-left: 8px;">';
                 res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
@@ -214,174 +240,176 @@
                 return res;
             };
 
+            function commonScheduleGridParams() {
+                return {
+                    caption: "@DictExpressionBuilderSystem.Translate("Schedule.GridCaption")",
+                    postData: getScheduleGridParams(),
+                    loadonce: false,
+                    height: "100%",
+                    autowidth: true,
+                    regional: "il",
+                    hidegrid: false,
+                    //multiselect: false,
+                    mtype: "get",
+                    viewrecords: true,
+                    ignoreCase: true,
+                    loadui: "disable",
+                    altRows: false,
+                    sortable: true,
+                    altclass: "ui-state-default",
+                    sortname: 'Id',
+                    sortorder: "asc",
+                    colNames: [
+                        '@DictExpressionBuilderSystem.Translate("Schedule.Id")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.Date")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.Direction")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.LineIdDescription")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.LineId")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.DriverIdDescription")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.DriverId")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.BusIdDescription")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.BusId")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.leaveTime")',
+                        '@DictExpressionBuilderSystem.Translate("Schedule.arriveTime")',
+                        ""
+                    ],
+                    colModel: [
+                        { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                        { name: 'Date', index: 'Date', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function() { this.focus(); }, onClose: function() { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                        {
+                            name: 'Direction',
+                            index: 'Direction',
+                            sorttype: "select",
+                            width: 110,
+                            editable: true,
+                            search: false,
+                            edittype: 'select',
+                            formatter: 'select',
+                            editoptions: {
+                                value: {
+                                    '@((int) LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
+                                    '@((int) LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
+                                    '@((int) LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                                }
+                            }
+                        },
+                        { name: 'LineIdDescription', index: 'LineIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                        {
+                            name: 'LineId',
+                            index: 'LineId',
+                            sorttype: "text",
+                            search: false,
+                            editable: true,
+                            edittype: "select",
+                            editoptions: {
+                                dataUrl: '/api' + '@Url.Action("GetScheduleLines", "ScheduleApi")',
+                                dataInit: function(elem) {
+                                    var lineIdSelect = $(elem);
+                                    lineIdSelect.width('94%'); // set the width for dropdown
+                                    lineIdSelect.on('change', function(e) {
+                                        var lineId = this.value;
+                                        $.ajax({
+                                            url: '/api' + '@Url.Action("GetAvailableBuses", "ScheduleApi")',
+                                            data: { lineId: lineId },
+                                            type: 'GET',
+                                            dataType: 'json',
+                                            contentType: 'application/json; charset=utf-8',
+                                            success: function(data) {
+                                                var busesOptions = buildBusesOptions(data);
+                                                lineIdSelect.parent().closest('tr.jqgrow, table').find('select[name=BusId]').html(busesOptions);
+                                            }
+                                        });
+                                    });
+                                },
+                                buildSelect: function(data) {
+                                    var response = jQuery.parseJSON(data);
+                                    var s = '<select>';
+                                    if (response && response.Data.length) {
+                                        for (var i = 0, l = response.Data.length; i < l; i++) {
+                                            var ri = response.Data[i];
+                                            s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                        }
+                                    }
+                                    return s + "</select>";
+                                },
+                            },
+                        },
+                        { name: 'DriverIdDescription', index: 'DriverIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                        {
+                            name: 'DriverId',
+                            index: 'DriverId',
+                            sorttype: "text",
+                            search: false,
+                            editable: true,
+                            edittype: "select",
+                            editoptions: {
+                                dataUrl: '/api' + '@Url.Action("GetScheduleDrivers", "ScheduleApi")',
+                                dataInit: function(elem) {
+                                    $(elem).width('94%'); // set the width for dropdown
+                                },
+                                postData: function(rowid, value, cmName) {
+                                    return {
+                                        lineId: rowid
+                                    }
+                                },
+                                buildSelect: function(data) {
+                                    var response = jQuery.parseJSON(data);
+                                    var s = '<select>';
+                                    if (response && response.Data.length) {
+                                        for (var i = 0, l = response.Data.length; i < l; i++) {
+                                            var ri = response.Data[i];
+                                            s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
+                                        }
+                                    }
+                                    return s + "</select>";
+                                },
+                            },
+                        },
+                        { name: 'BusIdDescription', index: 'BusIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                        {
+                            name: 'BusId',
+                            index: 'BusId',
+                            sorttype: "text",
+                            search: false,
+                            editable: true,
+                            edittype: "select",
+                            editoptions: {
+                                dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "ScheduleApi")',
+                                dataInit: function(elem) {
+                                    $(elem).width('94%'); // set the width for dropdown
+                                },
+                                postData: function(rowid, value, cmName) {
+                                    return {
+                                        scheduleId: rowid
+                                    }
+                                },
+                                buildSelect: function(data) {
+                                    var response = jQuery.parseJSON(data);
+                                    return '<select>' + buildBusesOptions(response) + '</select>';
+                                },
+                            },
+                        },
+                        { name: 'leaveTime', index: 'leaveTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).timepicker({ onSelect: function() { this.focus(); }, onClose: function() { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                        { name: 'arriveTime', index: 'arriveTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).timepicker({ onSelect: function() { this.focus(); }, onClose: function() { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
+                        {
+                            name: 'ActionsBtn',
+                            index: 'ActionsBtn',
+                            width: 80,
+                            align: 'center',
+                            search: false,
+                            formatter: lineActionsFormatter,
+                        },
+                    ],
+                    saveAfterSelect: true
+                }
+            }
 
-            scheduleGrid.jqGrid({
-                caption: "@DictExpressionBuilderSystem.Translate("Schedule.GridCaption")",
+            scheduleGrid.jqGrid($.extend(commonScheduleGridParams(), {
                 url: '/api' + '@Url.Action("GetSchedule", "ScheduleApi")',
-                postData: getScheduleGridParams(),
                 datatype: "json",
-                loadonce: false,
-                reloadAfterSubmit: true,
-                height: "100%",
-                autowidth: true,
-                regional: "il",
-                hidegrid: false,
-                multiselect: false,
                 pager: schedulePagerID,
-                mtype: "get",
                 rowNum: 25,
                 rowList: [5, 25, 50, 100],
-                viewrecords: true,
-                ignoreCase: true,
-                loadui: "disable",
-                altRows: false,
-                sortable: true,
-                altclass: "ui-state-default",
-                editurl: '/api' + '@Url.Action("EditItem", "ScheduleApi")',
-                sortname: 'Id',
-                sortorder: "asc",
-                colNames: [
-                    '@DictExpressionBuilderSystem.Translate("Schedule.Id")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.Date")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.Direction")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.LineIdDescription")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.LineId")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.DriverIdDescription")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.DriverId")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.BusIdDescription")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.BusId")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.leaveTime")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.arriveTime")',
-                    ""
-                ],
-                colModel: [
-                    { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                    { name: 'Date', index: 'Date', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).datepicker({ dateFormat: 'mm/dd/yy', onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
-                    {
-                        name: 'Direction',
-                        index: 'Direction',
-                        sorttype: "select",
-                        width: 110,
-                        editable: true,
-                        search: false,
-                        edittype: 'select',
-                        formatter: 'select',
-                        editoptions: {
-                            value: {
-                                '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
-                                '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
-                                '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
-                            }
-                        }
-                    },
-                    { name: 'LineIdDescription', index: 'LineIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                    {
-                        name: 'LineId',
-                        index: 'LineId',
-                        sorttype: "text",
-                        search: false,
-                        editable: true,
-                        edittype: "select",
-                        editoptions: {
-                            dataUrl: '/api' + '@Url.Action("GetScheduleLines", "ScheduleApi")',
-                            dataInit: function (elem) {
-                                var lineIdSelect = $(elem);
-                                lineIdSelect.width('94%'); // set the width for dropdown
-                                lineIdSelect.on('change', function (e) {
-                                    var lineId = this.value;
-                                    $.ajax({
-                                        url: '/api' + '@Url.Action("GetAvailableBuses", "ScheduleApi")',
-                                        data: { lineId: lineId },
-                                        type: 'GET',
-                                        dataType: 'json',
-                                        contentType: 'application/json; charset=utf-8',
-                                        success: function (data) {
-                                            var busesOptions = buildBusesOptions(data);
-                                            lineIdSelect.parent().closest('tr.jqgrow, table').find('select[name=BusId]').html(busesOptions);
-                                        }
-                                    });
-                                });
-                            },
-                            buildSelect: function (data) {
-                                var response = jQuery.parseJSON(data);
-                                var s = '<select>';
-                                if (response && response.Data.length) {
-                                    for (var i = 0, l = response.Data.length; i < l; i++) {
-                                        var ri = response.Data[i];
-                                        s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
-                                    }
-                                }
-                                return s + "</select>";
-                            },
-                        },
-                    },
-                    { name: 'DriverIdDescription', index: 'DriverIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                    {
-                        name: 'DriverId',
-                        index: 'DriverId',
-                        sorttype: "text",
-                        search: false,
-                        editable: true,
-                        edittype: "select",
-                        editoptions: {
-                            dataUrl: '/api' + '@Url.Action("GetScheduleDrivers", "ScheduleApi")',
-                            dataInit: function (elem) {
-                                $(elem).width('94%'); // set the width for dropdown
-                            },
-                            postData: function (rowid, value, cmName) {
-                                return {
-                                    lineId: rowid
-                                }
-                            },
-                            buildSelect: function (data) {
-                                var response = jQuery.parseJSON(data);
-                                var s = '<select>';
-                                if (response && response.Data.length) {
-                                    for (var i = 0, l = response.Data.length; i < l; i++) {
-                                        var ri = response.Data[i];
-                                        s += '<option value="' + ri.Value + '" title="' + ri.Title + '">' + ri.Text + '</option>';
-                                    }
-                                }
-                                return s + "</select>";
-                            },
-                        },
-                    },
-                    { name: 'BusIdDescription', index: 'BusIdDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                    {
-                        name: 'BusId',
-                        index: 'BusId',
-                        sorttype: "text",
-                        search: false,
-                        editable: true,
-                        edittype: "select",
-                        editoptions: {
-                            dataUrl: '/api' + '@Url.Action("GetAvailableBuses", "ScheduleApi")',
-                            dataInit: function (elem) {
-                                $(elem).width('94%'); // set the width for dropdown
-                            },
-                            postData: function (rowid, value, cmName) {
-                                return {
-                                    scheduleId: rowid
-                                }
-                            },
-                            buildSelect: function (data) {
-                                var response = jQuery.parseJSON(data);
-                                return '<select>' + buildBusesOptions(response) + '</select>';
-                            },
-                        },
-                    },
-                    { name: 'leaveTime', index: 'leaveTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
-                    { name: 'arriveTime', index: 'arriveTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
-                    {
-                        name: 'ActionsBtn',
-                        index: 'ActionsBtn',
-                        width: 80,
-                        align: 'center',
-                        search: false,
-                        formatter: lineActionsFormatter,
-                    },
-                ],
-                saveAfterSelect: true,
                 beforeSelectRow: function (rowid) {
                     scheduleGridExtend.fn.restore(rowid);
                     return false;
@@ -391,22 +419,24 @@
                 },
                 loadComplete: function (data) {
                     scheduleGridExtend.fn.populateDescription(data);
-                }
-            })
+                },
+                editurl: '/api' + '@Url.Action("EditItem", "ScheduleApi")',
+                reloadAfterSubmit: true,
+                }))
                 .navGrid(schedulePagerID, {
-                    edit: false,
-                    add: true,
-                    addtitle: "@DictExpressionBuilderSystem.Translate("grid.CreateNewRow")",
-                    del: false,
-                    deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")",
-                    refresh: true,
-                    refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")",
-                    search: false,
-                    view: false,
-                    closeAfterAdd: true,
-                    closeAfterEdit: true,
-                    reloadAfterSubmit: true,
-                }
+                        edit: false,
+                        add: true,
+                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.CreateNewRow")",
+                        del: false,
+                        deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")",
+                        refresh: true,
+                        refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")",
+                        search: false,
+                        view: false,
+                        closeAfterAdd: true,
+                        closeAfterEdit: true,
+                        reloadAfterSubmit: true,
+                    }
                 )
                 @*.navButtonAdd(schedulePagerID, {
                     id: "print",
@@ -505,12 +535,38 @@
                 }
                 )*@
                 .filterToolbar({
-                    stringResult: true,
-                    enableClear: false
-                }
+                        stringResult: true,
+                        enableClear: false
+                    }
                 );
 
             scheduleGridExtend.fn.init();
+
+
+            // ---------------------------- Generated Schedule grid -------------------------
+
+            generatedScheduleGrid.jqGrid($.extend(commonScheduleGridParams(), {
+                url: '/api' + '@Url.Action("GenerateSchedule", "ScheduleApi")',
+                datatype: "local",
+                beforeSelectRow: function (rowid) {
+                    generatedScheduleGridExtend.fn.restore(rowid);
+                    return false;
+                },
+                ondblClickRow: function (rowid, iRow, iCol) {
+                    generatedScheduleGridExtend.fn.editRow(rowid);
+                },
+                loadComplete: function (data) {
+                    generatedScheduleGridExtend.fn.populateDescription(data);
+                },
+                editurl:'clientArray',
+                reloadAfterSubmit: false,
+            }))
+            .filterToolbar({
+                stringResult: true,
+                enableClear: false
+            });
+
+            generatedScheduleGridExtend.fn.init();
 
             function buildBusesOptions(data) {
                 var s = '';
@@ -547,19 +603,29 @@
 
             function getScheduleGridParams() {
                 return {
-                    linesIds: function () { return linesGrid.jqGrid('getGridParam', 'selarrrow').join() },
-                    dateFrom: function () { return dateFrom.val() },
-                    dateTo: function () { return dateTo.val() }
+                    LinesIds: function() { return linesGrid.jqGrid('getGridParam', 'selarrrow').join(); },
+                    DateFrom: function() { return dateFrom.val() },
+                    DateTo: function() { return dateTo.val() },
+                    ArriveTime: function() { return $('[name=ArriveTime]').val() },
+                    LeaveTime: function() { return $('[name=LeaveTime]').val() },
+                    Sun: function() { return $('[name=Sun]').val() },
+                    Mon: function() { return $('[name=Mon]').val() },
+                    Tue: function() { return $('[name=Tue]').val() },
+                    Wed: function() { return $('[name=Wed]').val() },
+                    Thu: function() { return $('[name=Thu]').val() },
+                    Fri: function() { return $('[name=Fri]').val() },
+                    Sut: function() { return $('[name=Sut]').val() }
                 }
             }
 
             $("#dlgUpdateLines").dialog({
                 autoOpen: false,
-                width: 700,
+                width: 920,
                 modal: true
             });
-            $('#btnUpdateLines').on('click', function () {
+            $('#btnUpdateLines').on('click', function() {
                 $("#dlgUpdateLines").dialog("open");
+                generatedScheduleGrid.jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
             });
 
             // ---------------------------- Generated Schedule grid -------------------------

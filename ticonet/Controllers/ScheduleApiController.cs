@@ -21,7 +21,7 @@ namespace ticonet.Controllers
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(ScheduleApiController));
 
-        [System.Web.Mvc.HttpGet]
+        [System.Web.Http.HttpGet]
         public HttpResponseMessage GetLines(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
             var lines = new List<GridLineModel>();
@@ -43,16 +43,16 @@ namespace ticonet.Controllers
                 });
         }
 
-        [System.Web.Mvc.HttpGet]
-        public HttpResponseMessage GetSchedule(string linesIds, string dateFrom, string dateTo, bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
+        [System.Web.Http.HttpGet]
+        public HttpResponseMessage GetSchedule([FromUri]ScheduleParamsModel parameters, bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
             var items = new List<ScheduleItemModel>();
             var totalRecords = 0;
-            var linesIdsList = linesIds != null 
-                ? linesIds.Split(',').Select(int.Parse)
+            var linesIdsList = parameters.LinesIds != null
+                ? parameters.LinesIds.Split(',').Select(int.Parse)
                 : null;
-            var dateFromDt = DateHelper.StringToDate(dateFrom);
-            var dateToDt = DateHelper.StringToDate(dateTo);
+            var dateFromDt = DateHelper.StringToDate(parameters.DateFrom);
+            var dateToDt = DateHelper.StringToDate(parameters.DateTo);
             using (var logic = new tblScheduleLogic())
             {
                 items = logic.GetPaged(linesIdsList, dateFromDt, dateToDt, _search, rows, page, sidx, sord, filters)
@@ -70,7 +70,33 @@ namespace ticonet.Controllers
                 });
         }
 
-        [System.Web.Mvc.HttpPost]
+        [System.Web.Http.HttpGet]
+        public HttpResponseMessage GenerateSchedule([FromUri]ScheduleParamsModel parameters)
+        {
+            return Request.CreateResponse(
+                HttpStatusCode.OK,
+                new
+                {
+                    //total = (totalRecords + rows - 1) / rows,
+                    //page,
+                    //records = totalRecords,
+                    rows = new List<ScheduleItemModel>
+                    {
+                        new ScheduleItemModel
+                        {
+                            Date = DateHelper.DateToString(DateTime.Now),
+                            Direction = LineDirection.To,
+                            LineId = 4,
+                            DriverId = 3,
+                            BusId = 4,
+                            leaveTime = "14:00",
+                            arriveTime = "16:00"
+                        }
+                    }
+                });
+        }
+
+        [System.Web.Http.HttpPost]
         public JsonResult EditItem(ScheduleItemModel model)
         {
             using (var logic = new tblScheduleLogic())
@@ -157,24 +183,6 @@ namespace ticonet.Controllers
             }
 
             return new JsonResult { Data = buses };
-        }
-
-        [System.Web.Mvc.HttpGet]
-        public IEnumerable<ScheduleItemModel> GenerateSchedule(GenerateScheduleParamsModel model)
-        {
-            return new List<ScheduleItemModel>
-            {
-                new ScheduleItemModel
-                {
-                    Date = DateHelper.DateToString(DateTime.Now),
-                    Direction = LineDirection.To,
-                    LineId = 4,
-                    DriverId = 3,
-                    BusId = 4,
-                    leaveTime = "14:00",
-                    arriveTime = "16:00"
-                }
-            };
         }
 
         //public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
