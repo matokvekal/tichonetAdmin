@@ -3,13 +3,77 @@
 @using Business_Logic.Enums
 
 <div class="content inline-block" style="height: calc(100% - 30px); width: 100%; display: inline-block; margin: 20px 0 0 0; padding: 0;">
-    <div style="margin: 0; padding: 0; height: 100%; width: calc(100% - 500px); float: left; border: solid silver thin; overflow: hidden;">
-        <div style="margin: 0; padding: 0; height: 70px; width: 400px; float: right; border: solid silver thin;">
-            <p><input type="text" id="dateFrom"> :@DictExpressionBuilderSystem.Translate("Schedule.DateFrom")</p>
-            <p><input type="text" id="dateTo"> :@DictExpressionBuilderSystem.Translate("Schedule.DateTo")</p>
+    <div style="margin: 0; padding: 0; height: 100%; width: calc(100% - 400px); float: left; border: solid silver thin; overflow: hidden;">
+        <div style="margin: 0; padding: 0; height: 70px; width: 300px; float: right;">
+            <p><input type="text" id="dateFrom" style="width:100px;"> :@DictExpressionBuilderSystem.Translate("Schedule.DateFrom")</p>
+            <p><input type="text" id="dateTo" style="width:100px;"> :@DictExpressionBuilderSystem.Translate("Schedule.DateTo")</p>
         </div>
-        <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right; border: solid silver thin;">
-            <input type="checkbox" value="true" name="ArriveTime" checked> @DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")&nbsp;
+        <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right;">
+            <div style="margin: 0; padding: 0; height: 25px; width: 100%; float: right;">
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.LeaveTime")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    &nbsp;
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.Sun")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.Mon")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.Tue")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.Wed")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.Thu")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.Fri")
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    @DictExpressionBuilderSystem.Translate("Schedule.Sut")
+                </div>
+            </div>
+            <div style="margin: 0; padding: 0; height: 25px; width: 100%; float: right;">
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">
+                    <input type="checkbox" value="true" name="ArriveTime" checked title="@DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">
+                    <input type="checkbox" value="true" name="LeaveTime" checked title="@DictExpressionBuilderSystem.Translate("Schedule.LeaveTime")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    &nbsp;
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    <input type="checkbox" value="true" name="Sun" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Sun")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    <input type="checkbox" value="true" name="Mon" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Mon")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    <input type="checkbox" value="true" name="Tue" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Tue")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    <input type="checkbox" value="true" name="Wed" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Wed")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    <input type="checkbox" value="true" name="Thu" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Thu")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    <input type="checkbox" value="true" name="Fri" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Fri")">
+                </div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">
+                    <input type="checkbox" value="true" name="Sut" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Sut")">
+                </div>
+            </div>
+            @*<input type="checkbox" value="true" name="ArriveTime" checked> @DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")&nbsp;
             <input type="checkbox" value="true" name="LeaveTime" checked> @DictExpressionBuilderSystem.Translate("Schedule.LeaveTime")<br />
             <input type="checkbox" value="true" name="Sun" checked> @DictExpressionBuilderSystem.Translate("Schedule.Sun")&nbsp;
             <input type="checkbox" value="true" name="Mon" checked> @DictExpressionBuilderSystem.Translate("Schedule.Mon")&nbsp;
@@ -17,12 +81,12 @@
             <input type="checkbox" value="true" name="Wed" checked> @DictExpressionBuilderSystem.Translate("Schedule.Wed")&nbsp;
             <input type="checkbox" value="true" name="Thu" checked> @DictExpressionBuilderSystem.Translate("Schedule.Thu")&nbsp;
             <input type="checkbox" value="true" name="Fri" checked> @DictExpressionBuilderSystem.Translate("Schedule.Fri")&nbsp;
-            <input type="checkbox" value="true" name="Sut" checked> @DictExpressionBuilderSystem.Translate("Schedule.Sut")
+            <input type="checkbox" value="true" name="Sut" checked> @DictExpressionBuilderSystem.Translate("Schedule.Sut")*@
         </div>
-        <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right; border: solid silver thin;">
-            <button><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
-            <button id="btnUpdateLines">@DictExpressionBuilderSystem.Translate("Schedule.UpdateLines")</button>
-            Control: Refresh, Update LINES, Show PopupWindow with Cube
+        <div style="margin: 0; padding: 0; height: 30px; width: 100%; float: right;">
+            <button id="btnShowCube" title="@DictExpressionBuilderSystem.Translate("Schedule.ShowCube")"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></button>
+            <button id="btnUpdateLines" title="@DictExpressionBuilderSystem.Translate("Schedule.UpdateLines")"><span class="glyphicon glyphicon-import" aria-hidden="true"></span></button>
+            <button id="btnRefresh" title="@DictExpressionBuilderSystem.Translate("Schedule.Refresh")"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
         </div>
 
         <div style="margin: 0; padding: 0; height: calc(100% - 150px); width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
@@ -32,7 +96,7 @@
             </div>
         </div>
     </div>
-    <div style="margin: 0; padding: 0; height: 100%; width: 500px; float: left; border: solid silver thin; overflow: hidden;">
+    <div style="margin: 0; padding: 0; height: 100%; width: 400px; float: left; border: solid silver thin; overflow: hidden;">
         <div style="margin: 0; padding: 0; height: 100%; width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
             <div class="content jqgrid-extended" id="dLinesTable">
                 <table id="grLines"></table>
@@ -48,6 +112,14 @@
         <div id="pgGeneratedSchedule"></div>
     </div>
 </div>
+
+<div id="dlgShowCube" title="Show Cube" hidden>
+    <div class="content jqgrid-extended" id="dCubeTable">
+        <table id="grCubeSchedule"></table>
+        <div id="pgCubeSchedule"></div>
+    </div>
+</div>
+
 
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
@@ -115,14 +187,14 @@
                     '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
                 ],
                 colModel: [
-                    { name: "Id", index: 'Id', key: true, hidden: false, width: 60, sortable: false, editable: false, edittype: "text", search: false },
+                    { name: "Id", index: 'Id', key: true, hidden: false, width: 50, sortable: false, editable: false, edittype: "text", search: false },
                     { name: 'LineName', index: 'LineName', sorttype: "text", width: 110 },
-                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110 },
+                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 50 },
                     {
                         name: 'Direction',
                         index: 'Direction',
                         sorttype: "select",
-                        width: 110,
+                        width: 80,
                         editable: false,
                         search: false,
                         edittype: 'select',
@@ -135,7 +207,7 @@
                             }
                         }
                     },
-                    { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                 ],
                 onSelectRow: function (id) {
                     scheduleGrid.jqGrid().trigger('reloadGrid');
@@ -532,14 +604,34 @@
                 }
             }
 
+            // ---------------------------- Popap windows -------------------------
             $("#dlgUpdateLines").dialog({
                 autoOpen: false,
                 width: 920,
+                height: 600,
                 modal: true
             });
-            $('#btnUpdateLines').on('click', function () {
+
+            $("#dlgShowCube").dialog({
+                autoOpen: false,
+                width: 920,
+                height: 600,
+                modal: true
+            });
+
+
+            // ---------------------------- Control buttons -------------------------
+            $("#btnRefresh").on("click", function () {
+                scheduleGrid.trigger("reloadGrid");
+            });
+
+            $("#btnUpdateLines").on("click", function () {
                 $("#dlgUpdateLines").dialog("open");
-                generatedScheduleGrid.jqGrid('setGridParam', { datatype: 'json' }).trigger('reloadGrid');
+                generatedScheduleGrid.jqGrid("setGridParam", { datatype: "json" }).trigger("reloadGrid");
+            });
+
+            $("#btnShowCube").on("click", function () {
+                $("#dlgShowCube").dialog("open");
             });
 
             // ---------------------------- Generated Schedule grid -------------------------
