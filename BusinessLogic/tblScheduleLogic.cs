@@ -24,11 +24,14 @@ namespace Business_Logic
             var searchFilters = searchModel;
 
             IEnumerable<tblSchedule> query = DB.tblSchedules;
-
-            if (linesIds != null)
+            
+            var idsArr = linesIds != null ? linesIds.ToList() : new List<int>();
+            if (!idsArr.Any())
             {
-                query = query.Where(x => linesIds.Any(l => l == x.LineId));
+                return new List<tblSchedule>();
             }
+            query = query.Where(x => idsArr.Any(l => l == x.LineId));
+
             if (dateFrom.HasValue)
             {
                 query = query.Where(x => x.Date.HasValue && x.Date.Value >= dateFrom.Value);
@@ -133,13 +136,11 @@ namespace Business_Logic
             return res;
         }
 
-        public bool DeleteItems(DateTime dateFrom, DateTime dateTo)
+        public bool DeleteItems(IEnumerable<tblSchedule> items)
         {
             var res = false;
             try
             {
-                var items = DB.tblSchedules
-                    .Where(z => z.Date.HasValue && z.Date.Value >= dateFrom && z.Date.Value <= dateTo);
                 DB.tblSchedules.RemoveRange(items);
                 DB.SaveChanges();
                 res = true;

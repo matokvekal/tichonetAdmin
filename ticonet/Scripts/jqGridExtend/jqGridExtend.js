@@ -16,7 +16,9 @@
                 a.isFunction(k.afterSave) && k.afterSave.call(g, b, c);
                 j.find("div.ui-inline-edit,div.ui-inline-del").show();
                 j.find("div.ui-inline-save,div.ui-inline-cancel").hide();
-                f.trigger("reloadGrid");
+                if (f.jqGrid("getGridParam", "datatype") !== "local") {
+                    f.trigger("reloadGrid");
+                }
             },
             m = function (b) {
                 a.isFunction(k.afterRestore) && k.afterRestore.call(g, b);

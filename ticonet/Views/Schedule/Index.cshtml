@@ -177,7 +177,11 @@
                 onSelectRow: function (id) {
                     scheduleGrid.jqGrid().trigger('reloadGrid');
                 },
+                onSelectAll: function (id) {
+                    scheduleGrid.jqGrid().trigger('reloadGrid');
+                },
                 loadComplete: function () {
+                    scheduleGrid.jqGrid("setGridParam", { datatype: "json" });
                     $("#cb_" + this.id).click();
                 }
             })
@@ -361,7 +365,7 @@
 
             scheduleGrid.jqGrid($.extend({}, commonScheduleGridParams, {
                 url: '/api' + '@Url.Action("GetSchedule", "ScheduleApi")',
-                datatype: "json",
+                datatype: "local",
                 pager: schedulePagerID,
                 rowNum: 25,
                 rowList: [5, 25, 50, 100],
@@ -595,8 +599,27 @@
                 scheduleGrid.trigger("reloadGrid");
             });
 
-            $("#btnUpdateLinesCancel").on('dialogclose', function (event) {
-                //TODO Clear old Data
+            $("#dlgUpdateLines").on('dialogclose', function (event) {
+                generatedScheduleGrid.jqGrid('clearGridData');
+            });
+            $("#btnUpdateLinesApplay").on("click", function (event) {
+                var localGridData = generatedScheduleGrid.jqGrid('getRowData'),
+                    dataToSend = JSON.stringify(localGridData);
+                $.ajax({
+                    type: "POST",
+                    url: '/api' + '@Url.Action("SaveGeneratedShcedule", "ScheduleApi")' + '?dateFrom=' + dateFrom.val() + '&dateTo=' + dateTo.val(),
+                    dataType: "json",
+                    data: dataToSend,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response, textStatus, jqXHR) {
+                        // display an success message if needed
+                        alert("success");
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        // display an error message in any way
+                        alert("error");
+                    }
+                });
             });
             $("#btnUpdateLinesCancel").on("click", function (event) {
                 event.preventDefault();

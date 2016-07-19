@@ -123,6 +123,21 @@ namespace ticonet.Controllers
             }
             return new JsonResult { Data = true };
         }
+
+        [System.Web.Http.HttpPost]
+        public JsonResult SaveGeneratedShcedule(IEnumerable<ScheduleItemModel> model, string dateFrom, string dateTo)
+        {
+            var dtDateFrom = DateHelper.StringToDate(dateFrom);
+            var dtDateTo = DateHelper.StringToDate(dateTo);
+            var result = false;
+            var items = model != null ? model.ToArray() : new ScheduleItemModel[0];
+
+            if (items.Any() && dtDateFrom.HasValue && dtDateTo.HasValue)
+            {
+                result = ScheduleService.SaveGeneratedShcedule(items.Select(x => x.ToDbModel()), dtDateFrom.Value, dtDateTo.Value);
+            }
+            return new JsonResult { Data = result };
+        }
         
         public JsonResult GetScheduleLines()
         {

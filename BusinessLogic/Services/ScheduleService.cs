@@ -44,6 +44,29 @@ namespace Business_Logic.Services
             }
             return schedule;
         }
+
+        public bool SaveGeneratedShcedule(IEnumerable<tblSchedule> schedule, DateTime dateFrom, DateTime dateTo)
+        {
+            using (var logic = new tblScheduleLogic())
+            {
+                var scheduleArr = schedule != null ? schedule.ToArray() : new tblSchedule[0];
+                var linesIds = scheduleArr
+                    .Where(x => x.LineId.HasValue)
+                    .Select(x => x.LineId.Value)
+                    .Distinct();
+
+                var itemsToDelete = logic.Schedule
+                    .Where(x => x.LineId.HasValue)
+                    .Where(x => linesIds.Any(id => id == x.LineId.Value) && x.Date >= dateFrom && x.Date <= dateTo);
+                logic.DeleteItems(itemsToDelete);
+
+                foreach (var item in scheduleArr)
+                {
+                    logic.SaveItem(item);
+                }
+            }
+            return true;
+        }
         
         private List<DateTime> GetScheduleLineDates(Line line, DateTime dateFrom, DateTime dateTo, ScheduleParamsModel parameters)
         {

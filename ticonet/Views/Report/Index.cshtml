@@ -1,10 +1,13 @@
-﻿@using Business_Logic
+﻿@using Business_Logic;
+@using Business_Logic.Enums
+@using DEBS = Business_Logic.DictExpressionBuilderSystem;
 
 <table id="reportGrid"></table>
 <div id="reportGridPager"></div>
 
 <script>
     $(function () {
+        var LocalData
         var gridCont = $("#reportGrid")
         gridCont.jqGrid({
             caption: '@DictExpressionBuilderSystem.Translate("Line.GridCaption")',
@@ -16,21 +19,19 @@
             viewrecords: true,
             loadonce: false,
             hidegrid: false,
-            //multiselect: true,
-            //rowNum: -1,
             colNames: [
-                '@DictExpressionBuilderSystem.Translate("Line.Id")',
-                '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
-                '@DictExpressionBuilderSystem.Translate("Line.Sun")',
-                '@DictExpressionBuilderSystem.Translate("Line.Mon")',
-                '@DictExpressionBuilderSystem.Translate("Line.Tue")',
-                '@DictExpressionBuilderSystem.Translate("Line.Wed")',
-                '@DictExpressionBuilderSystem.Translate("Line.Thu")',
-                '@DictExpressionBuilderSystem.Translate("Line.Fri")',
-                '@DictExpressionBuilderSystem.Translate("Line.Sut")',
+                '@DEBS.Translate("Line.Id")',
+                '@DEBS.Translate("Line.LineNumber")',
+                '@DEBS.Translate("Line.Sun")',
+                '@DEBS.Translate("Line.Mon")',
+                '@DEBS.Translate("Line.Tue")',
+                '@DEBS.Translate("Line.Wed")',
+                '@DEBS.Translate("Line.Thu")',
+                '@DEBS.Translate("Line.Fri")',
+                '@DEBS.Translate("Line.Sut")',
             ],
             colModel: [
-                    { name: "Id", index: 'Id', key: true, hidden: false, sortable: false, editable: false, edittype: "text", search: false },
+                    { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                     { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110, editable: false },
                     { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                     { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
@@ -40,52 +41,80 @@
                     { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                     { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
             ],
-            //onSelectRow: function (id) {
-            //    scheduleGrid.jqGrid().trigger('reloadGrid');
-            //},
-            //loadComplete: function () {
-            //    $("#cb_" + this.id).click();
-            //}
+            loadComplete: function (data) {
+                LocalData = data;
+            },
             width: "100%",
             height: "100%",
-            rowNum: 2,
+            rowNum: 100,
             subGrid: true, // set the subGrid property to true to show expand buttons for each row
             subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
-            subGridPostData: function (rowid, value, cmName) {
-                alert("!" + rowid)
-                return {
-                    scheduleId: rowid
-                }
-            },
             pager: "#reportGridPager"
         })
-        // the event handler on expanding parent row receives two parameters
-        // the ID of the grid tow  and the primary key of the row
+
+
+        function PushPropertyLikeObj(arr, data, property, customName, propertyFunc) {
+            if (typeof propertyFunc === 'undefined')
+                propertyFunc = function(p){return p};
+            if (typeof customName !== 'undefined')
+                arr.push({ Name: customName, Val: propertyFunc( data[property]) })
+            else
+                arr.push({ Name: property, Val: propertyFunc( data[property]) })
+        }
+
+        function ConvertLineDataToRows(lineData) {
+            var rows = []
+            PushPropertyLikeObj(rows, lineData, 'LineName', '@DEBS.Translate("Line.LineName")');
+            PushPropertyLikeObj(rows, lineData, 'Direction', '@DEBS.Translate("Line.Direction")', DirectionToString);
+            PushPropertyLikeObj(rows, lineData, 'totalStudents', '@DEBS.Translate("Line.totalStudents")');
+            PushPropertyLikeObj(rows, lineData, 'BusCompanyName', '@DEBS.Translate("BusCompany.Name")');
+            PushPropertyLikeObj(rows, lineData, 'price', '@DEBS.Translate("Bus.price")');
+            PushPropertyLikeObj(rows, lineData, 'seats', '@DEBS.Translate("Bus.seats")');
+            return rows;
+        }
+
         function showChildGrid(parentRowID, parentRowKey) {
+            var lineData = LocalData.rows.find(function (e, i, a) { return e.Id == parentRowKey })
+            var lineDataRows = ConvertLineDataToRows(lineData)
+
             var childGridID = parentRowID + "_table";
             var childGridPagerID = parentRowID + "_pager";
 
-            // send the parent row primary key to the server so that we know which grid to show
             var childGridURL = parentRowKey + ".json";
-            //childGridURL = childGridURL + "&parentRowID=" + encodeURIComponent(parentRowKey)
 
             // add a table and pager HTML elements to the parent grid row - we will render the child grid here
             $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
 
-            $("#" + childGridID).jqGrid({
-                url: '/api' + '@Url.Action("GetLineDetailedToRows", "LinesApi")',
-                //mtype: "GET",
-                datatype: "json",
 
-                //page: 1,
+            $("#" + childGridID).jqGrid({
+                //url: '/api' + '@Url.Action("GetLineDetailedToRows", "LinesApi")',
+                //datatype: "json",
+                //serializeGridData: function(postdata){
+                //    return {id:parentRowKey}
+                //},
+                datatype: 'local',
+                data: lineDataRows,
+                colNames:["1","2"],
                 colModel: [
-                    { name: 'name', index: 'name', width: 110, editable: false },
-                    { name: 'val', index: 'val', width: 110, editable: false },
+                    { name: 'Name', index: 'Name', width: 110, editable: false },
+                    { name: 'Val', index: 'Val', width: 110, editable: false },
                 ],
                 loadonce: false,
                 width: '100%',
                 height: '100%',
+                hidegrid: false,
+                loadComplete: function (data) {
+                },
             });
+
+        }
+
+        function DirectionToString(dirValue) {
+            return dirValue === @((int)LineDirection.Bouth) ?
+                '@DEBS.Translate("General.Bouth")' :
+                dirValue == @((int)LineDirection.To) ?
+                '@DEBS.Translate("General.To")' :
+                '@DEBS.Translate("General.From")'
         }
     })
 </script>
