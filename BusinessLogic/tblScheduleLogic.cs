@@ -132,6 +132,24 @@ namespace Business_Logic
             }
             return res;
         }
+
+        public bool DeleteItems(DateTime dateFrom, DateTime dateTo)
+        {
+            var res = false;
+            try
+            {
+                var items = DB.tblSchedules
+                    .Where(z => z.Date.HasValue && z.Date.Value >= dateFrom && z.Date.Value <= dateTo);
+                DB.tblSchedules.RemoveRange(items);
+                DB.SaveChanges();
+                res = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return res;
+        }
         
         public void SaveChanges()
         {

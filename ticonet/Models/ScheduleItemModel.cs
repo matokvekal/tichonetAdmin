@@ -17,9 +17,9 @@ namespace ticonet.Models
             leaveTime = DateHelper.TimeToString(data.leaveTime);
             arriveTime = DateHelper.TimeToString(data.arriveTime);
             LineId = data.LineId;
-            LineIdDescription = data.Line != null ? data.Line.LineName : string.Empty;
+            LineIdDescription = GetLineIdDescription(data.Line);
             DriverIdDescription = data.Driver != null ? data.Driver.FirstName + " " + data.Driver.LastName : string.Empty;
-            BusIdDescription = GetBusIdDescription(data);
+            BusIdDescription = GetBusIdDescription(data.Bus);
         }
 
         public ScheduleItemModel() { }
@@ -64,12 +64,13 @@ namespace ticonet.Models
             };
         }
 
-        private string GetBusIdDescription(tblSchedule data)
+        public static string GetLineIdDescription(Line line)
         {
-            var bus = data.Line != null && data.Line.BusesToLines.Any()
-                ? data.Line.BusesToLines.First().Bus
-                : null;
+            return line != null ? line.LineName : string.Empty;
+        }
 
+        public static string GetBusIdDescription(Bus bus)
+        {
             if (bus == null)
             {
                 return string.Empty;

@@ -73,6 +73,41 @@ namespace ticonet.Controllers
         [System.Web.Http.HttpGet]
         public HttpResponseMessage GenerateSchedule([FromUri]ScheduleParamsModel parameters)
         {
+            var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
+            var dateTo = DateHelper.StringToDate(parameters.DateTo);
+            var schedule = new List<ScheduleItemModel>();
+            var fakeId = 0;
+
+            if (!dateFrom.HasValue || !dateTo.HasValue || string.IsNullOrEmpty(parameters.LinesIds))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
+            using (var logic = new LineLogic())
+            {
+                var lines = logic.GetLines(parameters.LinesIds.Split(',').Select(int.Parse));
+
+                foreach (var line in lines)
+                {
+                    var dates = GetScheduleLineDates(line, dateFrom.Value, dateTo.Value, parameters);
+                    foreach (var date in dates)
+                    {
+                        schedule.Add(new ScheduleItemModel
+                        {
+                            Id = fakeId++,
+                            Date = DateHelper.DateToString(date),
+                            Direction = (LineDirection)line.Direction,
+                            LineId = line.Id,
+                            BusId = line.BusesToLines.DefaultIfEmpty(new BusesToLine()).First().BusId,
+                            LineIdDescription = ScheduleItemModel.GetLineIdDescription(line),
+                            BusIdDescription = ScheduleItemModel.GetBusIdDescription(line.BusesToLines.DefaultIfEmpty(new BusesToLine()).First().Bus),
+                            leaveTime = string.Empty,
+                            arriveTime = string.Empty
+                        });
+                    }
+                }
+            }
+            
             return Request.CreateResponse(
                 HttpStatusCode.OK,
                 new
@@ -80,19 +115,7 @@ namespace ticonet.Controllers
                     //total = (totalRecords + rows - 1) / rows,
                     //page,
                     //records = totalRecords,
-                    rows = new List<ScheduleItemModel>
-                    {
-                        new ScheduleItemModel
-                        {
-                            Date = DateHelper.DateToString(DateTime.Now),
-                            Direction = LineDirection.To,
-                            LineId = 4,
-                            DriverId = 3,
-                            BusId = 4,
-                            leaveTime = "14:00",
-                            arriveTime = "16:00"
-                        }
-                    }
+                    rows = schedule
                 });
         }
 
@@ -183,6 +206,39 @@ namespace ticonet.Controllers
             }
 
             return new JsonResult { Data = buses };
+        }
+
+        private List<DateTime> GetScheduleLineDates(Line line, DateTime dateFrom, DateTime dateTo, ScheduleParamsModel parameters)
+        {
+            var dates = new List<DateTime>();
+            for (DateTime date = dateFrom; date <= dateTo; date = date.AddDays(1))
+            {
+                switch (date.DayOfWeek)
+                {
+                    case DayOfWeek.Sunday:
+                        if (line.Sun.HasValue && line.Sun.Value && parameters.Sun) { dates.Add(date); }
+                        break;
+                    case DayOfWeek.Monday:
+                        if (line.Mon.HasValue && line.Mon.Value && parameters.Mon) { dates.Add(date); }
+                        break;
+                    case DayOfWeek.Tuesday:
+                        if (line.Tue.HasValue && line.Tue.Value && parameters.Tue) { dates.Add(date); }
+                        break;
+                    case DayOfWeek.Wednesday:
+                        if (line.Wed.HasValue && line.Wed.Value && parameters.Wed) { dates.Add(date); }
+                        break;
+                    case DayOfWeek.Thursday:
+                        if (line.Thu.HasValue && line.Thu.Value && parameters.Thu) { dates.Add(date); }
+                        break;
+                    case DayOfWeek.Friday:
+                        if (line.Fri.HasValue && line.Fri.Value && parameters.Fri) { dates.Add(date); }
+                        break;
+                    case DayOfWeek.Saturday:
+                        if (line.Sut.HasValue && line.Sut.Value && parameters.Sut) { dates.Add(date); }
+                        break;
+                }
+            }
+            return dates;
         }
 
         //public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")

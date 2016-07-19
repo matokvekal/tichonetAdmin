@@ -77,7 +77,7 @@ namespace Business_Logic
             return DB.Lines.FirstOrDefault(z => z.Id == id);
         }
 
-        public List<Line> GetLines(List<int> ids)
+        public List<Line> GetLines(IEnumerable<int> ids)
         {
             return DB.Lines.Where(z => ids.Contains(z.Id)).ToList();
         }
