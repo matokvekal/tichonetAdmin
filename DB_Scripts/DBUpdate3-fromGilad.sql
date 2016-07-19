@@ -6,7 +6,9 @@ ADD  	[distanceFromSchool] [float] NULL,
 
 
 GO
-
+ALTER TABLE dbo.tblStudent
+ADD schoolId int
+go
 ALTER TABLE dbo.tblFamily
 ADD  
 	[oneParentOnly][bit]NOT NULL
@@ -20,6 +22,32 @@ GO
 drop table [tblSchedule]
 SET QUOTED_IDENTIFIER ON
 GO
+USE [BusProject]
+GO
+
+/****** Object:  Table [dbo].[tblSchool]    Script Date: 07/19/2016 19:07:39 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[tblSchool](
+	[id] [int] NOT NULL,
+	[name] [nvarchar](max) NULL,
+	[adress] [nvarchar](max) NULL,
+	[city] [nvarchar](max) NULL,
+	[tell] [nvarchar](50) NULL,
+	[manager] [nvarchar](50) NULL,
+ CONSTRAINT [PK_tblSchool] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
 
 CREATE TABLE [dbo].[tblSchedule](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
