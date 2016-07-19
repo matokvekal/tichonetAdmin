@@ -103,6 +103,9 @@
     <Compile Include="Student.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblCalendar.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
     <Compile Include="tblMessageQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -111,9 +114,6 @@
     </Compile>
     <Compile Include="tblScheduleLogic.cs" />
     <Compile Include="tblBusCompany.cs">
-      <DependentUpon>registration.tt</DependentUpon>
-    </Compile>
-    <Compile Include="tblCalendar.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="tblCalendarLogic.cs" />
