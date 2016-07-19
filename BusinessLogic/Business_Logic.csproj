@@ -72,6 +72,7 @@
     <Compile Include="Driver.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="Entities\GenerateScheduleParamsModel.cs" />
     <Compile Include="Entities\LoginInfo.cs" />
     <Compile Include="Entities\SaveDurationsModel.cs" />
     <Compile Include="Entities\SegmentDuration.cs" />
@@ -100,6 +101,8 @@
     <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Dtos\TotalDto.cs" />
     <Compile Include="DriverLogic.cs" />
+    <Compile Include="Services\IScheduleService.cs" />
+    <Compile Include="Services\ScheduleService.cs" />
     <Compile Include="Student.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>

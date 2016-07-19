@@ -383,14 +383,26 @@ namespace Business_Logic
                     else
                     {
                         var filterByProperty = typeof(Line).GetProperty(rule.field);
+                        var filterByPropertyType = filterByProperty.PropertyType;
                         if (filterByProperty != null)
                         {
                             query = query.Where(x => filterByProperty.GetValue(x, null) != null);
 
-                            if (filterByProperty.PropertyType == typeof(string))
+                            if (filterByPropertyType == typeof(string))
                                 query = query.Where(x => filterByProperty.GetValue(x, null).ToString().Contains(rule.data));
-                            else if (filterByProperty.PropertyType == typeof(int))
+                            else if (filterByPropertyType == typeof(int))
                                 query = query.Where(x => filterByProperty.GetValue(x, null).ToString().StartsWith(rule.data));
+                            else if (filterByPropertyType == typeof(DateTime) && !string.IsNullOrWhiteSpace(rule.op)) {
+                                DateTime compareDate;
+                                DateTime.TryParse(rule.data, out compareDate);
+                                //ge: greater or equal
+                                if (rule.op == "ge")
+                                    query = query.Where(x => (DateTime)filterByProperty.GetValue(x, null) >= compareDate);
+                                //we dont need other operands now. so it goes like
+                                //le: less or equal
+                                else 
+                                    query = query.Where(x => (DateTime)filterByProperty.GetValue(x, null) <= compareDate);
+                            }
                             else
                                 query = query.Where(x => filterByProperty.GetValue(x, null).ToString() == rule.data);
                         }

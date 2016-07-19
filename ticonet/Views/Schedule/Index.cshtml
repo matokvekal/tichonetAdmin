@@ -60,7 +60,6 @@
         <div style="margin: 0; padding: 0; height: 100%; width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
             <div class="content jqgrid-extended" id="dLinesTable">
                 <table id="grLines"></table>
-                @*<div id="pgLines"></div>*@
             </div>
         </div>
     </div>
@@ -78,11 +77,12 @@
     </div>
 </div>
 
-<div id="dlgShowCube" title="Show Cube"  hidden style="overflow-x: hidden; overflow-y: auto;">
-    <div class="content jqgrid-extended" id="dCubeTable" style="width: calc(100% - 10px)">
-        <table id="grCubeSchedule"></table>
-        <div id="pgCubeSchedule"></div>
-    </div>
+<div id="dlgShowCube" title="Show Cube" hidden style="overflow-x: hidden; overflow-y: auto;">
+    @Html.Partial("~/Views/Report/Index.cshtml")
+    @*<div class="content jqgrid-extended" id="dCubeTable" style="width: calc(100% - 10px)">
+            <table id="grCubeSchedule"></table>
+            <div id="pgCubeSchedule"></div>
+        </div>*@
 </div>
 
 
@@ -574,7 +574,7 @@
                 }
             }
 
-            // ---------------------------- Popap windows -------------------------
+            // ---------------------------- Popup windows -------------------------
             $("#dlgUpdateLines").dialog({
                 autoOpen: false,
                 width: 900,
@@ -604,6 +604,7 @@
             });
             $("#btnUpdateLines").on("click", function () {
                 generatedScheduleGrid.jqGrid("setGridParam", { datatype: "json" }).trigger("reloadGrid");
+                generatedScheduleGrid.jqGrid("setGridParam", { datatype: "local" });
                 $("#dlgUpdateLines").dialog("open");
                 //generatedScheduleGrid.find(".ui-jqgrid .ui-jqgrid-bdiv").css({ "overflow-y": "scroll" });
             });
@@ -787,3 +788,4 @@
         });
     </script>
 }
+

@@ -216,5 +216,11 @@ namespace ticonet.Controllers
             return new JsonResult { Data = companies };
         }
 
+        [System.Web.Mvc.HttpGet]
+        public JsonResult GetLineDetailedToRows (int Id) {
+            object[] tmp = { new { name = "fdf", val = "val" }, new { name = "fdf2", val = "va2l" } };
+            return new JsonResult { Data = tmp };
+        }
+
     }
 }

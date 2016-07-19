@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Business_Logic;
-
-namespace ticonet.Models
+﻿namespace Business_Logic.Entities
 {
     public class ScheduleParamsModel
     {
