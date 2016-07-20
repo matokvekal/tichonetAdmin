@@ -1,6 +1,6 @@
 ﻿@using System.Web.Optimization
-@using Business_Logic
 @using Business_Logic.Enums
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
 
 <div class="content jqgrid-extended" id="dLinesTable">
     <table id="grLines"></table>
@@ -17,10 +17,10 @@
             var lineActionsFormatter = function (cellvalue, options, rowObject) {
                 var res = "";
                 res += '<div style="margin-left: 8px;">';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
                 res += '</div>';
                 return res;
             };
@@ -31,7 +31,7 @@
             var pagerID = "#pgLines";
 
             grid.jqGrid({
-                caption: "@DictExpressionBuilderSystem.Translate("Line.GridCaption")",
+                caption: "@DEBS.Translate("Line.GridCaption")",
                 url: '/api' + '@Url.Action("GetLines", "LinesApi")',
                 datatype: "json",
                 loadonce: false,
@@ -43,8 +43,8 @@
                 multiselect: false,
                 pager: pagerID,
                 mtype: "get",
-                rowNum: 25,
-                rowList: [5, 25, 50, 100],
+                rowNum: 20,
+                rowList: [10,  20, 30, 40, 50],
                 viewrecords: true,
                 ignoreCase: true,
                 loadui: "disable",
@@ -56,27 +56,27 @@
                 sortorder: "asc",
                 footerrow: true,
                 colNames: [
-                    '@DictExpressionBuilderSystem.Translate("Line.Id")',
-                    '@DictExpressionBuilderSystem.Translate("Line.LineName")',
-                    '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Direction")',
-                    '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
-                    '@DictExpressionBuilderSystem.Translate("Line.totalStudents")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Duration")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Sun")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Mon")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Tue")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Wed")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Thu")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Fri")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Sut")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.BusDescription")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.Id")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.BusId")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
-                    '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.seats")',
-                    '@DictExpressionBuilderSystem.Translate("Bus.price")',
+                    '@DEBS.Translate("Line.Id")',
+                    '@DEBS.Translate("Line.LineName")',
+                    '@DEBS.Translate("Line.LineNumber")',
+                    '@DEBS.Translate("Line.Direction")',
+                    '@DEBS.Translate("Line.IsActive")',
+                    '@DEBS.Translate("Line.totalStudents")',
+                    '@DEBS.Translate("Line.Duration")',
+                    '@DEBS.Translate("Line.Sun")',
+                    '@DEBS.Translate("Line.Mon")',
+                    '@DEBS.Translate("Line.Tue")',
+                    '@DEBS.Translate("Line.Wed")',
+                    '@DEBS.Translate("Line.Thu")',
+                    '@DEBS.Translate("Line.Fri")',
+                    '@DEBS.Translate("Line.Sut")',
+                    '@DEBS.Translate("Bus.BusDescription")',
+                    '@DEBS.Translate("Bus.Id")',
+                    '@DEBS.Translate("Bus.BusId")',
+                    '@DEBS.Translate("Bus.PlateNumber")',
+                    '@DEBS.Translate("BusCompany.Name")',
+                    '@DEBS.Translate("Bus.seats")',
+                    '@DEBS.Translate("Bus.price")',
                     ""
                 ],
                 colModel: [
@@ -93,9 +93,9 @@
                         edittype: 'select',
                         formatter: 'select',
                         editoptions: { value: {
-                            '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
-                            '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
-                            '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                            '@((int)LineDirection.Bouth)': '@DEBS.Translate("General.Bouth")',
+                            '@((int)LineDirection.To)': '@DEBS.Translate("General.To")',
+                            '@((int)LineDirection.From)': '@DEBS.Translate("General.From")'
                         } }
                     },
                     { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
@@ -192,7 +192,7 @@
                         dataType: 'json',
                         contentType: 'application/json; charset=utf-8',
                         success: function (data) {
-                            grid.footerData('set', { LineName: '@DictExpressionBuilderSystem.Translate("grid.Total")', totalStudents: data.Data.Students, seats: data.Data.Seats, price: data.Data.Price });
+                            grid.footerData('set', { LineName: '@DEBS.Translate("grid.Total")', totalStudents: data.Data.Students, seats: data.Data.Seats, price: data.Data.Price });
                         }
                     });
                 }
@@ -202,7 +202,7 @@
                     edit: false,
                     del: false,
                     refresh: true,
-                    refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")",
+                    refreshtitle: "@DEBS.Translate("grid.Reload")",
                     search: false,
                     view: false,
                     closeAfterAdd: true
@@ -212,7 +212,7 @@
                     id: "print",
                     buttonicon: "ui-icon-print",
                     caption: "",
-                    title: "@DictExpressionBuilderSystem.Translate("grid.Print")",
+                    title: "@DEBS.Translate("grid.Print")",
                     onClickButton: function() {
                         var postData = grid.jqGrid('getGridParam', 'postData');
                         var urlGetExcel = '/api' + "@Url.Action("GetPrint", "LinesApi")";
@@ -233,23 +233,23 @@
                                         datatype: "local",
                                         data: data,
                                         colNames: [
-                                            '@DictExpressionBuilderSystem.Translate("Line.LineName")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Direction")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.totalStudents")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Duration")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Sun")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Mon")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Tue")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Wed")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Thu")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Fri")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Sut")',
-                                            '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
-                                            '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
-                                            '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
-                                            '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                                            '@DEBS.Translate("Line.LineName")',
+                                            '@DEBS.Translate("Line.LineNumber")',
+                                            '@DEBS.Translate("Line.Direction")',
+                                            '@DEBS.Translate("Line.IsActive")',
+                                            '@DEBS.Translate("Line.totalStudents")',
+                                            '@DEBS.Translate("Line.Duration")',
+                                            '@DEBS.Translate("Line.Sun")',
+                                            '@DEBS.Translate("Line.Mon")',
+                                            '@DEBS.Translate("Line.Tue")',
+                                            '@DEBS.Translate("Line.Wed")',
+                                            '@DEBS.Translate("Line.Thu")',
+                                            '@DEBS.Translate("Line.Fri")',
+                                            '@DEBS.Translate("Line.Sut")',
+                                            '@DEBS.Translate("Bus.BusIdDescription")',
+                                            '@DEBS.Translate("Bus.PlateNumber")',
+                                            '@DEBS.Translate("BusCompany.Name")',
+                                            '@DEBS.Translate("Bus.seats")',
                                         ],
                                         colModel: [
                                             { name: "LineName" },
@@ -258,9 +258,9 @@
                                                 name: "Direction", formatter: 'select',
                                                 editoptions: {
                                                     value: {
-                                                        '@((int)LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
-                                                        '@((int)LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
-                                                        '@((int)LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                                                        '@((int)LineDirection.Bouth)': '@DEBS.Translate("General.Bouth")',
+                                                        '@((int)LineDirection.To)': '@DEBS.Translate("General.To")',
+                                                        '@((int)LineDirection.From)': '@DEBS.Translate("General.From")'
                                                     }
                                                 }
                                             },
@@ -282,7 +282,7 @@
                                         height: "auto",
                                     });
                                     printWindow.document.clear();
-                                    printWindow.document.write('<html><head><title>@DictExpressionBuilderSystem.Translate("Line.GridCaption")</title>');
+                                    printWindow.document.write('<html><head><title>@DEBS.Translate("Line.GridCaption")</title>');
                                     //printWindow.document.write('<style type=\"text/css\"> table th, table td { border:1px solid #000; padding:0; margin:0; } </style>');
                                     printWindow.document.write('</head><body >');
                                     printWindow.document.write('<div class="page">');
@@ -304,7 +304,7 @@
                     id: "toExcel",
                     buttonicon: "ui-icon-disk",
                     caption: "",
-                    title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")",
+                    title: "@DEBS.Translate("grid.ToExcel")",
                     onClickButton: function() {
                         var postData = grid.jqGrid('getGridParam', 'postData');
                         var urlGetExcel = '/api' + "@Url.Action("GetExcel", "LinesApi")";

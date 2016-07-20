@@ -1,20 +1,23 @@
-﻿@using Business_Logic;
+﻿@using System.Web.Optimization
 @using Business_Logic.Enums
-@using DEBS = Business_Logic.DictExpressionBuilderSystem;
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
 
 <div>
     @DEBS.Translate("Report.Year"):
     <span id="pickYearSliderVal"></span>
 </div>
 <div style="margin-bottom:20px" id="pickYearSlider"></div>
-<div class="content jqgrid-extended" style="width: 100%; height: calc(100% - 50px); overflow-x: hidden; overflow-y: auto;">
+<div class="content jqgrid-extended" style="width: 100%; height: calc(100% - 50px - 130px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
     <div style="width: calc(100% - 20px); margin-right: 20px">
         <table id="reportGrid"></table>
         <div style="margin-bottom:20px" id="reportGridPager"></div>
-        <table id="summaryReportGrid"></table>
     </div>
 </div>
+<hr style="margin:0; padding:5px;" />
+<table id="summaryReportGrid"></table>
 
+@section scripts{
+    @Scripts.Render("~/bundles/jqGridExtend")
 
 <script>
     function GetUserEnteredYear (){
@@ -50,8 +53,110 @@
         var reportGridLocalData
 
         //REPORT GRID ------------------------------------------------------------
+        function getDaysInMonth(m, y) {
+            return /8|3|5|10/.test(--m)?30:m==1?(!(y%4)&&y%100)||!(y%400)?29:28:31;
+        }
 
-        var gridCont = $("#reportGrid");
+        var weekdays = new Array(7);
+        weekdays[0]=  "@DEBS.Translate("Line.Sun")";
+        weekdays[1] = "@DEBS.Translate("Line.Mon")";
+        weekdays[2] = "@DEBS.Translate("Line.Tue")";
+        weekdays[3] = "@DEBS.Translate("Line.Wed")";
+        weekdays[4] = "@DEBS.Translate("Line.Thu")";
+        weekdays[5] = "@DEBS.Translate("Line.Fri")";
+        weekdays[6] = "@DEBS.Translate("Line.Sut")";
+
+        $.ajax(
+        {
+            type: "GET",
+            url: "/api" + "@Url.Action("GetReport", "ReportApi")",
+            data: "",
+            dataType: "json",
+            success: function(result)
+            {
+                var year = 2016;
+                var month = 7;
+                var days = getDaysInMonth(month, year);
+
+                //colD = result.colData;
+                //colN = result.colNames;
+                //colM = result.colModel;
+
+                colN = [];
+                colM = [];
+                colN.push("@DEBS.Translate("Line.Id")");
+                colM.push({ name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false });
+                colN.push("@DEBS.Translate("Line.LineNumber")");
+                colM.push({ name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false });
+                for(var day=1; day<=days; day++) {
+                    var date = new Date(year, month, day);
+                    var weekday = weekdays[date.getDay()];
+                    colN.push("(" + month + "/" + day + "/" + year + ") <br />" + weekday);
+                    colM.push({ name: "day"+day, index: "day"+day, sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false });
+                }
+
+                jQuery("#reportGrid").jqGrid({
+                    jsonReader : {
+                        cell: "",
+                        id: "0"
+                    },
+                    datatype: 'jsonstring',
+                    mtype: 'POST',
+                    //datastr : colD,
+                    colNames:colN,
+                    colModel :colM,
+
+                    height: "100%",
+                    //autowidth: true,
+                    regional: "il",
+                    hidegrid: false,
+                    multiselect: false,
+                    rowNum: 20,
+                    rowList: [10,  20, 30, 40, 50],
+                    viewrecords: true,
+                    ignoreCase: true,
+                    sortname: 'LineName',
+                    sortorder: "asc",
+                    viewrecords: true,
+                    loadonce: true,
+                    @*colNames: [
+                        '@DEBS.Translate("Line.Id")',
+                        '@DEBS.Translate("Line.LineNumber")',
+                        '@DEBS.Translate("Line.Sun")',
+                        '@DEBS.Translate("Line.Mon")',
+                        '@DEBS.Translate("Line.Tue")',
+                        '@DEBS.Translate("Line.Wed")',
+                        '@DEBS.Translate("Line.Thu")',
+                        '@DEBS.Translate("Line.Fri")',
+                        '@DEBS.Translate("Line.Sut")',
+                    ],
+                    colModel: [
+                            { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                            { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false },
+                            { name: 'Sun', index: 'Sun', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                            { name: 'Mon', index: 'Mon', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                            { name: 'Tue', index: 'Tue', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                            { name: 'Wed', index: 'Wed', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                            { name: 'Thu', index: 'Thu', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                            { name: 'Fri', index: 'Fri', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                            { name: 'Sut', index: 'Sut', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    ],*@
+                    loadComplete: function (data) {
+                        reportGridLocalData = data;
+                    },
+                    subGrid: true, // set the subGrid property to true to show expand buttons for each row
+                    subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
+                    pager: "#reportGridPager"
+
+                })
+            },
+            error: function(x, e)
+            {
+                alert(x.readyState + " "+ x.status +" "+ e.msg);
+            }
+        });
+
+        @*var gridCont = $("#reportGrid");
         gridCont.jqGrid({
             caption: '@DEBS.Translate("Report.GridCaption")',
             url: '/api' + '@Url.Action("GetLines", "LinesApi")',
@@ -61,11 +166,19 @@
                 postdata._search = true
                 return postdata
             },
+            height: "100%",
+            //autowidth: true,
+            regional: "il",
+            hidegrid: false,
+            multiselect: false,
+            rowNum: 20,
+            rowList: [10,  20, 30, 40, 50],
+            viewrecords: true,
+            ignoreCase: true,
             sortname: 'LineName',
             sortorder: "asc",
             viewrecords: true,
             loadonce: false,
-            hidegrid: false,
             colNames: [
                 '@DEBS.Translate("Line.Id")',
                 '@DEBS.Translate("Line.LineNumber")',
@@ -91,13 +204,10 @@
             loadComplete: function (data) {
                 reportGridLocalData = data;
             },
-            width: "100%",
-            height: "100%",
-            rowNum: 100,
             subGrid: true, // set the subGrid property to true to show expand buttons for each row
             subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
             pager: "#reportGridPager"
-        });
+        });*@
 
         function PushPropertyLikeObj(arr, data, property, customName, propertyFunc) {
             if (typeof propertyFunc === 'undefined') {
@@ -135,8 +245,8 @@
             // add a table and pager HTML elements to the parent grid row - we will render the child grid here
             $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
 
-
-            $("#" + childGridID).jqGrid({
+            var subgrid = $("#" + childGridID);
+            subgrid.jqGrid({
                 //url: '/api' + '@Url.Action("GetLineDetailedToRows", "LinesApi")',
                 //datatype: "json",
                 //serializeGridData: function(postdata){
@@ -150,12 +260,15 @@
                     { name: 'Val', index: 'Val', width: 110, editable: false },
                 ],
                 loadonce: false,
-                width: '100%',
                 height: '100%',
                 hidegrid: false,
                 loadComplete: function (data) {
                 },
             });
+
+            subgrid.closest("div.ui-jqgrid-view")
+            .children("div.ui-jqgrid-hdiv")
+            .hide();
 
         }
 
@@ -200,13 +313,15 @@
             serializeGridData: function(postdata){
                 return {year: GetUserEnteredYear()};
             },
+            autowidth: true,
+            regional: "il",
+            hidegrid: false,
+            multiselect: false,
             viewrecords: true,
             loadonce: false,
             hidegrid: false,
             colNames: MakeMonthNamesArr(),
             colModel: MakeMonthModels(),
-
-            width: "100%",
             height: "100%",
             rowNum: -1,
             jsonReader: {
@@ -224,4 +339,4 @@
         })
     })
 </script>
-
+}

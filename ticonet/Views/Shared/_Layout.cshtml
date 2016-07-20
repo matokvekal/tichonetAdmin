@@ -1,5 +1,6 @@
 ﻿@using System.Web.Optimization
-@using Business_Logic
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,24 +28,24 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Home"), "Index", "Home")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Insets"), "Index", "Insets")</li>
+                    <li>@Html.ActionLink(@DEBS.Translate("menu.Home"), "Index", "Home")</li>
+                    <li>@Html.ActionLink(@DEBS.Translate("menu.Insets"), "Index", "Insets")</li>
 
                     <li class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">@DictExpressionBuilderSystem.Translate("menu.BusSchedule")<b class="caret"></b></a>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">@DEBS.Translate("menu.BusSchedule")<b class="caret"></b></a>
                         <ul role="menu" class="dropdown-menu">
-                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Buses"), "Index", "Buses")</li>
-                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Lines"), "Index", "Lines")</li>
-                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.BusesToLines"), "Index", "BusesToLines")</li>
-                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Calendar"), "Index", "Calendar")</li>
-                            <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.Schedule"), "Index", "Schedule")</li>
+                            <li>@Html.ActionLink(@DEBS.Translate("menu.Buses"), "Index", "Buses")</li>
+                            <li>@Html.ActionLink(@DEBS.Translate("menu.Lines"), "Index", "Lines")</li>
+                            <li>@Html.ActionLink(@DEBS.Translate("menu.BusesToLines"), "Index", "BusesToLines")</li>
+                            <li>@Html.ActionLink(@DEBS.Translate("menu.Calendar"), "Index", "Calendar")</li>
+                            <li>@Html.ActionLink(@DEBS.Translate("menu.Schedule"), "Index", "Schedule")</li>
                         </ul>
                     </li>
 
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.reports"), "Index", "reports")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.accountancy"), "Index", "accountancy")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.notification"), "Index", "notification")</li>
-                    <li>@Html.ActionLink(@DictExpressionBuilderSystem.Translate("menu.history"), "Index", "history")</li>
+                    <li>@Html.ActionLink(@DEBS.Translate("menu.reports"), "Index", "reports")</li>
+                    <li>@Html.ActionLink(@DEBS.Translate("menu.accountancy"), "Index", "accountancy")</li>
+                    <li>@Html.ActionLink(@DEBS.Translate("menu.notification"), "Index", "notification")</li>
+                    <li>@Html.ActionLink(@DEBS.Translate("menu.history"), "Index", "history")</li>
                     
                 </ul>
                 @Html.Partial("_LoginPartial")
@@ -58,7 +59,7 @@
 
     <footer>
         <hr />
-        <p>&copy; @DateTime.Now.Year - @DictExpressionBuilderSystem.Translate("general.schoolRegistration")</p>
+        <p>&copy; @DateTime.Now.Year - @DEBS.Translate("general.schoolRegistration")</p>
     </footer>
  
 </body>

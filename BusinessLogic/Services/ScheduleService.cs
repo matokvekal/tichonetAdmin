@@ -62,6 +62,8 @@ namespace Business_Logic.Services
 
                 foreach (var item in scheduleArr)
                 {
+                    item.Line = null;
+                    item.Bus = null;
                     logic.SaveItem(item);
                 }
             }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
 using Business_Logic;
@@ -104,27 +105,6 @@ namespace ticonet.Controllers
         }
 
         [System.Web.Http.HttpPost]
-        public JsonResult EditItem(ScheduleItemModel model)
-        {
-            using (var logic = new tblScheduleLogic())
-            {
-                switch ((GridOperation)Enum.Parse(typeof(GridOperation), model.Oper, true))
-                {
-                    case GridOperation.add:
-                        logic.SaveItem(model.ToDbModel());
-                        break;
-                    case GridOperation.edit:
-                        logic.Update(model.ToDbModel());
-                        break;
-                    case GridOperation.del:
-                        logic.DeleteItem(model.Id);
-                        break;
-                }
-            }
-            return new JsonResult { Data = true };
-        }
-
-        [System.Web.Http.HttpPost]
         public JsonResult SaveGeneratedShcedule(IEnumerable<ScheduleItemModel> model, string dateFrom, string dateTo)
         {
             var dtDateFrom = DateHelper.StringToDate(dateFrom);
@@ -143,6 +123,63 @@ namespace ticonet.Controllers
                 result = ScheduleService.SaveGeneratedShcedule(items.Select(x => x.ToDbModel()), dtDateFrom.Value, dtDateTo.Value);
             }
             return new JsonResult { Data = result };
+        }
+
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> FillSchedule()
+        {
+            var success = await Task<bool>.Factory.StartNew(() =>
+            {
+                var linesIds = new List<int>();
+                var dateFrom = DateTime.Now.AddDays(1).Date;
+                var dateTo = DateTime.Now.AddDays(8).Date;
+
+                using (var logic = new LineLogic())
+                {
+                    linesIds = logic.GetList().Select(x => x.Id).ToList();
+                }
+                var parameters = new ScheduleParamsModel
+                {
+                    LinesIds = string.Join(",", linesIds),
+                    DateFrom = DateHelper.DateToString(dateFrom),
+                    DateTo = DateHelper.DateToString(dateTo),
+                    ArriveTime = true,
+                    LeaveTime = true,
+                    Sun = true,
+                    Mon = true,
+                    Tue = true,
+                    Wed = true,
+                    Thu = true,
+                    Fri = true,
+                    Sut = true,
+                };
+
+                var schedule = ScheduleService.GenerateSchedule(parameters).ToList();
+                return ScheduleService.SaveGeneratedShcedule(schedule, dateFrom, dateTo);
+            });
+
+            return Request.CreateResponse(!success ? HttpStatusCode.InternalServerError : HttpStatusCode.OK);
+        }
+
+        [System.Web.Http.HttpPost]
+        public JsonResult EditItem(ScheduleItemModel model)
+        {
+            using (var logic = new tblScheduleLogic())
+            {
+                switch ((GridOperation)Enum.Parse(typeof(GridOperation), model.Oper, true))
+                {
+                    case GridOperation.add:
+                        logic.SaveItem(model.ToDbModel());
+                        break;
+                    case GridOperation.edit:
+                        logic.Update(model.ToDbModel());
+                        break;
+                    case GridOperation.del:
+                        logic.DeleteItem(model.Id);
+                        break;
+                }
+            }
+            return new JsonResult { Data = true };
         }
         
         public JsonResult GetScheduleLines()

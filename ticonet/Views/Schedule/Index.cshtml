@@ -1,52 +1,52 @@
 ﻿@using System.Web.Optimization
-@using Business_Logic
 @using Business_Logic.Enums
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
 
 <div class="content inline-block" style="height: calc(100% - 30px); width: 100%; display: inline-block; margin: 20px 0 0 0; padding: 0;">
     <div style="margin: 0; padding: 0; height: 100%; width: calc(100% - 400px); float: left; border: solid silver thin; overflow: hidden;">
         <div style="margin: 0; padding: 0; height: 70px; width: 300px; float: right;">
-            <p><input type="text" id="dateFrom" style="width:100px;"> :@DictExpressionBuilderSystem.Translate("Schedule.DateFrom")</p>
-            <p><input type="text" id="dateTo" style="width:100px;"> :@DictExpressionBuilderSystem.Translate("Schedule.DateTo")</p>
+            <p><input type="text" id="dateFrom" style="width:100px;"> :@DEBS.Translate("Schedule.DateFrom")</p>
+            <p><input type="text" id="dateTo" style="width:100px;"> :@DEBS.Translate("Schedule.DateTo")</p>
         </div>
         <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right;">
             <div style="margin: 0; padding: 0; height: 25px; width: 100%; float: right;">
-                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.LeaveTime")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">@DEBS.Translate("Schedule.ArriveTime")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;">@DEBS.Translate("Schedule.LeaveTime")</div>
                 <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">&nbsp;</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.Sun")</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.Mon")</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.Tue")</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.Wed")</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.Thu")</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.Fri")</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DictExpressionBuilderSystem.Translate("Schedule.Sut")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DEBS.Translate("Schedule.Sun")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DEBS.Translate("Schedule.Mon")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DEBS.Translate("Schedule.Tue")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DEBS.Translate("Schedule.Wed")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DEBS.Translate("Schedule.Thu")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DEBS.Translate("Schedule.Fri")</div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">@DEBS.Translate("Schedule.Sut")</div>
             </div>
             <div style="margin: 0; padding: 0; height: 25px; width: 100%; float: right;">
-                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;"><input type="checkbox" value="true" name="ArriveTime" checked title="@DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")"></div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;"><input type="checkbox" value="true" name="LeaveTime" checked title="@DictExpressionBuilderSystem.Translate("Schedule.LeaveTime")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;"><input type="checkbox" value="true" name="ArriveTime" checked title="@DEBS.Translate("Schedule.ArriveTime")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 80px; float: right;"><input type="checkbox" value="true" name="LeaveTime" checked title="@DEBS.Translate("Schedule.LeaveTime")"></div>
                 <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;">&nbsp;</div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Sun" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Sun")"></div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Mon" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Mon")"></div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Tue" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Tue")"></div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Wed" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Wed")"></div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Thu" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Thu")"></div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Fri" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Fri")"></div>
-                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Sut" checked title="@DictExpressionBuilderSystem.Translate("Schedule.Sut")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Sun" checked title="@DEBS.Translate("Schedule.Sun")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Mon" checked title="@DEBS.Translate("Schedule.Mon")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Tue" checked title="@DEBS.Translate("Schedule.Tue")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Wed" checked title="@DEBS.Translate("Schedule.Wed")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Thu" checked title="@DEBS.Translate("Schedule.Thu")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Fri" checked title="@DEBS.Translate("Schedule.Fri")"></div>
+                <div style="text-align:center; margin: 0; padding: 0; width: 60px; float: right;"><input type="checkbox" value="true" name="Sut" checked title="@DEBS.Translate("Schedule.Sut")"></div>
             </div>
-            @*<input type="checkbox" value="true" name="ArriveTime" checked> @DictExpressionBuilderSystem.Translate("Schedule.ArriveTime")&nbsp;
-            <input type="checkbox" value="true" name="LeaveTime" checked> @DictExpressionBuilderSystem.Translate("Schedule.LeaveTime")<br />
-            <input type="checkbox" value="true" name="Sun" checked> @DictExpressionBuilderSystem.Translate("Schedule.Sun")&nbsp;
-            <input type="checkbox" value="true" name="Mon" checked> @DictExpressionBuilderSystem.Translate("Schedule.Mon")&nbsp;
-            <input type="checkbox" value="true" name="Tue" checked> @DictExpressionBuilderSystem.Translate("Schedule.Tue")&nbsp;
-            <input type="checkbox" value="true" name="Wed" checked> @DictExpressionBuilderSystem.Translate("Schedule.Wed")&nbsp;
-            <input type="checkbox" value="true" name="Thu" checked> @DictExpressionBuilderSystem.Translate("Schedule.Thu")&nbsp;
-            <input type="checkbox" value="true" name="Fri" checked> @DictExpressionBuilderSystem.Translate("Schedule.Fri")&nbsp;
-            <input type="checkbox" value="true" name="Sut" checked> @DictExpressionBuilderSystem.Translate("Schedule.Sut")*@
+            @*<input type="checkbox" value="true" name="ArriveTime" checked> @DEBS.Translate("Schedule.ArriveTime")&nbsp;
+            <input type="checkbox" value="true" name="LeaveTime" checked> @DEBS.Translate("Schedule.LeaveTime")<br />
+            <input type="checkbox" value="true" name="Sun" checked> @DEBS.Translate("Schedule.Sun")&nbsp;
+            <input type="checkbox" value="true" name="Mon" checked> @DEBS.Translate("Schedule.Mon")&nbsp;
+            <input type="checkbox" value="true" name="Tue" checked> @DEBS.Translate("Schedule.Tue")&nbsp;
+            <input type="checkbox" value="true" name="Wed" checked> @DEBS.Translate("Schedule.Wed")&nbsp;
+            <input type="checkbox" value="true" name="Thu" checked> @DEBS.Translate("Schedule.Thu")&nbsp;
+            <input type="checkbox" value="true" name="Fri" checked> @DEBS.Translate("Schedule.Fri")&nbsp;
+            <input type="checkbox" value="true" name="Sut" checked> @DEBS.Translate("Schedule.Sut")*@
         </div>
         <div style="margin: 0; padding: 0; height: 30px; width: 100%; float: right;">
-            <button id="btnShowCube" title="@DictExpressionBuilderSystem.Translate("Schedule.ShowCube")"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></button>
-            <button id="btnUpdateLines" title="@DictExpressionBuilderSystem.Translate("Schedule.UpdateLines")"><span class="glyphicon glyphicon-import" aria-hidden="true"></span></button>
-            <button id="btnRefresh" title="@DictExpressionBuilderSystem.Translate("Schedule.Refresh")"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            <button id="btnShowCube" title="@DEBS.Translate("Schedule.ShowCube")"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></button>
+            <button id="btnUpdateLines" title="@DEBS.Translate("Schedule.UpdateLines")"><span class="glyphicon glyphicon-import" aria-hidden="true"></span></button>
+            <button id="btnRefresh" title="@DEBS.Translate("Schedule.Refresh")"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
         </div>
 
         <div style="margin: 0; padding: 0; height: calc(100% - 150px); width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
@@ -72,17 +72,13 @@
     </div>
     <div style="width: 100%; height: 50px;">
         <hr style="margin:0; padding:5px;"/>
-        <button id="btnUpdateLinesApplay" title="@DictExpressionBuilderSystem.Translate("Schedule.Applay")"><span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span></button>
-        <button id="btnUpdateLinesCancel" title="@DictExpressionBuilderSystem.Translate("Schedule.Cancel")"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></button>
+        <button id="btnUpdateLinesApplay" title="@DEBS.Translate("Schedule.Applay")"><span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span></button>
+        <button id="btnUpdateLinesCancel" title="@DEBS.Translate("Schedule.Cancel")"><span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></button>
     </div>
 </div>
 
 <div id="dlgShowCube" title="Show Cube" hidden style="width: 900px; height: 500px;">
     @Html.Partial("~/Views/Report/Index.cshtml")
-    @*<div class="content jqgrid-extended" id="dCubeTable" style="width: calc(100% - 10px)">
-            <table id="grCubeSchedule"></table>
-            <div id="pgCubeSchedule"></div>
-        </div>*@
 </div>
 
 
@@ -132,7 +128,7 @@
                 });
 
             linesGrid.jqGrid({
-                caption: '@DictExpressionBuilderSystem.Translate("Line.GridCaption")',
+                caption: '@DEBS.Translate("Line.GridCaption")',
                 url: '/api' + '@Url.Action("GetLines", "ScheduleApi")',
                 datatype: "json",
                 sortname: 'LineName',
@@ -145,11 +141,11 @@
                 multiselect: true,
                 rowNum: -1,
                 colNames: [
-                    '@DictExpressionBuilderSystem.Translate("Line.Id")',
-                    '@DictExpressionBuilderSystem.Translate("Line.LineName")',
-                    '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
-                    '@DictExpressionBuilderSystem.Translate("Line.Direction")',
-                    '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
+                    '@DEBS.Translate("Line.Id")',
+                    '@DEBS.Translate("Line.LineName")',
+                    '@DEBS.Translate("Line.LineNumber")',
+                    '@DEBS.Translate("Line.Direction")',
+                    '@DEBS.Translate("Line.IsActive")',
                 ],
                 colModel: [
                     { name: "Id", index: 'Id', key: true, hidden: false, width: 50, sortable: false, editable: false, edittype: "text", search: false },
@@ -166,9 +162,9 @@
                         formatter: 'select',
                         editoptions: {
                             value: {
-                                '@((int) LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
-                                '@((int) LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
-                                '@((int) LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                                '@((int) LineDirection.Bouth)': '@DEBS.Translate("General.Bouth")',
+                                '@((int) LineDirection.To)': '@DEBS.Translate("General.To")',
+                                '@((int) LineDirection.From)': '@DEBS.Translate("General.From")'
                             }
                         }
                     },
@@ -192,16 +188,16 @@
             var lineActionsFormatter = function(cellvalue, options, rowObject) {
                 var res = "";
                 res += '<div style="margin-left: 8px;">';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
-                res += '    <div title="@DictExpressionBuilderSystem.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
                 res += '</div>';
                 return res;
             };
 
             var commonScheduleGridParams = {
-                caption: "@DictExpressionBuilderSystem.Translate("Schedule.GridCaption")",
+                caption: "@DEBS.Translate("Schedule.GridCaption")",
                 postData: getScheduleGridParams(),
                 loadonce: false,
                 scrollerbar: true,
@@ -220,20 +216,20 @@
                 sortname: 'Id',
                 sortorder: "asc",
                 colNames: [
-                    '@DictExpressionBuilderSystem.Translate("Schedule.Id")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.Date")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.Direction")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.LineIdDescription")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.LineIdKey")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.LineId")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.DriverIdDescription")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.DriverIdKey")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.DriverId")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.BusIdDescription")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.BusIdKey")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.BusId")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.leaveTime")',
-                    '@DictExpressionBuilderSystem.Translate("Schedule.arriveTime")',
+                    '@DEBS.Translate("Schedule.Id")',
+                    '@DEBS.Translate("Schedule.Date")',
+                    '@DEBS.Translate("Schedule.Direction")',
+                    '@DEBS.Translate("Schedule.LineIdDescription")',
+                    '@DEBS.Translate("Schedule.LineIdKey")',
+                    '@DEBS.Translate("Schedule.LineId")',
+                    '@DEBS.Translate("Schedule.DriverIdDescription")',
+                    '@DEBS.Translate("Schedule.DriverIdKey")',
+                    '@DEBS.Translate("Schedule.DriverId")',
+                    '@DEBS.Translate("Schedule.BusIdDescription")',
+                    '@DEBS.Translate("Schedule.BusIdKey")',
+                    '@DEBS.Translate("Schedule.BusId")',
+                    '@DEBS.Translate("Schedule.leaveTime")',
+                    '@DEBS.Translate("Schedule.arriveTime")',
                     ""
                 ],
                 colModel: [
@@ -250,9 +246,9 @@
                         formatter: 'select',
                         editoptions: {
                             value: {
-                                '@((int) LineDirection.Bouth)': '@DictExpressionBuilderSystem.Translate("General.Bouth")',
-                                '@((int) LineDirection.To)': '@DictExpressionBuilderSystem.Translate("General.To")',
-                                '@((int) LineDirection.From)': '@DictExpressionBuilderSystem.Translate("General.From")'
+                                '@((int) LineDirection.Bouth)': '@DEBS.Translate("General.Bouth")',
+                                '@((int) LineDirection.To)': '@DEBS.Translate("General.To")',
+                                '@((int) LineDirection.From)': '@DEBS.Translate("General.From")'
                             }
                         }
                     },
@@ -385,8 +381,8 @@
                     url: '/api' + '@Url.Action("GetSchedule", "ScheduleApi")',
                     datatype: "local",
                     pager: schedulePagerID,
-                    rowNum: 25,
-                    rowList: [5, 25, 50, 100],
+                    rowNum: 20,
+                    rowList: [10,  20, 30, 40, 50],
                     beforeSelectRow: function(rowid) {
                         scheduleGridExtend.restore(rowid);
                         return false;
@@ -403,11 +399,11 @@
                 .navGrid(schedulePagerID, {
                         edit: false,
                         add: true,
-                        addtitle: "@DictExpressionBuilderSystem.Translate("grid.CreateNewRow")",
+                        addtitle: "@DEBS.Translate("grid.CreateNewRow")",
                         del: false,
-                        deltitle: "@DictExpressionBuilderSystem.Translate("grid.DeleteRow")",
+                        deltitle: "@DEBS.Translate("grid.DeleteRow")",
                         refresh: true,
-                        refreshtitle: "@DictExpressionBuilderSystem.Translate("grid.Reload")",
+                        refreshtitle: "@DEBS.Translate("grid.Reload")",
                         search: false,
                         view: false,
                         closeAfterAdd: true,
@@ -419,7 +415,7 @@
                     id: "print",
                     buttonicon: "ui-icon-print",
                     caption: "",
-                    title: "@DictExpressionBuilderSystem.Translate("grid.Print")",
+                    title: "@DEBS.Translate("grid.Print")",
                     onClickButton: function () {
                         var postData = grid.jqGrid('getGridParam', 'postData');
                         var urlGetExcel = '/api' + "@Url.Action("GetPrint", "LinesApi")";
@@ -440,23 +436,23 @@
                                         datatype: "local",
                                         data: data,
                                         colNames: [
-                                            '@DictExpressionBuilderSystem.Translate("Line.LineName")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.LineNumber")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Direction")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.IsActive")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.totalStudents")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Duration")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Sun")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Mon")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Tue")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Wed")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Thu")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Fri")',
-                                            '@DictExpressionBuilderSystem.Translate("Line.Sut")',
-                                            '@DictExpressionBuilderSystem.Translate("Bus.BusIdDescription")',
-                                            '@DictExpressionBuilderSystem.Translate("Bus.PlateNumber")',
-                                            '@DictExpressionBuilderSystem.Translate("BusCompany.Name")',
-                                            '@DictExpressionBuilderSystem.Translate("Bus.seats")',
+                                            '@DEBS.Translate("Line.LineName")',
+                                            '@DEBS.Translate("Line.LineNumber")',
+                                            '@DEBS.Translate("Line.Direction")',
+                                            '@DEBS.Translate("Line.IsActive")',
+                                            '@DEBS.Translate("Line.totalStudents")',
+                                            '@DEBS.Translate("Line.Duration")',
+                                            '@DEBS.Translate("Line.Sun")',
+                                            '@DEBS.Translate("Line.Mon")',
+                                            '@DEBS.Translate("Line.Tue")',
+                                            '@DEBS.Translate("Line.Wed")',
+                                            '@DEBS.Translate("Line.Thu")',
+                                            '@DEBS.Translate("Line.Fri")',
+                                            '@DEBS.Translate("Line.Sut")',
+                                            '@DEBS.Translate("Bus.BusIdDescription")',
+                                            '@DEBS.Translate("Bus.PlateNumber")',
+                                            '@DEBS.Translate("BusCompany.Name")',
+                                            '@DEBS.Translate("Bus.seats")',
                                         ],
                                         colModel: [
                                             { name: "LineName" },
@@ -480,7 +476,7 @@
                                         height: "auto",
                                     });
                                     printWindow.document.clear();
-                                    printWindow.document.write('<html><head><title>@DictExpressionBuilderSystem.Translate("Line.GridCaption")</title>');
+                                    printWindow.document.write('<html><head><title>@DEBS.Translate("Line.GridCaption")</title>');
                                     //printWindow.document.write('<style type=\"text/css\"> table th, table td { border:1px solid #000; padding:0; margin:0; } </style>');
                                     printWindow.document.write('</head><body >');
                                     printWindow.document.write('<div class="page">');
@@ -502,7 +498,7 @@
                     id: "toExcel",
                     buttonicon: "ui-icon-disk",
                     caption: "",
-                    title: "@DictExpressionBuilderSystem.Translate("grid.ToExcel")",
+                    title: "@DEBS.Translate("grid.ToExcel")",
                     onClickButton: function () {
                         var postData = grid.jqGrid('getGridParam', 'postData');
                         var urlGetExcel = '/api' + "@Url.Action("GetExcel", "LinesApi")";
@@ -562,7 +558,7 @@
                     var pattern = "(0[1-9]|1[012])(/)(0[1-9]|[12][0-9]|3[01])(/)(19|20)\\d\\d";
                     var regCheck = new RegExp(pattern);
                     if (!regCheck.test(value)) {
-                        return [false, "@DictExpressionBuilderSystem.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
+                        return [false, "@DEBS.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
                     }
                 }
                 return [true, ""];
@@ -573,7 +569,7 @@
                     var pattern = "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
                     var regCheck = new RegExp(pattern);
                     if (!regCheck.test(value)) {
-                        return [false, "@DictExpressionBuilderSystem.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
+                        return [false, "@DEBS.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
                     }
                 }
                 return [true, ""];
@@ -606,8 +602,8 @@
 
             $("#dlgShowCube").dialog({
                 autoOpen: false,
-                width: 900,
-                height: 500,
+                width: 900, //$(window).width(),
+                height: 500, //$(window).height(),
                 modal: true
             });
 
@@ -652,9 +648,15 @@
             });
 
             $("#btnShowCube").on("click", function () {
-                $("#reportGrid").trigger('reloadGrid');
-                $("#summaryReportGrid").trigger('reloadGrid');
-                $("#dlgShowCube").dialog("open");
+                window.open("@Url.Action("Index", "Report")", "_self")
+                return;
+
+                dlgShowCube = $("#dlgShowCube");
+                //dlgShowCube.dialog("option", "width", $(window).width());
+                //dlgShowCube.dialog("option", "height", $(window).height());
+                dlgShowCube.find("#reportGrid").trigger('reloadGrid');
+                dlgShowCube.find("#summaryReportGrid").trigger('reloadGrid');
+                dlgShowCube.dialog("open");
             });
         });
     </script>
