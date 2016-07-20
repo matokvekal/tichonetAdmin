@@ -2,20 +2,67 @@
 @using Business_Logic.Enums
 @using DEBS = Business_Logic.DictExpressionBuilderSystem;
 
-<table id="reportGrid"></table>
-<div id="reportGridPager"></div>
+<div>
+    @DEBS.Translate("Report.Year"):
+    <span id="pickYearSliderVal"></span>
+</div>
+<div style="margin-bottom:20px" id="pickYearSlider"></div>
+<div class="content jqgrid-extended" style="width: 100%; height: calc(100% - 50px); overflow-x: hidden; overflow-y: auto;">
+    <div style="width: calc(100% - 20px); margin-right: 20px">
+        <table id="reportGrid"></table>
+        <div style="margin-bottom:20px" id="reportGridPager"></div>
+        <table id="summaryReportGrid"></table>
+    </div>
+</div>
+
 
 <script>
+    function GetUserEnteredYear (){
+        return $( "#pickYearSlider" ).slider( "option", "value" );
+    }
+
+    function MakeYearRestrictionFilterRules (year) {
+        return [
+            { field: "Date", op: "ge", data:  new Date(year, 0, 1)},
+            { field: "Date", op: "lt", data:  new Date(year + 1, 0, 1)}
+        ]
+    }
+
     $(function () {
-        var LocalData
-        var gridCont = $("#reportGrid")
+
+        //SLIDER ------------------------------------
+
+        function UpdateReportGrids () {
+            gridCont.trigger('reloadGrid');
+            summaryGridCont.trigger('reloadGrid');
+        }
+
+        var NowDate = new Date();
+        var NowYear = NowDate.getFullYear();
+        $("#pickYearSliderVal").html(NowYear);
+        $("#pickYearSlider" ).slider({
+            max: NowYear + 50,
+            min: NowYear - 50,
+            value: NowYear,
+            slide: function(event, ui) {$("#pickYearSliderVal").html(ui.value)},
+            stop: function(event, ui) {UpdateReportGrids()}
+        });
+        var reportGridLocalData
+
+        //REPORT GRID ------------------------------------------------------------
+
+        var gridCont = $("#reportGrid");
         gridCont.jqGrid({
-            caption: '@DictExpressionBuilderSystem.Translate("Line.GridCaption")',
+            caption: '@DEBS.Translate("Report.GridCaption")',
             url: '/api' + '@Url.Action("GetLines", "LinesApi")',
             datatype: "json",
+            serializeGridData: function(postdata){
+                postdata.filters = JSON.stringify( {rules: MakeYearRestrictionFilterRules(GetUserEnteredYear())} )
+                postdata._search = true
+                return postdata
+            },
             sortname: 'LineName',
             sortorder: "asc",
-            //altclass: "ui-state-default",
             viewrecords: true,
             loadonce: false,
             hidegrid: false,
@@ -32,17 +79,17 @@
             ],
             colModel: [
                     { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110, editable: false },
-                    { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Tue', index: 'Tue', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Wed', index: 'Wed', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false },
+                    { name: 'Sun', index: 'Sun', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'Mon', index: 'Mon', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'Tue', index: 'Tue', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'Wed', index: 'Wed', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'Thu', index: 'Thu', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'Fri', index: 'Fri', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'Sut', index: 'Sut', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
             ],
             loadComplete: function (data) {
-                LocalData = data;
+                reportGridLocalData = data;
             },
             width: "100%",
             height: "100%",
@@ -50,20 +97,23 @@
             subGrid: true, // set the subGrid property to true to show expand buttons for each row
             subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
             pager: "#reportGridPager"
-        })
-
+        });
 
         function PushPropertyLikeObj(arr, data, property, customName, propertyFunc) {
-            if (typeof propertyFunc === 'undefined')
+            if (typeof propertyFunc === 'undefined') {
                 propertyFunc = function(p){return p};
-            if (typeof customName !== 'undefined')
-                arr.push({ Name: customName, Val: propertyFunc( data[property]) })
-            else
-                arr.push({ Name: property, Val: propertyFunc( data[property]) })
+
+            }
+            if (typeof customName !== 'undefined') {
+                arr.push({ Name: customName, Val: propertyFunc( data[property]) });
+            }
+            else {
+                arr.push({ Name: property, Val: propertyFunc( data[property]) });
+            }
         }
 
         function ConvertLineDataToRows(lineData) {
-            var rows = []
+            var rows = [];
             PushPropertyLikeObj(rows, lineData, 'LineName', '@DEBS.Translate("Line.LineName")');
             PushPropertyLikeObj(rows, lineData, 'Direction', '@DEBS.Translate("Line.Direction")', DirectionToString);
             PushPropertyLikeObj(rows, lineData, 'totalStudents', '@DEBS.Translate("Line.totalStudents")');
@@ -74,8 +124,8 @@
         }
 
         function showChildGrid(parentRowID, parentRowKey) {
-            var lineData = LocalData.rows.find(function (e, i, a) { return e.Id == parentRowKey })
-            var lineDataRows = ConvertLineDataToRows(lineData)
+            var lineData = reportGridLocalData.rows.find(function (e, i, a) { return e.Id == parentRowKey });
+            var lineDataRows = ConvertLineDataToRows(lineData);
 
             var childGridID = parentRowID + "_table";
             var childGridPagerID = parentRowID + "_pager";
@@ -116,6 +166,62 @@
                 '@DEBS.Translate("General.To")' :
                 '@DEBS.Translate("General.From")'
         }
+
+
+        //SUMMARY REPORT GRID ------------------------------------------------------------
+
+        function MakeMonthNamesArr () {
+            var arr = [];
+            arr.push('@DEBS.Translate("Report.Month")');
+            for (ind = 1; ind < 13; ind++ ) {
+                arr.push(ind);
+            }
+            return arr;
+        }
+
+        function MakeMonthModels () {
+            var arr = [];
+            arr.push({ name: 'name', index: 'name', width: 120, editable: false, align: 'center' });
+            for (ind = 1; ind < 13; ind++) {
+                arr.push({ name: 'month'+ind, index: 'month'+ind, width: 62, editable: false, align: 'center' });
+            }
+            return arr;
+        }
+
+        const txt_LinesCount = '@DEBS.Translate("Report.linesCount")'
+        const txt_totalStudents = '@DEBS.Translate("Report.totalStudents")'
+        const txt_totalPrice = '@DEBS.Translate("Report.totalPrice")'
+
+        var summaryGridCont = $("#summaryReportGrid");
+        summaryGridCont.jqGrid({
+            caption: '@DEBS.Translate("SummaryReport.GridCaption")',
+            url: '/api' + '@Url.Action("GetLinesTotalStatistic", "ReportApi")',
+            datatype: "json",
+            serializeGridData: function(postdata){
+                return {year: GetUserEnteredYear()};
+            },
+            viewrecords: true,
+            loadonce: false,
+            hidegrid: false,
+            colNames: MakeMonthNamesArr(),
+            colModel: MakeMonthModels(),
+
+            width: "100%",
+            height: "100%",
+            rowNum: -1,
+            jsonReader: {
+                repeatitems: false,
+                root: function (obj){
+                    var result = [{name:txt_LinesCount},{name:txt_totalStudents},{name:txt_totalPrice}];
+                    for (ind = 1; ind<13; ind ++) {
+                        result[0]['month'+ind]=obj.Data[ind-1]["linesCount"];
+                        result[1]['month'+ind]=obj.Data[ind-1]["totalStudents"];
+                        result[2]['month'+ind]=obj.Data[ind-1]["totalPrice"];
+                    }
+                    return result;
+                }
+            }
+        })
     })
 </script>
 

@@ -46,6 +46,12 @@ namespace ticonet.Models
 
         public string BusIdDescription { get; set; }
 
+        public int? LineIdKey { get; set; }
+
+        public int? DriverIdKey { get; set; }
+
+        public int? BusIdKey { get; set; }
+
         public string Oper { get; set; }
 
         public tblSchedule ToDbModel()

@@ -167,3 +167,10 @@ div#ui-datepicker-div.ui-datepicker, div#calendar-datepicker > div.ui-datepicker
     border: 1px #999 solid;
 }
 
+
+/* Scrollbar */ 
+::-webkit-scrollbar{width: 10px;}
+::-webkit-scrollbar-thumb{background-color:#555; border-radius: 0;}
+::-webkit-scrollbar-thumb:hover{background-color:#999;}
+::-webkit-scrollbar-track{background-color:#222;}
+/* End Scrollbar */

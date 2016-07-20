@@ -380,6 +380,19 @@ namespace Business_Logic
                             .Include(x => x.BusesToLines)
                             .Where(x => x.BusesToLines.Select(l => l.Bus).Any(b => b.BusCompany != null && b.BusCompany.pk == id));
                     }
+                    else if (rule.field == "Date") {
+                        DateTime dt;
+                        if (DateTime.TryParse(rule.data, out dt)) {
+                            query = query.AsQueryable()
+                            .Include(x => x.tblSchedules);
+                            if (rule.op == "ge") //greater or equal then 
+                                query = query.Where(x => x.tblSchedules.Any(y => y.Date >= dt));
+                            else //less then
+                                query = query.Where(x => x.tblSchedules.Any(y => y.Date < dt));
+                        }
+                        else
+                            throw new ArgumentException();
+                    }
                     else
                     {
                         var filterByProperty = typeof(Line).GetProperty(rule.field);
@@ -436,6 +449,17 @@ namespace Business_Logic
                     return line => line.BusesToLines.DefaultIfEmpty(new BusesToLine {Bus = new Bus() }).First().Bus.BusCompany.IfNotNull(c => c.companyName);
             }
             return line => line.Id;
+        }
+
+        public LinesTotalStatistic GetLinesTotalStatistic (DateTime periodStart_incl,DateTime periodEnd_excl) {
+            var query = DB.tblSchedules
+                .Where(x => x.Date >= periodStart_incl && x.Date < periodEnd_excl);
+            var result = new LinesTotalStatistic {
+                linesCount = query.Select(x => x.Line).Any()? query.Select(x => x.Line).Count():0,
+                totalStudents = query.Select(x => x.Line).Any()? query.Select(x => x.Line).Sum(x => x.totalStudents ?? 0) : 0,
+                totalPrice = query.Select(x => x.Bus).Any()? query.Select(x => x.Bus).Sum(x => x.price ?? 0) : 0
+            };
+            return result;
         }
     }
 }

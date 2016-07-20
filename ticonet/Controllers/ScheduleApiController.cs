@@ -84,7 +84,7 @@ namespace ticonet.Controllers
         {
             var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
             var dateTo = DateHelper.StringToDate(parameters.DateTo);
-            var fakeId = 0;
+            //var fakeId = 0;
 
             if (!dateFrom.HasValue || !dateTo.HasValue || string.IsNullOrEmpty(parameters.LinesIds))
             {
@@ -134,6 +134,12 @@ namespace ticonet.Controllers
 
             if (items.Any() && dtDateFrom.HasValue && dtDateTo.HasValue)
             {
+                foreach (var item in items)
+                {
+                    item.LineId = item.LineIdKey;
+                    item.DriverId = item.DriverIdKey;
+                    item.BusId = item.BusIdKey;
+                }
                 result = ScheduleService.SaveGeneratedShcedule(items.Select(x => x.ToDbModel()), dtDateFrom.Value, dtDateTo.Value);
             }
             return new JsonResult { Data = result };

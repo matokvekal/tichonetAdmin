@@ -103,6 +103,7 @@ var jqGridExtend = (function () {
                 $.each(grid.getDataIDs(), function (index, id) {
                     var row = grid.getRowData(id);
                     var value = row[col.name];
+                    row[col.name + "Key"] = value;
                     var text = row[col.name + "Description"];
                     row[col.name] = text;
                     grid.setRowData(id, row);
