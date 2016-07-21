@@ -217,6 +217,7 @@
                         var postData = grid.jqGrid('getGridParam', 'postData');
                         var urlGetExcel = '/api' + "@Url.Action("GetPrint", "LinesApi")";
                         var url = urlGetExcel + "?" + $.param(postData);
+                        var printGrid = $("#grPrintLines");
                         if (printWindow == null || printWindow.closed) {
                             printWindow = window.open('', '', 'height=' + $(window).height() + ',width=' + $(window).width());
                         } else {
@@ -229,9 +230,11 @@
                             contentType: 'application/json; charset=utf-8',
                             success: function(data) {
                                 if (printWindow != undefined) {
-                                    $("#grPrintLines").jqGrid({
+                                    printGrid.jqGrid({
                                         datatype: "local",
                                         data: data,
+                                        footerrow: true,
+                                        rowNum: -1,
                                         colNames: [
                                             '@DEBS.Translate("Line.LineName")',
                                             '@DEBS.Translate("Line.LineNumber")',
@@ -250,6 +253,7 @@
                                             '@DEBS.Translate("Bus.PlateNumber")',
                                             '@DEBS.Translate("BusCompany.Name")',
                                             '@DEBS.Translate("Bus.seats")',
+                                            '@DEBS.Translate("Bus.price")',
                                         ],
                                         colModel: [
                                             { name: "LineName" },
@@ -278,8 +282,15 @@
                                             { name: "PlateNumber" },
                                             { name: "BusCompanyName" },
                                             { name: "seats" },
+                                            { name: "price" },
                                         ],
                                         height: "auto",
+                                        loadComplete: function () {
+                                            var totalStudents = printGrid.jqGrid('getCol', 'totalStudents', false, 'sum'),
+                                                seats = printGrid.jqGrid('getCol', 'seats', false, 'sum'),
+                                                price = printGrid.jqGrid('getCol', 'price', false, 'sum');
+                                            printGrid.jqGrid("footerData", "set", { LineName: '@DEBS.Translate("grid.Total")', totalStudents: totalStudents, seats: seats, price: price });
+                                        }
                                     });
                                     printWindow.document.clear();
                                     printWindow.document.write('<html><head><title>@DEBS.Translate("Line.GridCaption")</title>');

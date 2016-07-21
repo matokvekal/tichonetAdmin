@@ -119,7 +119,7 @@ namespace ticonet.Controllers
             worksheet.Cell(1, 15).Value = DictExpressionBuilderSystem.Translate("Bus.PlateNumber");
             worksheet.Cell(1, 16).Value = DictExpressionBuilderSystem.Translate("BusCompany.Name");
             worksheet.Cell(1, 17).Value = DictExpressionBuilderSystem.Translate("Bus.seats");
-            worksheet.Cell(1, 17).Value = DictExpressionBuilderSystem.Translate("Bus.price");
+            worksheet.Cell(1, 18).Value = DictExpressionBuilderSystem.Translate("Bus.price");
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -142,9 +142,15 @@ namespace ticonet.Controllers
                 worksheet.Cell(row, 15).SetValue<string>(lines[i].PlateNumber);
                 worksheet.Cell(row, 16).SetValue<string>(lines[i].BusCompanyName);
                 worksheet.Cell(row, 17).SetValue<int?>(lines[i].seats);
-                worksheet.Cell(row, 17).SetValue<double?>(lines[i].price);
+                worksheet.Cell(row, 18).SetValue<double?>(lines[i].price);
             }
 
+            var totalRowIndex = lines.Length + 2;
+            worksheet.Cell(totalRowIndex, 1).Value = DictExpressionBuilderSystem.Translate("grid.Total");
+            worksheet.Cell(totalRowIndex, 5).SetFormulaA1(string.Format("=SUM(E2:E{0})", totalRowIndex - 1));
+            worksheet.Cell(totalRowIndex, 17).SetFormulaA1(string.Format("=SUM(Q2:Q{0})", totalRowIndex - 1));
+            worksheet.Cell(totalRowIndex, 18).SetFormulaA1(string.Format("=SUM(R2:R{0})", totalRowIndex - 1));
+            
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             worksheet.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.None;
             worksheet.Columns().AdjustToContents();

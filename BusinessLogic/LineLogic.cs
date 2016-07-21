@@ -380,15 +380,21 @@ namespace Business_Logic
                             .Include(x => x.BusesToLines)
                             .Where(x => x.BusesToLines.Select(l => l.Bus).Any(b => b.BusCompany != null && b.BusCompany.pk == id));
                     }
-                    else if (rule.field == "Date") {
-                        DateTime dt;
-                        if (DateTime.TryParse(rule.data, out dt)) {
+                    else if (rule.field == "DateRange") {
+                        DateTime dtmin,dtmax;
+                        var dates = rule.data.Replace("\"","").Split(new string[] { "<->" }, StringSplitOptions.RemoveEmptyEntries );
+                        if (dates.Length == 2 && DateTime.TryParse(dates[0], out dtmin) && DateTime.TryParse(dates[1], out dtmax)) {
                             query = query.AsQueryable()
-                            .Include(x => x.tblSchedules);
-                            if (rule.op == "ge") //greater or equal then 
-                                query = query.Where(x => x.tblSchedules.Any(y => y.Date >= dt));
-                            else //less then
-                                query = query.Where(x => x.tblSchedules.Any(y => y.Date < dt));
+                            .Include(x => x.tblSchedules)
+                            .Where(x => x.tblSchedules.Any(y => y.Date >= dtmin && y.Date < dtmax));
+                            //TODO!!
+                            //this is doesnt work as desired since the relation line2sqhedule is one to many
+                            //if (rule.op == "ge") //greater or equal then 
+                            //    query = query.Where(x => x.tblSchedules.Any(y => y.Date >= dt));
+                            //else if (rule.op == "lt") //less then
+                            //    query = query.Where(x => x.tblSchedules.Any(y => y.Date < dt));
+                            //else
+                            //throw new NotImplementedException("There is no defined rule for filtering Date with operand: " + rule.op);
                         }
                         else
                             throw new ArgumentException();
@@ -451,15 +457,66 @@ namespace Business_Logic
             return line => line.Id;
         }
 
-        public LinesTotalStatistic GetLinesTotalStatistic (DateTime periodStart_incl,DateTime periodEnd_excl) {
+        public LinesTotalStatisticDto GetLinesTotalStatistic (DateTime periodStart_incl,DateTime periodEnd_excl) {
             var query = DB.tblSchedules
                 .Where(x => x.Date >= periodStart_incl && x.Date < periodEnd_excl);
-            var result = new LinesTotalStatistic {
+            var result = new LinesTotalStatisticDto {
                 linesCount = query.Select(x => x.Line).Any()? query.Select(x => x.Line).Count():0,
                 totalStudents = query.Select(x => x.Line).Any()? query.Select(x => x.Line).Sum(x => x.totalStudents ?? 0) : 0,
                 totalPrice = query.Select(x => x.Bus).Any()? query.Select(x => x.Bus).Sum(x => x.price ?? 0) : 0
             };
             return result;
+        }
+
+        public List<LinePeriodStatisticDto> GetAllLinesPeriodActivities(DateTime periodStart_incl, DateTime periodEnd_excl) {
+            var output = new List<LinePeriodStatisticDto>();
+            var lineIDs = DB.Lines.Select(x => x.Id);
+            foreach (var id in lineIDs)
+                output.Add(GetLinePeriodActivity(id, periodStart_incl, periodEnd_excl));
+            return output;
+        }
+
+        public LinePeriodStatisticDto GetLinePeriodActivity (int LineID, DateTime periodStart_incl, DateTime periodEnd_excl) {
+            var lineQuery = DB.Lines
+                .Where(x => x.Id == LineID);
+
+            var line = lineQuery.First();
+            var bus = DB.BusesToLines
+                .Where(x=> x.LineId == LineID)
+                .Select(x => x.Bus)
+                .FirstOrDefault();
+            var LPA = new LinePeriodStatisticDto {
+                Id = line.Id,
+                LineName = line.LineName,
+                LineNumber = line.LineNumber,
+                Direction = line.Direction,
+                totalStudents = line.totalStudents ?? 0,
+                BusCompanyName = string.Empty,
+                DayIsScheduled = new List<bool>(),
+                DayDate = new List<DateTime>()
+            };
+            if (bus != null) {
+                LPA.seats = bus.seats;
+                LPA.price = bus.price;
+                LPA.BusCompanyName = bus.BusCompany != null ? bus.BusCompany.companyName : string.Empty;
+            }
+
+            var activityDates = lineQuery
+                .SelectMany(x => x.tblSchedules)
+                .Where(x => x.Date != null && x.Date >= periodStart_incl && x.Date < periodEnd_excl)
+                .Select(x => x.Date.Value.Day).Distinct().ToDictionary(x => x - 1);
+
+            //todo its possible to optimize and do without dict
+            int days = periodEnd_excl.Subtract(periodStart_incl).Days;
+            if (days <= 0)
+                throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");
+
+            for (int i = 1; i <= days; i++) {
+                LPA.DayIsScheduled.Add(activityDates.ContainsKey(i));
+                LPA.DayDate.Add(periodStart_incl.AddDays(i - 1));
+            }
+
+            return LPA;
         }
     }
 }

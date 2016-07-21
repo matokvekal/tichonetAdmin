@@ -36,8 +36,8 @@ namespace ticonet.Models
             BusId = bus != null ? bus.BusId : string.Empty;
             PlateNumber = bus != null ? bus.PlateNumber : string.Empty;
             BusCompanyName = bus != null ? (bus.BusCompany!=null? bus.BusCompany.companyName: string.Empty) : string.Empty;
-            seats = bus != null ? bus.seats : (int?)null;
-            price = bus != null ? bus.price : (double?)null;
+            seats = bus != null ? bus.seats : null;
+            price = bus != null ? bus.price : null;
         }
 
         public int Id { get; set; }

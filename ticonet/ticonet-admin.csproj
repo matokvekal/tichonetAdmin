@@ -385,6 +385,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ExcellWriter.cs" />
     <Compile Include="Models\AddStationToLineModel.cs" />
     <Compile Include="Models\AttachStudentModel.cs" />
     <Compile Include="Models\AttachStudentResultModel.cs" />

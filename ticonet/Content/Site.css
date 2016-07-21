@@ -2,9 +2,9 @@
     padding-top: 50px;
     padding-bottom: 20px;
     /*direction:rtl;*/
-    height: 100%;
-    color: #bbb;
-    background-color: #222;
+    height: 100% !important;
+    color: #bbb !important;
+    background-color: #222 !important;
 }
 html
 {

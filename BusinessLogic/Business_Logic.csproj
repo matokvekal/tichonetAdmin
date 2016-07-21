@@ -72,7 +72,8 @@
     <Compile Include="Driver.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
-    <Compile Include="Dtos\LinesTotalStatistic.cs" />
+    <Compile Include="Dtos\LinePeriodStatisticDto.cs" />
+    <Compile Include="Dtos\LinesTotalStatisticDto.cs" />
     <Compile Include="Entities\GenerateScheduleParamsModel.cs" />
     <Compile Include="Entities\LoginInfo.cs" />
     <Compile Include="Entities\SaveDurationsModel.cs" />

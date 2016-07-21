@@ -2,15 +2,50 @@
 @using Business_Logic.Enums
 @using DEBS = Business_Logic.DictExpressionBuilderSystem
 
-<div>
+<style>
+    .page-block {
+        margin-top:10px;
+        margin-bottom:10px;
+    }
+    .page-block:first-of-type{
+        margin-top:20px;
+    }
+    th.ui-th-column div{
+        white-space:normal !important;
+        height:auto !important;
+        padding:2px;
+    }
+    #reportGridPager{
+        width: 800px !important;
+        position: absolute;
+    }
+</style>
+
+@*<i class="glyphicon glyphicon-road" style="font-size:16px"></i>*@
+@*<i class="glyphicon glyphicon-minus-sign" style="font-size:16px; color:#585858"></i>*@
+
+
+<div class="page-block">
     @DEBS.Translate("Report.Year"):
     <span id="pickYearSliderVal"></span>
+    <div id="pickYearSlider"></div>
 </div>
-<div style="margin-bottom:20px" id="pickYearSlider"></div>
-<div class="content jqgrid-extended" style="width: 100%; height: calc(100% - 50px - 130px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
+
+<div class="page-block">
+    @DEBS.Translate("Report.Month"):
+    <span id="pickMonthSliderVal"></span>
+    <div id="pickMonthSlider"></div>
+</div>
+
+<div style="margin: 0; padding: 0; height: 30px; width: 100%; float: right;">
+    <button id="btnGetExcel" title="@DEBS.Translate("Report.GetExcel")" onclick="GetReportExcell()"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
+    <button id="btnGetSumExcel" title="@DEBS.Translate("Report.GetSumExcel")" onclick="GetSummaryReportExcell()"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
+</div>
+
+<div class="page-block content jqgrid-extended" style="width: 100%; height: calc(100% - 150px - 130px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
     <div style="width: calc(100% - 20px); margin-right: 20px">
-        <table id="reportGrid"></table>
-        <div style="margin-bottom:20px" id="reportGridPager"></div>
+        <div id="reportGridContainer">
+        </div>
     </div>
 </div>
 <hr style="margin:0; padding:5px;" />
@@ -20,94 +55,196 @@
     @Scripts.Render("~/bundles/jqGridExtend")
 
 <script>
-    function GetUserEnteredYear (){
-        return $( "#pickYearSlider" ).slider( "option", "value" );
+    function GetReportExcell () {
+        var postData = {
+            startDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()-1) ).toUTCString(),
+            endDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()) ).toUTCString(),
+        }   
+        var urlGetExcel = '/api' + '@Url.Action("GetAllLinesPeriodStatisticXL", "ReportApi")' + "?" + $.param(postData)
+        window.location.href = urlGetExcel
+    }
+    function GetSummaryReportExcell () {
+        var urlGetExcel = '/api' + '@Url.Action("GetLinesTotalStatisticXL", "ReportApi")' + "?" + $.param({year : GetUserEnteredYear()})
+        window.location.href = urlGetExcel
     }
 
-    function MakeYearRestrictionFilterRules (year) {
+    function GetUserEnteredYear (){
+        return $( "#pickYearSlider" ).slider( "option", "value" )
+    }
+    function GetUserEnteredMonth (){
+        return $( "#pickMonthSlider" ).slider( "option", "value" )
+    }
+
+    function MakeYearMonthRestrictionFilterRules (year, month) {
         return [
-            { field: "Date", op: "ge", data:  new Date(year, 0, 1)},
-            { field: "Date", op: "lt", data:  new Date(year + 1, 0, 1)}
+            //Remember that month starts from 0
+            { 
+                field: "DateRange", 
+                op: "", 
+                data: JSON.stringify(  new Date(year, month-1, 1) ) + "<->" + JSON.stringify(new Date(year, month, 1))
+            }
         ]
     }
 
+    var weekdays = new Array(7);
+    weekdays[0] = "@DEBS.Translate("Line.Sun")"
+    weekdays[1] = "@DEBS.Translate("Line.Mon")"
+    weekdays[2] = "@DEBS.Translate("Line.Tue")"
+    weekdays[3] = "@DEBS.Translate("Line.Wed")"
+    weekdays[4] = "@DEBS.Translate("Line.Thu")"
+    weekdays[5] = "@DEBS.Translate("Line.Fri")"
+    weekdays[6] = "@DEBS.Translate("Line.Sut")"
+
+    var MonthNames = []
+    MonthNames[0] = '@DEBS.Translate("Month.JAN")'
+    MonthNames[1] = '@DEBS.Translate("Month.FEB")'
+    MonthNames[2] = '@DEBS.Translate("Month.MAR")'
+    MonthNames[3] = '@DEBS.Translate("Month.APR")'
+    MonthNames[4] = '@DEBS.Translate("Month.MAJ")'
+    MonthNames[5] = '@DEBS.Translate("Month.JUN")'
+    MonthNames[6] = '@DEBS.Translate("Month.JUL")'
+    MonthNames[7] = '@DEBS.Translate("Month.AUG")'
+    MonthNames[8] = '@DEBS.Translate("Month.SEN")'
+    MonthNames[9] = '@DEBS.Translate("Month.OCT")'
+    MonthNames[10] = '@DEBS.Translate("Month.NOV")'
+    MonthNames[11] = '@DEBS.Translate("Month.DEC")'
+
     $(function () {
-
-        //SLIDER ------------------------------------
-
-        function UpdateReportGrids () {
-            gridCont.trigger('reloadGrid');
+        function UpdateAllGrids () {
+            UpdateReportGrid("reportGridContainer","reportGrid")
+            //TODO??
             summaryGridCont.trigger('reloadGrid');
         }
 
-        var NowDate = new Date();
-        var NowYear = NowDate.getFullYear();
-        $("#pickYearSliderVal").html(NowYear);
-        $("#pickYearSlider" ).slider({
-            max: NowYear + 50,
-            min: NowYear - 50,
-            value: NowYear,
-            slide: function(event, ui) {$("#pickYearSliderVal").html(ui.value)},
-            stop: function(event, ui) {UpdateReportGrids()}
-        });
-        var reportGridLocalData
+        //SLIDERS ------------------------------------
 
-        //REPORT GRID ------------------------------------------------------------
-        function getDaysInMonth(m, y) {
-            return /8|3|5|10/.test(--m)?30:m==1?(!(y%4)&&y%100)||!(y%400)?29:28:31;
+        var NowDate = new Date();
+        var NowYear = NowDate.getFullYear()
+        var NowMonth = NowDate.getMonth()+1
+
+        MakeSimpleSlider($,"pickYearSlider","pickYearSliderVal",NowYear,NowYear+50,NowYear-50,UpdateAllGrids)
+        MakeSimpleSlider($,"pickMonthSlider","pickMonthSliderVal",NowMonth,12,1,UpdateAllGrids, function(v){return MonthNames[v-1]})
+
+        function MakeSimpleSlider ($,sliderID,sliderValID,defaultVal,max,min,onChanged,valShowerFunc){
+            if (typeof valShowerFunc === 'undefined')
+                valShowerFunc = function(val) {return val}
+            $("#"+sliderValID).html(valShowerFunc(defaultVal))
+            $("#"+sliderID).slider({
+                max: max,
+                min: min,
+                value: defaultVal,
+                slide: function(event, ui) {$("#"+sliderValID).html(valShowerFunc(ui.value))},
+                stop: onChanged
+            })
         }
 
-        var weekdays = new Array(7);
-        weekdays[0]=  "@DEBS.Translate("Line.Sun")";
-        weekdays[1] = "@DEBS.Translate("Line.Mon")";
-        weekdays[2] = "@DEBS.Translate("Line.Tue")";
-        weekdays[3] = "@DEBS.Translate("Line.Wed")";
-        weekdays[4] = "@DEBS.Translate("Line.Thu")";
-        weekdays[5] = "@DEBS.Translate("Line.Fri")";
-        weekdays[6] = "@DEBS.Translate("Line.Sut")";
+        //CUSTOM FORMATTER
+        function ActiveDayFormatter (cellvalue, options, rowObject){
+            return cellvalue ? '<i class="glyphicon glyphicon-road" style="font-size:16px"></i>' 
+                : '<i class="glyphicon glyphicon-minus-sign" style="font-size:16px; color:#585858"></i>'
+        }
 
-        $.ajax(
-        {
-            type: "GET",
-            url: "/api" + "@Url.Action("GetReport", "ReportApi")",
-            data: "",
-            dataType: "json",
-            success: function(result)
-            {
-                var year = 2016;
-                var month = 7;
-                var days = getDaysInMonth(month, year);
+        //REPORT GRID ------------------------------------------------------------
 
-                //colD = result.colData;
-                //colN = result.colNames;
-                //colM = result.colModel;
+        UpdateReportGrid("reportGridContainer","reportGrid")
 
-                colN = [];
-                colM = [];
-                colN.push("@DEBS.Translate("Line.Id")");
-                colM.push({ name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false });
-                colN.push("@DEBS.Translate("Line.LineNumber")");
-                colM.push({ name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false });
-                for(var day=1; day<=days; day++) {
-                    var date = new Date(year, month, day);
-                    var weekday = weekdays[date.getDay()];
-                    colN.push("(" + month + "/" + day + "/" + year + ") <br />" + weekday);
-                    colM.push({ name: "day"+day, index: "day"+day, sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false });
+        function UpdateReportGrid (gridContainerID, gridNewID) {
+            //clear old
+            $('#'+gridNewID).jqGrid("clearGridData");
+            $('#'+gridNewID).remove();
+            $('#'+gridContainerID).empty();
+
+            //create new
+            var gridholder = document.createElement('table');
+            gridholder.id = gridNewID;
+            $('#'+gridContainerID).append(gridholder);
+            var pagerholder = document.createElement('div');
+            pagerholder.id = gridNewID + "Pager"
+            $('#'+gridContainerID).append(pagerholder);
+
+            gridholder = $('#'+gridNewID)
+
+            var localData
+            var colNames = []
+            var colModel = []
+
+            function parseDates (datearr){
+                var output = []
+                for (i = 0; i < datearr.length; i++)
+                    output.push( new Date(Date.parse(datearr[i])) )
+                return output;
+            }
+
+            function shortenDateString (date){
+                return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()
+            }
+
+            function UpdateColModels (datarows){
+                //days = datarows[0].DayDate
+                var days = parseDates(datarows[0].DayDate)
+                colNames.push("@DEBS.Translate("Line.Id")");
+                colNames.push("@DEBS.Translate("Line.LineNumber")");
+                colModel.push({ name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false });
+                colModel.push({ name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false });
+                days.forEach(function(day,ind,arr){
+                    colNames.push( shortenDateString(day)  + ' <br />' + weekdays[day.getDay()]);
+                    colModel.push({
+                        name: "day"+ind, 
+                        index: "day"+ind, 
+                        sorttype: "text", 
+                        width: 80, 
+                        editable: false, 
+                        //edittype: "checkbox", 
+                        //editoptions: { value: "True:False" },
+                        align: 'center', 
+                        formatter: ActiveDayFormatter, 
+                        search: false
+                    })
+                })
+            }
+
+            function ArrayToObject (arr,prefix){
+                var obj = {}
+                arr.forEach(function(ele,ind,arr){
+                    obj[prefix+ind]=ele
+                })
+                return obj
+            }
+
+            function AppendArrAsFields (obj, arr,prefix){
+                arr.forEach(function(ele,ind,arr){
+                    obj[prefix+ind]=ele
+                })
+            }
+
+            $.ajax({
+                //type: "GET",
+                url: "/api" + "@Url.Action("GetAllLinesPeriodStatistic", "ReportApi")",
+                data: {
+                    startDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()-1) ).toUTCString(),
+                    endDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()) ).toUTCString(),
+                },
+                dataType: "json",
+                success: function(result){
+                    localData = result.Data.rows
+                    localData.forEach(function(ele,ind,arr){
+                        //ele.DayIsScheduled = ArrayToObject(ele.DayIsScheduled,'day')
+                        AppendArrAsFields(ele,ele.DayIsScheduled,'day')
+                    })
+                    UpdateColModels(localData)
+                    buildJqGrid()
+                },
+                error: function(x, e){
+                    alert("Error when fetching data from server. " + x.readyState + " "+ x.status +" "+ e.msg);
                 }
+            })
 
-                jQuery("#reportGrid").jqGrid({
-                    jsonReader : {
-                        cell: "",
-                        id: "0"
-                    },
-                    datatype: 'jsonstring',
-                    mtype: 'POST',
-                    //datastr : colD,
-                    colNames:colN,
-                    colModel :colM,
-
+            function buildJqGrid () {
+                gridholder.jqGrid({
+                    datatype: 'local',
+                    data: localData,
+                    caption: '@DEBS.Translate("Report.GridCaption")',
                     height: "100%",
-                    //autowidth: true,
                     regional: "il",
                     hidegrid: false,
                     multiselect: false,
@@ -118,168 +255,63 @@
                     sortname: 'LineName',
                     sortorder: "asc",
                     viewrecords: true,
-                    loadonce: true,
-                    @*colNames: [
-                        '@DEBS.Translate("Line.Id")',
-                        '@DEBS.Translate("Line.LineNumber")',
-                        '@DEBS.Translate("Line.Sun")',
-                        '@DEBS.Translate("Line.Mon")',
-                        '@DEBS.Translate("Line.Tue")',
-                        '@DEBS.Translate("Line.Wed")',
-                        '@DEBS.Translate("Line.Thu")',
-                        '@DEBS.Translate("Line.Fri")',
-                        '@DEBS.Translate("Line.Sut")',
-                    ],
-                    colModel: [
-                            { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                            { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false },
-                            { name: 'Sun', index: 'Sun', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                            { name: 'Mon', index: 'Mon', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                            { name: 'Tue', index: 'Tue', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                            { name: 'Wed', index: 'Wed', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                            { name: 'Thu', index: 'Thu', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                            { name: 'Fri', index: 'Fri', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                            { name: 'Sut', index: 'Sut', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    ],*@
-                    loadComplete: function (data) {
-                        reportGridLocalData = data;
-                    },
+                    loadonce: false,
+                    colNames: colNames,
+                    colModel: colModel,
                     subGrid: true, // set the subGrid property to true to show expand buttons for each row
                     subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
-                    pager: "#reportGridPager"
+                    pager: "#" + pagerholder.id
+                });
 
-                })
-            },
-            error: function(x, e)
-            {
-                alert(x.readyState + " "+ x.status +" "+ e.msg);
-            }
-        });
+                function PushPropertyLikeObj(arr, data, property, customName, propertyFunc) {
+                    if (typeof propertyFunc === 'undefined')
+                        propertyFunc = function(p){return p}
+                    if (typeof customName !== 'undefined')
+                        arr.push({ Name: customName, Val: propertyFunc( data[property]) })
+                    else
+                        arr.push({ Name: property, Val: propertyFunc( data[property]) })
+                }
 
-        @*var gridCont = $("#reportGrid");
-        gridCont.jqGrid({
-            caption: '@DEBS.Translate("Report.GridCaption")',
-            url: '/api' + '@Url.Action("GetLines", "LinesApi")',
-            datatype: "json",
-            serializeGridData: function(postdata){
-                postdata.filters = JSON.stringify( {rules: MakeYearRestrictionFilterRules(GetUserEnteredYear())} )
-                postdata._search = true
-                return postdata
-            },
-            height: "100%",
-            //autowidth: true,
-            regional: "il",
-            hidegrid: false,
-            multiselect: false,
-            rowNum: 20,
-            rowList: [10,  20, 30, 40, 50],
-            viewrecords: true,
-            ignoreCase: true,
-            sortname: 'LineName',
-            sortorder: "asc",
-            viewrecords: true,
-            loadonce: false,
-            colNames: [
-                '@DEBS.Translate("Line.Id")',
-                '@DEBS.Translate("Line.LineNumber")',
-                '@DEBS.Translate("Line.Sun")',
-                '@DEBS.Translate("Line.Mon")',
-                '@DEBS.Translate("Line.Tue")',
-                '@DEBS.Translate("Line.Wed")',
-                '@DEBS.Translate("Line.Thu")',
-                '@DEBS.Translate("Line.Fri")',
-                '@DEBS.Translate("Line.Sut")',
-            ],
-            colModel: [
-                    { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false },
-                    { name: 'Sun', index: 'Sun', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Mon', index: 'Mon', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Tue', index: 'Tue', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Wed', index: 'Wed', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Thu', index: 'Thu', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Fri', index: 'Fri', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Sut', index: 'Sut', sorttype: "text", width: 106, editable: false, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-            ],
-            loadComplete: function (data) {
-                reportGridLocalData = data;
-            },
-            subGrid: true, // set the subGrid property to true to show expand buttons for each row
-            subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
-            pager: "#reportGridPager"
-        });*@
+                function ConvertLineDataToRows(lineData) {
+                    var rows = [];
+                    PushPropertyLikeObj(rows, lineData, 'LineName', '@DEBS.Translate("Line.LineName")');
+                    PushPropertyLikeObj(rows, lineData, 'Direction', '@DEBS.Translate("Line.Direction")', DirectionToString);
+                    PushPropertyLikeObj(rows, lineData, 'totalStudents', '@DEBS.Translate("Line.totalStudents")');
+                    PushPropertyLikeObj(rows, lineData, 'BusCompanyName', '@DEBS.Translate("BusCompany.Name")');
+                    PushPropertyLikeObj(rows, lineData, 'price', '@DEBS.Translate("Bus.price")');
+                    PushPropertyLikeObj(rows, lineData, 'seats', '@DEBS.Translate("Bus.seats")');
+                    return rows;
+                }
 
-        function PushPropertyLikeObj(arr, data, property, customName, propertyFunc) {
-            if (typeof propertyFunc === 'undefined') {
-                propertyFunc = function(p){return p};
-
-            }
-            if (typeof customName !== 'undefined') {
-                arr.push({ Name: customName, Val: propertyFunc( data[property]) });
-            }
-            else {
-                arr.push({ Name: property, Val: propertyFunc( data[property]) });
+                function showChildGrid(parentRowID, parentRowKey) {
+                    var lineData = localData.find(function (e, i, a) { return e.Id == parentRowKey });
+                    var lineDataRows = ConvertLineDataToRows(lineData);
+                    var childGridID = parentRowID + "_table";
+                    var childGridPagerID = parentRowID + "_pager";
+                    var childGridURL = parentRowKey + ".json";
+                    // add a table and pager HTML elements to the parent grid row - we will render the child grid here
+                    $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+                    var subgrid = $("#" + childGridID);
+                    subgrid.jqGrid({
+                        datatype: 'local',
+                        data: lineDataRows,
+                        colNames:["",""],
+                        colModel: [
+                            { name: 'Name', index: 'Name', width: 110, editable: false },
+                            { name: 'Val', index: 'Val', width: 110, editable: false },
+                        ],
+                        loadonce: false,
+                        height: '100%',
+                        hidegrid: false,
+                        loadComplete: function (data) {
+                        },
+                    });
+                    subgrid.closest("div.ui-jqgrid-view")
+                    .children("div.ui-jqgrid-hdiv")
+                    .hide();
+                }
             }
         }
-
-        function ConvertLineDataToRows(lineData) {
-            var rows = [];
-            PushPropertyLikeObj(rows, lineData, 'LineName', '@DEBS.Translate("Line.LineName")');
-            PushPropertyLikeObj(rows, lineData, 'Direction', '@DEBS.Translate("Line.Direction")', DirectionToString);
-            PushPropertyLikeObj(rows, lineData, 'totalStudents', '@DEBS.Translate("Line.totalStudents")');
-            PushPropertyLikeObj(rows, lineData, 'BusCompanyName', '@DEBS.Translate("BusCompany.Name")');
-            PushPropertyLikeObj(rows, lineData, 'price', '@DEBS.Translate("Bus.price")');
-            PushPropertyLikeObj(rows, lineData, 'seats', '@DEBS.Translate("Bus.seats")');
-            return rows;
-        }
-
-        function showChildGrid(parentRowID, parentRowKey) {
-            var lineData = reportGridLocalData.rows.find(function (e, i, a) { return e.Id == parentRowKey });
-            var lineDataRows = ConvertLineDataToRows(lineData);
-
-            var childGridID = parentRowID + "_table";
-            var childGridPagerID = parentRowID + "_pager";
-
-            var childGridURL = parentRowKey + ".json";
-
-            // add a table and pager HTML elements to the parent grid row - we will render the child grid here
-            $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
-
-            var subgrid = $("#" + childGridID);
-            subgrid.jqGrid({
-                //url: '/api' + '@Url.Action("GetLineDetailedToRows", "LinesApi")',
-                //datatype: "json",
-                //serializeGridData: function(postdata){
-                //    return {id:parentRowKey}
-                //},
-                datatype: 'local',
-                data: lineDataRows,
-                colNames:["1","2"],
-                colModel: [
-                    { name: 'Name', index: 'Name', width: 110, editable: false },
-                    { name: 'Val', index: 'Val', width: 110, editable: false },
-                ],
-                loadonce: false,
-                height: '100%',
-                hidegrid: false,
-                loadComplete: function (data) {
-                },
-            });
-
-            subgrid.closest("div.ui-jqgrid-view")
-            .children("div.ui-jqgrid-hdiv")
-            .hide();
-
-        }
-
-        function DirectionToString(dirValue) {
-            return dirValue === @((int)LineDirection.Bouth) ?
-                '@DEBS.Translate("General.Bouth")' :
-                dirValue == @((int)LineDirection.To) ?
-                '@DEBS.Translate("General.To")' :
-                '@DEBS.Translate("General.From")'
-        }
-
 
         //SUMMARY REPORT GRID ------------------------------------------------------------
 
@@ -337,6 +369,21 @@
                 }
             }
         })
+
+        //UTILITY -------------------------------------------
+
+        function DirectionToString(dirValue) {
+            return dirValue === @((int)LineDirection.Bouth) ?
+                '@DEBS.Translate("General.Bouth")' :
+                dirValue == @((int)LineDirection.To) ?
+                '@DEBS.Translate("General.To")' :
+                '@DEBS.Translate("General.From")'
+        }
+
+        function getDaysInMonth(m, y) {
+            return /8|3|5|10/.test(--m)?30:m==1?(!(y%4)&&y%100)||!(y%400)?29:28:31;
+        }
+
     })
 </script>
 }
