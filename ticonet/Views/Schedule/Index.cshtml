@@ -102,7 +102,7 @@
 
             dateFrom.datepicker({
                     regional: $.datepicker.regional["he"],
-                    dateFormat: 'mm/dd/yy',
+                    dateFormat: 'dd/mm/yy',
                     onSelect: function() {
                         scheduleGrid.jqGrid().trigger('reloadGrid');
                         this.focus();
@@ -115,7 +115,7 @@
                 });
             dateTo.datepicker({
                     regional: $.datepicker.regional["he"],
-                    dateFormat: 'mm/dd/yy',
+                    dateFormat: 'dd/mm/yy',
                     onSelect: function() {
                         scheduleGrid.jqGrid().trigger('reloadGrid');
                         this.focus();
@@ -234,7 +234,7 @@
                 ],
                 colModel: [
                     { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
-                    { name: 'Date', index: 'Date', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'm/d/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ regional: $.datepicker.regional["he"], dateFormat: 'mm/dd/yy', onSelect: function() { this.focus(); }, onClose: function() { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
+                    { name: 'Date', index: 'Date', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'd/m/Y', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function(element) { $(element).datepicker({ regional: $.datepicker.regional["he"], dateFormat: 'dd/mm/yy', onSelect: function() { this.focus(); }, onClose: function() { this.focus(); } }); } }, editrules: { custom: true, custom_func: datecheck }, search: false },
                     {
                         name: 'Direction',
                         index: 'Direction',
@@ -555,7 +555,7 @@
 
             function datecheck(value, colname) {
                 if (value) {
-                    var pattern = "(0[1-9]|1[012])(/)(0[1-9]|[12][0-9]|3[01])(/)(19|20)\\d\\d";
+                    var pattern = "(0[1-9]|[12][0-9]|3[01])(/)(0[1-9]|1[012])(/)(19|20)\\d\\d";
                     var regCheck = new RegExp(pattern);
                     if (!regCheck.test(value)) {
                         return [false, "@DEBS.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
