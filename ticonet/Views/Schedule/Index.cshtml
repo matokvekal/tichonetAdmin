@@ -571,15 +571,15 @@
                     LinesIds: function() { return linesGrid.jqGrid('getGridParam', 'selarrrow').join(); },
                     DateFrom: function() { return dateFrom.val() },
                     DateTo: function() { return dateTo.val() },
-                    ArriveTime: function() { return $('[name=ArriveTime]').val() },
-                    LeaveTime: function() { return $('[name=LeaveTime]').val() },
-                    Sun: function() { return $('[name=Sun]').val() },
-                    Mon: function() { return $('[name=Mon]').val() },
-                    Tue: function() { return $('[name=Tue]').val() },
-                    Wed: function() { return $('[name=Wed]').val() },
-                    Thu: function() { return $('[name=Thu]').val() },
-                    Fri: function() { return $('[name=Fri]').val() },
-                    Sut: function() { return $('[name=Sut]').val() }
+                    ArriveTime: function () { return $('[name=ArriveTime]').prop('checked') },
+                    LeaveTime: function () { return $('[name=LeaveTime]').prop('checked') },
+                    Sun: function () { return $('[name=Sun]').prop('checked') },
+                    Mon: function () { return $('[name=Mon]').prop('checked') },
+                    Tue: function () { return $('[name=Tue]').prop('checked') },
+                    Wed: function () { return $('[name=Wed]').prop('checked') },
+                    Thu: function () { return $('[name=Thu]').prop('checked') },
+                    Fri: function () { return $('[name=Fri]').prop('checked') },
+                    Sut: function () { return $('[name=Sut]').prop('checked') }
                 }
             }
 

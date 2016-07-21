@@ -29,7 +29,7 @@ namespace Business_Logic.Services
                     var dates = GetScheduleLineDates(line, dateFrom.Value, dateTo.Value, parameters);
                     foreach (var date in dates)
                     {
-                        schedule.Add(new tblSchedule
+                        var item = new tblSchedule
                         {
                             Id = fakeId++,
                             Date = date,
@@ -38,7 +38,22 @@ namespace Business_Logic.Services
                             BusId = line.BusesToLines.DefaultIfEmpty(new BusesToLine()).First().BusId,
                             Line = line,
                             Bus = line.BusesToLines.DefaultIfEmpty(new BusesToLine()).First().Bus
-                        });
+                        };
+
+                        var leaveTime = GetLeaveTime(line, date);
+                        if (leaveTime.HasValue)
+                        {
+                            if (parameters.LeaveTime)
+                            {
+                                item.leaveTime = leaveTime;
+                            }
+                            if (parameters.ArriveTime && line.Duration.HasValue)
+                            {
+                                item.arriveTime = leaveTime.Value.Add(line.Duration.Value);
+                            }
+                        }
+
+                        schedule.Add(item);
                     }
                 }
             }
@@ -101,6 +116,35 @@ namespace Business_Logic.Services
                 }
             }
             return dates;
+        }
+        
+        private DateTime? GetLeaveTime(Line line, DateTime date)
+        {
+            switch (date.DayOfWeek)
+            {
+                case DayOfWeek.Sunday:
+                    if (line.Sun.HasValue && line.Sun.Value) { return line.SunTime; }
+                    break;
+                case DayOfWeek.Monday:
+                    if (line.Mon.HasValue && line.Mon.Value) { return line.MonTime; }
+                    break;
+                case DayOfWeek.Tuesday:
+                    if (line.Tue.HasValue && line.Tue.Value) { return line.TueTime; }
+                    break;
+                case DayOfWeek.Wednesday:
+                    if (line.Wed.HasValue && line.Wed.Value) { return line.WedTime; }
+                    break;
+                case DayOfWeek.Thursday:
+                    if (line.Thu.HasValue && line.Thu.Value) { return line.ThuTime; }
+                    break;
+                case DayOfWeek.Friday:
+                    if (line.Fri.HasValue && line.Fri.Value) { return line.FriTime; }
+                    break;
+                case DayOfWeek.Saturday:
+                    if (line.Sut.HasValue && line.Sut.Value) { return line.SutTime; }
+                    break;
+            }
+            return null;
         }
     }
 }
