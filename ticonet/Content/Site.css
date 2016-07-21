@@ -174,3 +174,17 @@ div#ui-datepicker-div.ui-datepicker, div#calendar-datepicker > div.ui-datepicker
 ::-webkit-scrollbar-thumb:hover{background-color:#999;}
 ::-webkit-scrollbar-track{background-color:#222;}
 /* End Scrollbar */
+
+
+.ui-jqgrid tr.ui-row-ltr td {
+    text-align:left;
+    border-right-width: 1px;
+     border-right-color: #999 !important;
+      border-right-style: solid;
+}
+.ui-jqgrid tr.ui-row-rtl td {
+    text-align:right;
+    border-left-width: 1px;
+     border-left-color: #999 !important;
+      border-left-style: solid;
+}

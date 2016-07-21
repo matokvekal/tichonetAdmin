@@ -98,6 +98,8 @@ namespace ticonet.Models
             existingLine.Thu = Thu;
             existingLine.Fri = Fri;
             existingLine.Sut = Sut;
+
+            LineHelper.RefreshActive(existingLine);
         }
     }
 }

@@ -4,9 +4,9 @@
 
 <div class="content inline-block" style="height: calc(100% - 30px); width: 100%; display: inline-block; margin: 20px 0 0 0; padding: 0;">
     <div style="margin: 0; padding: 0; height: 100%; width: calc(100% - 400px); float: left; border: solid silver thin; overflow: hidden;">
-        <div style="margin: 0; padding: 0; height: 70px; width: 300px; float: right;">
-            <p><input type="text" id="dateFrom" style="width:100px;"> :@DEBS.Translate("Schedule.DateFrom")</p>
-            <p><input type="text" id="dateTo" style="width:100px;"> :@DEBS.Translate("Schedule.DateTo")</p>
+        <div style="margin: 0; padding: 0; height: 40px; width: 100%; float: right;">
+            <div style="margin: 0; padding: 5px 0; width: 300px; float: right;"><input type="text" id="dateFrom" style="width:100px;"> :@DEBS.Translate("Schedule.DateFrom")</div>
+            <div style="margin: 0; padding: 5px 0; width: 300px; float: right;"><input type="text" id="dateTo" style="width:100px;"> :@DEBS.Translate("Schedule.DateTo")</div>
         </div>
         <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right;">
             <div style="margin: 0; padding: 0; height: 25px; width: 100%; float: right;">
@@ -49,7 +49,7 @@
             <button id="btnRefresh" title="@DEBS.Translate("Schedule.Refresh")"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
         </div>
 
-        <div style="margin: 0; padding: 0; height: calc(100% - 150px); width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
+        <div style="margin: 0; padding: 0; height: calc(100% - 110px); width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
             <div class="content jqgrid-extended" id="dScheduleTable">
                 <table id="grSchedule"></table>
                 <div id="pgSchedule"></div>

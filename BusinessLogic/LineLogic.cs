@@ -111,6 +111,7 @@ namespace Business_Logic
                 itm.Direction = direction;
                 if (itm.Id == 0)
                 {
+                    LineHelper.RefreshActive(itm);
                     DB.Lines.Add(itm);
                 }
                 if (updateDirections)
@@ -149,6 +150,7 @@ namespace Business_Logic
             try
             {
                 BusProjectEntities db = new BusProjectEntities();
+                LineHelper.RefreshActive(line);
                 db.Lines.Add(line);
                 db.SaveChanges();
                 return line;
@@ -167,6 +169,7 @@ namespace Business_Logic
             try
             {
                 BusProjectEntities db = new BusProjectEntities();
+                LineHelper.RefreshActive(line);
                 db.Entry(line).State = EntityState.Modified;
                 db.SaveChanges();
                 res = true;
@@ -234,6 +237,7 @@ namespace Business_Logic
                 if (itm != null)
                 {
                     itm.IsActive = active;
+                    LineHelper.RefreshActive(itm);
                     DB.SaveChanges();
                     res = true;
                 }
@@ -359,7 +363,7 @@ namespace Business_Logic
                 .Distinct()
                 .ToList();
         }
-        
+
         private IEnumerable<Line> GetFilteredAll(bool isSearch, string filters)
         {
             var searchModel = new { groupOp = "", rules = new[] { new { field = "", op = "", data = "" } } };
@@ -431,6 +435,7 @@ namespace Business_Logic
 
             return query;
         }
+
 
         private Func<Line, object> GetSortField(string sortBy)
         {
