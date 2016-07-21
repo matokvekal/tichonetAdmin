@@ -69,6 +69,10 @@ namespace IdentitySample
                       "~/Content/jquery-ui.theme.min.css",
                       "~/Content/jquery-ui-timepicker-addon.min.css",
                       "~/Scripts/jqGrid/plugins/searchFilter.css"));
+
+
+            bundles.Add(new StyleBundle("~/bundles/cssReport").Include(
+                      "~/Content/Report.css"));
         }
     }
 }

@@ -38,11 +38,11 @@ namespace ticonet.Controllers
 
 
         [System.Web.Mvc.HttpGet]
-        public JsonResult GetAllLinesPeriodStatistic (DateTime startDate, DateTime endDate)
-        {
+        public JsonResult GetAllLinesPeriodStatistic (DateTime startDate, DateTime endDate){
             using (var l = new LineLogic()) {
                 var rows = l.GetAllLinesPeriodActivities(startDate, endDate);
-                return new JsonResult { Data = new { rows = rows } };
+                var footer = l.GetLineTotalStatisticByDays(startDate, endDate);
+                return new JsonResult { Data = new { rows = rows, footer = footer } };
             }
         }
 

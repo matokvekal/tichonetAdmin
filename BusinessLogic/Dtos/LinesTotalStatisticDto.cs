@@ -8,4 +8,5 @@ namespace Business_Logic.Dtos {
         public int totalStudents { get; set; }
         public double totalPrice { get; set; }
     }
+
 }

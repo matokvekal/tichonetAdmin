@@ -1,0 +1,55 @@
+﻿    .clearfix:before,
+    .clearfix:after {
+        content: '\0020';
+        display: block;
+        overflow: hidden;
+        visibility: hidden;
+        width: 0;
+        height: 0;
+    }
+
+    .clearfix:after {
+        clear: both;
+    }
+
+    .clearfix {
+        zoom: 1;
+    }
+
+    .page-block {
+        margin-top:10px;
+        margin-bottom:10px;
+    }
+    .page-block:first-of-type{
+        margin-top:20px;
+    }
+    th.ui-th-column div{
+        white-space:normal !important;
+        height:auto !important;
+        padding:2px;
+    }
+    #reportGridPager{
+        width: 800px !important;
+        position: absolute;
+    }
+    .float-right{
+        float: right;
+    }
+
+    .icon-btn,
+    .icon-btn:hover,
+    .icon-btn:active,
+    .icon-btn:focus
+    .icon-btn:visited{
+        text-decoration: none;
+        color: white;
+    }
+    .icon-btn{
+        border: 1px solid #222222;
+        padding: 5px;
+        transition: all linear 0.5s
+    }
+    .icon-btn:hover {
+        border: 1px solid gray;
+        cursor: pointer
+    }

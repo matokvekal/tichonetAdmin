@@ -2,47 +2,45 @@
 @using Business_Logic.Enums
 @using DEBS = Business_Logic.DictExpressionBuilderSystem
 
-<style>
-    .page-block {
-        margin-top:10px;
-        margin-bottom:10px;
-    }
-    .page-block:first-of-type{
-        margin-top:20px;
-    }
-    th.ui-th-column div{
-        white-space:normal !important;
-        height:auto !important;
-        padding:2px;
-    }
-    #reportGridPager{
-        width: 800px !important;
-        position: absolute;
-    }
-</style>
 
-@*<i class="glyphicon glyphicon-road" style="font-size:16px"></i>*@
-@*<i class="glyphicon glyphicon-minus-sign" style="font-size:16px; color:#585858"></i>*@
-
-
-<div class="page-block">
-    @DEBS.Translate("Report.Year"):
-    <span id="pickYearSliderVal"></span>
-    <div id="pickYearSlider"></div>
-</div>
-
-<div class="page-block">
-    @DEBS.Translate("Report.Month"):
-    <span id="pickMonthSliderVal"></span>
-    <div id="pickMonthSlider"></div>
-</div>
-
-<div style="margin: 0; padding: 0; height: 30px; width: 100%; float: right;">
+<div style="display:inline-block; width: 80px; padding: 0; margin: 0 10px; height: 30px;">
     <button id="btnGetExcel" title="@DEBS.Translate("Report.GetExcel")" onclick="GetReportExcell()"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
     <button id="btnGetSumExcel" title="@DEBS.Translate("Report.GetSumExcel")" onclick="GetSummaryReportExcell()"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
 </div>
 
-<div class="page-block content jqgrid-extended" style="width: 100%; height: calc(100% - 150px - 130px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
+<div class="page-block" style="display:inline-block; width: 300px; margin: 0 10px;">
+    <div class="clearfix">
+        <div class="float-right" style="margin-bottom: 5px">
+            @DEBS.Translate("Report.Month") :
+            <span id="pickMonthSliderVal"></span>
+            <a class="icon-btn" onclick="SliderMonth.ValUp()">
+                <i class="glyphicon glyphicon-backward"></i>
+            </a>
+            <a class="icon-btn" onclick="SliderMonth.ValDown()">
+                <i class="glyphicon glyphicon-forward"></i>
+            </a>
+        </div>
+    </div>
+    <div id="pickMonthSlider"></div>
+</div>
+
+<div class="page-block" style="display:inline-block; width: calc(100% - 450px); margin: 0 10px;">
+    <div class="clearfix">
+        <div class="float-right" style="margin-bottom: 5px">
+            @DEBS.Translate("Report.Year"):
+            <span id="pickYearSliderVal"></span>
+            <a class="icon-btn" onclick="SliderYear.ValUp()">
+                <i class="glyphicon glyphicon-backward"></i>
+            </a>
+            <a class="icon-btn" onclick="SliderYear.ValDown()">
+                <i class="glyphicon glyphicon-forward"></i>
+            </a>
+        </div>
+    </div>
+    <div id="pickYearSlider"></div>
+</div>
+
+<div class="page-block content jqgrid-extended" style="width: 100%; height: calc(100% - 150px - 100px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
     <div style="width: calc(100% - 20px); margin-right: 20px">
         <div id="reportGridContainer">
         </div>
@@ -51,36 +49,39 @@
 <hr style="margin:0; padding:5px;" />
 <table id="summaryReportGrid"></table>
 
+
+@section styles{
+    @Styles.Render("~/bundles/cssReport")
+}
+
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
+    <script type="text/javascript" src="~/Scripts/JquerySimpleUI.js"></script>
 
 <script>
     function GetReportExcell () {
         var postData = {
-            startDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()-1) ).toUTCString(),
-            endDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()) ).toUTCString(),
-        }   
+            startDate: (new Date(SliderYear.GetCurrentVal(), SliderMonth.GetCurrentVal()-1) ).toUTCString(),
+            endDate: (new Date(SliderYear.GetCurrentVal(), SliderMonth.GetCurrentVal()) ).toUTCString(),
+        }
         var urlGetExcel = '/api' + '@Url.Action("GetAllLinesPeriodStatisticXL", "ReportApi")' + "?" + $.param(postData)
         window.location.href = urlGetExcel
     }
     function GetSummaryReportExcell () {
-        var urlGetExcel = '/api' + '@Url.Action("GetLinesTotalStatisticXL", "ReportApi")' + "?" + $.param({year : GetUserEnteredYear()})
+        var urlGetExcel = '/api' + '@Url.Action("GetLinesTotalStatisticXL", "ReportApi")' + "?" + $.param({year : SliderYear.GetCurrentVal()})
         window.location.href = urlGetExcel
     }
 
-    function GetUserEnteredYear (){
-        return $( "#pickYearSlider" ).slider( "option", "value" )
-    }
-    function GetUserEnteredMonth (){
-        return $( "#pickMonthSlider" ).slider( "option", "value" )
-    }
+    var SliderYear
+    var SliderMonth
 
+    //TODO UNUSED
     function MakeYearMonthRestrictionFilterRules (year, month) {
         return [
             //Remember that month starts from 0
-            { 
-                field: "DateRange", 
-                op: "", 
+            {
+                field: "DateRange",
+                op: "",
                 data: JSON.stringify(  new Date(year, month-1, 1) ) + "<->" + JSON.stringify(new Date(year, month, 1))
             }
         ]
@@ -112,7 +113,6 @@
     $(function () {
         function UpdateAllGrids () {
             UpdateReportGrid("reportGridContainer","reportGrid")
-            //TODO??
             summaryGridCont.trigger('reloadGrid');
         }
 
@@ -122,25 +122,21 @@
         var NowYear = NowDate.getFullYear()
         var NowMonth = NowDate.getMonth()+1
 
-        MakeSimpleSlider($,"pickYearSlider","pickYearSliderVal",NowYear,NowYear+50,NowYear-50,UpdateAllGrids)
-        MakeSimpleSlider($,"pickMonthSlider","pickMonthSliderVal",NowMonth,12,1,UpdateAllGrids, function(v){return MonthNames[v-1]})
-
-        function MakeSimpleSlider ($,sliderID,sliderValID,defaultVal,max,min,onChanged,valShowerFunc){
-            if (typeof valShowerFunc === 'undefined')
-                valShowerFunc = function(val) {return val}
-            $("#"+sliderValID).html(valShowerFunc(defaultVal))
-            $("#"+sliderID).slider({
-                max: max,
-                min: min,
-                value: defaultVal,
-                slide: function(event, ui) {$("#"+sliderValID).html(valShowerFunc(ui.value))},
-                stop: onChanged
+        SliderYear = new $SimpleSlider($,"pickYearSlider","pickYearSliderVal",NowYear,NowYear+50,NowYear-50,UpdateAllGrids,
+            {
+                inverted: true
             })
-        }
+        SliderMonth = new $SimpleSlider($,"pickMonthSlider","pickMonthSliderVal",NowMonth,12,1,UpdateAllGrids,
+            {
+                inverted: true,
+                valShowerFunc: function(v){return MonthNames[v-1]}
+            })
 
         //CUSTOM FORMATTER
         function ActiveDayFormatter (cellvalue, options, rowObject){
-            return cellvalue ? '<i class="glyphicon glyphicon-road" style="font-size:16px"></i>' 
+            if (typeof cellvalue === 'number')
+                return cellvalue
+            return cellvalue ? '<i class="glyphicon glyphicon-road" style="font-size:16px"></i>'
                 : '<i class="glyphicon glyphicon-minus-sign" style="font-size:16px; color:#585858"></i>'
         }
 
@@ -189,29 +185,31 @@
                 days.forEach(function(day,ind,arr){
                     colNames.push( shortenDateString(day)  + ' <br />' + weekdays[day.getDay()]);
                     colModel.push({
-                        name: "day"+ind, 
-                        index: "day"+ind, 
-                        sorttype: "text", 
-                        width: 80, 
-                        editable: false, 
-                        //edittype: "checkbox", 
+                        name: "day"+ind,
+                        index: "day"+ind,
+                        sorttype: "text",
+                        width: 80,
+                        editable: false,
+                        //edittype: "checkbox",
                         //editoptions: { value: "True:False" },
-                        align: 'center', 
-                        formatter: ActiveDayFormatter, 
+                        align: 'center',
+                        formatter: ActiveDayFormatter,
                         search: false
                     })
                 })
             }
 
-            function ArrayToObject (arr,prefix){
+            function ArrayToObject (arr,prefix, propSelector){
+                if (typeof propSelector === 'undefined')
+                    propSelector = function(item){return item}
                 var obj = {}
                 arr.forEach(function(ele,ind,arr){
-                    obj[prefix+ind]=ele
+                    obj[prefix+ind]=propSelector(ele)
                 })
                 return obj
             }
 
-            function AppendArrAsFields (obj, arr,prefix){
+            function AppendArrAsFields (obj, arr, prefix){
                 arr.forEach(function(ele,ind,arr){
                     obj[prefix+ind]=ele
                 })
@@ -221,8 +219,8 @@
                 //type: "GET",
                 url: "/api" + "@Url.Action("GetAllLinesPeriodStatistic", "ReportApi")",
                 data: {
-                    startDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()-1) ).toUTCString(),
-                    endDate: (new Date(GetUserEnteredYear(),GetUserEnteredMonth()) ).toUTCString(),
+                    startDate: (new Date(SliderYear.GetCurrentVal(),SliderMonth.GetCurrentVal()-1) ).toUTCString(),
+                    endDate: (new Date(SliderYear.GetCurrentVal(),SliderMonth.GetCurrentVal()) ).toUTCString(),
                 },
                 dataType: "json",
                 success: function(result){
@@ -231,6 +229,8 @@
                         //ele.DayIsScheduled = ArrayToObject(ele.DayIsScheduled,'day')
                         AppendArrAsFields(ele,ele.DayIsScheduled,'day')
                     })
+                    localData.footer = ArrayToObject( result.Data.footer,'day',function(obj) {return obj.totalPrice} )
+                    localData.footer.LineNumber = '@DEBS.Translate("Report.totalPrice")'
                     UpdateColModels(localData)
                     buildJqGrid()
                 },
@@ -252,7 +252,7 @@
                     rowList: [10,  20, 30, 40, 50],
                     viewrecords: true,
                     ignoreCase: true,
-                    sortname: 'LineName',
+                    sortname: 'LineNumber',
                     sortorder: "asc",
                     viewrecords: true,
                     loadonce: false,
@@ -260,8 +260,10 @@
                     colModel: colModel,
                     subGrid: true, // set the subGrid property to true to show expand buttons for each row
                     subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
-                    pager: "#" + pagerholder.id
+                    pager: "#" + pagerholder.id,
+                    footerrow: true,
                 });
+                gridholder.footerData('set', localData.footer );
 
                 function PushPropertyLikeObj(arr, data, property, customName, propertyFunc) {
                     if (typeof propertyFunc === 'undefined')
@@ -343,7 +345,7 @@
             url: '/api' + '@Url.Action("GetLinesTotalStatistic", "ReportApi")',
             datatype: "json",
             serializeGridData: function(postdata){
-                return {year: GetUserEnteredYear()};
+                return {year: SliderYear.GetCurrentVal()};
             },
             autowidth: true,
             regional: "il",
@@ -380,6 +382,7 @@
                 '@DEBS.Translate("General.From")'
         }
 
+        //TODO UNUSED
         function getDaysInMonth(m, y) {
             return /8|3|5|10/.test(--m)?30:m==1?(!(y%4)&&y%100)||!(y%400)?29:28:31;
         }

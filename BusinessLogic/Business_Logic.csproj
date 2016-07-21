@@ -73,6 +73,7 @@
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="Dtos\LinePeriodStatisticDto.cs" />
+    <Compile Include="Dtos\LinesDatedTotalStatisticDto.cs" />
     <Compile Include="Dtos\LinesTotalStatisticDto.cs" />
     <Compile Include="Entities\GenerateScheduleParamsModel.cs" />
     <Compile Include="Entities\LoginInfo.cs" />
