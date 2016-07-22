@@ -113,7 +113,8 @@ namespace ticonet.Controllers
             using (var memoryStream = new MemoryStream())
             {
                 workbook.SaveAs(memoryStream);
-                result.Content = new ByteArrayContent(memoryStream.GetBuffer());
+                memoryStream.Position = 0;
+                result.Content = new ByteArrayContent(memoryStream.ToArray());
                 result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
                 {
                     FileName = Name + ".xlsx"

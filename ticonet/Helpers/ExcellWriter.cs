@@ -145,7 +145,8 @@ namespace ticonet.Helpers {
             var result = new HttpResponseMessage(HttpStatusCode.OK);
             using (var memoryStream = new MemoryStream()) {
                 book.SaveAs(memoryStream);
-                result.Content = new ByteArrayContent(memoryStream.GetBuffer());
+                memoryStream.Position = 0;
+                result.Content = new ByteArrayContent(memoryStream.ToArray());
                 result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") {
                     FileName = fileName + ".xlsx"
                 };
