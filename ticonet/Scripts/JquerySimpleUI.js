@@ -10,7 +10,6 @@ function $SimpleSlider($, sliderID, sliderValID, defaultVal, max, min, onChanged
     sliderCont.id = sliderID + 'slider'
     sliderWrapper.append(sliderCont)
     sliderCont = $("#" + sliderID + 'slider')
-    //sliderCont.css({ display: "inline-block" });
 
     var sliderValCont = $("#" + sliderValID)
 

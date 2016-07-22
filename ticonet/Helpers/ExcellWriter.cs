@@ -13,85 +13,132 @@ namespace ticonet.Helpers {
 
     public static class ExcellWriter {
 
-        public static XLWorkbook AllLinesPeriodStatistic(List<LinePeriodStatisticDto> data) {
-            var dates = data[0].DayDate;
-
-            var book = new XLWorkbook();
-            var sheet = book.Worksheets.Add("Sheet");
-            sheet.Outline.SummaryVLocation = XLOutlineSummaryVLocation.Top;
-
-            //Table Header
-            int rowIndex = 2;
-            sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Line.Report");
-            rowIndex += 2;
-            sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Line.LineNumber");
-
-            for (int i = 0; i < dates.Count; i++)
-                sheet.Cell(rowIndex, 2+i).Value = dates[i].ToString(@"ddd dd/MM/yyyy");
-            rowIndex++;
-            //Content
-            for (int i = 0; i < data.Count; i++) {
-                //Pure Row
-                sheet.Cell(rowIndex, 1).Value = data[i].LineNumber;
-                for (int colomn = 0; colomn < dates.Count; colomn++) {
-                    sheet.Cell(rowIndex, 2 +colomn ).Value = data[i].DayIsScheduled[colomn] ? "+":"-";
-                }
-                rowIndex++;
-                //Info
-                sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Line.Name");
-                sheet.Cell(rowIndex, 2).Value = data[i].LineName;
-                rowIndex++;
-                sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Line.Direction");
-                sheet.Cell(rowIndex, 2).Value = DirectionToString(data[i].Direction);
-                rowIndex++;
-                sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Line.totalStudents");
-                sheet.Cell(rowIndex, 2).Value = data[i].totalStudents;
-                rowIndex++;
-                sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Bus.CompanyName");
-                sheet.Cell(rowIndex, 2).Value = data[i].BusCompanyName;
-                rowIndex++;
-                sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Bus.seats");
-                sheet.Cell(rowIndex, 2).Value = data[i].seats;
-                rowIndex++;
-                sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Bus.price");
-                sheet.Cell(rowIndex, 2).Value = data[i].price;
-                rowIndex++;
-            }
-
-            sheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-            sheet.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.None;
-            sheet.Columns().AdjustToContents();
-
-            return book;
+        public static XLWorkbook NewBook () {
+            return new XLWorkbook();
         }
 
-        public static XLWorkbook AllLinesTotalStatistic(List<LinesTotalStatisticDto> data) {
-            var book = new XLWorkbook();
-            var sheet = book.Worksheets.Add("Sheet");
-            sheet.Outline.SummaryVLocation = XLOutlineSummaryVLocation.Top;
+        public static IXLWorksheet NewReportSheet (XLWorkbook book, string SheetName, string Header, int HeaderRow) {
+            var sh = book.Worksheets.Add(SheetName);
+            var cols = sh.Columns();
+            cols.Width = 18;
+            cols.Style.Fill.BackgroundColor = XLColor.FromArgb(34,34,34);
+            cols.Style.Font.FontColor = XLColor.LightGray;
+            sh.Cell(HeaderRow, 1).Value = Header;
+            RowStyle_H1(sh.Row(HeaderRow));
+            sh.Outline.SummaryVLocation = XLOutlineSummaryVLocation.Top;
+            return sh;
+        }
 
-            //Table Header
-            int rowIndex = 2;
-            sheet.Cell(rowIndex, 1).Value = DEBS.Translate("Line.SummaryReport");
-            rowIndex += 2;
-            int colIndex = 1;
-            sheet.Cell(rowIndex, colIndex).Value = DEBS.Translate("Report.Month");
-            sheet.Cell(rowIndex + 1, colIndex).Value = DEBS.Translate("Report.linesCount");
-            sheet.Cell(rowIndex + 2, colIndex).Value = DEBS.Translate("Report.totalStudents");
-            sheet.Cell(rowIndex + 3, colIndex).Value = DEBS.Translate("Report.totalPrice");
-            colIndex++;
-            for (int i=0; i < data.Count; i++) {
-                sheet.Cell(rowIndex, colIndex+i).Value = i+1;
-                sheet.Cell(rowIndex + 1, colIndex + i).Value = data[i].linesCount;
-                sheet.Cell(rowIndex + 2, colIndex + i).Value = data[i].totalStudents;
-                sheet.Cell(rowIndex + 3, colIndex + i).Value = data[i].totalPrice;
+        static void RowStyle_H1 (IXLRow row) {
+            row.Height = 30;
+            row.Style.Font.FontSize = 20;
+        }
+        static void RowStyle_H2 (IXLRow row) {
+            row.Height = 20;
+            row.Style.Font.FontSize = 16;
+        }
+
+        static void FoldRows (IXLRows rows) {
+            rows.Style.Fill.BackgroundColor = XLColor.FromArgb(45, 45, 45);
+            IXLRow last = null;
+            rows.ForEach(x => last = x);
+            last.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+            last.Style.Border.BottomBorderColor = XLColor.DarkGray;
+            rows.Group(1, true);
+        }
+
+        static void MakeBottomBorder (IXLRow row) {
+            row.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+            row.Style.Border.BottomBorderColor = XLColor.DarkGray;
+        }
+        static void MakeFooterStyle(IXLRow row) {
+            row.Style.Fill.BackgroundColor = XLColor.SeaGreen;
+        }
+
+        ///<summary>
+        ///returns next spare row number
+        ///</summary>
+        public static int AddLinesPeriodStatisticToSheet (IXLWorksheet toSheet, int startRow, List<LinePeriodStatisticDto> data, List<LinesDatedTotalStatisticDto> footerData) {
+            var dates = data[0].DayDate;
+
+            toSheet.Cell(startRow, 1).Value = DEBS.Translate("Line.ReportByDays");
+            RowStyle_H2(toSheet.Row(startRow));
+            startRow += 1;
+            toSheet.Cell(startRow, 1).Value = DEBS.Translate("Line.LineNumber");
+
+            for (int i = 0; i < dates.Count; i++)
+                toSheet.Cell(startRow, 2 + i).Value = dates[i].ToString(@"ddd dd/MM/yyyy");
+            startRow++;
+            for (int i = 0; i < data.Count; i++) {
+                //Pure Row
+                toSheet.Cell(startRow, 1).Value = data[i].LineNumber;
+                toSheet.Row(startRow).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                MakeBottomBorder(toSheet.Row(startRow));
+                for (int colomn = 0; colomn < dates.Count; colomn++) {
+                    var c = toSheet.Cell(startRow, 2 + colomn);
+                    bool scheduled = data[i].DayIsScheduled[colomn];
+                    c.Value = scheduled ? "+" : "-";
+                    if (scheduled)
+                        c.Style.Fill.BackgroundColor = XLColor.SeaGreen;
+                }
+                startRow++;
+                //Info
+                var infoRowStart = startRow;
+                toSheet.Cell(startRow, 2).Value = DEBS.Translate("Line.Name");
+                toSheet.Cell(startRow, 3).Value = data[i].LineName;
+                startRow++;
+                toSheet.Cell(startRow, 2).Value = DEBS.Translate("Line.Direction");
+                toSheet.Cell(startRow, 3).Value = DirectionToString(data[i].Direction);
+                startRow++;
+                toSheet.Cell(startRow, 2).Value = DEBS.Translate("Line.totalStudents");
+                toSheet.Cell(startRow, 3).Value = data[i].totalStudents;
+                startRow++;
+                toSheet.Cell(startRow, 2).Value = DEBS.Translate("Bus.CompanyName");
+                toSheet.Cell(startRow, 3).Value = data[i].BusCompanyName;
+                startRow++;
+                toSheet.Cell(startRow, 2).Value = DEBS.Translate("Bus.seats");
+                toSheet.Cell(startRow, 3).Value = data[i].seats;
+                startRow++;
+                toSheet.Cell(startRow, 2).Value = DEBS.Translate("Bus.price");
+                toSheet.Cell(startRow, 3).Value = data[i].price;
+                //styling and collapsing
+                FoldRows(toSheet.Rows(infoRowStart, startRow));
+                startRow++;
             }
+            toSheet.CollapseRows(1);
+            //Footer
+            toSheet.Cell(startRow, 1).Value = DEBS.Translate("Lines.totalPrice");
+            toSheet.Row(startRow).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            MakeFooterStyle(toSheet.Row(startRow));
+            for (int colomn = 0; colomn < dates.Count; colomn++) {
+                var c = toSheet.Cell(startRow, 2 + colomn);
+                c.Value = footerData[colomn].totalPrice;
+            }
+            startRow++;
+            return startRow;
+        }
 
-            sheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-            sheet.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.None;
-            sheet.Columns().AdjustToContents();
-
-            return book;
+        ///<summary>
+        ///returns next spare row number
+        ///</summary>
+        public static int AddLinesSummaryStatisticToSheet (IXLWorksheet toSheet, int startRow, List<LinesTotalStatisticDto> data) {
+            //Table Header
+            toSheet.Cell(startRow, 1).Value = DEBS.Translate("Line.SummaryReport");
+            RowStyle_H2(toSheet.Row(startRow));
+            startRow++;
+            int colIndex = 1;
+            toSheet.Cell(startRow, colIndex).Value = DEBS.Translate("Report.Month");
+            toSheet.Cell(startRow + 1, colIndex).Value = DEBS.Translate("Report.linesCount");
+            toSheet.Cell(startRow + 2, colIndex).Value = DEBS.Translate("Report.totalStudents");
+            toSheet.Cell(startRow + 3, colIndex).Value = DEBS.Translate("Report.totalPrice");
+            colIndex++;
+            for (int i = 0; i < data.Count; i++) {
+                toSheet.Cell(startRow, colIndex + i).Value = i + 1;
+                toSheet.Cell(startRow + 1, colIndex + i).Value = data[i].linesCount;
+                toSheet.Cell(startRow + 2, colIndex + i).Value = data[i].totalStudents;
+                toSheet.Cell(startRow + 3, colIndex + i).Value = data[i].totalPrice;
+            }
+            return startRow +4;
         }
 
         public static HttpResponseMessage BookToHTTPResponseMsg (XLWorkbook book, string fileName) {

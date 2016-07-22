@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Mvc;
 using ticonet.Helpers;
+using DEBS = Business_Logic.DictExpressionBuilderSystem;
+
 
 namespace ticonet.Controllers
 {
@@ -23,20 +25,6 @@ namespace ticonet.Controllers
             return new JsonResult { Data = result };
         }
 
-        public HttpResponseMessage GetLinesTotalStatisticXL(int year) {
-            using (var l = new LineLogic()) {
-                DateTime date = new DateTime(year, 1, 1);
-                var data = new List<LinesTotalStatisticDto>();
-                for (int i = 0; i < 12; i++)
-                    data.Add(l.GetLinesTotalStatistic(date.AddMonths(i), date.AddMonths(i + 1)));
-                return ExcellWriter.BookToHTTPResponseMsg(
-                    ExcellWriter.AllLinesTotalStatistic(data),
-                    "Summary Lines Report (" + (new DateTime(year, 1, 1)).ToString("yyyy")+")"
-                    );
-            }
-        }
-
-
         [System.Web.Mvc.HttpGet]
         public JsonResult GetAllLinesPeriodStatistic (DateTime startDate, DateTime endDate){
             using (var l = new LineLogic()) {
@@ -46,11 +34,23 @@ namespace ticonet.Controllers
             }
         }
 
-        public HttpResponseMessage GetAllLinesPeriodStatisticXL (DateTime startDate, DateTime endDate) {
+        public HttpResponseMessage GetReportXL (DateTime startDate, DateTime endDate, int summaryYear) {
             using (var l = new LineLogic()) {
                 var data = l.GetAllLinesPeriodActivities(startDate, endDate);
+                DateTime date = new DateTime(summaryYear, 1, 1);
+                var dataSummary = new List<LinesTotalStatisticDto>();
+                for (int i = 0; i < 12; i++)
+                    dataSummary.Add(l.GetLinesTotalStatistic(date.AddMonths(i), date.AddMonths(i + 1)));
+
+                var book = ExcellWriter.NewBook();
+                var sheet = ExcellWriter.NewReportSheet(book, DEBS.Translate("Lines.Report"), "Lines Report from " + startDate.ToString("dd-MM-yyyy") + " to " + endDate.ToString("dd-MM-yyyy"), 2);
+                int row = ExcellWriter.AddLinesPeriodStatisticToSheet(sheet, 4,
+                    l.GetAllLinesPeriodActivities(startDate, endDate),
+                    l.GetLineTotalStatisticByDays(startDate, endDate)
+                    );
+                ExcellWriter.AddLinesSummaryStatisticToSheet(sheet, row + 1, dataSummary);
                 return ExcellWriter.BookToHTTPResponseMsg(
-                    ExcellWriter.AllLinesPeriodStatistic(data),
+                    book,
                     "Lines Report (" + startDate.ToString("dd-MM-yyyy") + " - " + endDate.ToString("dd-MM-yyyy") + ")"
                     );
             }

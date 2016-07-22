@@ -327,14 +327,6 @@ namespace Business_Logic
                             query = query.AsQueryable()
                             .Include(x => x.tblSchedules)
                             .Where(x => x.tblSchedules.Any(y => y.Date >= dtmin && y.Date < dtmax));
-                            //TODO!!
-                            //this is doesnt work as desired since the relation line2sqhedule is one to many
-                            //if (rule.op == "ge") //greater or equal then 
-                            //    query = query.Where(x => x.tblSchedules.Any(y => y.Date >= dt));
-                            //else if (rule.op == "lt") //less then
-                            //    query = query.Where(x => x.tblSchedules.Any(y => y.Date < dt));
-                            //else
-                            //throw new NotImplementedException("There is no defined rule for filtering Date with operand: " + rule.op);
                         }
                         else
                             throw new ArgumentException();

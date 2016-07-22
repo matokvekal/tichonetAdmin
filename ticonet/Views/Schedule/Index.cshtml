@@ -403,101 +403,17 @@
                     }
                 )
                 @*.navButtonAdd(schedulePagerID, {
-                    id: "print",
-                    buttonicon: "ui-icon-print",
-                    caption: "",
-                    title: "@DEBS.Translate("grid.Print")",
-                    onClickButton: function () {
-                        var postData = grid.jqGrid('getGridParam', 'postData');
-                        var urlGetExcel = '/api' + "@Url.Action("GetPrint", "LinesApi")";
-                        var url = urlGetExcel + "?" + $.param(postData);
-                        if (printWindow == null || printWindow.closed) {
-                            printWindow = window.open('', '', 'height=' + $(window).height() + ',width=' + $(window).width());
-                        } else {
-                            printWindow.focus();
-                        }
-                        $.ajax({
-                            url: url,
-                            type: 'GET',
-                            dataType: 'json',
-                            contentType: 'application/json; charset=utf-8',
-                            success: function (data) {
-                                if (printWindow != undefined) {
-                                    $("#grPrintLines").jqGrid({
-                                        datatype: "local",
-                                        data: data,
-                                        colNames: [
-                                            '@DEBS.Translate("Line.LineName")',
-                                            '@DEBS.Translate("Line.LineNumber")',
-                                            '@DEBS.Translate("Line.Direction")',
-                                            '@DEBS.Translate("Line.IsActive")',
-                                            '@DEBS.Translate("Line.totalStudents")',
-                                            '@DEBS.Translate("Line.Duration")',
-                                            '@DEBS.Translate("Line.Sun")',
-                                            '@DEBS.Translate("Line.Mon")',
-                                            '@DEBS.Translate("Line.Tue")',
-                                            '@DEBS.Translate("Line.Wed")',
-                                            '@DEBS.Translate("Line.Thu")',
-                                            '@DEBS.Translate("Line.Fri")',
-                                            '@DEBS.Translate("Line.Sut")',
-                                            '@DEBS.Translate("Bus.BusIdDescription")',
-                                            '@DEBS.Translate("Bus.PlateNumber")',
-                                            '@DEBS.Translate("BusCompany.Name")',
-                                            '@DEBS.Translate("Bus.seats")',
-                                        ],
-                                        colModel: [
-                                            { name: "LineName" },
-                                            { name: "LineNumber" },
-                                            { name: "Direction" },
-                                            { name: "IsActive" },
-                                            { name: "totalStudents" },
-                                            { name: "Duration" },
-                                            { name: "Sun" },
-                                            { name: "Mon" },
-                                            { name: "Tue" },
-                                            { name: "Wed" },
-                                            { name: "Thu" },
-                                            { name: "Fri" },
-                                            { name: "Sut" },
-                                            { name: "BusIdDescription" },
-                                            { name: "PlateNumber" },
-                                            { name: "BusCompanyName" },
-                                            { name: "seats" },
-                                        ],
-                                        height: "auto",
-                                    });
-                                    printWindow.document.clear();
-                                    printWindow.document.write('<html><head><title>@DEBS.Translate("Line.GridCaption")</title>');
-                                    //printWindow.document.write('<style type=\"text/css\"> table th, table td { border:1px solid #000; padding:0; margin:0; } </style>');
-                                    printWindow.document.write('</head><body >');
-                                    printWindow.document.write('<div class="page">');
-                                    printWindow.document.write('<div class="subpage">');
-                                    printWindow.document.write($("#printLinesGrid").html());
-                                    printWindow.document.write('</div>');
-                                    printWindow.document.write('</div>');
-                                    printWindow.document.write('</body></html>');
-                                    printWindow.document.close();
-                                    printWindow.print();
-                                }
-                            }
-                        });
-
-                    }
-                }
-                )*@
-                @*.navButtonAdd(schedulePagerID, {
                     id: "toExcel",
                     buttonicon: "ui-icon-disk",
                     caption: "",
                     title: "@DEBS.Translate("grid.ToExcel")",
                     onClickButton: function () {
                         var postData = grid.jqGrid('getGridParam', 'postData');
-                        var urlGetExcel = '/api' + "@Url.Action("GetExcel", "LinesApi")";
+                        var urlGetExcel = '/api' + "@Url.Action("GetExcel", "ScheduleApi")";
                         var url = urlGetExcel + "?" + $.param(postData);
                         window.location.href = url;
                     }
-                }
-                )*@
+                })*@
                 .filterToolbar({
                         stringResult: true,
                         enableClear: false

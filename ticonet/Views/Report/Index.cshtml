@@ -5,7 +5,6 @@
 
 <div style="display:inline-block; width: 80px; padding: 0; margin: 0 10px; height: 30px;">
     <button id="btnGetExcel" title="@DEBS.Translate("Report.GetExcel")" onclick="GetReportExcell()"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
-    <button id="btnGetSumExcel" title="@DEBS.Translate("Report.GetSumExcel")" onclick="GetSummaryReportExcell()"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></button>
 </div>
 
 <div class="page-block" style="display:inline-block; width: 300px; margin: 0 10px;">
@@ -63,29 +62,14 @@
         var postData = {
             startDate: (new Date(SliderYear.GetCurrentVal(), SliderMonth.GetCurrentVal()-1) ).toUTCString(),
             endDate: (new Date(SliderYear.GetCurrentVal(), SliderMonth.GetCurrentVal()) ).toUTCString(),
+            summaryYear: SliderYear.GetCurrentVal(),
         }
-        var urlGetExcel = '/api' + '@Url.Action("GetAllLinesPeriodStatisticXL", "ReportApi")' + "?" + $.param(postData)
-        window.location.href = urlGetExcel
-    }
-    function GetSummaryReportExcell () {
-        var urlGetExcel = '/api' + '@Url.Action("GetLinesTotalStatisticXL", "ReportApi")' + "?" + $.param({year : SliderYear.GetCurrentVal()})
+        var urlGetExcel = '/api' + '@Url.Action("GetReportXL", "ReportApi")' + "?" + $.param(postData)
         window.location.href = urlGetExcel
     }
 
     var SliderYear
     var SliderMonth
-
-    //TODO UNUSED
-    function MakeYearMonthRestrictionFilterRules (year, month) {
-        return [
-            //Remember that month starts from 0
-            {
-                field: "DateRange",
-                op: "",
-                data: JSON.stringify(  new Date(year, month-1, 1) ) + "<->" + JSON.stringify(new Date(year, month, 1))
-            }
-        ]
-    }
 
     var weekdays = new Array(7);
     weekdays[0] = "@DEBS.Translate("Line.Sun")"
@@ -262,6 +246,27 @@
                     subGridRowExpanded: showChildGrid, // javascript function that will take care of showing the child grid
                     pager: "#" + pagerholder.id,
                     footerrow: true,
+                })
+                .navGrid("#" + pagerholder.id, {
+                    edit: false,
+                    add: false,
+                    del: false,
+                    refresh: false,
+                    search: false,
+                    view: false,
+                })
+                .navButtonAdd("#" + pagerholder.id, {
+                    id: "toExcel",
+                    buttonicon: "ui-icon-disk",
+                    caption: "",
+                    title: "@DEBS.Translate("grid.ToExcel")",
+                    onClickButton: function () {
+                        GetReportExcell();
+                        @*var postData = grid.jqGrid('getGridParam', 'postData');
+                        var urlGetExcel = '/api' + "@Url.Action("GetExcel", "ReportApi")";
+                        var url = urlGetExcel + "?" + $.param(postData);
+                        window.location.href = url;*@
+                    }
                 });
                 gridholder.footerData('set', localData.footer );
 
@@ -380,11 +385,6 @@
                 dirValue == @((int)LineDirection.To) ?
                 '@DEBS.Translate("General.To")' :
                 '@DEBS.Translate("General.From")'
-        }
-
-        //TODO UNUSED
-        function getDaysInMonth(m, y) {
-            return /8|3|5|10/.test(--m)?30:m==1?(!(y%4)&&y%100)||!(y%400)?29:28:31;
         }
 
     })
