@@ -183,22 +183,6 @@
                 })
             }
 
-            function ArrayToObject (arr,prefix, propSelector){
-                if (typeof propSelector === 'undefined')
-                    propSelector = function(item){return item}
-                var obj = {}
-                arr.forEach(function(ele,ind,arr){
-                    obj[prefix+ind]=propSelector(ele)
-                })
-                return obj
-            }
-
-            function AppendArrAsFields (obj, arr, prefix){
-                arr.forEach(function(ele,ind,arr){
-                    obj[prefix+ind]=ele
-                })
-            }
-
             $.ajax({
                 //type: "GET",
                 url: "/api" + "@Url.Action("GetAllLinesPeriodStatistic", "ReportApi")",
@@ -269,15 +253,6 @@
                     }
                 });
                 gridholder.footerData('set', localData.footer );
-
-                function PushPropertyLikeObj(arr, data, property, customName, propertyFunc) {
-                    if (typeof propertyFunc === 'undefined')
-                        propertyFunc = function(p){return p}
-                    if (typeof customName !== 'undefined')
-                        arr.push({ Name: customName, Val: propertyFunc( data[property]) })
-                    else
-                        arr.push({ Name: property, Val: propertyFunc( data[property]) })
-                }
 
                 function ConvertLineDataToRows(lineData) {
                     var rows = [];
@@ -377,7 +352,7 @@
             }
         })
 
-        //UTILITY -------------------------------------------
+        //UTILITY---------
 
         function DirectionToString(dirValue) {
             return dirValue === @((int)LineDirection.Bouth) ?
@@ -386,7 +361,6 @@
                 '@DEBS.Translate("General.To")' :
                 '@DEBS.Translate("General.From")'
         }
-
     })
 </script>
 }

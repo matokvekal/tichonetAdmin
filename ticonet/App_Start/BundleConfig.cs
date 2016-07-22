@@ -46,7 +46,8 @@ namespace IdentitySample
                         "~/Scripts/jqGrid/plugins/jquery.searchFilter.js",
                         "~/Scripts/jqGrid/i18n/grid.locale-he.js",
                         "~/Scripts/spectrum.js",
-                        "~/Scripts/jqGridExtend/jqGridExtend.js"));
+                        "~/Scripts/jqGridExtend/jqGridExtend.js",
+                        "~/Scripts/jqGridHelper.js"));
 
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're

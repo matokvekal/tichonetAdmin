@@ -14,6 +14,9 @@
     @Scripts.Render("~/bundles/jqGridExtend")
     <script>
         $(function() {
+            //CUSTOM FORMATTERS
+            $.fn.fmatter.checkbox = hackedfmatter_checkbox
+
             var lineActionsFormatter = function (cellvalue, options, rowObject) {
                 var res = "";
                 res += '<div style="margin-left: 8px;">';
@@ -101,13 +104,13 @@
                     { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
                     { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: false },
                     { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
-                    { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Tue', index: 'Tue', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Wed', index: 'Wed', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
+                    { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Tue', index: 'Tue', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Wed', index: 'Wed', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
                     { name: 'BusDescription', index: 'BusDescription', hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                     {
                         name: 'Bus',
@@ -192,7 +195,14 @@
                         dataType: 'json',
                         contentType: 'application/json; charset=utf-8',
                         success: function (data) {
-                            grid.footerData('set', { LineName: '@DEBS.Translate("grid.Total")', totalStudents: data.Data.Students, seats: data.Data.Seats, price: data.Data.Price });
+                            var footData = {
+                                LineName: '@DEBS.Translate("grid.Total")',
+                                totalStudents: data.Data.Students,
+                                seats: data.Data.Seats,
+                                price: data.Data.Price
+                            }
+                            AppendArrAsNamedFields(footData, data.Data.WeekDayPrices, ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sut'])
+                            grid.footerData('set', footData);
                         }
                     });
                 }

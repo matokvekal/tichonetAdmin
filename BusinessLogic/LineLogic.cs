@@ -37,24 +37,25 @@ namespace Business_Logic
         }
 
         public TotalDto GetTotal(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters) {
-            TotalDto total = new TotalDto() {
-                Students = 0,
-                Seats = 0,
-                Price = 0
-            };
-
+            TotalDto total = new TotalDto();
             IEnumerable<Line> query = GetFilteredAll(isSearch, filters);
-
             Line[] filteredAll = query.ToArray();
             foreach (var line in filteredAll) {
-                total.Students += line.totalStudents.HasValue ? line.totalStudents.Value : 0;
-                var busesToLines = line.BusesToLines.FirstOrDefault();
-                if (busesToLines != null) {
-                    total.Seats += busesToLines.Bus.seats.HasValue ? busesToLines.Bus.seats.Value : 0;
-                    total.Price += busesToLines.Bus.price.HasValue ? busesToLines.Bus.price.Value : 0;
+                if (line.IsActive) {
+                    var busesToLines = line.BusesToLines.FirstOrDefault();
+                    if (busesToLines != null) {
+                        var bus = busesToLines.Bus;
+                        IterDays(7, weekDay => {
+                            if (LineHelper.IsLineActiveAtDay(line,  (DayOfWeek) (weekDay-1) ) )  {
+                                total.Seats += bus.seats.HasValue ? busesToLines.Bus.seats.Value : 0;
+                                total.Students += line.totalStudents.HasValue ? line.totalStudents.Value : 0;
+                                total.WeekDayPrices[weekDay - 1] += bus.price ?? 0;
+                                total.Price += bus.price.HasValue ? busesToLines.Bus.price.Value : 0;
+                            }
+                        });
+                    }
                 }
             }
-
             return total;
         }
 

@@ -275,6 +275,7 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\datepicker-he.js" />
     <Content Include="Scripts\jqGridExtend\jqGridExtend.js" />
+    <Content Include="Scripts\jqGridHelper.js" />
     <Content Include="Scripts\jqGrid\Changes.txt" />
     <Content Include="Scripts\jqGrid\i18n\grid.locale-ar.js" />
     <Content Include="Scripts\jqGrid\i18n\grid.locale-bg.js" />

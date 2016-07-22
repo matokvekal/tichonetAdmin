@@ -47,7 +47,7 @@ namespace ticonet.Controllers
         [System.Web.Mvc.HttpGet]
         public JsonResult GetTotal(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
         {
-            var total = new TotalDto();
+            TotalDto total;
             using (var logic = new LineLogic())
             {
                 total = logic.GetTotal(_search, rows, page, sidx, sord, filters);
@@ -89,11 +89,13 @@ namespace ticonet.Controllers
         {
             var lines = new GridLineModel[] {};
             var totalRecords = 0;
+            TotalDto totalStat;
             using (var logic = new LineLogic())
             {
                 totalRecords = logic.Lines.Count();
                 lines = logic.GetPaged(_search, totalRecords, 1, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToArray();
+                totalStat = logic.GetTotal(_search, totalRecords, 1, sidx, sord, filters);
             }
 
             string Name = "Lines";
@@ -147,9 +149,14 @@ namespace ticonet.Controllers
 
             var totalRowIndex = lines.Length + 2;
             worksheet.Cell(totalRowIndex, 1).Value = DictExpressionBuilderSystem.Translate("grid.Total");
-            worksheet.Cell(totalRowIndex, 5).SetFormulaA1(string.Format("=SUM(E2:E{0})", totalRowIndex - 1));
-            worksheet.Cell(totalRowIndex, 17).SetFormulaA1(string.Format("=SUM(Q2:Q{0})", totalRowIndex - 1));
-            worksheet.Cell(totalRowIndex, 18).SetFormulaA1(string.Format("=SUM(R2:R{0})", totalRowIndex - 1));
+            worksheet.Cell(totalRowIndex, 5).SetValue(totalStat.Students);
+
+            for (int i = 0; i < 7; i ++) {
+                worksheet.Cell(totalRowIndex, 7+i).SetValue(totalStat.WeekDayPrices[i]);
+            }
+
+            worksheet.Cell(totalRowIndex, 17).SetValue(totalStat.Seats);
+            worksheet.Cell(totalRowIndex, 18).SetValue(totalStat.Price);
             
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             worksheet.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.None;
