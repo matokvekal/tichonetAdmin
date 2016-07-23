@@ -79,6 +79,9 @@
     <Compile Include="Entities\LoginInfo.cs" />
     <Compile Include="Entities\SaveDurationsModel.cs" />
     <Compile Include="Entities\SegmentDuration.cs" />
+    <Compile Include="Entities\SimpleItem.cs" />
+    <Compile Include="Entities\StudentFullInfo.cs" />
+    <Compile Include="Entities\StudentLineInfo.cs" />
     <Compile Include="Entities\StudentSearchRequest.cs" />
     <Compile Include="Entities\StudentShortInfo.cs" />
     <Compile Include="Enums\ColorMode.cs" />
