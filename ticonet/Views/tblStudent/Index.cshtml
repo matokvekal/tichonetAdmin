@@ -1,0 +1,374 @@
+﻿@using System.Web.Optimization
+@using Business_Logic
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
+
+@{
+    ViewBag.Title = "Index";
+    string families = ViewBag.Families;
+}
+@section scripts{
+    @Scripts.Render("~/bundles/stable")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            stbl.init();
+        });
+    </script>
+}
+@Html.Hidden("Families", families)
+<div class="students-toolbar">
+    <div class="header" style="padding-left: 10px; border-bottom: 1px solid #999;">
+        <h2>
+            <a href="javascript:stbl.edit(0);"><span class="glyphicon glyphicon-plus"></span>@DEBS.Translate("tblStudents.addStudent")</a>
+            &nbsp;|&nbsp;
+            <a href="javascript:stbl.editFamily(0);"><span class="glyphicon glyphicon-plus"></span>@DEBS.Translate("tblStudents.addFamily")</a>
+            &nbsp;|&nbsp;
+            <a href="javascript:stbl.getExcel();"><span title="@DEBS.Translate("general.DownloadExcelFile")" class="glyphicon glyphicon-download"></span></a>
+            &nbsp;|&nbsp;
+            <a href="javascript:stbl.print();"><span title="@DEBS.Translate("general.Print")" class="glyphicon glyphicon-print"></span></a>
+        </h2>
+    </div>
+    <div class="header">
+        <h2>@DEBS.Translate("general.Filter")</h2>
+        <div class="glyphicon glyphicon-chevron-up toggle" id="btToggleFilter"></div>
+    </div>
+    <div class="content container" id="dFilter">
+        <form class="form-inline" id="frmFilter">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 filter-header">@DEBS.Translate("tblStudent.student")</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="sr-only" for="tbStudentId">@DEBS.Translate("tblStudent.id")</label>
+                        <input type="number" style="width: 80px" class="form-control input-sm" id="tbStudentId" placeholder=@DEBS.Translate("tblStudent.id")>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="tbName">@DEBS.Translate("tblStudent.name")</label>
+                        <input type="text" class="form-control input-sm" id="tbName" placeholder=@DEBS.Translate("tblStudent.name")>
+                    </div>
+                    <div class="form-group">
+                        <label for="ddlActive" style="width: 75px;">@DEBS.Translate("tblStudent.active")</label>
+                        <select class="form-control input-sm" style="width: 75px" id="ddlActive">
+                            <option value="0" selected="selected">@DEBS.Translate("tblStudent.All")</option>
+                            <option value="1">@DEBS.Translate("general.Yes")</option>
+                            <option value="2">@DEBS.Translate("general.No")</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ddlSibiling" style="width: 140px;">@DEBS.Translate("tblStudent.sibilingAtSchool")</label>
+                        <select class="form-control input-sm" style="width: 75px" id="ddlSibiling">
+                            <option value="0" selected="selected">@DEBS.Translate("tblStudent.All")</option>
+                            <option value="1">@DEBS.Translate("general.Yes")</option>
+                            <option value="2">@DEBS.Translate("general.No")</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ddlRequest" style="width: 130px;">@DEBS.Translate("tblStudent.SpecialRequest")</label>
+                        <select class="form-control input-sm" style="width: 75px" id="ddlRequest">
+                            <option value="0" selected="selected">@DEBS.Translate("tblStudent.All")</option>
+                            <option value="1">@DEBS.Translate("general.Yes")</option>
+                            <option value="2">@DEBS.Translate("general.No")</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 filter-header">@DEBS.Translate("tblStudent.address")</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="sr-only" for="tbCity">@DEBS.Translate("tblStudent.city")</label>
+                        <input type="text" class="form-control input-sm" id="tbCity" placeholder="@DEBS.Translate("tblStudent.City")">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="tbStreet">@DEBS.Translate("tblStudent.street")</label>
+                        <input type="text" class="form-control input-sm" id="tbStreet" placeholder="@DEBS.Translate("tblStudent.Street")">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="tbHouse">@DEBS.Translate("tblStudent.house")</label>
+                        <input type="text" class="form-control input-sm" id="tbHouse" placeholder="@DEBS.Translate("tblStudent.House")">
+                    </div>
+                    <div class="form-group">
+                        <label for="tbDTSFrom" style="width: 210px;">@DEBS.Translate("tblStudent.distanceFromStation"): @DEBS.Translate("general.From")</label>
+                        <input type="number" style="width: 75px" class="form-control input-sm" id="tbDTStFrom" value="0" />
+                        <label for="tbDTSTo" style="width: 50px;">@DEBS.Translate("general.meter"). @DEBS.Translate("general.To") </label>
+                        <input type="number" style="width: 75px" class="form-control input-sm" id="tbDTStTo" value="0" />
+                        <label style="width: 20px">@DEBS.Translate("general.meter")</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 filter-header">@DEBS.Translate("tblStudent.school")</div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="sr-only" for="lstClasses">>@DEBS.Translate("tblStudent.class")</label>
+                        <select multiple id="lstClasses" class="form-control input-sm chosen-select chosen-rtl" style="width: 175px;">
+                            @foreach (var c in ViewBag.Classes)
+                            {
+                                <option value="@c">@c</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="lstShicvas">@DEBS.Translate("tblStudent.shicva")</label>
+                        <select multiple id="lstShicvas" class="form-control input-sm chosen-select chosen-rtl" style="width: 175px;">
+                            @foreach (var c in ViewBag.Shicvas)
+                            {
+                                <option value="@c">@c</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tbDTSFrom" style="width: 210px;">@DEBS.Translate("tblStudent.distanceFromSchool"): @DEBS.Translate("general.From")</label>
+                        <input type="number" style="width: 75px" class="form-control input-sm" id="tbDTSFrom" value="0" />
+                        <label for="tbDTSTo" style="width: 50px;">@DEBS.Translate("general.KiloMeter"). @DEBS.Translate("general.To") </label>
+                        <input type="number" style="width: 75px" class="form-control input-sm" id="tbDTSTo" value="0" />
+                        <label style="width: 30px">@DEBS.Translate("general.KiloMeter")</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 filter-header">
+                    Bus
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="form-group">
+                        <label class="sr-only" for="lstLines">@DEBS.Translate("tblStudent.lines")</label>
+                        <select multiple id="lstLines" class="form-control input-sm chosen-select chosen-rtl" style="width: 175px;">
+                            @foreach (var l in (List<Line>)ViewBag.Lines)
+                            {
+                                <option value="@l.Id">@l.LineNumber</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="lstStations">@DEBS.Translate("tblStudent.lines")</label>
+                        <select multiple id="lstStations" class="form-control input-sm chosen-select chosen-rtl" style="width: 250px;">
+                            @foreach (var s in (List<Station>)ViewBag.Stations)
+                            {
+                                <option value="@s.Id">@s.StationName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ddlDirection" style="width: 100px;">@DEBS.Translate("tblStudent.direction")</label>
+                        <select class="form-control input-sm" style="width: 75px" id="ddlDirection">
+                            <option value="0" selected="selected">@DEBS.Translate("tblStudent.all")</option>
+                            <option value="1">@DEBS.Translate("general.Yes")</option>
+                            <option value="2">@DEBS.Translate("general.No")</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 filter-header">Payment</div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="ddlPayStatus" style="width: 100px;">Pay Status</label>
+                    <select class="form-control input-sm" style="width: 75px" id="ddlPayStatus">
+                        <option value="0" selected="selected">@DEBS.Translate("tblStudent.all")</option>
+                        <option value="1">@DEBS.Translate("general.Yes")</option>
+                        <option value="2">@DEBS.Translate("general.No")</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ddlSubcidy" style="width: 75px;">Subcidy</label>
+                    <select class="form-control input-sm" style="width: 75px" id="ddlSubcidy">
+                        <option value="0" selected="selected">@DEBS.Translate("tblStudent.all")</option>
+                        <option value="1">@DEBS.Translate("general.Yes")</option>
+                        <option value="2">@DEBS.Translate("general.No")</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px; margin-top: 10px;">
+                <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+                    <a style="width: 200px;" class="btn btn-primary btn-sm" href="javascript:stbl.reload()">@DEBS.Translate("general.Search")</a>
+                    <a style="width: 200px;" class="btn btn-default btn-sm" href="javascript:stbl.resetFilter()">@DEBS.Translate("general.Reset")</a>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<div>
+    <table id="tbStudents"></table>
+    <div id="pgStudents"></div>
+</div>
+@*Dialogs*@
+
+<div id="dlgFamily" title="Add / Edit family" style="display: none; overflow: hidden;">
+    <form id="frmFamily">
+        <input type="hidden" name="familyId" value="0" />
+        <div id="tabsFamily">
+            <ul>
+                <li><a href="#ftabs-1">@DEBS.Translate("tblFamily.parents")</a></li>
+                <li><a href="#ftabs-2">@DEBS.Translate("tblFamily.payment")</a></li>
+                <li><a href="#ftabs-3">@DEBS.Translate("tblFamily.students")</a></li>
+            </ul>
+            <div id="ftabs-1" class="container">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 container">
+
+                    <div class="row" style="margin-top: 25px">
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center" style="padding-top: 8px;" @DEBS.Translate("tblFamily.parent1")></div>
+                        <input type="text" id="tbPType1" class="form-control input-xs col-lg-8 col-md-8 col-sm-8 col-xs-8" style="width: 100px" placeholder="Type" name="parent1Type" />
+                    </div>
+                    <div class="row" style="margin-top: 15px">
+                        <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 160px" placeholder=@DEBS.Translate("tblFamily.parent1FirstName") name="parent1FirstName" />
+                        <input type="text" class="col-lg-5 col-md-5 col-sm-5 col-xs-5 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 col-xs-offset-1 form-control input-xs"
+                               style="width: 160px" placeholder="Last Name" name="parent1LastName" />
+                    </div>
+                    <div class="row " style="margin-top: 15px">
+                        <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent1Email") name="parent1Email" />
+                        <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSE1" title="E-mail has not been confirmed" data-name="parent1EmailConfirm"></span>
+                        <input type="checkbox" style="margin-top: 10px;" name="parent1GetAlertByEmail" />
+                        <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                    </div>
+                    <div class="row " style="margin-top: 15px">
+                        <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent1CellPhone") name="parent1CellPhone" />
+                        <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSP1" title="Phone has not been confirmed" data-name="parent1CellConfirm"></span>
+                        <input type="checkbox" style="margin-top: 10px;" name="parent1GetAlertBycell" />
+                        <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 container">
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <input type="checkbox" class="input-xs col-lg-1 col-md-1 col-sm-1 col-xs-1" onchange="stbl.showSecondParent();" id="cbOneParent" name="oneParentOnly" />
+                            <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">@DEBS.Translate("tblFamily.oneparentonly")</div>
+                        </div>
+                    </div>
+                    <div class="row" rel="secondParent">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-center">Parent 2</div>
+                        <input type="text" id="tbPType2" class="form-control input-sm col-lg-6 col-md-6 col-sm-6 col-xs-6" style="width: 100px" placeholder=@DEBS.Translate("tblFamily.parent2Type") name="parent2Type" />
+                    </div>
+                    <div class="row" rel="secondParent" style="margin-top: 15px">
+                        <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 160px" placeholder=@DEBS.Translate("tblFamily.parent2FirstName") name="parent2FirstName" />
+                        <input type="text" class="col-lg-5 col-md-5 col-sm-5 col-xs-5 col-lg-offset-1 col-md-offset-1 col-sm-offset-1 col-xs-offset-1 form-control input-xs" style="width: 160px" placeholder="Last Name" name="parent2LastName" />
+                    </div>
+                    <div class="row" rel="secondParent" style="margin-top: 15px">
+                        <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent2Email") name="parent2Email" />
+                        <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSE2" title="E-mail has not been confirmed" data-name="parent2EmailConfirm"></span>
+                        <input type="checkbox" style="margin-top: 10px;" name="parent2GetAlertByEmail" />
+                        <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                    </div>
+                    <div class="row" rel="secondParent" style="margin-top: 15px">
+                        <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent2CellPhone") name="parent2CellPhone" />
+                        <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSP2" title="Phone has not been confirmed" data-name="parent2CellConfirm"></span>
+                        <input type="checkbox" style="margin-top: 10px;" name="parent2GetAlertBycell" />
+                        <span style="padding-top: 8px; padding-left: 5px;">@DEBS.Translate("general.GetAlerts")</span>
+                    </div>
+                </div>
+            </div>
+            <div id="ftabs-2" class="container">
+                <div class="row">
+                    <input type="checkbox" name="subsidy" /> <span style="padding-top: 8px; padding-left: 5px;">@DEBS.Translate("tblStudent.subsidy")</span>
+                </div>
+            </div>
+            <div id="ftabs-3">
+                <table id="tblFStudents"></table>
+                <div id="pgFStudents"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="dlgStudent" title="Add / Edit student" style="display: none; overflow: hidden;">
+    <form id="frmStudent" class="form-inline">
+        <input type="hidden" name="studentId" />
+        <input type="hidden" name="pk" />
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                    <label for="ddlFamily" class="control-label" style="font-size: 14pt; font-weight: normal;">Family</label>
+                    <select id="ddlFamily" class="form-control input-xs" name="familyId"></select>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top: 8px;">
+                    <input type="checkbox" name="siblingAtSchool" /> <span>Sibiling At School</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <h2>Student</h2>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="firstName" placeholder="First Name" style="width: 100%;" class="form-control input-xs" />
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="lastName" placeholder="Last Name" style="width: 100%;" class="form-control input-xs" />
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="Shicva" placeholder="Shicva" style="width: 100%;" class="form-control input-xs" />
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="class" placeholder="Class" style="width: 100%;" class="form-control input-xs" />
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <h2>Address</h2>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="city" placeholder="City" style="width: 100%;" class="form-control input-xs" value="@ViewBag.DefaultCity" />
+                    <input type="hidden" name="cityId" value="@ViewBag.DefaultCityId" />
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="street" placeholder="Street" style="width: 100%;" class="form-control input-xs" />
+                    <input type="hidden" name="streetId" value="0" />
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="houseNumber" placeholder="House" style="width: 100%;" class="form-control input-xs" />
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="text" name="zipCode" placeholder="Zip Code" style="width: 100%;" class="form-control input-xs" />
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <h2>Alerts</h2>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <input type="text" class="form-control input-xs" style="width: 230px" placeholder="Email" name="Email" />
+                    <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSE" title="E-mail has not been confirmed" data-name="EmailConfirm"></span>
+                    <input type="checkbox" style="margin-top: 10px;" name="GetAlertByEmail" />
+                    <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <input type="text" class="form-control input-xs" style="width: 230px" placeholder="Cellphone" name="CellPhone" />
+                    <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSP" title="Phone has not been confirmed" data-name="CellConfirm"></span>
+                    <input type="checkbox" style="margin-top: 10px;" name="GetAlertByCell" />
+                    <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <h2>Other</h2>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <input type="checkbox" name="specialRequest" /><span style="margin-left: 5px">Special Request</span>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                    <input type="text" class="form-control input-xs" name="request" style="max-width: 550px;" />
+                </div>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <input type="checkbox" name="Active" style="margin-top: 0px; padding-top: 0px;" /><span style="margin-left: 5px">Active</span>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <input type="checkbox" name="subsidy" /><span style="margin-left: 5px">Subsidy</span>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="dlgConfirm" title="Delete student" style="display: none; overflow: hidden;">
+    <input type="hidden" id="hfConfirmId" />
+    <div id="dConfirmMessage">Are you really want remove student?</div>
+</div>

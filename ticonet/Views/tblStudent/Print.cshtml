@@ -1,0 +1,61 @@
+﻿@using Business_Logic.Entities
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Print</title>
+    <style>
+        table, th, td {
+            border: 1px #999999 solid;
+            border-spacing: 0;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Class</th>
+                <th>Shicva</th>
+                <th>Address</th>
+                <th>Payment</th>
+                <th>Active</th>
+                <th>Sibiling</th>
+                <th>Special<br />request</th>
+                <th>Distance<br />to school</th>
+                <th>Line & Station</th>
+            </tr>
+            @foreach (StudentFullInfo stud in ViewBag.List)
+            {
+                <tr>
+                    <td>@stud.StudentId</td>
+                    <td>@stud.FirstName</td>
+                    <td>@stud.LastName</td>
+                    <td>@stud.Class</td>
+                    <td>@stud.Shicva</td>
+                    <td>@stud.Address</td>
+                    <td>@(stud.PayStatus == true ? "Yes" : "No")</td>
+                    <td>@(stud.Active == true ? "Yes" : "No")</td>
+                    <td>@(stud.SibilingAtSchool == true ? "Yes" : "No")</td>
+                    <td>@(stud.SpecialRequest ? "Yes" : "No")</td>
+                    <td>@(stud.DistanceToSchool) m.</td>
+                    <td>@stud.LineName</td>
+                </tr>
+            }
+        </table>
+    </div>
+    <script type="text/javascript">
+        window.print();
+        setTimeout(function () { window.close(); }, 100);
+
+    </script>
+</body>
+</html>
