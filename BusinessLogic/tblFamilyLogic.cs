@@ -1,13 +1,29 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 
 namespace Business_Logic
 {
     public class tblFamilyLogic : baseLogic
     {
+        public List<tblFamily> GetAll()
+        {
+            List<tblFamily> res;
+            try
+            {
+                res = DB.tblFamilies.ToList();
+            }
+            catch (Exception)
+            {
+                res = new List<tblFamily>();
+                //throw;
+            }
+            return res;
+        } 
 
         public tblFamily GetFamilyById(int familyId)
         {
@@ -15,6 +31,21 @@ namespace Business_Logic
             {
                 BusProjectEntities db = new BusProjectEntities();
                 return db.tblFamilies.FirstOrDefault(c => c.familyId == familyId);
+            }
+            catch
+            {
+                return null;
+            }
+
+        }
+
+        public tblFamily GetFamilyByStudentId(string pk)
+        {
+            try
+            {
+                var id = Int32.Parse(pk);
+                var familyId = DB.tblStudents.First(z => z.pk == id).familyId;
+                return DB.tblFamilies.FirstOrDefault(c => c.familyId == familyId);
             }
             catch
             {
@@ -57,22 +88,28 @@ namespace Business_Logic
         }
         public static int createFamily(tblFamily c)
         {
+            var res = -1;
             try
             {
-                BusProjectEntities db = new BusProjectEntities();
-                tblFamily v = new tblFamily();
-                c.familyId = 9999999;
-                c.date = DateTime.Today;
-                c.LastUpdate = DateTime.Today; 
-                db.tblFamilies.Add(c);
-                db.SaveChanges();
-                return c.familyId;
+                using (var db = new BusProjectEntities())
+                {
+                    var pid = 0; 
+                    int.TryParse(db.tblFamilies.Max(z => z.ParentId), out pid);
+                    c.ParentId = (pid +1).ToString();
+                    c.date = DateTime.Today;
+                    c.LastUpdate = DateTime.Today;
+                    c.registrationStatus = false;
+                    db.tblFamilies.Add(c);
+                    db.SaveChanges();
+                    res = c.familyId;
+                }
             }
-            catch
+            catch (DbEntityValidationException ex)
             {
+                var e = ex.EntityValidationErrors.FirstOrDefault();
                 throw;
             }
-
+            return res;
         }
         public static void update(tblFamily c)
         {
