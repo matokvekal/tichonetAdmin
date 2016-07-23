@@ -27,6 +27,48 @@
             $("#dFilter").toggle();
         });
 
+        $("#tbCity").autocomplete({
+            minLength: 3,
+            source: function (request, response) {
+                $.post("/tblStudent/CitiesAutocomplete", { term: request.term }).done(function (loader) { response(loader); });
+            },
+            select: function (event, ui) {
+                if (ui.item) {
+                    console.log(ui.item);
+                }
+            }
+        });
+        $("#dlgStudent").find("input[name='city']").autocomplete({
+            minLength: 3,
+            appendTo: "#dlgStudent",
+            source: function (request, response) {
+                $.post("/tblStudent/CitiesAutocomplete", { term: request.term }).done(function (loader) { response(loader); });
+            },
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#dlgStudent").find("input[name='cityId']").val(ui.item.id);
+                    stbl.switchStreetEnabled();
+                }
+            }
+        });
+        $("#dlgStudent").find("input[name='street']").autocomplete({
+            minLength: 3,
+            appendTo: "#dlgStudent",
+            source: function (request, response) {
+                var cityId = $("#dlgStudent").find("input[name='cityId']").val();
+                $.post("/tblStudent/StreetsAutocomplete", { term: request.term, cityId: cityId }).done(function (loader) { response(loader); });
+            },
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#dlgStudent").find("input[name='streetId']").val(ui.item.id);
+                }
+            }
+        });
+        stbl.switchStreetEnabled();
+    },
+    switchStreetEnabled: function () {
+        var cityId = $("#dlgStudent").find("input[name='cityId']").val();
+        $("#dlgStudent").find("input[name='street']").prop("disabled", (cityId == 0));
     },
     createGrid: function () {
         stbl.grid = $("#tbStudents").jqGrid({
@@ -208,7 +250,7 @@
     },
     openSubRow: function (subgridDivId, rowId) {
         $("<div id='tabsSRow" + rowId + "'><ul><li><a href='#srtabs-1" + rowId + "'>Lines</a></li><li><a href='#srtabs-2" + rowId + "'>Siblings</a></li></ul><div id='srtabs-1" + rowId + "'></div><div id='srtabs-2" + rowId + "'></div></div>").appendTo("#" + subgridDivId);
-        $("#tabsSRow" + rowId ).tabs();
+        $("#tabsSRow" + rowId).tabs();
         $("<table id='tblLines" + rowId + "'></table><div id='pgLines" + rowId + "'></div>").appendTo("#srtabs-1" + rowId + "");
         $("<table id='tblSibiling" + rowId + "'></table><div id='pgSibiling" + rowId + "'></div>").appendTo("#srtabs-2" + rowId + "");
         $("#tblLines" + rowId + "").jqGrid({
@@ -217,7 +259,7 @@
             regional: 'il',
             hidegrid: false,
             multiselect: false,
-            pager: '#pgLines' +rowId,
+            pager: '#pgLines' + rowId,
             mtype: 'post',
             rowNum: 10,
             rowList: [10, 25, 50],
@@ -238,7 +280,7 @@
                 align: 'center',
                 width: 75,
                 formatter: function (cellvalue, options, rowObject) {
-                    
+
                     var color = stbl.fixCssColor(cellvalue);
                     console.log(color);
                     return '<div style="width:46px; height:10px;background-color:' + color + '" title="' + color + '"></div>';
@@ -322,6 +364,14 @@
                 width: 450
             }]
         });
+    },
+    resetFilter: function () {
+        document.getElementById("frmFilter").reset();
+        $("#lstLines").find("option").prop("selected", false).end().trigger('chosen:updated');
+        $("#lstStations").find("option").prop("selected", false).end().trigger('chosen:updated');
+        $("#lstShicvas").find("option").prop("selected", false).end().trigger('chosen:updated');
+        $("#lstClasses").find("option").prop("selected", false).end().trigger('chosen:updated');
+        stbl.reload();
     },
     fixCssColor: function (color) { //fix color for use in css properies
         if (color.substring(0, 1) != "#") color = "#" + color;
@@ -608,5 +658,69 @@
         $.post("/tblStudent/SaveStudent", data).done(function (loader) {
 
         });
+    },
+    getPostData: function () {
+        var postData = {
+            Id: function () { return $("#tbStudentId").val(); },
+            Name: function () { return $("#tbName").val() },
+            Classes: function () {
+                var res = "";
+                $("#lstClasses").find("option:selected").each(function (i, e) {
+                    res += $(e).val() + "|";
+                });
+                return res;
+            },
+            Shicvas: function () {
+                var res = "";
+                $("#lstShicvas").find("option:selected").each(function (i, e) {
+                    res += $(e).val() + "|";
+                });
+                return res;
+            },
+            Lines: function () {
+                var res = "";
+                $("#lstLines").find("option:selected").each(function (i, e) {
+                    res += $(e).val() + "|";
+                });
+                return res;
+            },
+            Stations: function () {
+                var res = "";
+                $("#lstStations").find("option:selected").each(function (i, e) {
+                    res += $(e).val() + "|";
+                });
+                return res;
+            },
+            City: function () { return $("#tbCity").val() },
+            Street: function () { return $("#tbStreet").val() },
+            House: function () { return $("#tbHouse").val() },
+            Active: function () { return $("#ddlActive").val() },
+            PayStatus: function () { return $("#ddlPayStatus").val() },
+            Subcidy: function () { return $("#ddlSubcidy").val() },
+            Sibiling: function () { return $("#ddlSibiling").val() },
+            Request: function () { return $("#ddlRequest").val() },
+            DFSFrom: function () { return $("#tbDTSFrom").val() },
+            DFSTo: function () { return $("#tbDTSTo").val() },
+            DFStFrom: function () { return $("#tbDTStFrom").val() },
+            DFStTo: function () { return $("#tbDTStTo").val() },
+            Direction: function () { return $("#ddlDirection").val() },
+            SortOrder: stbl.grid.getGridParam("sortorder"),
+            SortColumn: stbl.grid.getGridParam("sortname")
+        };
+        return postData;
+    },
+    getExcel: function () {
+
+
+        $.fileDownload("/tblStudent/GetExcel", {
+            preparingMessageHtml: "We are preparing your report, please wait...",
+            failMessageHtml: "There was a problem generating your report, please try again.",
+            httpMethod: "POST",
+            data: stbl.getPostData()
+        });
+
+    },
+    print: function () {
+        window.open("/tblStudent/Print?" + $.param(stbl.getPostData()));
     }
 }
