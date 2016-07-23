@@ -39,6 +39,16 @@ namespace IdentitySample
                         "~/Scripts/jqGrid/i18n/grid.locale-he.js",
                         "~/Scripts/spectrum.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/stable").Include(
+                          "~/Scripts/jqGrid/jquery.jqGrid.min.js",
+                          "~/Scripts/jqGrid/plugins/grid.addons.js",
+                          "~/Scripts/jqGrid/plugins/grid.subgrid.js",
+                          "~/Scripts/jqGrid/plugins/jquery.searchFilter.js",
+                          "~/Scripts/jqGrid/i18n/grid.locale-en.js",
+                          "~/Scripts/StudentsGrid/sTable.js",
+                          "~/Scripts/chosen.jquery.min.js",
+                          "~/Scripts/jquery.fileDownload.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/jqGridExtend").Include(
                         "~/Scripts/jqGrid/jquery.jqGrid.min.js",
                         "~/Scripts/jqGrid/plugins/grid.addons.js",
@@ -61,8 +71,10 @@ namespace IdentitySample
 
             bundles.Add(new StyleBundle("~/bundles/css").Include(
                       "~/Content/bootstrap.min.css",
+                      "~/Content/chosen.min.css",
                       "~/Content/Site.css",
                       "~/Content/Map.css",
+                       "~/Content/stdentstable.css",
                       "~/Content/spectrum.css",
                       "~/Content/ui.jqgrid.css",
                       "~/Content/jquery-ui.min.css",
