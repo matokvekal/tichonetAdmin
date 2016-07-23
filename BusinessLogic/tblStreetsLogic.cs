@@ -5,6 +5,11 @@ namespace Business_Logic
 {
     public class tblStreetsLogic:baseLogic
     {
+        public string GetCityById(int id)
+        {
+            var city = DB.tblStreets.FirstOrDefault(z => z.cityId == id);
+            return city != null ? city.cityName : "";
+        }
         public bool IsExist(string street)
         {
             try
