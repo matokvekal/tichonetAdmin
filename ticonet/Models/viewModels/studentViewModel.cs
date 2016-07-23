@@ -9,8 +9,8 @@ namespace ticonet
         public List<string> clas { get; set; }
 
         //public string streetName { get; set; }
-       
-            
+
+
         public bool CellConfirm
         {
             get
@@ -72,11 +72,33 @@ namespace ticonet
         {
             get
             {
-                return EditableTblStudents.subsidy== true;
+                return EditableTblStudents.subsidy == true;
             }
             set
             {
                 EditableTblStudents.subsidy = value;
+            }
+        }
+        public bool siblingAtSchool
+        {
+            get
+            {
+                return EditableTblStudents.siblingAtSchool == true;
+            }
+            set
+            {
+                EditableTblStudents.siblingAtSchool = value;
+            }
+        }
+        public bool specialRequest
+        {
+            get
+            {
+                return EditableTblStudents.specialRequest == true;
+            }
+            set
+            {
+                EditableTblStudents.specialRequest = value;
             }
         }
     }
