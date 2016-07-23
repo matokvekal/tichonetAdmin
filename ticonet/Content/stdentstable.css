@@ -1,0 +1,47 @@
+﻿.students-toolbar {
+    width: 100%;
+    min-height: 20px;
+    background-color: #222;
+    color: #999;
+    direction: ltr;
+    margin-bottom: 10px;
+}
+
+    .students-toolbar .header {
+        padding: 10px 2px;
+        position: relative;
+        width: 100%;
+        direction: ltr;
+    }
+
+        .students-toolbar .header h2 {
+            padding: 0;
+            margin: 0 5px;
+            font-size: 16pt;
+        }
+
+        .students-toolbar .header .toggle {
+            position: absolute;
+            font-size: 16pt;
+            right: 10px;
+            top: 7px;
+            cursor: pointer;
+        }
+
+            .students-toolbar .header .toggle:hover {
+                color: white;
+            }
+
+    .students-toolbar .content {
+        display: none;
+    }
+
+    .filter-header {
+        font-size: 12pt;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+    #frmStudent h2 {
+        font-size: 14pt;
+        margin: 0;
+    }
