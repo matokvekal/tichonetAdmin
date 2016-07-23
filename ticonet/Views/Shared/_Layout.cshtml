@@ -30,7 +30,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink(@DEBS.Translate("menu.Home"), "Index", "Home")</li>
                     <li>@Html.ActionLink(@DEBS.Translate("menu.students"), "Index", "tblStudent")</li>
-                    <li>@Html.ActionLink(@DEBS.Translate("menu.Insets"), "Index", "Insets")</li>
+                    @*<li>@Html.ActionLink(@DEBS.Translate("menu.Insets"), "Index", "Insets")</li>*@
 
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">@DEBS.Translate("menu.BusSchedule")<b class="caret"></b></a>
@@ -44,10 +44,10 @@
                         </ul>
                     </li>
 
-                    <li>@Html.ActionLink(@DEBS.Translate("menu.reports"), "Index", "reports")</li>
+                    @*<li>@Html.ActionLink(@DEBS.Translate("menu.reports"), "Index", "reports")</li>
                     <li>@Html.ActionLink(@DEBS.Translate("menu.accountancy"), "Index", "accountancy")</li>
-                    <li>@Html.ActionLink(@DEBS.Translate("menu.notification"), "Index", "notification")</li>
-                    <li>@Html.ActionLink(@DEBS.Translate("menu.history"), "Index", "history")</li>
+                    <li>@Html.ActionLink(@DEBS.Translate("menu.notification"), "Index", "notification")</li>*@
+                    @*<li>@Html.ActionLink(@DEBS.Translate("menu.history"), "Index", "history")</li>*@
                     
                 </ul>
                 @Html.Partial("_LoginPartial")
