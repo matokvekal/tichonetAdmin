@@ -481,8 +481,8 @@ namespace Business_Logic
                 if (activityDates.TryGetValue(d, out group)) {
                     var buses = group.Select(x => x.Bus);
                     bool isAnyBuses = buses.Any();
-                    statItem.totalPrice = isAnyBuses ? buses.Sum(x => x.price ?? 0) : 0;
-                    statItem.totalSeats = isAnyBuses ? buses.Sum(x => x.seats ?? 0) : 0;
+                    statItem.totalPrice = isAnyBuses ? buses.Sum(x => (x != null ? (x.price ?? 0) : 0)) : 0;
+                    statItem.totalSeats = isAnyBuses ? buses.Sum(x => (x != null ? (x.seats ?? 0) : 0)) : 0;
                     statItem.linesCount = group.Select(x => x.Line).Distinct().Count();
                 };
                 result.Add(statItem);
