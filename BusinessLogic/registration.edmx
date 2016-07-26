@@ -244,6 +244,27 @@
           <Property Name="PaymentRequestID" Type="nvarchar(max)" />
           <Property Name="registrationStatus" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="tblLinesPlan">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LineId" Type="int" Nullable="false" />
+          <Property Name="Sun" Type="bit" />
+          <Property Name="SunTime" Type="datetime" />
+          <Property Name="Mon" Type="bit" />
+          <Property Name="MonTime" Type="datetime" />
+          <Property Name="Tue" Type="bit" />
+          <Property Name="TueTime" Type="datetime" />
+          <Property Name="Wed" Type="bit" />
+          <Property Name="WedTime" Type="datetime" />
+          <Property Name="Thu" Type="bit" />
+          <Property Name="ThuTime" Type="datetime" />
+          <Property Name="Fri" Type="bit" />
+          <Property Name="FriTime" Type="datetime" />
+          <Property Name="Sut" Type="bit" />
+          <Property Name="SutTime" Type="datetime" />
+        </EntityType>		
         <EntityType Name="tblMessageQueue">
           <Key>
             <PropertyRef Name="pk" />
@@ -454,6 +475,7 @@
           <EntitySet Name="tblCulture" EntityType="Self.tblCulture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblFamily" EntityType="Self.tblFamily" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblLinesPlan" EntityType="Self.tblLinesPlan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblMessageQueue" EntityType="Self.tblMessageQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblPaymentOrders" EntityType="Self.tblPaymentOrders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSchedule" EntityType="Self.tblSchedule" Schema="dbo" store:Type="Tables" />
@@ -545,6 +567,11 @@
             <End Role="Bus" EntitySet="Buses" />
             <End Role="tblSchedule" EntitySet="tblSchedules" />
           </AssociationSet>
+		  <EntitySet Name="tblLinesPlans" EntityType="BusProjectModel.tblLinesPlan" />
+          <AssociationSet Name="tblLinesPlanLine" Association="BusProjectModel.tblLinesPlanLine">
+            <End Role="tblLinesPlan" EntitySet="tblLinesPlans" />
+            <End Role="Line" EntitySet="Lines" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Bus">
           <Key>
@@ -621,6 +648,7 @@
           <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="Line" ToRole="BusesToLine" />
           <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
           <NavigationProperty Name="tblSchedules" Relationship="BusProjectModel.LinetblSchedule" FromRole="Line" ToRole="tblSchedule" />
+          <NavigationProperty Name="tblLinesPlan" Relationship="BusProjectModel.tblLinesPlanLine" FromRole="Line" ToRole="tblLinesPlan" />		  
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -1045,6 +1073,40 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+		  <EntityType Name="tblLinesPlan">
+          <Key>
+             <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LineId" Type="Int32" Nullable="false" />
+          <Property Name="Sun" Type="Boolean" />
+          <Property Name="SunTime" Type="DateTime" Precision="3" />
+          <Property Name="Mon" Type="Boolean" />
+          <Property Name="MonTime" Type="DateTime" Precision="3" />
+          <Property Name="Tue" Type="Boolean" />
+          <Property Name="TueTime" Type="DateTime" Precision="3" />
+          <Property Name="Wed" Type="Boolean" />
+          <Property Name="WedTime" Type="DateTime" Precision="3" />
+          <Property Name="Thu" Type="Boolean" />
+          <Property Name="ThuTime" Type="DateTime" Precision="3" />
+          <Property Name="Fri" Type="Boolean" />
+          <Property Name="FriTime" Type="DateTime" Precision="3" />
+          <Property Name="Sut" Type="Boolean" />
+          <Property Name="SutTime" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Line" Relationship="BusProjectModel.tblLinesPlanLine" FromRole="tblLinesPlan" ToRole="Line" />
+        </EntityType>
+        <Association Name="tblLinesPlanLine">
+          <End Type="BusProjectModel.tblLinesPlan" Role="tblLinesPlan" Multiplicity="*" />
+          <End Type="BusProjectModel.Line" Role="Line" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="Line">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblLinesPlan">
+              <PropertyRef Name="LineId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1432,6 +1494,28 @@
                 <ScalarProperty Name="nameHeb" ColumnName="nameHeb" />
                 <ScalarProperty Name="nameEng" ColumnName="nameEng" />
                 <ScalarProperty Name="year" ColumnName="year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+		  <EntitySetMapping Name="tblLinesPlans">
+            <EntityTypeMapping TypeName="BusProjectModel.tblLinesPlan">
+              <MappingFragment StoreEntitySet="tblLinesPlan">
+                <ScalarProperty Name="SutTime" ColumnName="SutTime" />
+                <ScalarProperty Name="Sut" ColumnName="Sut" />
+                <ScalarProperty Name="FriTime" ColumnName="FriTime" />
+                <ScalarProperty Name="Fri" ColumnName="Fri" />
+                <ScalarProperty Name="ThuTime" ColumnName="ThuTime" />
+                <ScalarProperty Name="Thu" ColumnName="Thu" />
+                <ScalarProperty Name="WedTime" ColumnName="WedTime" />
+                <ScalarProperty Name="Wed" ColumnName="Wed" />
+                <ScalarProperty Name="TueTime" ColumnName="TueTime" />
+                <ScalarProperty Name="Tue" ColumnName="Tue" />
+                <ScalarProperty Name="MonTime" ColumnName="MonTime" />
+                <ScalarProperty Name="Mon" ColumnName="Mon" />
+                <ScalarProperty Name="SunTime" ColumnName="SunTime" />
+                <ScalarProperty Name="Sun" ColumnName="Sun" />
+                <ScalarProperty Name="LineId" ColumnName="LineId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

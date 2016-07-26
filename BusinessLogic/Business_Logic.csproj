@@ -113,6 +113,9 @@
     <Compile Include="Student.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblLinesPlan.cs">
+      <DependentUpon>registration.tt</DependentUpon>
+    </Compile>
     <Compile Include="tblMessageQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
