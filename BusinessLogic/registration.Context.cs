@@ -48,5 +48,6 @@ namespace Business_Logic
         public virtual DbSet<tblSystem> tblSystems { get; set; }
         public virtual DbSet<tblYear> tblYears { get; set; }
         public virtual DbSet<tblLinesPlan> tblLinesPlans { get; set; }
+        public virtual DbSet<tblSetting> tblSettings { get; set; }
     }
 }

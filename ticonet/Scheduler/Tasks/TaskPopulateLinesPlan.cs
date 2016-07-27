@@ -1,4 +1,7 @@
-﻿using Business_Logic.Services;
+﻿using Business_Logic;
+using Business_Logic.Services;
+using log4net;
+using System;
 
 namespace ticonet.Scheduler.Tasks
 {
@@ -6,10 +9,22 @@ namespace ticonet.Scheduler.Tasks
 
     public class TaskPopulateLinesPlan : AbstractTask, ITaskPopulateLinesPlan
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(TaskPopulateLinesPlan));
+
         public override void Execute()
         {
             var scheduleService = new ScheduleService();
-            //var result = scheduleService.PopulateLinesPlan();
+
+            using (var logic = new tblSettingLogic())
+            {
+                if(logic.GetPopulateLinesIsActive())
+                {
+                    logger.Info("PopulateLinesPlan");
+                    var result = scheduleService.PopulateLinesPlan();
+                    if (result)
+                        logic.SetPopulateLinesLastRun(DateTime.UtcNow);
+                }
+            }
         }
     }
 }

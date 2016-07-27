@@ -320,6 +320,14 @@
           <Property Name="leaveTime" Type="datetime2" Precision="7" />
           <Property Name="arriveTime" Type="datetime2" Precision="7" />
         </EntityType>
+		<EntityType Name="tblSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="PopulateLinesIsActive" Type="bit" />
+          <Property Name="PopulateLinesLastRun" Type="datetime" />
+        </EntityType>
         <EntityType Name="tblStreet">
           <Key>
             <PropertyRef Name="cityId" />
@@ -479,6 +487,7 @@
           <EntitySet Name="tblMessageQueue" EntityType="Self.tblMessageQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblPaymentOrders" EntityType="Self.tblPaymentOrders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSchedule" EntityType="Self.tblSchedule" Schema="dbo" store:Type="Tables" />
+		  <EntitySet Name="tblSetting" EntityType="Self.tblSetting" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblStreet" EntityType="Self.tblStreet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblStudent" EntityType="Self.tblStudent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSystem" EntityType="Self.tblSystem" Schema="dbo" store:Type="Tables" />
@@ -572,6 +581,7 @@
             <End Role="tblLinesPlan" EntitySet="tblLinesPlans" />
             <End Role="Line" EntitySet="Lines" />
           </AssociationSet>
+		  <EntitySet Name="tblSettings" EntityType="BusProjectModel.tblSetting" />
         </EntityContainer>
         <EntityType Name="Bus">
           <Key>
@@ -1107,6 +1117,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+		<EntityType Name="tblSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="PopulateLinesIsActive" Type="Boolean" />
+          <Property Name="PopulateLinesLastRun" Type="DateTime" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1515,6 +1533,15 @@
                 <ScalarProperty Name="SunTime" ColumnName="SunTime" />
                 <ScalarProperty Name="Sun" ColumnName="Sun" />
                 <ScalarProperty Name="LineId" ColumnName="LineId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+		  <EntitySetMapping Name="tblSettings">
+            <EntityTypeMapping TypeName="BusProjectModel.tblSetting">
+              <MappingFragment StoreEntitySet="tblSetting">
+                <ScalarProperty Name="PopulateLinesLastRun" ColumnName="PopulateLinesLastRun" />
+                <ScalarProperty Name="PopulateLinesIsActive" ColumnName="PopulateLinesIsActive" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
