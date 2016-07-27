@@ -1,0 +1,168 @@
+﻿@using System.Web.Optimization
+@using DEBS = Business_Logic.DictExpressionBuilderSystem
+
+<h2>@DEBS.Translate("LinesPlan.GridCaption")</h2>
+
+<div class="page-block">
+    <input type="checkbox" id="UseLinesPlanInAutoScheduling" onclick="UpdateAppConf()"/>
+    @DEBS.Translate("LinesPlan.AutomaticMode")
+</div>
+<div class="page-block content jqgrid-extended" style="width: 100%; height: calc(100% - 200px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
+    <div style="width: calc(100% - 20px); margin-right: 20px">
+        <div id="plansGridContainer">
+        </div>
+    </div>
+</div>
+
+
+@section styles{
+    @Styles.Render("~/bundles/cssReport")
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqGridExtend")
+
+    <script>
+
+        function UpdateAppConf() {
+            var b = $("#UseLinesPlanInAutoScheduling").prop('checked')
+            $.ajax({
+                url: '@Url.Action("Update", "AppConfig")',
+                data: { settings: { UseLinesPlanInAutoScheduling : b } },
+                type: 'POST',
+                success: function (data) {
+                    $("#UseLinesPlanInAutoScheduling").prop('checked', data['UseLinesPlanInAutoScheduling']);
+                }
+            });
+        }
+        function GetAppConf() {
+            $.ajax({
+                url: '@Url.Action("Get", "AppConfig")',
+                data: { settings: ['UseLinesPlanInAutoScheduling'] },
+                type: 'POST',
+                success: function (data) {
+                    $("#UseLinesPlanInAutoScheduling").prop('checked',data['UseLinesPlanInAutoScheduling']);
+                }
+            });
+        }
+
+        $(function () {
+            var gridContainerID = 'plansGridContainer'
+            var gridNewID = 'plansGrid'
+
+            var gridholder = document.createElement('table')
+            gridholder.id = gridNewID
+            $('#' + gridContainerID).append(gridholder)
+            var pagerholder = document.createElement('div')
+            pagerholder.id = gridNewID + "Pager"
+            $('#' + gridContainerID).append(pagerholder)
+
+            gridholder = $('#' + gridNewID)
+            buildJqGrid(gridholder, pagerholder)
+            GetAppConf()
+        })
+
+        var lineActionsFormatter = function (cellvalue, options, rowObject) {
+            var res = "";
+            res += '<div style="margin-left: 8px;">';
+            res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+            res += '    <div title="@DEBS.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
+            res += '    <div title="@DEBS.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+            res += '    <div title="@DEBS.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+            res += '</div>';
+            return res;
+        };
+
+        function buildJqGrid(gridholder, pagerholder) {
+            var gridExtend = new jqGridExtend(gridholder);
+
+            gridholder.jqGrid({
+                url: '@Url.Action("Get", "LinesPlan")',
+                datatype: "json",
+                //caption: '',
+                height: "100%",
+                regional: "il",
+                hidegrid: false,
+                multiselect: false,
+                rowNum: 20,
+                rowList: [10, 20, 30, 40, 50],
+                viewrecords: true,
+                ignoreCase: true,
+                sortname: 'ParentLineNumber',
+                sortorder: "asc",
+                viewrecords: true,
+                loadonce: false,
+                saveAfterSelect: true,
+                editurl: '@Url.Action("Edit", "LinesPlan")',
+                beforeSelectRow: function (rowid) {
+                    gridExtend.restore(rowid);
+                    return false;
+                },
+                ondblClickRow: function (rowid, iRow, iCol) {
+                    gridExtend.editRow(rowid);
+                },
+                //loadComplete: function (data) {
+                //    gridExtend.populateDescription(data)
+                //},
+                colNames: [
+                    '@DEBS.Translate("LinesPlan.Id")',
+                    '@DEBS.Translate("LinesPlan.LineName")',
+                    '@DEBS.Translate("LinesPlan.LineNumber")',
+                    //'@DEBS.Translate("LinesPlan.IsActive")',
+                    '@DEBS.Translate("LinesPlan.Sun")',
+                    '@DEBS.Translate("LinesPlan.Mon")',
+                    '@DEBS.Translate("LinesPlan.Tue")',
+                    '@DEBS.Translate("LinesPlan.Wed")',
+                    '@DEBS.Translate("LinesPlan.Thu")',
+                    '@DEBS.Translate("LinesPlan.Fri")',
+                    '@DEBS.Translate("LinesPlan.Sut")',
+                    ""
+                ],
+                colModel: [
+                    { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
+                    { name: 'ParentLineName', index: 'ParentLineName', sorttype: "text", width: 110, editable: false },
+                    { name: 'ParentLineNumber', index: 'ParentLineNumber', sorttype: "text", width: 110, editable: false },
+                    { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Tue', index: 'Tue', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Wed', index: 'Wed', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    {
+                        name: 'ActionsBtn',
+                        index: 'ActionsBtn',
+                        width: 80,
+                        align: 'center',
+                        search: false,
+                        formatter: lineActionsFormatter,
+                    },
+                ],
+                pager: "#" + pagerholder.id,
+                footerrow: true,
+            })
+            @*.navGrid("#" + pagerholder.id, {
+                edit: false,
+                add: false,
+                del: false,
+                refresh: false,
+                search: false,
+                view: false,
+            })
+            .navButtonAdd("#" + pagerholder.id, {
+                id: "toExcel",
+                buttonicon: "ui-icon-disk",
+                caption: "",
+                title: "@DEBS.Translate("grid.ToExcel")",
+                onClickButton: function () {
+                    GetReportExcell();
+                }
+            });*@
+
+            gridExtend.init();
+        }
+
+
+    </script>
+}
+

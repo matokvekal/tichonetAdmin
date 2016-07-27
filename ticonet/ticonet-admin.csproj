@@ -364,7 +364,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AppConfigController.cs" />
     <Compile Include="Controllers\CalendarApiController.cs" />
+    <Compile Include="Controllers\GenericApiAndMVCController.cs" />
+    <Compile Include="Controllers\LinesPlanController.cs" />
     <Compile Include="Controllers\ReportApiController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\ScheduleApiController.cs" />
@@ -393,6 +396,7 @@
     <Compile Include="Models\AttachStudentModel.cs" />
     <Compile Include="Models\AttachStudentResultModel.cs" />
     <Compile Include="Models\BusCompanyModel.cs" />
+    <Compile Include="Models\LinesPlanApiModel.cs" />
     <Compile Include="Models\ScheduleItemModel.cs" />
     <Compile Include="Models\EventModel.cs" />
     <Compile Include="Models\GridLineBusModel.cs" />
@@ -434,6 +438,7 @@
     <Content Include="Views\Schedule\Index.cshtml" />
     <Content Include="Views\BusesToLines\Index.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\LinesPlan\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -443,6 +448,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\AppConfig\" />
+    <Folder Include="Views\GenericApiAndMVC\" />
     <Folder Include="Views\Sms\" />
   </ItemGroup>
   <ItemGroup>

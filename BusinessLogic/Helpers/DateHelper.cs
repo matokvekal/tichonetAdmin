@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Business_Logic.Helpers
 {
-    public class DateHelper
+    public static class DateHelper
     {
         public static string DateToString(DateTime? dt)
         {
@@ -37,6 +37,23 @@ namespace Business_Logic.Helpers
                     dtNull = (DateTime?)dt;
             }
             return dtNull;
+        }
+
+        public static void IterDays(int dayCount, Action<int> iterator) {
+            for (int i = 1; i <= dayCount; i++) {
+                iterator(i);
+            }
+        }
+
+        public static void IterDays(DateTime startFrom, int dayCount, Action<int, DateTime> iterator) {
+            for (int i = 1; i <= dayCount; i++) {
+                iterator(i, startFrom);
+                startFrom = startFrom.AddDays(1);
+            }
+        }
+
+        public static int GetDatesPeriodInDays(DateTime periodStart_incl, DateTime periodEnd_excl) {
+            return periodEnd_excl.Subtract(periodStart_incl).Days;
         }
 
     }

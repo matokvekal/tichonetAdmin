@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Linq.Expressions;
+using Business_Logic.Helpers;
+using Business_Logic.Services;
 
 namespace Business_Logic
 {
@@ -89,9 +92,9 @@ namespace Business_Logic
             try
             {
                 UpdateLineBus(scheduleItem.LineId, scheduleItem.BusId);
-                BusProjectEntities db = new BusProjectEntities();
-                db.tblSchedules.Add(scheduleItem);
-                db.SaveChanges();
+                //BusProjectEntities db = new BusProjectEntities();
+                DB.tblSchedules.Add(scheduleItem);
+                DB.SaveChanges();
                 return scheduleItem;
             }
             catch (Exception ex)
@@ -159,10 +162,41 @@ namespace Business_Logic
 
         private void UpdateLineBus(int? lineId, int? busId)
         {
-            using (var logic = new BusToLineLogic())
-            {
-                logic.UpdateBusToLine(lineId ?? 0, busId ?? 0);
-            }
+            //using (var logic = new BusToLineLogic())
+            //{
+            var logic = new BusToLineLogic(DB);
+            logic.UpdateBusToLine(lineId ?? 0, busId ?? 0);
+            //}
+        }
+
+        public void AutoCorrectLineSchedules(int LineID, DateTime periodStart_incl, DateTime periodEnd_excl) {
+            var line = DB.Lines.First(x => x.Id == LineID);
+            IQueryable<tblSchedule> schedules = DB
+                .tblSchedules
+                .Where(x => x.LineId == LineID);
+
+            DateTime dateSt = periodStart_incl, dateEnd = periodStart_incl;
+            Expression<Func<tblSchedule, bool>> scheduleDayPredicate = x =>
+                x.Date >= dateSt && x.Date < dateEnd;
+
+            int days = DateHelper.GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
+            if (days <= 0)
+                throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");
+
+            ScheduleService schedServ = new ScheduleService();
+            DateHelper.IterDays(periodStart_incl, days, (i, date) => {
+                dateSt = date;
+                dateEnd = dateSt.AddDays(1);
+                if (LineHelper.IsLineActiveAtDay(line, (DayOfWeek)i - 1)) {
+                    if (!schedules.Any(scheduleDayPredicate)) {
+                        var newSch = schedServ.GenerateSingleSchedule(line, date, true, true);
+                        SaveItem(newSch);
+                    }
+                }
+                else if (schedules.Any(scheduleDayPredicate))
+                    DB.tblSchedules.RemoveRange(schedules.Where(scheduleDayPredicate));
+            });
+            DB.SaveChanges();
         }
     }
 }

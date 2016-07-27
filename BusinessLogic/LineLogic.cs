@@ -9,6 +9,8 @@ using Business_Logic.Entities;
 using Business_Logic.Dtos;
 using Business_Logic.Helpers;
 using Newtonsoft.Json;
+using System.Linq.Expressions;
+using Business_Logic.Services;
 
 namespace Business_Logic
 {
@@ -45,7 +47,7 @@ namespace Business_Logic
                     var busesToLines = line.BusesToLines.FirstOrDefault();
                     if (busesToLines != null) {
                         var bus = busesToLines.Bus;
-                        IterDays(7, weekDay => {
+                        DateHelper.IterDays(7, weekDay => {
                             if (LineHelper.IsLineActiveAtDay(line,  (DayOfWeek) (weekDay-1) ) )  {
                                 total.Seats += bus.seats.HasValue ? busesToLines.Bus.seats.Value : 0;
                                 total.Students += line.totalStudents.HasValue ? line.totalStudents.Value : 0;
@@ -435,33 +437,16 @@ namespace Business_Logic
                 .Select(x => x.Date.Value.Day).Distinct().ToDictionary(x => x);
 
             //todo its possible to optimize and do without dict
-            int days = GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
+            int days = DateHelper.GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
             if (days <= 0)
                 throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");
 
-            IterDays(days, i => {
+            DateHelper.IterDays(days, i => {
                 LPA.DayIsScheduled.Add(activityDates.ContainsKey(i));
                 LPA.DayDate.Add(periodStart_incl.AddDays(i - 1));
             });
 
             return LPA;
-        }
-
-        static void IterDays(int dayCount, Action<int> iterator) {
-            for (int i = 1; i <= dayCount; i++) {
-                iterator(i);
-            }
-        }
-
-        static void IterDays(DateTime startFrom, int dayCount, Action<int, DateTime> iterator) {
-            for (int i = 1; i <= dayCount; i++) {
-                iterator(i, startFrom);
-                startFrom = startFrom.AddDays(1);
-            }
-        }
-
-        static int GetDatesPeriodInDays(DateTime periodStart_incl, DateTime periodEnd_excl) {
-            return periodEnd_excl.Subtract(periodStart_incl).Days;
         }
 
         public List<LinesDatedTotalStatisticDto> GetLineTotalStatisticByDays(DateTime periodStart_incl, DateTime periodEnd_excl) {
@@ -471,11 +456,11 @@ namespace Business_Logic
             var activityDates = rootQ
                 .GroupBy(x => x.Date.Value)
                 .ToDictionary(x => x.Key);
-            int days = GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
+            int days = DateHelper.GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
             if (days <= 0)
                 throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");
             var result = new List<LinesDatedTotalStatisticDto>();
-            IterDays(periodStart_incl, days, (i, d) => {
+            DateHelper.IterDays(periodStart_incl, days, (i, d) => {
                 IGrouping<DateTime, tblSchedule> group;
                 LinesDatedTotalStatisticDto statItem = new LinesDatedTotalStatisticDto { Date = d };
                 if (activityDates.TryGetValue(d, out group)) {
@@ -489,5 +474,45 @@ namespace Business_Logic
             });
             return result;
         }
+
+        //TODO
+        public void AutoCorrectLineSchedules(int LineID, DateTime periodStart_incl, DateTime periodEnd_excl) {
+            var line = DB.Lines.First(x => x.Id == LineID);
+            IQueryable<tblSchedule> schedules = DB
+                .tblSchedules
+                .Where(x => x.LineId == LineID);
+
+            DateTime dateSt = periodStart_incl, dateEnd = periodStart_incl;
+            Expression<Func<tblSchedule, bool>> scheduleDayPredicate = x =>
+                x.Date >= dateSt && x.Date < dateEnd;
+
+            int days = DateHelper.GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
+            if (days <= 0)
+                throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");
+
+            ScheduleService schedServ = new ScheduleService();
+            var newSchedules = new List<tblSchedule>();
+            DateHelper.IterDays(periodStart_incl, days, (i, date) => {
+                dateSt = date;
+                dateEnd = dateSt.AddDays(1);
+                if (LineHelper.IsLineActiveAtDay(line, (DayOfWeek) i-1)) {
+                    if (!schedules.Any(scheduleDayPredicate)) {
+                        var newSch = schedServ.GenerateSingleSchedule(line, date, true, true);
+                        newSchedules.Add(newSch);
+                        //using (var l = new tblScheduleLogic()) {
+                        //l.SaveItem(newSch);
+                        //}
+                        //TODO 
+                        //add sch
+                    }
+                }
+                else if (schedules.Any(scheduleDayPredicate)) 
+                   DB.tblSchedules.RemoveRange(schedules.Where(scheduleDayPredicate));
+            });
+            if (newSchedules.Count > 0)
+
+            DB.SaveChanges();
+        }
+
     }
 }

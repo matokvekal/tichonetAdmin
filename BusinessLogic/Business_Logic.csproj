@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppConfigLogic.cs" />
     <Compile Include="BaseLogic.cs" />
     <Compile Include="Bus.cs">
       <DependentUpon>registration.tt</DependentUpon>
@@ -102,12 +103,14 @@
     <Compile Include="Helpers\StringCipher.cs" />
     <Compile Include="Helpers\DateHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
+    <Compile Include="IWeekDatedObject.cs" />
     <Compile Include="Line.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
     <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Dtos\TotalDto.cs" />
     <Compile Include="DriverLogic.cs" />
+    <Compile Include="ModelsExtensions.cs" />
     <Compile Include="Services\IScheduleService.cs" />
     <Compile Include="Services\ScheduleService.cs" />
     <Compile Include="Student.cs">
@@ -116,6 +119,7 @@
     <Compile Include="tblLinesPlan.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="tblLinesPlanLogic.cs" />
     <Compile Include="tblMessageQueue.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>

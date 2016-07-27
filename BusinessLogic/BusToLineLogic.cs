@@ -12,6 +12,9 @@ namespace Business_Logic
 {
     public class BusToLineLogic : baseLogic
     {
+        public BusToLineLogic() : base() { }
+        public BusToLineLogic(BusProjectEntities openedContext) : base (openedContext) { }
+
         public void UpdateBusToLine(int lineId, int busId)
         {
             var existingBusInLine = DB.BusesToLines.FirstOrDefault(x => x.LineId == lineId);

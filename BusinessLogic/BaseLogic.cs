@@ -4,7 +4,15 @@ namespace Business_Logic
 {
     public class baseLogic : IDisposable
     {
-        private BusProjectEntities _db = new BusProjectEntities();
+        public baseLogic () {
+            _db = new BusProjectEntities();
+        }
+
+        public baseLogic (BusProjectEntities openedContext) {
+            _db = openedContext;
+        }
+
+        private BusProjectEntities _db;
 
         protected BusProjectEntities DB
         {

@@ -14,65 +14,56 @@ using log4net;
 using ticonet.Models;
 using Business_Logic.Enums;
 using Business_Logic.Helpers;
+using Newtonsoft.Json;
 
 namespace ticonet.Controllers
 {
     [System.Web.Mvc.Authorize]
-    public class LinesApiController : ApiController
-    {
+    public class LinesApiController : ApiController {
         private static readonly ILog logger = LogManager.GetLogger(typeof(LinesApiController));
 
         [System.Web.Mvc.HttpGet]
-        public HttpResponseMessage GetLines(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
-        {
+        public HttpResponseMessage GetLines(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "") {
             var lines = new List<GridLineModel>();
             var totalRecords = 0;
-            using (var logic = new LineLogic())
-            {
+            using (var logic = new LineLogic()) {
                 lines = logic.GetPaged(_search, rows, page, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToList();
                 totalRecords = logic.Lines.Count();
             }
             return Request.CreateResponse(
                 HttpStatusCode.OK,
-                new
-                {
+                new {
                     total = (totalRecords + rows - 1) / rows,
                     page,
-                    records = totalRecords,
+                    records = totalRecords
+                    ,
                     rows = lines
                 });
         }
 
         [System.Web.Mvc.HttpGet]
-        public JsonResult GetTotal(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
-        {
+        public JsonResult GetTotal(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "") {
             TotalDto total;
-            using (var logic = new LineLogic())
-            {
+            using (var logic = new LineLogic()) {
                 total = logic.GetTotal(_search, rows, page, sidx, sord, filters);
             }
             return new JsonResult { Data = total };
         }
 
         [System.Web.Mvc.HttpPost]
-        public JsonResult EditLine(GridLineModel model)
-        {
-            using (var logic = new LineLogic())
-            {
-                switch ((GridOperation)Enum.Parse(typeof(GridOperation), model.Oper, true))
-                {
+        public JsonResult EditLine(GridLineModel model) {
+            using (var logic = new LineLogic()) {
+                switch ((GridOperation)Enum.Parse(typeof(GridOperation), model.Oper, true)) {
                     //case GridOperation.add:
                     //    logic.SaveLine(model.ToDbModel());
                     //    break;
                     case GridOperation.edit:
                         var existingLine = logic.GetLine(model.Id);
-                        if (existingLine != null)
-                        {
+                        if (existingLine != null) {
                             model.UpdateDbModel(existingLine);
                             logic.SaveChanges();
-                            using (var busesToLinesLogic = new BusToLineLogic())
-                            {
+                            using (var busesToLinesLogic = new BusToLineLogic()) {
                                 busesToLinesLogic.UpdateBusToLine(model.Id, model.Bus);
                             }
                         }
@@ -82,16 +73,14 @@ namespace ticonet.Controllers
                         break;
                 }
             }
-            return new JsonResult {Data = true};
+            return new JsonResult { Data = true };
         }
 
-        public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
-        {
-            var lines = new GridLineModel[] {};
+        public HttpResponseMessage GetExcel(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "") {
+            var lines = new GridLineModel[] { };
             var totalRecords = 0;
             TotalDto totalStat;
-            using (var logic = new LineLogic())
-            {
+            using (var logic = new LineLogic()) {
                 totalRecords = logic.Lines.Count();
                 lines = logic.GetPaged(_search, totalRecords, 1, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToArray();
@@ -123,8 +112,7 @@ namespace ticonet.Controllers
             worksheet.Cell(1, 17).Value = DictExpressionBuilderSystem.Translate("Bus.seats");
             worksheet.Cell(1, 18).Value = DictExpressionBuilderSystem.Translate("Bus.price");
 
-            for (int i = 0; i < lines.Length; i++)
-            {
+            for (int i = 0; i < lines.Length; i++) {
                 var row = 2 + i;
                 worksheet.Cell(row, 1).SetValue<string>(lines[i].LineName);
                 worksheet.Cell(row, 2).SetValue<string>(lines[i].LineNumber);
@@ -151,25 +139,23 @@ namespace ticonet.Controllers
             worksheet.Cell(totalRowIndex, 1).Value = DictExpressionBuilderSystem.Translate("grid.Total");
             worksheet.Cell(totalRowIndex, 5).SetValue(totalStat.Students);
 
-            for (int i = 0; i < 7; i ++) {
-                worksheet.Cell(totalRowIndex, 7+i).SetValue(totalStat.WeekDayPrices[i]);
+            for (int i = 0; i < 7; i++) {
+                worksheet.Cell(totalRowIndex, 7 + i).SetValue(totalStat.WeekDayPrices[i]);
             }
 
             worksheet.Cell(totalRowIndex, 17).SetValue(totalStat.Seats);
             worksheet.Cell(totalRowIndex, 18).SetValue(totalStat.Price);
-            
+
             worksheet.RangeUsed().Style.Border.InsideBorder = XLBorderStyleValues.Thin;
             worksheet.RangeUsed().Style.Border.OutsideBorder = XLBorderStyleValues.None;
             worksheet.Columns().AdjustToContents();
 
             var result = new HttpResponseMessage(HttpStatusCode.OK);
-            using (var memoryStream = new MemoryStream())
-            {
+            using (var memoryStream = new MemoryStream()) {
                 workbook.SaveAs(memoryStream);
                 memoryStream.Position = 0;
                 result.Content = new ByteArrayContent(memoryStream.ToArray());
-                result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
-                {
+                result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment") {
                     FileName = Name + ".xlsx"
                 };
                 result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -177,13 +163,10 @@ namespace ticonet.Controllers
             return result;
         }
 
-
-        public GridLineModel[] GetPrint(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "")
-        {
+        public GridLineModel[] GetPrint(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "") {
             var lines = new GridLineModel[] { };
             var totalRecords = 0;
-            using (var logic = new LineLogic())
-            {
+            using (var logic = new LineLogic()) {
                 totalRecords = logic.Lines.Count();
                 lines = logic.GetPaged(_search, totalRecords, page, sidx, sord, filters)
                     .Select(z => new GridLineModel(z)).ToArray();
@@ -192,16 +175,13 @@ namespace ticonet.Controllers
             return lines;
         }
 
-        public JsonResult GetAvailableBuses(int lineId)
-        {
+        public JsonResult GetAvailableBuses(int lineId) {
             var buses = new List<SelectItemModel>();
-            buses.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty});
-            using (var logic = new LineLogic())
-            {
+            buses.Add(new SelectItemModel { Value = "0", Text = string.Empty, Title = string.Empty });
+            using (var logic = new LineLogic()) {
                 buses.AddRange(logic.GetAvailableBuses(lineId)
                     .ToList()
-                    .Select(z => new SelectItemModel
-                    {
+                    .Select(z => new SelectItemModel {
                         Value = z.Id.ToString(),
                         Text = DescriptionHelper.GetBusDescription(z),
                         Title = DescriptionHelper.GetBusDescription(z)
@@ -211,17 +191,14 @@ namespace ticonet.Controllers
             return new JsonResult { Data = buses };
         }
 
-        public JsonResult GetCompaniesFilter()
-        {
+        public JsonResult GetCompaniesFilter() {
             var companies = new List<SelectItemModel>();
-            companies.Add(new SelectItemModel { Value = "", Text = DictExpressionBuilderSystem.Translate("Search.All")});
-            using (var logic = new LineLogic())
-            {
+            companies.Add(new SelectItemModel { Value = "", Text = DictExpressionBuilderSystem.Translate("Search.All") });
+            using (var logic = new LineLogic()) {
                 var getCompanies = logic.GetCompaniesFilter();
                 companies.AddRange(getCompanies
-                    .Where(w=> w != null)
-                    .Select(z => new SelectItemModel
-                    {
+                    .Where(w => w != null)
+                    .Select(z => new SelectItemModel {
                         Value = z.pk.ToString(),
                         Text = z.companyName
                     }).ToList());
@@ -230,5 +207,18 @@ namespace ticonet.Controllers
             return new JsonResult { Data = companies };
         }
 
+        [System.Web.Mvc.HttpGet]
+        public JsonResult GetCurrentStartOfWeek() {
+            var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+            return new JsonResult { Data = startOfWeek };
+        }
+
+        [System.Web.Mvc.HttpPost]
+        public JsonResult CorrectLineWeekSchedules(int lineID, DateTime weekStart) {
+            using (var l = new tblScheduleLogic()) {
+                l.AutoCorrectLineSchedules(lineID,weekStart,weekStart.AddDays(7));
+            }
+            return new JsonResult { Data = true };
+        }
     }
 }

@@ -2,6 +2,15 @@
 @using Business_Logic.Enums
 @using DEBS = Business_Logic.DictExpressionBuilderSystem
 
+<style>
+    .center-content {
+        text-align: center
+    }
+    .center-content > div {
+        display: inline-block
+    }
+</style>
+
 <div class="content jqgrid-extended" id="dLinesTable">
     <table id="grLines"></table>
     <div id="pgLines"></div>
@@ -10,10 +19,106 @@
 <!--Div for render grid for Print-->
 <div hidden id="printLinesGrid"><table id="grPrintLines"></table></div>
 
+@*<i class="glyphicon glyphicon-link"></i>*@
+<div id="dlgEnterPass" title='@DEBS.Translate("Lines.EnterPass")' hidden style="width: 300px; height: 200px;">
+    <div class="center-content">
+        <div>
+            <input type="password" id="dlgEnterPass-pass" />
+        </div>
+    </div>
+    <br/>
+    <div class="center-content">
+        <div>
+            <a onclick="LineUpdatePlanning(currentEditedLineID, $('#dlgEnterPass-pass').val())">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+            </a>
+            <a onclick="CloseEnterPassDlg()">
+                <span class="glyphicon glyphicon-ban-circle"></span>
+            </a>
+        </div>
+    </div>
+</div>
+@*<i class="glyphicon glyphicon-calendar"></i>*@ 
+
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
     <script>
-        $(function() {
+        var CurrentWeekStart
+        function SetCurrentStartOfWeek(date) {
+            CurrentWeekStart = date
+            //alert(date)
+        }
+
+        //LineToPlanning--------------------------------------
+        var currentEditedLineID;
+
+        function LineUpdatePlanningDlg(LineId) {
+            currentEditedLineID = LineId
+            $('#dlgEnterPass-pass').val('')
+            $("#dlgEnterPass").dialog("open")
+        }
+        function CloseEnterPassDlg() {
+            $('#dlgEnterPass-pass').val('')
+            $("#dlgEnterPass").dialog("close")
+        }
+
+        function LineUpdatePlanning(LineId, pass) {
+            CloseEnterPassDlg()
+            var dataFromTheRow = $("#grLines").jqGrid('getRowData', LineId);
+            $.ajax({
+                url: '@Url.Action("SaveOrUpdate", "LinesPlan")',
+                type: "POST",
+                data: {
+                    model: {
+                        LineId: dataFromTheRow.Id,
+                        Sun: dataFromTheRow.Sun,
+                        Mon: dataFromTheRow.Mon,
+                        Tue: dataFromTheRow.Tue,
+                        Wed: dataFromTheRow.Wed,
+                        Thu: dataFromTheRow.Thu,
+                        Fri: dataFromTheRow.Fri,
+                        Sut: dataFromTheRow.Sut
+                    },
+                    pass: pass,
+                    doAppendPlan: dataFromTheRow.IsActive
+                },
+                success: function (response) {
+
+                },
+                error: function (response) {
+                    alert(response.responseJSON.message)
+                }
+            });
+        }
+
+        function CorrectLineWeekSchedules(lineID) {
+            var postData = {
+                lineID: lineID,
+                weekStart: CurrentWeekStart
+            }
+            var url = '/api' + '@Url.Action("CorrectLineWeekSchedules", "LinesApi")' + "?" + $.param(postData);
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+
+                },
+                error: function (response) {
+                    //alert(response.responseJSON.message)
+                }
+            });
+        }
+
+        $(function () {
+            $("#dlgEnterPass").dialog({
+                autoOpen: false,
+                //width: 500, //$(window).width(),
+                //height: 500, //$(window).height(),
+                modal: true
+            });
+
             //CUSTOM FORMATTERS
             $.fn.fmatter.checkbox = hackedfmatter_checkbox
 
@@ -21,9 +126,13 @@
                 var res = "";
                 res += '<div style="margin-left: 8px;">';
                 res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" style="float: left; cursor: pointer;" class="ui-pg-div" id="jSaveToPlanning_' + options.rowId + '" onclick="LineUpdatePlanningDlg(' + options.rowId + ');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-link"></span></div>';
+                res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" style="float: left; cursor: pointer;" class="ui-pg-div" id="jSaveToPlanning_' + options.rowId + '" onclick="CorrectLineWeekSchedules(' + options.rowId + ');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-calendar"></span></div>';
+
                 res += '    <div title="@DEBS.Translate("grid.DeleteSelectedRow")" style="float: left;" class="ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-trash"></span></div>';
                 res += '    <div title="@DEBS.Translate("grid.SaveRow")" style="float: left; display: none" class="ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
                 res += '    <div title="@DEBS.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+
                 res += '</div>';
                 return res;
             };
@@ -102,7 +211,7 @@
                         } }
                     },
                     { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 110, editable: false },
+                    { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 85, editable: false },
                     { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
                     { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
                     { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
@@ -169,7 +278,7 @@
                     {
                         name: 'ActionsBtn',
                         index: 'ActionsBtn',
-                        width: 80,
+                        width: 105,
                         align: 'center',
                         search: false,
                         formatter: lineActionsFormatter,
@@ -215,8 +324,17 @@
                             AppendArrAsNamedFields(footData, data.Data.WeekDayPrices, ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sut'])
                             grid.footerData('set', footData);
                         }
-                    });
-                },
+                    })
+                    $.ajax({
+                        url: '/api' + '@Url.Action("GetCurrentStartOfWeek", "LinesApi")',
+                        type: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (data) {
+                            SetCurrentStartOfWeek(data.Data)
+                        }
+                    })
+                }
             })
                 .navGrid(pagerID, {
                     add: false,

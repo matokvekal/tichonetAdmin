@@ -10,6 +10,10 @@ namespace Business_Logic.Services
     {
         public IEnumerable<tblSchedule> GenerateSchedule(ScheduleParamsModel parameters)
         {
+            bool UseLinesPlans;
+            using(var l = new AppConfigLogic()) {
+                UseLinesPlans = l.UseLinesPlanInAutoScheduling;
+            }
             var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
             var dateTo = DateHelper.StringToDate(parameters.DateTo);
             var schedule = new List<tblSchedule>();
@@ -26,7 +30,12 @@ namespace Business_Logic.Services
 
                 foreach (var line in lines)
                 {
-                    var dates = GetScheduleLineDates(line, dateFrom.Value, dateTo.Value, parameters);
+                    var dates =
+                        UseLinesPlans ?
+                            line.tblLinesPlan.Any() ?
+                                GetScheduleLineDates(line.tblLinesPlan.First(), dateFrom.Value, dateTo.Value, parameters)
+                                : new List<DateTime>()
+                            : GetScheduleLineDates(line, dateFrom.Value, dateTo.Value, parameters);
                     foreach (var date in dates)
                     {
                         var item = new tblSchedule
@@ -60,6 +69,27 @@ namespace Business_Logic.Services
             return schedule;
         }
 
+        //TODO use it in GenerateSchedule
+        public tblSchedule GenerateSingleSchedule (Line line, DateTime date, bool AddLeaveTime, bool AddArriveTime) {
+            var item = new tblSchedule {
+                Date = date,
+                Direction = line.Direction,
+                LineId = line.Id,
+                BusId = line.BusesToLines.DefaultIfEmpty(new BusesToLine()).First().BusId,
+                Line = line,
+                Bus = line.BusesToLines.DefaultIfEmpty(new BusesToLine()).First().Bus
+            };
+
+            var leaveTime = GetLeaveTime(line, date);
+            if (leaveTime.HasValue) {
+                if (AddLeaveTime) 
+                    item.leaveTime = leaveTime;
+                if (AddArriveTime && line.Duration.HasValue) 
+                    item.arriveTime = leaveTime.Value.Add(line.Duration.Value);
+            }
+            return item;
+        }
+
         public bool SaveGeneratedShcedule(IEnumerable<tblSchedule> schedule, DateTime dateFrom, DateTime dateTo)
         {
             using (var logic = new tblScheduleLogic())
@@ -85,7 +115,7 @@ namespace Business_Logic.Services
             return true;
         }
         
-        private List<DateTime> GetScheduleLineDates(Line line, DateTime dateFrom, DateTime dateTo, ScheduleParamsModel parameters)
+        private List<DateTime> GetScheduleLineDates(IWeekDatedObject line, DateTime dateFrom, DateTime dateTo, ScheduleParamsModel parameters)
         {
             var dates = new List<DateTime>();
             for (DateTime date = dateFrom; date <= dateTo; date = date.AddDays(1))

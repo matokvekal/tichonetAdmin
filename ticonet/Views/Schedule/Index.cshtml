@@ -69,8 +69,9 @@
 </div>
 
 <div id="dlgShowCube" title="Show Cube" hidden style="width: 900px; height: 500px;">
-    @Html.Partial("~/Views/Report/Index.cshtml")
+@*    @Html.Partial("~/Views/Report/Index.cshtml")*@
 </div>
+
 
 
 @section scripts{
@@ -510,6 +511,13 @@
             $("#dlgShowCube").dialog({
                 autoOpen: false,
                 width: 900, //$(window).width(),
+                height: 500, //$(window).height(),
+                modal: true
+            });
+
+            $("#dlgEnterPass").dialog({
+                autoOpen: false,
+                width: 500, //$(window).width(),
                 height: 500, //$(window).height(),
                 modal: true
             });
