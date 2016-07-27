@@ -8,6 +8,38 @@ namespace Business_Logic.Services
 {
     public class ScheduleService : IScheduleService
     {
+
+        public bool PopulateLinesPlan()
+        {
+            var linesIds = new List<int>();
+            var dateFrom = DateTime.Now.AddDays(1).Date;
+            var dateTo = DateTime.Now.AddDays(8).Date;
+
+            using (var logic = new LineLogic())
+            {
+                linesIds = logic.GetList().Select(x => x.Id).ToList();
+            }
+            var parameters = new ScheduleParamsModel
+            {
+                LinesIds = string.Join(",", linesIds),
+                DateFrom = DateHelper.DateToString(dateFrom),
+                DateTo = DateHelper.DateToString(dateTo),
+                ArriveTime = true,
+                LeaveTime = true,
+                Sun = true,
+                Mon = true,
+                Tue = true,
+                Wed = true,
+                Thu = true,
+                Fri = true,
+                Sut = true,
+            };
+
+            var schedule = GenerateSchedule(parameters).ToList();
+            return SaveGeneratedShcedule(schedule, dateFrom, dateTo);
+        }
+
+
         public IEnumerable<tblSchedule> GenerateSchedule(ScheduleParamsModel parameters)
         {
             bool UseLinesPlans;

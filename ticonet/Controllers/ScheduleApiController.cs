@@ -24,11 +24,11 @@ namespace ticonet.Controllers
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(ScheduleApiController));
 
-        private IScheduleService ScheduleService { get; set; }
+        private IScheduleService scheduleService { get; set; }
 
         public ScheduleApiController()
         {
-            ScheduleService = new ScheduleService();
+            scheduleService = new ScheduleService();
         }
 
         [System.Web.Http.HttpGet]
@@ -92,7 +92,7 @@ namespace ticonet.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            var schedule = ScheduleService.GenerateSchedule(parameters)
+            var schedule = scheduleService.GenerateSchedule(parameters)
                 .Select(x => new ScheduleItemModel(x))
                 .ToList();
             
@@ -120,7 +120,7 @@ namespace ticonet.Controllers
                     item.DriverId = item.DriverIdKey;
                     item.BusId = item.BusIdKey;
                 }
-                result = ScheduleService.SaveGeneratedShcedule(items.Select(x => x.ToDbModel()), dtDateFrom.Value, dtDateTo.Value);
+                result = scheduleService.SaveGeneratedShcedule(items.Select(x => x.ToDbModel()), dtDateFrom.Value, dtDateTo.Value);
             }
             return new JsonResult { Data = result };
         }
@@ -130,32 +130,7 @@ namespace ticonet.Controllers
         {
             var success = await Task<bool>.Factory.StartNew(() =>
             {
-                var linesIds = new List<int>();
-                var dateFrom = DateTime.Now.AddDays(1).Date;
-                var dateTo = DateTime.Now.AddDays(8).Date;
-
-                using (var logic = new LineLogic())
-                {
-                    linesIds = logic.GetList().Select(x => x.Id).ToList();
-                }
-                var parameters = new ScheduleParamsModel
-                {
-                    LinesIds = string.Join(",", linesIds),
-                    DateFrom = DateHelper.DateToString(dateFrom),
-                    DateTo = DateHelper.DateToString(dateTo),
-                    ArriveTime = true,
-                    LeaveTime = true,
-                    Sun = true,
-                    Mon = true,
-                    Tue = true,
-                    Wed = true,
-                    Thu = true,
-                    Fri = true,
-                    Sut = true,
-                };
-
-                var schedule = ScheduleService.GenerateSchedule(parameters).ToList();
-                return ScheduleService.SaveGeneratedShcedule(schedule, dateFrom, dateTo);
+                return scheduleService.PopulateLinesPlan();
             });
 
             return Request.CreateResponse(!success ? HttpStatusCode.InternalServerError : HttpStatusCode.OK);

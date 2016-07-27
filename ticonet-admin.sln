@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ticonet-admin", "ticonet\ticonet-admin.csproj", "{82F4DFE1-8B7E-437C-B9B9-6C48AFBF0A7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business_Logic", "BusinessLogic\Business_Logic.csproj", "{8EE085D7-D665-4F10-925C-011A1B63027E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentScheduler", "FluentScheduler\FluentScheduler.csproj", "{434FED39-4EC1-4797-BB2D-246432B3D4FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8EE085D7-D665-4F10-925C-011A1B63027E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EE085D7-D665-4F10-925C-011A1B63027E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EE085D7-D665-4F10-925C-011A1B63027E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{434FED39-4EC1-4797-BB2D-246432B3D4FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434FED39-4EC1-4797-BB2D-246432B3D4FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{434FED39-4EC1-4797-BB2D-246432B3D4FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{434FED39-4EC1-4797-BB2D-246432B3D4FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

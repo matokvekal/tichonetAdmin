@@ -1,12 +1,10 @@
-﻿using IdentitySample;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using FluentScheduler;
+using IdentitySample;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using ticonet.Scheduler;
 
 namespace ticonet
 {
@@ -19,6 +17,11 @@ namespace ticonet
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Scheduler
+            TaskManager.TaskFactory = new NinjectTaskFactory();
+            TaskManager.UnobservedTaskException += TaskException.TaskManager_UnobservedTaskException;
+            TaskManager.Initialize(new TaskRegistry());
         }
     }
 }
