@@ -20,8 +20,6 @@ namespace ticonet.Scheduler.Tasks
                 if(logic.PopulateLinesIsActive)
                 {
                     logger.Info("PopulateLinesPlan");
-                    using (var l = new tblLinesPlanLogic()) 
-                        l.SyncLinesToPlans();
                     var result = scheduleService.PopulateLinesPlan();
                     if (result)
                         logic.PopulateLinesLastRun = DateTime.UtcNow;

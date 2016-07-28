@@ -12,8 +12,8 @@ namespace Business_Logic.Services
         public bool PopulateLinesPlan()
         {
             var linesIds = new List<int>();
-            var dateFrom = DateTime.Now.AddDays(1).Date;
-            var dateTo = DateTime.Now.AddDays(8).Date;
+            var dateFrom = DateHelper.GetSunday(DateTime.Now); // DateTime.Now.AddDays(1).Date;
+            var dateTo = dateFrom.AddDays(7).Date;
 
             using (var logic = new LineLogic())
             {
@@ -35,6 +35,8 @@ namespace Business_Logic.Services
                 Sut = true,
             };
 
+            using (var logic = new tblLinesPlanLogic())
+                logic.SyncLinesToPlans();
             var schedule = GenerateSchedule(parameters).ToList();
             return SaveGeneratedShcedule(schedule, dateFrom, dateTo);
         }

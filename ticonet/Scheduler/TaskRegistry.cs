@@ -7,8 +7,8 @@ namespace ticonet.Scheduler
     {
         public TaskRegistry()
         {
-            // Run every week on Saturday at 23:00
-            Schedule<ITaskPopulateLinesPlan>().ToRunEvery(1).Weeks().On(System.DayOfWeek.Saturday).At(23, 00);
+            // Run every week on Sunday at 00:30
+            Schedule<ITaskPopulateLinesPlan>().ToRunEvery(1).Weeks().On(System.DayOfWeek.Sunday).At(00, 30);
         }
     }
 }

@@ -56,5 +56,13 @@ namespace Business_Logic.Helpers
             return periodEnd_excl.Subtract(periodStart_incl).Days;
         }
 
+        public static DateTime GetSunday(DateTime date)
+        {
+            while (date.DayOfWeek != DayOfWeek.Sunday)
+            {
+                date = date.AddDays(-1);
+            }
+            return date;
+        }
     }
 }
