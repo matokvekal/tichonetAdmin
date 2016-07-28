@@ -53,11 +53,9 @@ namespace ticonet.Controllers
 
         [System.Web.Mvc.HttpPost]
         public JsonResult EditLine(GridLineModel model) {
+            int LineIdToAutoCorrect = -1;
             using (var logic = new LineLogic()) {
                 switch ((GridOperation)Enum.Parse(typeof(GridOperation), model.Oper, true)) {
-                    //case GridOperation.add:
-                    //    logic.SaveLine(model.ToDbModel());
-                    //    break;
                     case GridOperation.edit:
                         var existingLine = logic.GetLine(model.Id);
                         if (existingLine != null) {
@@ -66,11 +64,18 @@ namespace ticonet.Controllers
                             using (var busesToLinesLogic = new BusToLineLogic()) {
                                 busesToLinesLogic.UpdateBusToLine(model.Id, model.Bus);
                             }
+                            LineIdToAutoCorrect = existingLine.Id;
                         }
                         break;
                     case GridOperation.del:
                         logic.DeleteLine(model.Id);
                         break;
+                }
+            }
+            if (LineIdToAutoCorrect != -1) {
+                var weekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
+                using (var l = new tblScheduleLogic()) {
+                    l.AutoCorrectLineSchedules(LineIdToAutoCorrect, weekStart, weekStart.AddDays(7));
                 }
             }
             return new JsonResult { Data = true };
@@ -214,7 +219,7 @@ namespace ticonet.Controllers
         }
 
         [System.Web.Mvc.HttpPost]
-        public JsonResult CorrectLineWeekSchedules(int lineID, DateTime weekStart) {
+        public JsonResult AutoCorrectLineWeekSchedules(int lineID, DateTime weekStart) {
             using (var l = new tblScheduleLogic()) {
                 l.AutoCorrectLineSchedules(lineID,weekStart,weekStart.AddDays(7));
             }

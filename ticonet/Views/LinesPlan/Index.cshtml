@@ -4,9 +4,17 @@
 <h2>@DEBS.Translate("LinesPlan.GridCaption")</h2>
 
 <div class="page-block">
-    <input type="checkbox" id="UseLinesPlanInAutoScheduling" onclick="UpdateAppConf()"/>
-    @DEBS.Translate("LinesPlan.AutomaticMode")
+    <!-- Switch -->
+    <div id="SW_WeekAutoScheduleGenerator" class="Switch" turned="true" style="height:30px">
+        <div class="Toggle"></div>
+        <span class="On"><i class="glyphicon glyphicon-off"></i></span>
+        <span class="Off"><i class="glyphicon glyphicon-off"></i></span>
+    </div>
+    <span class="switch-caption">
+        @DEBS.Translate("General.TurnWeekAutoScheduleGenerator")
+    </span>
 </div>
+
 <div class="page-block content jqgrid-extended" style="width: 100%; height: calc(100% - 200px); overflow-x: hidden; overflow-y: auto; overflow-x: auto;">
     <div style="width: calc(100% - 20px); margin-right: 20px">
         <div id="plansGridContainer">
@@ -14,38 +22,17 @@
     </div>
 </div>
 
-
 @section styles{
     @Styles.Render("~/bundles/cssReport")
+    @Styles.Render("~/bundles/JquerySimpleUIcss")
 }
 
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
+    @Scripts.Render("~/bundles/JquerySimpleUI")
+    @Scripts.Render("~/bundles/AppConfigControl")
 
     <script>
-
-        function UpdateAppConf() {
-            var b = $("#UseLinesPlanInAutoScheduling").prop('checked')
-            $.ajax({
-                url: '@Url.Action("Update", "AppConfig")',
-                data: { settings: { UseLinesPlanInAutoScheduling : b } },
-                type: 'POST',
-                success: function (data) {
-                    $("#UseLinesPlanInAutoScheduling").prop('checked', data['UseLinesPlanInAutoScheduling']);
-                }
-            });
-        }
-        function GetAppConf() {
-            $.ajax({
-                url: '@Url.Action("Get", "AppConfig")',
-                data: { settings: ['UseLinesPlanInAutoScheduling'] },
-                type: 'POST',
-                success: function (data) {
-                    $("#UseLinesPlanInAutoScheduling").prop('checked',data['UseLinesPlanInAutoScheduling']);
-                }
-            });
-        }
-
         $(function () {
             var gridContainerID = 'plansGridContainer'
             var gridNewID = 'plansGrid'
@@ -59,7 +46,23 @@
 
             gridholder = $('#' + gridNewID)
             buildJqGrid(gridholder, pagerholder)
-            GetAppConf()
+
+            //TODO incaps AppConfig UI
+            var AppCC = new AppConfigControl({
+                    update: '@Url.Action("Update", "AppConfig")',
+                    get: '@Url.Action("Get", "AppConfig")'
+                })
+            AppCC.GetSettings(
+                ['PopulateLinesIsActive'],
+                function (data) {
+                    new $SimpleSwitch($('#SW_WeekAutoScheduleGenerator'),
+                        data['PopulateLinesIsActive'],
+                        function (state) {
+                            AppCC.UpdateSettings({ 'PopulateLinesIsActive': state })
+                        }
+                    )
+                }
+            )
         })
 
         var lineActionsFormatter = function (cellvalue, options, rowObject) {

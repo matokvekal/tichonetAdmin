@@ -10,7 +10,7 @@ namespace Business_Logic {
 
         public int tblLinesCount { get { return DB.tblLinesPlans.Count(); } }
         
-        //TODO avoid moving data to memory
+        //todo avoid moving data to memory
         public List<tblLinesPlan> GetPaged(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters) {
             IEnumerable<tblLinesPlan> query = GetFilteredAll(isSearch, filters);
 

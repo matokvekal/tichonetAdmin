@@ -69,6 +69,15 @@ namespace IdentitySample
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/JquerySimpleUI").Include(
+                    "~/Scripts/JquerySimpleUI.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/AppConfigControl").Include(
+                    "~/Scripts/AppConfigControl.js"));
+
+            bundles.Add(new StyleBundle("~/bundles/JquerySimpleUIcss").Include(
+                    "~/Content/JquerySimpleUI.css"));
+
             bundles.Add(new StyleBundle("~/bundles/css").Include(
                       "~/Content/bootstrap.min.css",
                       "~/Content/chosen.min.css",
@@ -82,6 +91,7 @@ namespace IdentitySample
                       "~/Content/jquery-ui.theme.min.css",
                       "~/Content/jquery-ui-timepicker-addon.min.css",
                       "~/Scripts/jqGrid/plugins/searchFilter.css"));
+
 
 
             bundles.Add(new StyleBundle("~/bundles/cssReport").Include(

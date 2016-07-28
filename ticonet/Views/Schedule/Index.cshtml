@@ -2,6 +2,8 @@
 @using Business_Logic.Enums
 @using DEBS = Business_Logic.DictExpressionBuilderSystem
 
+
+
 <div class="content inline-block" style="height: calc(100% - 30px); width: 100%; display: inline-block; margin: 20px 0 0 0; padding: 0;">
     <div style="margin: 0; padding: 0; height: 100%; width: calc(100% - 400px); float: left; border: solid silver thin; overflow: hidden;">
         <div style="margin: 0; padding: 0; height: 40px; width: 100%; float: right;">
@@ -38,6 +40,17 @@
             <button id="btnShowCube" title="@DEBS.Translate("Schedule.ShowCube")"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></button>
             <button id="btnUpdateLines" title="@DEBS.Translate("Schedule.UpdateLines")"><span class="glyphicon glyphicon-import" aria-hidden="true"></span></button>
             <button id="btnRefresh" title="@DEBS.Translate("Schedule.Refresh")"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            <div style="display:inline-block">
+                <!-- Switch -->
+                <div id="SW_WeekAutoScheduleGenerator" class="Switch" turned="true" style="height:30px">
+                    <div class="Toggle"></div>
+                    <span class="On"><i class="glyphicon glyphicon-off"></i></span>
+                    <span class="Off"><i class="glyphicon glyphicon-off"></i></span>
+                </div>
+                <span class="switch-caption">
+                    @DEBS.Translate("General.TurnWeekAutoScheduleGenerator")
+                </span>
+            </div>
         </div>
 
         <div style="margin: 0; padding: 0; height: calc(100% - 110px); width: 100%; float: right; border: solid silver thin; overflow-x: hidden; overflow-y: auto;">
@@ -74,10 +87,30 @@
 
 
 
+
 @section scripts{
     @Scripts.Render("~/bundles/jqGridExtend")
+    @Scripts.Render("~/bundles/JquerySimpleUI")
+    @Scripts.Render("~/bundles/AppConfigControl")
     <script>
-        $(function() {
+        $(function () {
+            //AppConfig
+            var AppCC = new AppConfigControl({
+                update: '@Url.Action("Update", "AppConfig")',
+                get: '@Url.Action("Get", "AppConfig")'
+            })
+            AppCC.GetSettings(
+                ['PopulateLinesIsActive'],
+                function (data) {
+                    new $SimpleSwitch($('#SW_WeekAutoScheduleGenerator'),
+                        data['PopulateLinesIsActive'],
+                        function (state) {
+                            AppCC.UpdateSettings({ 'PopulateLinesIsActive': state })
+                        }
+                    )
+                }
+            )
+
             //var pagerID = "#pgLines";
             var linesGrid = $("#grLines"),
                 dateFrom = $('#dateFrom'),
@@ -576,4 +609,8 @@
         });
     </script>
 }
+@section styles{
+    @Styles.Render("~/bundles/JquerySimpleUIcss")
+}
+
 

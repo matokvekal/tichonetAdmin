@@ -96,7 +96,7 @@ namespace ticonet.Controllers
             //preparing canvas   
             int h = 40;
             int w = (int)((double)h * 0.6666666666666666666);
-            int mp = 0; //offset marker from top 
+            //int mp = 0; //offset marker from top 
             var bm = new Bitmap(w + 1, h + 1, PixelFormat.Format32bppArgb);
             var gr = Graphics.FromImage(bm);
             gr.CompositingQuality = CompositingQuality.HighQuality;

@@ -185,7 +185,7 @@ namespace Business_Logic
                         itm.Position = position;
                     }
                     itm.ArrivalDate = arrivalTime;
-                    var c = "";
+                    //var c = "";
                     if (changeColor)
                     {
                         var station = DB.Stations.FirstOrDefault(z => z.Id == stationId);

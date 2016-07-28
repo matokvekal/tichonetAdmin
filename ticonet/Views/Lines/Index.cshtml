@@ -9,11 +9,27 @@
     .center-content > div {
         display: inline-block
     }
+
+    .row-action-button {
+        float: left;
+        display: inline-block;
+        cursor: pointer;
+        border: 1px solid rgba(0, 0, 0, 0.00);
+        padding: 2px
+    }
+    .row-action-button:hover {
+        border: 1px solid white;
+    }
+    .unactive-row-action-button {
+    }
+    .active-row-action-button {
+        display: none;
+    }
 </style>
 
 <div class="content jqgrid-extended" id="dLinesTable">
     <table id="grLines"></table>
-    <div id="pgLines"></div>
+    <div id="pgLines" style="z-index: 1"></div>
 </div>
 
 <!--Div for render grid for Print-->
@@ -96,7 +112,7 @@
                 lineID: lineID,
                 weekStart: CurrentWeekStart
             }
-            var url = '/api' + '@Url.Action("CorrectLineWeekSchedules", "LinesApi")' + "?" + $.param(postData);
+            var url = '/api' + '@Url.Action("AutoCorrectLineWeekSchedules", "LinesApi")' + "?" + $.param(postData);
             $.ajax({
                 url: url,
                 type: "POST",
@@ -122,7 +138,7 @@
             //CUSTOM FORMATTERS
             $.fn.fmatter.checkbox = hackedfmatter_checkbox
 
-            var lineActionsFormatter = function (cellvalue, options, rowObject) {
+            @*var lineActionsFormatter = function (cellvalue, options, rowObject) {
                 var res = "";
                 res += '<div style="margin-left: 8px;">';
                 res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" onmouseover="jQuery(this).addClass(\'ui-state-hover\');" onmouseout="jQuery(this).removeClass(\'ui-state-hover\');"><span class="glyphicon glyphicon-pencil"></span></div>';
@@ -136,7 +152,36 @@
 
                 res += '</div>';
                 return res;
+            };*@
+
+            var lineActionsFormatter = function (cellvalue, options, rowObject) {
+                var res = "";
+                res += '<div style="margin-left: 8px;">';
+                res += '<div title="@DEBS.Translate("grid.EditSelectedRow")" style="float: left; cursor: pointer;" class="row-action-button ui-pg-div ui-inline-edit" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');"><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '<div title="@DEBS.Translate("Line.SaveToPlanning")" style="float: left; cursor: pointer;" class="row-action-button ui-pg-div ui-inline-edit unactive-row-action-button" id="jSaveToPlanning_' + options.rowId + '" onclick="LineUpdatePlanningDlg(' + options.rowId + ');"><span class="glyphicon glyphicon-link"></span></div>';
+                //res += '<div title="@DEBS.Translate("Line.AutocorrectSchedules")" style="float: left; cursor: pointer;" class="row-action-button ui-pg-div ui-inline-edit unactive-row-action-button" id="jAutocorrectSchedules_' + options.rowId + '" onclick="CorrectLineWeekSchedules(' + options.rowId + ');"><span class="glyphicon glyphicon-calendar"></span></div>';
+                res += '<div title="@DEBS.Translate("grid.DeleteSelectedRow")" style="float: left;" class="row-action-button ui-pg-div ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');"><span class="glyphicon glyphicon-trash"></span></div>';
+                res += '<div title="@DEBS.Translate("grid.SaveRow")" style="float: left; display: none" class="row-action-button ui-pg-div ui-inline-save" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '<div title="@DEBS.Translate("grid.CancelRowEditing")" style="float: left; display: none;" class="row-action-button ui-pg-div ui-inline-cancel" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+
+                res += '</div>';
+                return res;
             };
+
+            @*var lineActionsFormatter = function (cellvalue, options, rowObject) {
+                var res = "";
+                res += '<div style="margin-left: 8px;">';
+                res += '    <div title="@DEBS.Translate("grid.EditSelectedRow")" class="ui-pg-div ui-inline-edit row-action-button unactive-row-action-button" id="jEditButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'edit\');" ><span class="glyphicon glyphicon-pencil"></span></div>';
+                res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" class="ui-pg-div row-action-button unactive-row-action-button" id="jSaveToPlanning_' + options.rowId + '" onclick="LineUpdatePlanningDlg(' + options.rowId + ');"><span class="glyphicon glyphicon-link"></span></div>';
+                res += '    <div title="@DEBS.Translate("Line.SaveToPlanning")" class="ui-pg-div row-action-button unactive-row-action-button" id="jSaveToPlanning_' + options.rowId + '" onclick="CorrectLineWeekSchedules(' + options.rowId + ');" ><span class="glyphicon glyphicon-calendar"></span></div>';
+
+                res += '    <div title="@DEBS.Translate("grid.DeleteSelectedRow")" class="ui-pg-div row-action-button ui-inline-del" id="jDeleteButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'del\');" ></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.SaveRow")" class="ui-pg-div row-action-button ui-inline-save active-row-action-button" id="jSaveButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'save\');"><span class="glyphicon glyphicon-floppy-disk"></span></div>';
+                res += '    <div title="@DEBS.Translate("grid.CancelRowEditing")" class="ui-pg-div row-action-button ui-inline-cancel active-row-action-button" id="jCancelButton_' + options.rowId + '" onclick="$.fn.rowActionsExtended.call(this, \'cancel\');"><span class="glyphicon glyphicon-ban-circle"></span></div>';
+
+                res += '</div>';
+                return res;
+            };*@
 
             var printWindow = null;
             var grid = $("#grLines");
@@ -195,7 +240,7 @@
                 colModel: [
                     { name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false },
                     { name: 'LineName', index: 'LineName', sorttype: "text", width: 110, editable: true },
-                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 110, editable: true },
+                    { name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 80, editable: true },
                     {
                         name: 'Direction',
                         index: 'Direction',
@@ -212,7 +257,7 @@
                         } }
                     },
                     { name: 'IsActive', index: 'IsActive', sorttype: "text", width: 90, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: 'checkbox', search: false },
-                    { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 85, editable: false },
+                    { name: 'totalStudents', index: 'totalStudents', sorttype: "text", width: 75, editable: false },
                     { name: 'Duration', index: 'Duration', sorttype: "text", width: 110, editable: false, search: false },
                     { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
                     { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
@@ -279,7 +324,7 @@
                     {
                         name: 'ActionsBtn',
                         index: 'ActionsBtn',
-                        width: 105,
+                        width: 180,
                         align: 'center',
                         search: false,
                         formatter: lineActionsFormatter,

@@ -475,44 +475,5 @@ namespace Business_Logic
             return result;
         }
 
-        //TODO
-        public void AutoCorrectLineSchedules(int LineID, DateTime periodStart_incl, DateTime periodEnd_excl) {
-            var line = DB.Lines.First(x => x.Id == LineID);
-            IQueryable<tblSchedule> schedules = DB
-                .tblSchedules
-                .Where(x => x.LineId == LineID);
-
-            DateTime dateSt = periodStart_incl, dateEnd = periodStart_incl;
-            Expression<Func<tblSchedule, bool>> scheduleDayPredicate = x =>
-                x.Date >= dateSt && x.Date < dateEnd;
-
-            int days = DateHelper.GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
-            if (days <= 0)
-                throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");
-
-            ScheduleService schedServ = new ScheduleService();
-            var newSchedules = new List<tblSchedule>();
-            DateHelper.IterDays(periodStart_incl, days, (i, date) => {
-                dateSt = date;
-                dateEnd = dateSt.AddDays(1);
-                if (LineHelper.IsLineActiveAtDay(line, (DayOfWeek) i-1)) {
-                    if (!schedules.Any(scheduleDayPredicate)) {
-                        var newSch = schedServ.GenerateSingleSchedule(line, date, true, true);
-                        newSchedules.Add(newSch);
-                        //using (var l = new tblScheduleLogic()) {
-                        //l.SaveItem(newSch);
-                        //}
-                        //TODO 
-                        //add sch
-                    }
-                }
-                else if (schedules.Any(scheduleDayPredicate)) 
-                   DB.tblSchedules.RemoveRange(schedules.Where(scheduleDayPredicate));
-            });
-            if (newSchedules.Count > 0)
-
-            DB.SaveChanges();
-        }
-
     }
 }

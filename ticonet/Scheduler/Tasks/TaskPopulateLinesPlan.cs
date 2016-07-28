@@ -14,15 +14,17 @@ namespace ticonet.Scheduler.Tasks
         public override void Execute()
         {
             var scheduleService = new ScheduleService();
-
+            
             using (var logic = new tblSettingLogic())
             {
-                if(logic.GetPopulateLinesIsActive())
+                if(logic.PopulateLinesIsActive)
                 {
                     logger.Info("PopulateLinesPlan");
+                    using (var l = new tblLinesPlanLogic()) 
+                        l.SyncLinesToPlans();
                     var result = scheduleService.PopulateLinesPlan();
                     if (result)
-                        logic.SetPopulateLinesLastRun(DateTime.UtcNow);
+                        logic.PopulateLinesLastRun = DateTime.UtcNow;
                 }
             }
         }

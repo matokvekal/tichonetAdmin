@@ -46,6 +46,7 @@
         switch (b) {
             case "edit":
                 f.jqGrid("editRow", d, n);
+                j.find('div.unactive-row-action-button').hide()
                 j.find("div.ui-inline-edit,div.ui-inline-del").hide();
                 j.find("div.ui-inline-save,div.ui-inline-cancel").show();
                 f.triggerHandler("jqGridAfterGridComplete");
@@ -85,6 +86,7 @@ var jqGridExtend = (function () {
     };
     jqGridExtend.prototype.restore = function (id) {
         if (id && id !== this.lastSelection) {
+            //TODO AFTER delete this, use common css-aproach
             $("div.ui-inline-edit,div.ui-inline-del", this.grid).not("#jEditButton_" + id).not("#jDeleteButton_" + id).show();
             $("div.ui-inline-save,div.ui-inline-cancel", this.grid).not("#jSaveButton_" + id).not("#jCancelButton_" + id).hide();
             this.grid.triggerHandler("jqGridAfterGridComplete");
