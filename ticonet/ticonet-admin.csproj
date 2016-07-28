@@ -415,6 +415,7 @@
     <Compile Include="Models\AttachStudentModel.cs" />
     <Compile Include="Models\AttachStudentResultModel.cs" />
     <Compile Include="Models\BusCompanyModel.cs" />
+    <Compile Include="Models\FamilyModel.cs" />
     <Compile Include="Models\LinesPlanApiModel.cs" />
     <Compile Include="Models\ScheduleItemModel.cs" />
     <Compile Include="Models\EventModel.cs" />

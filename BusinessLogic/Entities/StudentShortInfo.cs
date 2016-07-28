@@ -22,7 +22,7 @@
             Shicva = data.Shicva;
             Class = data.@class;
             Active = data.Active ?? false;
-
+            request = data.request;
         }
         public int Id { get; set; }
         public string StudentId { get; set; }
@@ -36,6 +36,7 @@
         public double? Lng { get; set; }
         public string CellPhone { get; set; }
         public string Email { get; set; }
+        public string request { get; set; }
 
 
     }

@@ -154,6 +154,9 @@
             }
         });
     },
+    objectToString: function (o) {
+        return "" + (o == null ? "" : o) + "";
+    },
     openStudentInfoWindow: function (student) {
         for (var i = 0; i < smap.students.length; i++) {
             var st = smap.students[i];
@@ -177,9 +180,10 @@
         //content += "<li role='presentation'><a href='#'>Messages</a></li>";
         content += "</ul>";
         content += "<div class='iw-tab-content' >";
-        content += "<h4>" + student.Name + "</h4>";
-        content += "<div>" + student.CellPhone + "...." + student.Email + "</div>";
-        content += "<div>" + student.Address + "</div>";
+        content += "<h4>" + this.objectToString(student.Name) + "</h4>";
+        content += "<div>" + this.objectToString(student.CellPhone) + "...." + this.objectToString(student.Email) + "</div>";
+        content += "<div>" + this.objectToString(student.Address) + "</div>";
+        content += "<div>" + this.objectToString(student.request) + "</div>";
         content += "<div rel='family'><img src='/Content/img/ajax-loader.gif' /></div>";
         content += "</div>";
         content += "<div class='iw-tab-content' rel='buses' style='display:none;'>";
@@ -242,16 +246,16 @@
     showFamilyInfo: function (id, family) {
         var cont = $("#dIW" + id).find("div[rel=family]");
         if (family != null) {
-            var p1 = family.parent1Type + "</br>";
-            p1 += family.parent1FirstName + " " + family.parent1LastName + "</br>";
-            p1 += family.parent1CellPhone + "</br>";
-            p1 += family.parent1Email + "</br>";
+            var p1 = this.objectToString(family.parent1Type) + "</br>";
+            p1 += this.objectToString(family.parent1FirstName) + " " + this.objectToString(family.parent1LastName) + "</br>";
+            p1 += this.objectToString(family.parent1CellPhone) + "</br>";
+            p1 += this.objectToString(family.parent1Email) + "</br>";
 
-            var p2 = family.parent2Type + "</br>";
-            p2 += family.parent2FirstName + " " + family.parent2LastName + "</br>";
-            p2 += family.parent2CellPhone + "</br>";
-            p2 += family.parent2Email + "</br>";
-            $(cont).append("<hr/><table class='tbl-family' id='tblFamily" + id + "'><tr><td rel='p1'>" + p1 + "</td><td rel='p2'>" + p2 + "</td></tr></table");
+            var p2 = this.objectToString(family.parent2Type) + "</br>";
+            p2 += this.objectToString(family.parent2FirstName) + " " + this.objectToString(family.parent2LastName) + "</br>";
+            p2 += this.objectToString(family.parent2CellPhone) + "</br>";
+            p2 += this.objectToString(family.parent2Email) + "</br>";
+            $(cont).append("<hr/><table class='tbl-family' id='tblFamily" + this.objectToString(id) + "'><tr><td rel='p1'>" + p1 + "</td><td rel='p2'>" + p2 + "</td></tr></table");
 
         }
     },

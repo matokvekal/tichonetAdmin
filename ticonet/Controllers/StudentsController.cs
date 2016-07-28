@@ -7,6 +7,7 @@ using Business_Logic;
 using Business_Logic.Entities;
 using Business_Logic.Helpers;
 using log4net;
+using ticonet.Models;
 
 namespace ticonet
 {
@@ -84,7 +85,7 @@ namespace ticonet
                 }
             }
 
-            return new StudentFamilyInfo { Id = id, Family = res };
+            return new StudentFamilyInfo { Id = id, Family = (res != null ? new FamilyModel(res) : new FamilyModel()) };
         }
 
 
@@ -93,6 +94,6 @@ namespace ticonet
     public class StudentFamilyInfo
     {
         public int Id { get; set; }
-        public tblFamily Family { get; set; }
+        public FamilyModel Family { get; set; }
     }
 }
