@@ -516,7 +516,7 @@
             if (lines.indexOf(l) == -1) {
                 var t = "<option value='" + l.Id + "' ";
                 if (l.Id == smap.stations.latestLineId) t += "selected='selected'";
-                t += ">" + l.Name + "</option>";
+                t += ">" + l.Name + "  " + l.LineNumber +"</option>";
                 $(t).appendTo("#ddlAddLine");
             }
         }
