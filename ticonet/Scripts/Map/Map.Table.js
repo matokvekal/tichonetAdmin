@@ -2,8 +2,25 @@
     studentsGrid: null,
     linesGrid: null,
     jumpTimer: null,
+    sbGrd: null,
+    refreshSbGrd: function (rowId) {
+        var initted = false
+        if (smap.table.sbGrd !== null)
+            smap.table.sbGrd.jqGrid('clearGridData')
+        var lst = smap.getLine(rowId).Stations;
+        for (var x in lst) {
+            smap.table.sbGrd.jqGrid('addRowData', lst[x].StationId, lst[x]);
+        }
+    },
+    sortByDefSbGrd: function() {
+        smap.table.sbGrd.jqGrid('setGridParam', { sortorder: 'asc' });
+        smap.table.sbGrd.jqGrid("sortGrid", "Position");
+    },
+    sortByHackSbGrd: function () {
+        smap.table.sbGrd.jqGrid('setGridParam', { sortorder: 'desc' });
+        smap.table.sbGrd.jqGrid("sortGrid", "Position");
+    },
     init: function () {
-     
 
         //Students table
         if (smap.table.studentsGrid == null) {
@@ -171,7 +188,7 @@
                 subGridRowExpanded: function (subgridDivId, rowId) {
                     var subgridTableId = subgridDivId + "_t";
                     $("#" + subgridDivId).html("<table id='" + subgridTableId + "'></table><div id='" + subgridDivId + "_d'></div>");
-                    var sbGrd = $("#" + subgridTableId).jqGrid({
+                    smap.table.sbGrd = $("#" + subgridTableId).jqGrid({
                         datatype: 'local',
                         pager: '#' + subgridDivId + "_d",
                         rowList: [10, 25, 50],
@@ -184,20 +201,17 @@
                                 }
                             }
                         },
-                        colNames: ['Position', 'Station', 'Address', 'Time'],
+                        colNames: ["",'Position', 'Station', 'Address', 'Time'],
                         colModel: [
-                            { name: 'Position', width: 100, align: 'center' },
+                            { name: 'LineId', width: 29, align: 'center', formatter: smap.table.editPositionFormatter },
+                            { name: 'Position', width: 100, align: 'center', sorttype: 'int' },
                             { name: 'StationId', width: 100, formatter: smap.table.stationNameFormatter },
                             { name: 'StationId', width: 250, align: 'center', formatter: smap.table.stationAddressFormatter },
                             { name: 'ArrivalDateString', width: 100, align: 'center' }
                         ]
                     });
-                    var lst = smap.getLine(rowId).Stations;
-                    for (var x in lst) {
-                        sbGrd.jqGrid('addRowData', lst[x].StationId, lst[x]);
-                    }
-                    sbGrd.jqGrid('setGridParam', { sortorder: 'asc' });
-                    sbGrd.jqGrid("sortGrid", "Position");
+                    smap.table.refreshSbGrd(rowId)
+                    smap.table.sortByDefSbGrd()
                 }
 
             });
@@ -265,6 +279,47 @@
         if (station == null) return "--";
         return station.Name;
     },
+    editPositionFormatter: function (cellvalue, options, rowObject) {
+        var domId = $encodeparsToId(
+            "station_sub",
+            {stID: rowObject.StationId, lnID: cellvalue, pos: rowObject.Position})
+        var butstring = "<span id='" + domId + "'><span class='glyphicon glyph-control glyphicon-pushpin'></span></span>";
+        setTimeout(function () {
+            var a = document.getElementById(domId)
+            a = $clearfixJQ(a)
+            $draggable(a)
+            $droppable(a, function (item, bin) {
+                item = $decodeIdToPars("station_sub", item)
+                bin = $decodeIdToPars("station_sub", bin)
+                if (item === null || bin === null || item.stID === bin.stID || item.lnID !== bin.lnID)
+                    return;
+                var data = { stationId: parseInt(item.stID), lineId: parseInt(item.lnID), newPosition: parseInt(bin.pos) }
+                $.ajax({
+                    type: "POST",
+                    url: "/api/stations/ChangeStationPosition?" + $.param(data),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+                        var dict = response.Data.StationsToPositions
+                        var lst = smap.getLine(item.lnID).Stations;
+                        for (var key in dict) {
+                            if (dict.hasOwnProperty(key)) {
+                                var keyint = parseInt(key)
+                                var station = lst.find(function (ele) { return ele.StationId === keyint })
+                                station.Position = dict [key]
+                            }
+                        }
+                        //for fetched stations as f:
+                        //   smap.stations.updateStation(f)
+                        smap.table.refreshSbGrd(item.lnID)
+                        smap.table.sortByHackSbGrd()
+                    },
+                });
+            })
+        },300)
+        return butstring
+    },
+
     stationAddressFormatter: function (cellvalue, options, rowObject) {
         var station = smap.stations.getStation(cellvalue);
         if (station == null) return "";
@@ -396,7 +451,7 @@
         marker.setAnimation(google.maps.Animation.BOUNCE);
         smap.table.jumpTimer = window.setTimeout("smap.table.resetBounce();", 5000);
         if (!smap.mainMap.getBounds().contains(marker.getPosition())) {
-            smap.mainMap.setCenter(Marker.getPosition());
+            smap.mainMap.setCenter(marker.getPosition());
         }
     }
 }

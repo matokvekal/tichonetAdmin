@@ -1,15 +1,15 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic.Helpers
-@using MvcJqGrid
+
+@Styles.Render("~/bundles/Home")
 @section scripts{
     @Scripts.Render("http://maps.googleapis.com/maps/api/js?libraries=places&key=" + MapHelper.ApiKey)
     @Scripts.Render("~/bundles/map")
     <script type="text/javascript">
         $(document).ready(smap.init);
     </script>
+    <script src="~/Scripts/DragNDrop.js"></script>
 }
-
-
 @Html.Hidden("hfCenterLat", (string)ViewBag.CenterLat, new { @id = "hfCenterLat" })
 @Html.Hidden("hfCenterLng", (string)ViewBag.CenterLng, new { @id = "hfCenterLng" })
 @Html.Hidden("hfZoom", (string)ViewBag.Zoom, new { @id = "hfZoom" })
@@ -18,6 +18,7 @@
 @Html.Hidden("hfHiddenStations", (string)ViewBag.HiddenStations, new { @id = "hfHiddenStations" })
 @Html.Hidden("hfHiddenStudents", (string)ViewBag.HiddenStudents, new { @id = "hfHiddenStudents" })
 @Html.Hidden("hfShowStations", (bool)ViewBag.ShowStations, new { @id = "hfShowStations" })
+
 <div class="map-canvas" id="map-canvas" style=""></div>
 
 
@@ -71,7 +72,6 @@
 @*Dialogs*@
 
 <div id="dialog-form" title="Add / Edit station" style="display: none; overflow: hidden;">
-
 
     <form action="/api/stations/Save" id="frmCreate" method="POST" class="form-horizontal">
         <div class="form-group" id="dCSAddrBlock">
@@ -226,28 +226,28 @@
 </div>
 <div id="dlgEditToLine" title="Edit station on line" style="display: none;">
     <div id="tabLines"></div>
-    <form id="frmEditToLine">
-        <div class="row form-group">
-            <label for="tbAddLineHours" class="col-xs-3 control-label">Arrival Time</label>
-            <span>
-                <input type="number" id="tbEditLineHours" name="Hours" class="form-control input-sm" style="width: 50px; display: inline;" />
-                <span class="form-control-static" style="margin-left: 5px; margin-right: 5px;">:</span>
-                <input type="number" id="tbEditLineMinutes" name="Minutes" class="form-control input-sm" style="width: 50px; display: inline;" />
-
-            </span>
-        </div>
-        <div class="row form-group">
-            <label for="ddlEditPosition" class="col-xs-3 control-label">Position</label>
-            <select id="ddlEditPosition" name="Position" class="text form-control input-sm" style="width: 50px"></select>
-
-        </div>
-        <div class="row form-group">
-            <label for="cbEditLineColor" class="col-xs-4 control-label">Use line color </label>
-            <input type="checkbox" name="StrChangeColor" id="cbEditLineColor">
-        </div>
-        <input type="hidden" id="hfEditToLineStationId" name="StationId" />
-        <input type="hidden" id="hfEditToLineLineId" name="LineId" />
-    </form>
+    <div>
+        <form id="frmEditToLine">
+            <div class="row form-group" style="margin-left: 52px;">
+                <label for="tbAddLineHours" class="tlower col-xs-3 control-label">Arrival Time</label>
+                <span>
+                    <input type="number" id="tbEditLineHours" name="Hours" class="form-control input-sm" style="width: 80px; display: inline;" />
+                    <span class="form-control-static" style="margin-left: 5px; margin-right: 5px;">:</span>
+                    <input type="number" id="tbEditLineMinutes" name="Minutes" class="form-control input-sm" style="width: 80px; display: inline;" />
+                </span>
+            </div>
+            <div class="row form-group" style="margin-left: 52px;">
+                <label for="ddlEditPosition" class="tlower col-xs-3 control-label">Position</label>
+                <select id="ddlEditPosition" name="Position" class="text form-control input-sm" style="width: 183px"></select>
+            </div>
+            <div class="row form-group" style="margin-top:27px">
+                <label for="cbEditLineColor" class="col-xs-4 control-label">Use line color </label>
+                <input type="checkbox" name="StrChangeColor" id="cbEditLineColor">
+            </div>
+            <input type="hidden" id="hfEditToLineStationId" name="StationId" />
+            <input type="hidden" id="hfEditToLineLineId" name="LineId" />
+        </form>
+    </div>
 </div>
 <div id="dlgDeleteFromLine" title="Delete station from line" style="display: none;">
     <div id="dDeleteLines">

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
 using Business_Logic;
 using Business_Logic.Entities;
-using ClosedXML.Excel;
 using log4net;
 using ticonet.Models;
 using Business_Logic.Enums;
@@ -83,8 +80,13 @@ namespace ticonet.Controllers
         [System.Web.Http.HttpGet]
         public HttpResponseMessage GenerateSchedule([FromUri]ScheduleParamsModel parameters)
         {
-            var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
-            var dateTo = DateHelper.StringToDate(parameters.DateTo);
+            var dateFrom = (DateTime?)DateHelper.GetSunday(DateTime.Now); 
+            var dateTo = (DateTime?)dateFrom.Value.AddDays(7).Date;
+            parameters.DateFrom = DateHelper.DateToString(dateFrom);
+            parameters.DateTo = DateHelper.DateToString(dateTo);
+
+            //var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
+            //var dateTo = DateHelper.StringToDate(parameters.DateTo);
             //var fakeId = 0;
 
             if (!dateFrom.HasValue || !dateTo.HasValue || string.IsNullOrEmpty(parameters.LinesIds))
@@ -107,8 +109,11 @@ namespace ticonet.Controllers
         [System.Web.Http.HttpPost]
         public JsonResult SaveGeneratedShcedule(IEnumerable<ScheduleItemModel> model, string dateFrom, string dateTo)
         {
-            var dtDateFrom = DateHelper.StringToDate(dateFrom);
-            var dtDateTo = DateHelper.StringToDate(dateTo);
+            var dtDateFrom = (DateTime?)DateHelper.GetSunday(DateTime.Now);
+            var dtDateTo = (DateTime?)dtDateFrom.Value.AddDays(7).Date;
+
+            //var dtDateFrom = DateHelper.StringToDate(dateFrom);
+            //var dtDateTo = DateHelper.StringToDate(dateTo);
             var result = false;
             var items = model != null ? model.ToArray() : new ScheduleItemModel[0];
 

@@ -258,6 +258,14 @@ namespace ticonet
             return res;
         }
 
+        [System.Web.Mvc.HttpPost]
+        public JsonResult ChangeStationPosition(int stationId, int lineId, int newPosition) {
+            using(var l = new StationsLogic()) {
+                var result = l.ChangeStationPosition(stationId, lineId, newPosition);
+                return new JsonResult { Data = result };
+            }
+        }
+
         [System.Web.Http.ActionName("SaveOnLine")]
         public SaveStationToLineResult PostSaveOnLine(AddStationToLineModel model)
         {

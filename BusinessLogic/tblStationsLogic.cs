@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Business_Logic.Enums;
+using Business_Logic.Dtos;
 
 namespace Business_Logic
 {
@@ -160,6 +161,29 @@ namespace Business_Logic
                 Console.WriteLine(ex);
             }
             return res;
+        }
+
+        public ChangeStationsOrderResult ChangeStationPosition(int stationId, int lineId, int newPosition) {
+            var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
+            if (itm == null)
+                return null;
+            var result = new ChangeStationsOrderResult();
+            if (itm.Position != newPosition) { 
+                var p = 1;
+                foreach (var station in DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position)) {
+                    if (station.StationId != stationId) {
+                        if (p == newPosition) p++;
+                        station.Position = p;
+                        result.StationsToPositions.Add(station.StationId, p);
+                        p++;
+                    }
+                }
+                itm.Position = newPosition;
+                result.StationsToPositions.Add(itm.StationId, newPosition);
+                DB.SaveChanges();
+            }
+            
+            return result;
         }
 
         public bool SaveOnLine(int stationId, int lineId, TimeSpan arrivalTime, int position, bool changeColor)

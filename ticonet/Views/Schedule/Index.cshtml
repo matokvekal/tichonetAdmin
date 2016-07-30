@@ -1,14 +1,15 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic.Enums
 @using DEBS = Business_Logic.DictExpressionBuilderSystem
+@using Business_Logic.Helpers
 
 
 
 <div class="content inline-block" style="height: calc(100% - 30px); width: 100%; display: inline-block; margin: 20px 0 0 0; padding: 0;">
     <div style="margin: 0; padding: 0; height: 100%; width: calc(100% - 400px); float: left; border: solid silver thin; overflow: hidden;">
         <div style="margin: 0; padding: 0; height: 40px; width: 100%; float: right;">
-            <div style="margin: 0; padding: 5px 0; width: 300px; float: right;"><input type="text" id="dateFrom" style="width:100px;"> :@DEBS.Translate("Schedule.DateFrom")</div>
-            <div style="margin: 0; padding: 5px 0; width: 300px; float: right;"><input type="text" id="dateTo" style="width:100px;"> :@DEBS.Translate("Schedule.DateTo")</div>
+            <div style="margin: 0; padding: 5px 0; width: 300px; float: right;"><input type="text" id="dateFrom" style="width:100px;" value="@DateHelper.DateToString(DateHelper.GetSunday(DateTime.Now))"> :@DEBS.Translate("Schedule.DateFrom")</div>
+            <div style="margin: 0; padding: 5px 0; width: 300px; float: right;"><input type="text" id="dateTo" style="width:100px;" value="@DateHelper.DateToString(DateHelper.GetSunday(DateTime.Now).AddDays(7).Date)"> :@DEBS.Translate("Schedule.DateTo")</div>
         </div>
         <div style="margin: 0; padding: 0; height: 50px; width: 100%; float: right;">
             <div style="margin: 0; padding: 0; height: 25px; width: 100%; float: right;">
@@ -134,7 +135,7 @@
                     },
                     onClose: function() { this.focus(); }
                 })
-                .datepicker('setDate', new Date())
+                //.datepicker('setDate', new Date())
                 .on("input change", function(e) {
                     scheduleGrid.jqGrid().trigger('reloadGrid');
                 });
@@ -147,7 +148,7 @@
                     },
                     onClose: function() { this.focus(); }
                 })
-                .datepicker('setDate', 7)
+                //.datepicker('setDate', 7)
                 .on("input change", function(e) {
                     scheduleGrid.jqGrid().trigger('reloadGrid');
                 });

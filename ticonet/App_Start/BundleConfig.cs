@@ -79,23 +79,24 @@ namespace IdentitySample
                     "~/Content/JquerySimpleUI.css"));
 
             bundles.Add(new StyleBundle("~/bundles/css").Include(
-                      "~/Content/bootstrap.min.css",
-                      "~/Content/chosen.min.css",
-                      "~/Content/Site.css",
-                      "~/Content/Map.css",
-                       "~/Content/stdentstable.css",
-                      "~/Content/spectrum.css",
-                      "~/Content/ui.jqgrid.css",
-                      "~/Content/jquery-ui.min.css",
-                      "~/Content/jquery-ui.structure.min.css",
-                      "~/Content/jquery-ui.theme.min.css",
-                      "~/Content/jquery-ui-timepicker-addon.min.css",
-                      "~/Scripts/jqGrid/plugins/searchFilter.css"));
+                    "~/Content/bootstrap.min.css",
+                    "~/Content/chosen.min.css",
+                    "~/Content/Site.css",
+                    "~/Content/Map.css",
+                    "~/Content/stdentstable.css",
+                    "~/Content/spectrum.css",
+                    "~/Content/ui.jqgrid.css",
+                    "~/Content/jquery-ui.min.css",
+                    "~/Content/jquery-ui.structure.min.css",
+                    "~/Content/jquery-ui.theme.min.css",
+                    "~/Content/jquery-ui-timepicker-addon.min.css",
+                    "~/Scripts/jqGrid/plugins/searchFilter.css"));
 
-
+            bundles.Add(new StyleBundle("~/bundles/Home").Include(
+                    "~/Content/Home.css"));
 
             bundles.Add(new StyleBundle("~/bundles/cssReport").Include(
-                      "~/Content/Report.css"));
+                    "~/Content/Report.css"));
         }
     }
 }

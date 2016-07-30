@@ -607,8 +607,6 @@
                     $.post("/api/stations/SaveOnLine", data).done(function (loader) {
                         dialog.dialog("close");
                         smap.lines.updateLine(loader.Line, true);
-
-
                         var station = smap.stations.getStation(loader.Station.Id);
                         loader.Station.Marker = station.Marker;
                         var index = smap.stations.list.indexOf(station);

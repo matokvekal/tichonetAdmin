@@ -72,6 +72,7 @@
     <Compile Include="Driver.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
+    <Compile Include="Dtos\ChangeStationsOrderResult.cs" />
     <Compile Include="Dtos\LinePeriodStatisticDto.cs" />
     <Compile Include="Dtos\LinesDatedTotalStatisticDto.cs" />
     <Compile Include="Dtos\LinesTotalStatisticDto.cs" />
