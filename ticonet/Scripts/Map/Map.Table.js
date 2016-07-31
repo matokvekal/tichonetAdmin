@@ -51,7 +51,7 @@
                     rulesText: " rules",
                     clearSearch: false
                 },
-                colNames: ["", "Id", "Name", "Shicva", "Class", "Address", "Color", "Line", "Dist"],
+                colNames: ["", "Id", "Name", "schoolName", "Class", "Address", "Color", "Line", "Dist"],
                 colModel: [
                     {
                         name: "show",
@@ -69,8 +69,8 @@
                     {
                         name: "StudentId",
                         index: "StudentId",
-                        search: false,
-                        width: 25,
+                        //search: false,
+                        width: 70,
                         sorttype: "integer",
                         template: "integer"
                     },
@@ -81,9 +81,9 @@
                         sorttype: "text",
                         width: 100
                     },
-                    { name: 'Shicva', index: 'Shicva', clearSearch: false, width: 50 },
+                    { name: 'schoolName', index: 'schoolName', clearSearch: false, width: 100 },
                     { name: 'Class', index: 'Class', clearSearch: false, width: 50, align: "center" },
-                    { name: 'Address', index: 'Address', clearSearch: false, width: 198 },
+                    { name: 'Address', index: 'Address', clearSearch: false, width: 178 },
                     { name: 'Color', index: 'Color', clearSearch: false, width: 50, search: false, formatter: smap.table.colorFormatter },
                     { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter },
                     { name: 'Id', index: 'Id', clearSearch: false, width: 50, align: "center", search: false, formatter: smap.table.distanceFormatter }
