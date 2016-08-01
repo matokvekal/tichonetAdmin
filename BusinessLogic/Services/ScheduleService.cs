@@ -59,7 +59,7 @@ namespace Business_Logic.Services
 
             using (var logic = new LineLogic())
             {
-                var lines = logic.GetLines(parameters.LinesIds.Split(',').Select(int.Parse));
+                var lines = logic.GetLinesByPlan(parameters.LinesIds.Split(',').Select(int.Parse));
 
                 foreach (var line in lines)
                 {

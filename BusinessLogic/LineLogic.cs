@@ -475,5 +475,21 @@ namespace Business_Logic
             return result;
         }
 
+        public List<Line> GetLinesByPlan(IEnumerable<int> ids)
+        {
+            IEnumerable<int> linesByPlanIds = DB.tblLinesPlans.Where(z => ids.Contains(z.LineId)).Select(x=>x.LineId).ToArray();
+            var lines = DB.Lines.Where(z => linesByPlanIds.Contains(z.Id)).ToList();
+
+            foreach (var line in lines)
+            {
+                line.IsActive = true;
+                var plan = line.tblLinesPlan.FirstOrDefault();
+                line.SyncDatesTo(plan);
+            }
+
+            return lines;
+        }
+
+
     }
 }
