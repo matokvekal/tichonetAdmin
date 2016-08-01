@@ -45,8 +45,10 @@ namespace Business_Logic.Helpers
 
         private static void UpdateInfoDetails(LoginInfo login)
         {
-            try {
-                if (login == null) {
+            try
+            {
+                if (login == null)
+                {
                     var emptyCookie = new HttpCookie(GeneralConstants.LoggedAdmin);
 
                     emptyCookie.Expires = DateTime.Now.AddDays(-1);
@@ -68,13 +70,16 @@ namespace Business_Logic.Helpers
                 cookie.Values.Add(encryptedPropertyKey, encryptedPropertyValue);
 
                 if (login.UserRole == Enums.UserRole.Student)
-                    cookie.Expires = DateTime.Now.AddDays(365 * 10);
+                    cookie.Expires = DateTime.Now.AddDays(365*10);
                 else
                     cookie.Expires = DateTime.Now.AddDays(5);
 
                 HttpContext.Current.Response.Cookies.Add(cookie);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                //Logger.Log(ex);
+            }
         }
 
         #endregion

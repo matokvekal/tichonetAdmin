@@ -80,14 +80,14 @@ namespace ticonet.Controllers
         [System.Web.Http.HttpGet]
         public HttpResponseMessage GenerateSchedule([FromUri]ScheduleParamsModel parameters)
         {
-            var dateFrom = (DateTime?)DateHelper.GetSunday(DateTime.Now); 
-            var dateTo = (DateTime?)dateFrom.Value.AddDays(7).Date;
-            parameters.DateFrom = DateHelper.DateToString(dateFrom);
-            parameters.DateTo = DateHelper.DateToString(dateTo);
+            //var dateFrom = (DateTime?)DateHelper.GetSunday(DateTime.Now); 
+            //var dateTo = (DateTime?)dateFrom.Value.AddDays(7).Date;
+            //parameters.DateFrom = DateHelper.DateToString(dateFrom);
+            //parameters.DateTo = DateHelper.DateToString(dateTo);
 
-            //var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
-            //var dateTo = DateHelper.StringToDate(parameters.DateTo);
-            //var fakeId = 0;
+            var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
+            var dateTo = DateHelper.StringToDate(parameters.DateTo);
+            var fakeId = 0;
 
             if (!dateFrom.HasValue || !dateTo.HasValue || string.IsNullOrEmpty(parameters.LinesIds))
             {
@@ -109,11 +109,11 @@ namespace ticonet.Controllers
         [System.Web.Http.HttpPost]
         public JsonResult SaveGeneratedShcedule(IEnumerable<ScheduleItemModel> model, string dateFrom, string dateTo)
         {
-            var dtDateFrom = (DateTime?)DateHelper.GetSunday(DateTime.Now);
-            var dtDateTo = (DateTime?)dtDateFrom.Value.AddDays(7).Date;
+            //var dtDateFrom = (DateTime?)DateHelper.GetSunday(DateTime.Now);
+            //var dtDateTo = (DateTime?)dtDateFrom.Value.AddDays(7).Date;
 
-            //var dtDateFrom = DateHelper.StringToDate(dateFrom);
-            //var dtDateTo = DateHelper.StringToDate(dateTo);
+            var dtDateFrom = DateHelper.StringToDate(dateFrom);
+            var dtDateTo = DateHelper.StringToDate(dateTo);
             var result = false;
             var items = model != null ? model.ToArray() : new ScheduleItemModel[0];
 

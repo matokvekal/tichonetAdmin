@@ -356,6 +356,7 @@
     <Content Include="Scripts\jquery-ui-timepicker-addon.min.js" />
     <Content Include="Scripts\jquery-ui-timepicker-he.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery.fileDownload.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -363,10 +364,12 @@
     <Content Include="Scripts\JquerySimpleUI.js" />
     <Content Include="Scripts\Map\Map.js" />
     <Content Include="Scripts\Map\Map.Lines.js" />
+    <Content Include="Scripts\markerclusterer.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\spectrum.js" />
+    <Content Include="Scripts\StudentsGrid\sTable.js" />
     <Content Include="Views\Account\unAutorise.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
@@ -389,6 +392,7 @@
     <Compile Include="Controllers\CalendarApiController.cs" />
     <Compile Include="Controllers\GenericApiAndMVCController.cs" />
     <Compile Include="Controllers\LinesPlanController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ReportApiController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\ScheduleApiController.cs" />
@@ -409,6 +413,7 @@
     <Compile Include="Controllers\StreetController.cs" />
     <Compile Include="Controllers\StudentsController.cs" />
     <Compile Include="Controllers\SystemController.cs" />
+    <Compile Include="Controllers\tblStudentController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
