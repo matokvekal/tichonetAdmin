@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business_Logic.Helpers
 {
@@ -10,16 +6,16 @@ namespace Business_Logic.Helpers
     {
         public static void RefreshActive(Line line)
         {
-            bool isActive = line.IsActive;
-            if ((!(line.Sun.HasValue && line.Sun.Value)) &&
-                (!(line.Mon.HasValue && line.Mon.Value)) &&
-                (!(line.Tue.HasValue && line.Tue.Value)) &&
-                (!(line.Wed.HasValue && line.Wed.Value)) &&
-                (!(line.Thu.HasValue && line.Thu.Value)) &&
-                (!(line.Fri.HasValue && line.Fri.Value)) &&
-                (!(line.Sut.HasValue && line.Sut.Value)))
-                isActive = false;
-            line.IsActive = isActive;
+            if (line.IsActive)
+            {
+                line.Sun = line.Sun ?? false;
+                line.Mon = line.Mon ?? false;
+                line.Tue = line.Tue ?? false;
+                line.Wed = line.Wed ?? false;
+                line.Thu = line.Thu ?? false;
+                line.Fri = line.Fri ?? false;
+                line.Sut = line.Sut ?? false;
+            }
         }
 
         static bool checkNullBool (bool? b, bool defval) {
