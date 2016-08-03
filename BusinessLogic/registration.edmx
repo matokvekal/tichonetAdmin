@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Buses">
           <Key>
             <PropertyRef Name="Id" />
@@ -126,6 +126,7 @@
           <Property Name="MotherCellPhone" Type="nvarchar" MaxLength="50" />
           <Property Name="FatherEmail" Type="nvarchar" MaxLength="50" />
           <Property Name="MotherEmail" Type="nvarchar" MaxLength="50" />
+          <Property Name="schoolId" Type="int" />
         </EntityType>
         <EntityType Name="StudentsToLines">
           <Key>
@@ -183,9 +184,10 @@
           <Property Name="date" Type="date" />
           <Property Name="month" Type="nvarchar" MaxLength="50" />
           <Property Name="HebMonth" Type="nvarchar" MaxLength="50" />
+          <Property Name="HebDate" Type="nvarchar" MaxLength="50" />
           <Property Name="day" Type="nvarchar" MaxLength="50" />
           <Property Name="active" Type="bit" />
-          <Property Name="event" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="event" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="tblCulture">
           <Key>
@@ -208,9 +210,24 @@
           <Property Name="DateCreatedUTC" Type="datetime" />
           <Property Name="cantBeChange" Type="bit" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BusProject.dbo.tblFamily' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="tblFamily">
           <Key>
             <PropertyRef Name="familyId" />
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
           </Key>
           <Property Name="familyId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentId" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -264,7 +281,7 @@
           <Property Name="FriTime" Type="datetime" />
           <Property Name="Sut" Type="bit" />
           <Property Name="SutTime" Type="datetime" />
-        </EntityType>		
+        </EntityType>
         <EntityType Name="tblMessageQueue">
           <Key>
             <PropertyRef Name="pk" />
@@ -320,7 +337,18 @@
           <Property Name="leaveTime" Type="datetime2" Precision="7" />
           <Property Name="arriveTime" Type="datetime2" Precision="7" />
         </EntityType>
-		<EntityType Name="tblSetting">
+        <EntityType Name="tblSchool">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="name" Type="nvarchar(max)" />
+          <Property Name="adress" Type="nvarchar(max)" />
+          <Property Name="city" Type="nvarchar(max)" />
+          <Property Name="tell" Type="nvarchar" MaxLength="50" />
+          <Property Name="manager" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tblSetting">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -375,6 +403,8 @@
           <Property Name="request" Type="nvarchar" MaxLength="250" />
           <Property Name="cityId" Type="int" />
           <Property Name="streetId" Type="int" />
+          <Property Name="schoolName" Type="nvarchar" MaxLength="100" />
+          <Property Name="schoolId" Type="int" />
         </EntityType>
         <EntityType Name="tblSystem">
           <Key>
@@ -482,16 +512,51 @@
           <EntitySet Name="tblCalendar" EntityType="Self.tblCalendar" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCulture" EntityType="Self.tblCulture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="tblFamily" EntityType="Self.tblFamily" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblLinesPlan" EntityType="Self.tblLinesPlan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblMessageQueue" EntityType="Self.tblMessageQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblPaymentOrders" EntityType="Self.tblPaymentOrders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSchedule" EntityType="Self.tblSchedule" Schema="dbo" store:Type="Tables" />
-		  <EntitySet Name="tblSetting" EntityType="Self.tblSetting" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSchool" EntityType="Self.tblSchool" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSetting" EntityType="Self.tblSetting" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblStreet" EntityType="Self.tblStreet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblStudent" EntityType="Self.tblStudent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSystem" EntityType="Self.tblSystem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblYears" EntityType="Self.tblYears" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblFamily" EntityType="Self.tblFamily" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [tblFamily].[familyId] AS [familyId], 
+    [tblFamily].[ParentId] AS [ParentId], 
+    [tblFamily].[parent1Type] AS [parent1Type], 
+    [tblFamily].[parent1FirstName] AS [parent1FirstName], 
+    [tblFamily].[parent1LastName] AS [parent1LastName], 
+    [tblFamily].[parent1Email] AS [parent1Email], 
+    [tblFamily].[parent1EmailConfirm] AS [parent1EmailConfirm], 
+    [tblFamily].[parent1GetAlertByEmail] AS [parent1GetAlertByEmail], 
+    [tblFamily].[parent1CellPhone] AS [parent1CellPhone], 
+    [tblFamily].[parent1CellConfirm] AS [parent1CellConfirm], 
+    [tblFamily].[parent1GetAlertBycell] AS [parent1GetAlertBycell], 
+    [tblFamily].[parent2Type] AS [parent2Type], 
+    [tblFamily].[parent2FirstName] AS [parent2FirstName], 
+    [tblFamily].[parent2LastName] AS [parent2LastName], 
+    [tblFamily].[parent2Email] AS [parent2Email], 
+    [tblFamily].[parent2EmailConfirm] AS [parent2EmailConfirm], 
+    [tblFamily].[parent2GetAlertByEmail] AS [parent2GetAlertByEmail], 
+    [tblFamily].[parent2CellPhone] AS [parent2CellPhone], 
+    [tblFamily].[parent2CellConfirm] AS [parent2CellConfirm], 
+    [tblFamily].[parent2GetAlertBycell] AS [parent2GetAlertBycell], 
+    [tblFamily].[date] AS [date], 
+    [tblFamily].[LastUpdate] AS [LastUpdate], 
+    [tblFamily].[paymentOk] AS [paymentOk], 
+    [tblFamily].[paymentDateConfirm] AS [paymentDateConfirm], 
+    [tblFamily].[iAgree] AS [iAgree], 
+    [tblFamily].[subsidy] AS [subsidy], 
+    [tblFamily].[allredyUsed] AS [allredyUsed], 
+    [tblFamily].[oneParentOnly] AS [oneParentOnly], 
+    [tblFamily].[PaymentPlanID] AS [PaymentPlanID], 
+    [tblFamily].[PaymentRequestID] AS [PaymentRequestID], 
+    [tblFamily].[registrationStatus] AS [registrationStatus]
+    FROM [dbo].[tblFamily] AS [tblFamily]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_BusesToLines_ToBuses" Association="Self.FK_BusesToLines_ToBuses">
             <End Role="Buses" EntitySet="Buses" />
             <End Role="BusesToLines" EntitySet="BusesToLines" />
@@ -581,7 +646,8 @@
             <End Role="tblLinesPlan" EntitySet="tblLinesPlans" />
             <End Role="Line" EntitySet="Lines" />
           </AssociationSet>
-		  <EntitySet Name="tblSettings" EntityType="BusProjectModel.tblSetting" />
+          <EntitySet Name="tblSchools" EntityType="BusProjectModel.tblSchool" />
+          <EntitySet Name="tblSettings" EntityType="BusProjectModel.tblSetting" />
         </EntityContainer>
         <EntityType Name="Bus">
           <Key>
@@ -718,6 +784,7 @@
           <Property Name="MotherCellPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FatherEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="MotherEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="schoolId" Type="Int32" />
         </EntityType>
         <EntityType Name="StudentsToLine">
           <Key>
@@ -779,7 +846,8 @@
           <Property Name="HebMonth" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="day" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="active" Type="Boolean" />
-          <Property Name="event" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="event" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="HebDate" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblCulture">
           <Key>
@@ -943,6 +1011,8 @@
           <Property Name="request" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="cityId" Type="Int32" />
           <Property Name="streetId" Type="Int32" />
+          <Property Name="schoolName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="schoolId" Type="Int32" />
         </EntityType>
         <EntityType Name="tblSystem">
           <Key>
@@ -1117,7 +1187,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-		<EntityType Name="tblSetting">
+        <EntityType Name="tblSchool">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="adress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="city" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="tell" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="manager" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblSetting">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -1243,6 +1324,7 @@
           <EntitySetMapping Name="Students">
             <EntityTypeMapping TypeName="BusProjectModel.Student">
               <MappingFragment StoreEntitySet="Students">
+                <ScalarProperty Name="schoolId" ColumnName="schoolId" />
                 <ScalarProperty Name="MotherEmail" ColumnName="MotherEmail" />
                 <ScalarProperty Name="FatherEmail" ColumnName="FatherEmail" />
                 <ScalarProperty Name="MotherCellPhone" ColumnName="MotherCellPhone" />
@@ -1315,6 +1397,7 @@
           <EntitySetMapping Name="tblCalendars">
             <EntityTypeMapping TypeName="BusProjectModel.tblCalendar">
               <MappingFragment StoreEntitySet="tblCalendar">
+                <ScalarProperty Name="HebDate" ColumnName="HebDate" />
                 <ScalarProperty Name="event" ColumnName="event" />
                 <ScalarProperty Name="active" ColumnName="active" />
                 <ScalarProperty Name="day" ColumnName="day" />
@@ -1456,6 +1539,8 @@
           <EntitySetMapping Name="tblStudents">
             <EntityTypeMapping TypeName="BusProjectModel.tblStudent">
               <MappingFragment StoreEntitySet="tblStudent">
+                <ScalarProperty Name="schoolId" ColumnName="schoolId" />
+                <ScalarProperty Name="schoolName" ColumnName="schoolName" />
                 <ScalarProperty Name="streetId" ColumnName="streetId" />
                 <ScalarProperty Name="cityId" ColumnName="cityId" />
                 <ScalarProperty Name="request" ColumnName="request" />
@@ -1537,7 +1622,19 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-		  <EntitySetMapping Name="tblSettings">
+          <EntitySetMapping Name="tblSchools">
+            <EntityTypeMapping TypeName="BusProjectModel.tblSchool">
+              <MappingFragment StoreEntitySet="tblSchool">
+                <ScalarProperty Name="manager" ColumnName="manager" />
+                <ScalarProperty Name="tell" ColumnName="tell" />
+                <ScalarProperty Name="city" ColumnName="city" />
+                <ScalarProperty Name="adress" ColumnName="adress" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSettings">
             <EntityTypeMapping TypeName="BusProjectModel.tblSetting">
               <MappingFragment StoreEntitySet="tblSetting">
                 <ScalarProperty Name="PopulateLinesLastRun" ColumnName="PopulateLinesLastRun" />

@@ -2,9 +2,11 @@
     grid: null,
     formReady: false,
     families: [],
+    schools:[],
     FStudentGrid: null,
     init: function () {
         stbl.families = $.parseJSON($("input[name=Families]").val());
+        stbl.schools = $.parseJSON($("input[name=Schools]").val());
         stbl.createGrid();
         $("#tabsFamily").tabs();
 
@@ -413,8 +415,8 @@
                     $("#indSP").css("color", "red");
                     $("#indSP").attr("title", "Phone has not been confirmed");
                 }
-
-                stbl.openStudentDialog(st.familyId);
+                $("input[name=cityId]").val(st.cityId);
+                stbl.openStudentDialog(st);
 
             });
         } else {
@@ -423,15 +425,23 @@
         }
 
     },
-    openStudentDialog: function (familyId) {
+    openStudentDialog: function (st) {
         $("#ddlFamily").empty();
         $("#ddlFamily").append("<option value='0'>-- Select family--</option>");
         for (var i in stbl.families) {
             var f = stbl.families[i];
             var opt = "<option value='" + f.Id + "' ";
-            if (f.Id == familyId) opt += "selected='selected'";
+            if (f.Id == st.familyId) opt += "selected='selected'";
             opt += ">" + f.Name + "</option>";
             $("#ddlFamily").append(opt);
+        }
+        $("#ddlSchool").empty();
+        for (var j in stbl.schools) {
+            var sch = stbl.schools[j];
+            var opt2 = "<option value='" + sch.Id + "' ";
+            if (sch.Id == st.schoolId) opt2 += "selected='selected'";
+            opt2 += ">" + sch.Name + "</option>";
+            $("#ddlSchool").append(opt2);
         }
         var dlg = $("#dlgStudent").dialog({
             autoOpen: true,
@@ -450,6 +460,7 @@
             }
         });
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+        stbl.switchStreetEnabled();
     },
     editFamily: function (studentId) {
         if (studentId == 0) {

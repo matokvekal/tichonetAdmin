@@ -280,5 +280,8 @@
             }
             $("<div class='iw-bus-info-small'>" + t + "</div>").appendTo(cont);
         }
+    },
+    openAddressEditDialog:function(id) {
+        alert(id);
     }
 }

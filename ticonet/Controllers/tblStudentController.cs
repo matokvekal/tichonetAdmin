@@ -78,6 +78,14 @@ namespace ticonet
                            (z.oneParentOnly ? "" : " / " + z.parent2FirstName + " " + z.parent2LastName)
                 }));
             }
+            using (var logic5 = new tblSchoolLogic())
+            {
+                ViewBag.Schools = JsonConvert.SerializeObject(logic5.GetList().Select(z => new
+                {
+                    Id = z.id,
+                    Name = z.name
+                }));
+            }
             return View();
         }
 
@@ -303,7 +311,8 @@ namespace ticonet
                         st.Lat = null;
                         st.Lng = null;
                         st.distanceFromSchool = 0;
-
+                        st.Color = null;
+                        logic.RemoveStudentFromAllStations(data.pk);
                     }
 
                     st.familyId = data.familyId;
@@ -326,6 +335,16 @@ namespace ticonet
                     st.subsidy = data.subsidy;
                     st.streetId = data.streetId;
                     st.cityId = data.cityId;
+
+                    if (data.schoolId.HasValue)
+                    {
+                        st.schoolId = data.schoolId;
+                        using (var logic2 = new tblSchoolLogic())
+                        {
+                            var school = logic2.GetById(data.schoolId.Value);
+                            if (school != null) st.schoolName = school.name;
+                        }
+                    }
 
                     tblStudentLogic.update(st);
                 }
@@ -523,10 +542,6 @@ namespace ticonet
             };
             int ttl = 0;
             List<StudentFullInfo> lst;
-            using (var logic = new tblStudentLogic())
-            {
-                lst = logic.GetStudentsForTable(req, out ttl);
-            }
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Students");
             worksheet.Cell("A1").Value = "Id";
@@ -541,6 +556,11 @@ namespace ticonet
             worksheet.Cell("J1").Value = "Special request";
             worksheet.Cell("K1").Value = "Distance to School";
             worksheet.Cell("L1").Value = "Line & station";
+            worksheet.Cell("M1").Value = "Email";
+            worksheet.Cell("N1").Value = "Phone";
+            worksheet.Cell("O1").Value = "Subsidy";
+            worksheet.Cell("P1").Value = "Year Registration";
+            worksheet.Cell("Q1").Value = "School";
 
             worksheet.Cell("A1").Style.Font.Bold = true;
             worksheet.Cell("A1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
@@ -578,27 +598,55 @@ namespace ticonet
             worksheet.Cell("L1").Style.Font.Bold = true;
             worksheet.Cell("L1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Column("L").Width = 20;
+            worksheet.Cell("M1").Style.Font.Bold = true;
+            worksheet.Cell("M1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Column("M").Width = 20;
+            worksheet.Cell("N1").Style.Font.Bold = true;
+            worksheet.Cell("N1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Column("N").Width = 20;
+            worksheet.Cell("O1").Style.Font.Bold = true;
+            worksheet.Cell("O1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Column("O").Width = 20;
+            worksheet.Cell("P1").Style.Font.Bold = true;
+            worksheet.Cell("P1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Column("P").Width = 20;
+            worksheet.Cell("Q1").Style.Font.Bold = true;
+            worksheet.Cell("Q1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            worksheet.Column("Q").Width = 20;
 
-            var row = 2;
-            foreach (var stud in lst)
+            using (var logic = new tblStudentLogic())
             {
+                lst = logic.GetStudentsForTable(req, out ttl);
 
-                worksheet.Cell(row, "A").Value = stud.StudentId;
-                worksheet.Cell(row, "B").Value = stud.FirstName;
-                worksheet.Cell(row, "C").Value = stud.LastName;
-                worksheet.Cell(row, "D").Value = stud.Class;
-                worksheet.Cell(row, "E").Value = stud.Shicva;
-                worksheet.Cell(row, "F").Value = stud.Address;
-                worksheet.Cell(row, "G").Value = stud.PayStatus == true ? "Yes" : "No";
-                worksheet.Cell(row, "H").Value = stud.Active == true ? "Yes" : "No";
-                worksheet.Cell(row, "I").Value = stud.SibilingAtSchool == true ? "Yes" : "No";
-                worksheet.Cell(row, "J").Value = stud.SpecialRequest == true ? "Yes" : "No";
-                worksheet.Cell(row, "K").Value = stud.DistanceToSchool + " m.";
-                worksheet.Cell(row, "L").Value = stud.LineName;
 
-                row++;
+
+                var row = 2;
+                foreach (var stud in lst)
+                {
+                    var student = logic.getStudentByPk(stud.Id);
+
+                    worksheet.Cell(row, "A").Value = stud.StudentId;
+                    worksheet.Cell(row, "B").Value = stud.FirstName;
+                    worksheet.Cell(row, "C").Value = stud.LastName;
+                    worksheet.Cell(row, "D").Value = stud.Class;
+                    worksheet.Cell(row, "E").Value = stud.Shicva;
+                    worksheet.Cell(row, "F").Value = stud.Address;
+                    worksheet.Cell(row, "G").Value = stud.PayStatus == true ? "Yes" : "No";
+                    worksheet.Cell(row, "H").Value = stud.Active == true ? "Yes" : "No";
+                    worksheet.Cell(row, "I").Value = stud.SibilingAtSchool == true ? "Yes" : "No";
+                    worksheet.Cell(row, "J").Value = stud.SpecialRequest == true ? "Yes. " + student.request : "No";
+                    worksheet.Cell(row, "K").Value = stud.DistanceToSchool + " m.";
+                    worksheet.Cell(row, "L").Value = stud.LineName;
+
+
+                    worksheet.Cell(row, "M").Value = student.Email + "(" + (student.EmailConfirm == true ? "Confirmed" : "Not confirmed") + ", " + (student.GetAlertByEmail == true ? "Get alerts" : "No get alerts") + ")";
+                    worksheet.Cell(row, "N").Value = student.CellPhone + "(" + (student.CellConfirm == true ? "Confirmed" : "Not confirmed") + ", " + (student.GetAlertByCell == true ? "Get alerts" : "No get alerts") + ")";
+                    worksheet.Cell(row, "O").Value = student.subsidy == true ? "Yes" : "No";
+                    worksheet.Cell(row, "P").Value = student.yearRegistration;
+                    worksheet.Cell(row, "Q").Value = student.schoolName;
+                    row++;
+                }
             }
-
             var ms = new MemoryStream();
             workbook.SaveAs(ms);
             ms.Position = 0;

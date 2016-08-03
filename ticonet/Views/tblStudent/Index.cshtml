@@ -1,10 +1,10 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic
 @using DEBS = Business_Logic.DictExpressionBuilderSystem
-
 @{
     ViewBag.Title = "Index";
     string families = ViewBag.Families;
+    string schools = ViewBag.Schools;
 }
 @section scripts{
     @Scripts.Render("~/bundles/stable")
@@ -15,6 +15,7 @@
     </script>
 }
 @Html.Hidden("Families", families)
+@Html.Hidden("Schools", schools);
 <div class="students-toolbar">
     <div class="header" style="padding-left: 10px; border-bottom: 1px solid #999;">
         <h2>
@@ -72,7 +73,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 filter-header">@DEBS.Translate("tblStudent.address")</div>
             </div>
@@ -194,7 +194,6 @@
                 </div>
             </div>
         </form>
-
     </div>
 </div>
 <div>
@@ -202,7 +201,6 @@
     <div id="pgStudents"></div>
 </div>
 @*Dialogs*@
-
 <div id="dlgFamily" title="Add / Edit family" style="display: none; overflow: hidden;">
     <form id="frmFamily">
         <input type="hidden" name="familyId" value="0" />
@@ -214,9 +212,8 @@
             </ul>
             <div id="ftabs-1" class="container">
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 container">
-
                     <div class="row" style="margin-top: 25px">
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center" style="padding-top: 8px;" @DEBS.Translate("tblFamily.parent1")></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center" style="padding-top: 8px;">@DEBS.Translate("tblFamily.parent1")</div>
                         <input type="text" id="tbPType1" class="form-control input-xs col-lg-8 col-md-8 col-sm-8 col-xs-8" style="width: 100px" placeholder="Type" name="parent1Type" />
                     </div>
                     <div class="row" style="margin-top: 15px">
@@ -228,13 +225,13 @@
                         <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent1Email") name="parent1Email" />
                         <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSE1" title="E-mail has not been confirmed" data-name="parent1EmailConfirm"></span>
                         <input type="checkbox" style="margin-top: 10px;" name="parent1GetAlertByEmail" />
-                        <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                        <span style="padding-top: 8px; padding-left: 5px;">@DEBS.Translate("general.GetAlerts")</span>
                     </div>
                     <div class="row " style="margin-top: 15px">
                         <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent1CellPhone") name="parent1CellPhone" />
                         <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSP1" title="Phone has not been confirmed" data-name="parent1CellConfirm"></span>
                         <input type="checkbox" style="margin-top: 10px;" name="parent1GetAlertBycell" />
-                        <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                        <span style="padding-top: 8px; padding-left: 5px;">@DEBS.Translate("general.GetAlerts")</span>
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 container">
@@ -256,7 +253,7 @@
                         <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent2Email") name="parent2Email" />
                         <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true" style="padding: 8px; color: red;" id="indSE2" title="E-mail has not been confirmed" data-name="parent2EmailConfirm"></span>
                         <input type="checkbox" style="margin-top: 10px;" name="parent2GetAlertByEmail" />
-                        <span style="padding-top: 8px; padding-left: 5px;">Get alerts</span>
+                        <span style="padding-top: 8px; padding-left: 5px;">@DEBS.Translate("general.GetAlerts")</span>
                     </div>
                     <div class="row" rel="secondParent" style="margin-top: 15px">
                         <input type="text" class="col-lg-6 col-md-6 col-sm-6 col-xs-6 form-control input-xs" style="width: 230px" placeholder=@DEBS.Translate("tblFamily.parent2CellPhone") name="parent2CellPhone" />
@@ -278,7 +275,6 @@
         </div>
     </form>
 </div>
-
 <div id="dlgStudent" title="Add / Edit student" style="display: none; overflow: hidden;">
     <form id="frmStudent" class="form-inline">
         <input type="hidden" name="studentId" />
@@ -308,6 +304,10 @@
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                     <input type="text" name="class" placeholder="Class" style="width: 100%;" class="form-control input-xs" />
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    @*<label for="ddlSchool" class="control-label" style="font-size: 14pt; font-weight: normal;">School</label>*@
+                    <select id="ddlSchool" class="form-control input-xs" name="schoolId"></select>
                 </div>
             </div>
             <div class="row" style="margin-top: 10px;">

@@ -57,7 +57,7 @@ namespace Business_Logic
         public List<SimpleItem> CitiesAutocomplete(string term)
         {
             return DB.tblStreets.Where(z => z.cityName.ToLower().Contains(term.ToLower()))
-                .Select(z => new SimpleItem { id = z.cityId, value = z.cityName })
+                .Select(z => new SimpleItem { id = z.cityId, value = z.cityName.Trim() })
                 .Distinct()
                 .ToList();
         }
@@ -65,7 +65,7 @@ namespace Business_Logic
         public List<SimpleItem> StreetsAutocomplete(string term, int cityId)
         {
             return DB.tblStreets.Where(z => z.streetName.ToLower().Contains(term.ToLower()) && z.cityId == cityId)
-                .Select(z => new SimpleItem { id = z.streetId, value = z.streetName })
+                .Select(z => new SimpleItem { id = z.streetId, value = z.streetName.Trim() })
                 .Distinct()
                 .ToList();
         }
@@ -107,6 +107,12 @@ namespace Business_Logic
                 DB.tblStudents.Remove(itm);
                 DB.SaveChanges();
             }
+        }
+
+        public void RemoveStudentFromAllStations(int studentPk)
+        {
+            var stations = DB.StudentsToLines.Where(z => z.StudentId == studentPk);
+            DB.StudentsToLines.RemoveRange(stations);
         }
 
         public static void create(tblStudent c)
@@ -202,8 +208,9 @@ namespace Business_Logic
                 db.SaveChanges();
 
             }
-            catch
+            catch (DbEntityValidationException ex)
             {
+                var s = ex.EntityValidationErrors.ToList();
             }
         }
         public static bool checkIfIdExist(string id, int year)

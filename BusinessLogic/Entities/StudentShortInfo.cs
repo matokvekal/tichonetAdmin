@@ -23,6 +23,7 @@
             Class = data.@class;
             Active = data.Active ?? false;
             request = data.request;
+            SchoolName = data.schoolName;
         }
         public int Id { get; set; }
         public string StudentId { get; set; }
@@ -37,6 +38,8 @@
         public string CellPhone { get; set; }
         public string Email { get; set; }
         public string request { get; set; }
+
+        public string SchoolName { get; set; }
 
 
     }

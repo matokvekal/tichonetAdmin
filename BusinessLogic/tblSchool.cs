@@ -15,24 +15,20 @@ namespace Business_Logic
 using System;
     using System.Collections.Generic;
     
-public partial class tblSystem
+public partial class tblSchool
 {
 
-    public int pk { get; set; }
+    public int id { get; set; }
 
-    public string strKey { get; set; }
+    public string name { get; set; }
 
-    public string strValue { get; set; }
+    public string adress { get; set; }
 
-    public string key { get; set; }
+    public string city { get; set; }
 
-    public string value { get; set; }
+    public string tell { get; set; }
 
-    public Nullable<System.DateTime> LastModify { get; set; }
-
-    public Nullable<int> ModifedBy { get; set; }
-
-    public string strNamespace { get; set; }
+    public string manager { get; set; }
 
 }
 

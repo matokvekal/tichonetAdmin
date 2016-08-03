@@ -4,15 +4,15 @@
     jumpTimer: null,
     sbGrd: null,
     refreshSbGrd: function (rowId) {
-        var initted = false
+        var initted = false;
         if (smap.table.sbGrd !== null)
-            smap.table.sbGrd.jqGrid('clearGridData')
+            smap.table.sbGrd.jqGrid('clearGridData');
         var lst = smap.getLine(rowId).Stations;
         for (var x in lst) {
             smap.table.sbGrd.jqGrid('addRowData', lst[x].StationId, lst[x]);
         }
     },
-    sortByDefSbGrd: function() {
+    sortByDefSbGrd: function () {
         smap.table.sbGrd.jqGrid('setGridParam', { sortorder: 'asc' });
         smap.table.sbGrd.jqGrid("sortGrid", "Position");
     },
@@ -51,7 +51,7 @@
                     rulesText: " rules",
                     clearSearch: false
                 },
-                colNames: ["", "Id", "Name", "schoolName", "Class", "Address", "Color", "Line", "Dist"],
+                colNames: ["", "Id", "Name", "schoolName", "Class", "Address", "Station", "Line", "Dist"],
                 colModel: [
                     {
                         name: "show",
@@ -81,10 +81,20 @@
                         sorttype: "text",
                         width: 100
                     },
-                    { name: 'schoolName', index: 'schoolName', clearSearch: false, width: 100 },
+                    { name: 'SchoolName', index: 'SchoolName', clearSearch: false, width: 100 },
                     { name: 'Class', index: 'Class', clearSearch: false, width: 50, align: "center" },
-                    { name: 'Address', index: 'Address', clearSearch: false, width: 178 },
-                    { name: 'Color', index: 'Color', clearSearch: false, width: 50, search: false, formatter: smap.table.colorFormatter },
+                    {
+                        name: 'Address',
+                        index: 'Address',
+                        clearSearch: false,
+                        width: 178,
+                        formatter: function (cellvalue, options, rowObject) {
+                            var res = cellvalue;
+                            res += "&nbsp;&nbsp;<a href='javascript:smap.UI.openAddressEditDialog(" + rowObject.StudentId + ");'><span class='glyphicon glyphicon-edit' title='Edit'></span></a>";
+                            return res;
+                        }
+                    },
+                    {name: 'Id', index: 'Id', clearSearch: false, width: 100, search: false, formatter: smap.table.stationNameFormatter2},
                     { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter },
                     { name: 'Id', index: 'Id', clearSearch: false, width: 50, align: "center", search: false, formatter: smap.table.distanceFormatter }
                 ]
@@ -201,7 +211,7 @@
                                 }
                             }
                         },
-                        colNames: ["",'Position', 'Station', 'Address', 'Time'],
+                        colNames: ["", 'Position', 'Station', 'Address', 'Time'],
                         colModel: [
                             { name: 'LineId', width: 29, align: 'center', formatter: smap.table.editPositionFormatter },
                             { name: 'Position', width: 100, align: 'center', sorttype: 'int' },
@@ -279,18 +289,31 @@
         if (station == null) return "--";
         return station.Name;
     },
+    stationNameFormatter2: function (cellvalue, options, rowObject) {
+        // station by student Id
+        var list = smap.getAttachInfo(cellvalue);
+        if (list.length == 0) return "--";
+        for (var i in list) {
+            if (list[i].Date == null) {
+                var station = smap.stations.getStation(list[i].StationId);
+                if (station == null) return "--";
+                return station.Name;
+            }
+        }
+        return "--";
+    },
     editPositionFormatter: function (cellvalue, options, rowObject) {
         var domId = $encodeparsToId(
             "station_sub",
-            {stID: rowObject.StationId, lnID: cellvalue, pos: rowObject.Position})
+            { stID: rowObject.StationId, lnID: cellvalue, pos: rowObject.Position });
         var butstring = "<span id='" + domId + "'><span class='glyphicon glyph-control glyphicon-pushpin'></span></span>";
         setTimeout(function () {
-            var a = document.getElementById(domId)
-            a = $clearfixJQ(a)
-            $draggable(a)
+            var a = document.getElementById(domId);
+            a = $clearfixJQ(a);
+            $draggable(a);
             $droppable(a, function (item, bin) {
-                item = $decodeIdToPars("station_sub", item)
-                bin = $decodeIdToPars("station_sub", bin)
+                item = $decodeIdToPars("station_sub", item);
+                bin = $decodeIdToPars("station_sub", bin);
                 if (item === null || bin === null || item.stID === bin.stID || item.lnID !== bin.lnID)
                     return;
                 var data = { stationId: parseInt(item.stID), lineId: parseInt(item.lnID), newPosition: parseInt(bin.pos) }
@@ -300,24 +323,24 @@
                     dataType: 'json',
                     contentType: 'application/json; charset=utf-8',
                     success: function (response) {
-                        var dict = response.Data.StationsToPositions
+                        var dict = response.Data.StationsToPositions;
                         var lst = smap.getLine(item.lnID).Stations;
                         for (var key in dict) {
                             if (dict.hasOwnProperty(key)) {
-                                var keyint = parseInt(key)
-                                var station = lst.find(function (ele) { return ele.StationId === keyint })
-                                station.Position = dict [key]
+                                var keyint = parseInt(key);
+                                var station = lst.find(function (ele) { return ele.StationId === keyint });
+                                station.Position = dict[key];
                             }
                         }
                         //for fetched stations as f:
                         //   smap.stations.updateStation(f)
-                        smap.table.refreshSbGrd(item.lnID)
-                        smap.table.sortByHackSbGrd()
-                    },
+                        smap.table.refreshSbGrd(item.lnID);
+                        smap.table.sortByHackSbGrd();
+                    }
                 });
-            })
-        },300)
-        return butstring
+            });
+        }, 300);
+        return butstring;
     },
 
     stationAddressFormatter: function (cellvalue, options, rowObject) {
@@ -405,10 +428,12 @@
         var title = "";
         if (stl != null) {
             if (stl.LineId == null) {
-                if (station != null) {
-                    color = station.Color;
-                    title = station.Name;
-                }
+                //if (station != null) {
+                //    color = station.Color;
+                //    title = station.Name;
+                //}
+                color = "#FFFFFF";
+                title = "--";
             } else {
                 line = smap.getLine(stl.LineId);
                 if (line != null && station != null) {
@@ -419,9 +444,9 @@
         }
         if (color != "") {
             color = smap.fixCssColor(color);
-            res = '<div style="width:46px; height:10px;background-color:' + color + '" title="' + title + '"></div>';
+            res = '&nbsp;&nbsp;<div style="display: inline-block; width:10px; height:10px;background-color:' + color + '" title="' + title + '"></div>';
         }
-        return title;
+        return title + res;
     },
     directionFormatter: function (cellvalue, options, rowObject) {
         var res = cellvalue;

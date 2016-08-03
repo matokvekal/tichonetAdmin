@@ -36,6 +36,8 @@
         <AssociationConnector Association="BusProjectModel.LinetblSchedule" />
         <AssociationConnector Association="BusProjectModel.DrivertblSchedule" />
         <AssociationConnector Association="BusProjectModel.BustblSchedule" />
+        <EntityTypeShape EntityType="BusProjectModel.tblSchool" Width="1.5" PointX="14.375" PointY="13.75" />
+        <EntityTypeShape EntityType="BusProjectModel.tblSetting" Width="1.5" PointX="3.375" PointY="15.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
