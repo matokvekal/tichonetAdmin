@@ -155,5 +155,16 @@ namespace ticonet.Controllers
             }
             return res;
         }
+
+
+        [HttpPost]
+        public bool RefreshColor()
+        {
+            using (tblStudentLogic logic = new tblStudentLogic())
+            {
+                return logic.RefreshColor();
+            }
+        }
+
     }
 }

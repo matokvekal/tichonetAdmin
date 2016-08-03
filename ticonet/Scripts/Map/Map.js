@@ -560,5 +560,23 @@
         $("#icoSaveBtn").removeClass("glyphicon-floppy-remove");
         $("#icoSaveBtn").removeClass("glyphicon-floppy-saved");
         $("#icoSaveBtn").addClass("glyphicon-floppy-disk");
+    },
+    refreshColor: function () {
+        $.ajax({
+            type: "POST",
+            url: '/api/map/RefreshColor',
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (response, textStatus, jqXHR) {
+                if (response == true) {
+                    //TODO: reload if necessary
+                    smap.reloadData();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // display an error message in any way
+                //alert("error");
+            }
+        });
     }
 }

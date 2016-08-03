@@ -471,6 +471,10 @@
     <Content Include="Views\BusesToLines\Index.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <Content Include="Views\LinesPlan\Index.cshtml" />
+    <Content Include="Views\tblStudent\create.cshtml" />
+    <Content Include="Views\tblStudent\Index.cshtml" />
+    <Content Include="Views\tblStudent\Print.cshtml" />
+    <Content Include="Views\tblStudent\update.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Business_Logic.Entities;
 using Business_Logic.Helpers;
 
@@ -491,6 +489,35 @@ namespace Business_Logic
         public List<StudentsToLine> GetAttachInfo(int studentId)
         {
             return DB.StudentsToLines.Where(z => z.StudentId == studentId).ToList();
+        }
+
+        public bool RefreshColor()
+        {
+            bool res = false;
+            try
+            {
+                var students = DB.tblStudents.Where(a => (a.Color != string.Empty) && (a.Color != null) && (!DB.StudentsToLines.Any(b => b.StudentId == a.pk))).ToList();
+
+                if (students.Count > 0)
+                {
+                    foreach (var student in students)
+                    {
+                        student.Color = null;
+                        DB.Entry(student).State = EntityState.Modified;
+                    }
+                    var validateOnSaveEnabled = DB.Configuration.ValidateOnSaveEnabled;
+                    DB.Configuration.ValidateOnSaveEnabled = false;
+                    DB.SaveChanges();
+                    DB.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
+                    res = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                res = false;
+            }
+            return res;
         }
     }
 }
