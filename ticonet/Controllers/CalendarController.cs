@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Business_Logic.Helpers;
-using System.Globalization;
-using log4net;
-using Newtonsoft.Json;
+﻿using System.Web.Mvc;
 
 namespace ticonet.Controllers
 {
