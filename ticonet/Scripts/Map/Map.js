@@ -250,8 +250,14 @@
         var st = null;
         for (var i = 0; i < smap.students.length; i++) {
             if (smap.students[i].Lat == null || smap.students[i].Lng == null) {
-                st = smap.students[i];
-                break;
+                if (!smap.students[i].hasOwnProperty("googleRequestCount")) {
+                    $.extend(smap.students[i], { googleRequestCount: 0 });
+                }
+                smap.students[i].googleRequestCount++;
+                if (smap.students[i].googleRequestCount < 3) {
+                    st = smap.students[i];
+                    break;
+                }
             }
         }
 
@@ -269,13 +275,12 @@
 
                     });
 
-
                     smap.setMarker(st);
-                    setTimeout("smap.findLatLngForStudent();", 1000);
                 } else {
                     console.log("not found");
                     console.log(st);
                 }
+                setTimeout("smap.findLatLngForStudent();", 1000);
             });
         } else {
             $("#spStatus").html("");
