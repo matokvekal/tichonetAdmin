@@ -72,7 +72,7 @@ namespace ticonet.Models
 
         public static string GetLineIdDescription(Line line)
         {
-            return line != null ? line.LineName : string.Empty;
+            return (line != null ? string.Format("{0} - {1}", line.LineName, line.LineNumber) : string.Empty);
         }
 
         public static string GetBusIdDescription(Bus bus)

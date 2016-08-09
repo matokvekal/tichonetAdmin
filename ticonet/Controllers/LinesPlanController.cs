@@ -22,16 +22,7 @@ namespace ticonet.Controllers
         public JsonResult Get(bool _search, string nd, int rows, int page, string sidx, string sord, string filters = "") {
             using(var l = new tblLinesPlanLogic()) {
                 var list = l.GetPaged(_search, rows, page, sidx, sord, filters)
-                    .Select(x => {
-                        var m = new LinesPlanApiModel {
-                            ParentLineName = x.Line.LineName,
-                            ParentLineNumber = x.Line.LineNumber,
-                            Id = x.Id,
-                            LineId = x.LineId
-                        };
-                        m.SyncDatesTo(x);
-                        return m;
-                    }
+                    .Select(x => new LinesPlanApiModel(x)
                     )
                      .ToList();
                 return MakeJqGridResult(
@@ -50,7 +41,7 @@ namespace ticonet.Controllers
                 if (doAppendPlan) {
                     var tlp = l.GetFirstByLine(model.LineId) ??
                         new tblLinesPlan { LineId = model.LineId };
-                    tlp.SyncDatesTo(model);
+                    model.UpdateDBModelShallow(tlp);
                     l.Save(tlp);
                 }
                 else {
@@ -67,7 +58,7 @@ namespace ticonet.Controllers
         public JsonResult Edit(LinesPlanApiModel model) {
             using (var l = new tblLinesPlanLogic()) {
                 var item = l.Get(model.Id);
-                item.SyncDatesTo(model);
+                model.UpdateDBModelShallow(item);
                 l.Save(item);
             }
             return MakeSuccesResult(true);

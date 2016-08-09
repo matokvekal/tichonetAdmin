@@ -164,8 +164,10 @@
                 var days = parseDates(datarows[0].DayDate)
                 colNames.push("@DEBS.Translate("Line.Id")");
                 colNames.push("@DEBS.Translate("Line.LineNumber")");
+                colNames.push("@DEBS.Translate("Line.LineName")");
                 colModel.push({ name: "Id", index: 'Id', key: true, hidden: true, sortable: false, editable: false, edittype: "text", search: false });
-                colModel.push({ name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 98, editable: false });
+                colModel.push({ name: 'LineNumber', index: 'LineNumber', sorttype: "text", width: 70, editable: false });
+                colModel.push({ name: 'LineName', index: 'LineName', sorttype: "text", width: 150, editable: false });
                 days.forEach(function(day,ind,arr){
                     colNames.push( shortenDateString(day)  + ' <br />' + weekdays[day.getDay()]);
                     colModel.push({

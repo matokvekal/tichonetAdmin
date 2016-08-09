@@ -172,7 +172,7 @@ namespace ticonet.Controllers
                     .Select(z => new SelectItemModel
                     {
                         Value = z.Id.ToString(),
-                        Text = z.LineName,
+                        Text = string.Format("{0} - {1}", z.LineName, z.LineNumber ),
                         Title = string.Format("{0} ({1} - {2})", z.LineName, z.LineNumber, DictExpressionBuilderSystem.Translate("General." + (LineDirection)z.Direction))
                     }).ToList());
             }

@@ -114,12 +114,19 @@
                     '@DEBS.Translate("LinesPlan.LineNumber")',
                     //'@DEBS.Translate("LinesPlan.IsActive")',
                     '@DEBS.Translate("LinesPlan.Sun")',
+                    '@DEBS.Translate("LinesPlan.SunTime")',
                     '@DEBS.Translate("LinesPlan.Mon")',
+                    '@DEBS.Translate("LinesPlan.MonTime")',
                     '@DEBS.Translate("LinesPlan.Tue")',
+                    '@DEBS.Translate("LinesPlan.TueTime")',
                     '@DEBS.Translate("LinesPlan.Wed")',
+                    '@DEBS.Translate("LinesPlan.WedTime")',
                     '@DEBS.Translate("LinesPlan.Thu")',
+                    '@DEBS.Translate("LinesPlan.ThuTime")',
                     '@DEBS.Translate("LinesPlan.Fri")',
+                    '@DEBS.Translate("LinesPlan.FriTime")',
                     '@DEBS.Translate("LinesPlan.Sut")',
+                    '@DEBS.Translate("LinesPlan.SutTime")',
                     ""
                 ],
                 colModel: [
@@ -127,12 +134,19 @@
                     { name: 'ParentLineName', index: 'ParentLineName', sorttype: "text", width: 110, editable: false },
                     { name: 'ParentLineNumber', index: 'ParentLineNumber', sorttype: "text", width: 110, editable: false },
                     { name: 'Sun', index: 'Sun', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'SunTime', index: 'SunTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
                     { name: 'Mon', index: 'Mon', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "true:false" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'MonTime', index: 'MonTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
                     { name: 'Tue', index: 'Tue', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'TueTime', index: 'TueTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
                     { name: 'Wed', index: 'Wed', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'WedTime', index: 'WedTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
                     { name: 'Thu', index: 'Thu', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'ThuTime', index: 'ThuTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
                     { name: 'Fri', index: 'Fri', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'FriTime', index: 'FriTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
                     { name: 'Sut', index: 'Sut', sorttype: "text", width: 60, editable: true, edittype: "checkbox", editoptions: { value: "True:False" }, align: 'center', formatter: "checkbox", search: false },
+                    { name: 'SutTime', index: 'SutTime', width: 80, align: 'left', sortable: true, formatter: 'text', formatoptions: { srcformat: 'ISO8601Long', newformat: 'hh:mm', defaultValue: "" }, editable: true, edittype: 'text', editoptions: { size: 12, maxlengh: 12, dataInit: function (element) { $(element).timepicker({ onSelect: function () { this.focus(); }, onClose: function () { this.focus(); } }); } }, editrules: { custom: true, custom_func: timecheck }, search: false },
                     {
                         name: 'ActionsBtn',
                         index: 'ActionsBtn',
@@ -164,6 +178,18 @@
             });*@
 
             gridExtend.init();
+
+            function timecheck(value, colname) {
+                if (value) {
+                    var pattern = "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
+                    var regCheck = new RegExp(pattern);
+                    if (!regCheck.test(value)) {
+                        return [false, "@DEBS.Translate("grid.NotValidDate")" + " " + colname + ":" + value];
+                    }
+                }
+                return [true, ""];
+            }
+
         }
 
 

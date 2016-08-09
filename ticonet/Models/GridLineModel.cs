@@ -25,12 +25,19 @@ namespace ticonet.Models
             totalStudents = data.totalStudents ?? 0;
             Duration = data.Duration;
             Sun = data.Sun.HasValue ? data.Sun.Value : false;
+            SunTime = DateHelper.TimeToString(data.SunTime);
             Mon = data.Mon.HasValue ? data.Mon.Value : false;
+            MonTime = DateHelper.TimeToString(data.MonTime);
             Tue = data.Tue.HasValue ? data.Tue.Value : false;
+            TueTime = DateHelper.TimeToString(data.TueTime);
             Wed = data.Wed.HasValue ? data.Wed.Value : false;
+            WedTime = DateHelper.TimeToString(data.WedTime);
             Thu = data.Thu.HasValue ? data.Thu.Value : false;
+            ThuTime = DateHelper.TimeToString(data.ThuTime);
             Fri = data.Fri.HasValue ? data.Fri.Value : false;
+            FriTime = DateHelper.TimeToString(data.FriTime);
             Sut = data.Sut.HasValue ? data.Sut.Value : false;
+            SutTime = DateHelper.TimeToString(data.SutTime);
             Bus = bus != null ? bus.Id : (int)0;
             BusDescription = bus != null ? DescriptionHelper.GetBusDescription(bus) : string.Empty;
             BusId = bus != null ? bus.BusId : string.Empty;
@@ -56,17 +63,31 @@ namespace ticonet.Models
 
         public bool Sun { get; set; }
 
+        public string SunTime { get; set; }
+
         public bool Mon { get; set; }
+
+        public string MonTime { get; set; }
 
         public bool Tue { get; set; }
 
+        public string TueTime { get; set; }
+
         public bool Wed { get; set; }
+
+        public string WedTime { get; set; }
 
         public bool Thu { get; set; }
 
+        public string ThuTime { get; set; }
+
         public bool Fri { get; set; }
 
+        public string FriTime { get; set; }
+
         public bool Sut { get; set; }
+
+        public string SutTime { get; set; }
 
         public int Bus { get; set; }
         public string BusDescription { get; set; }
@@ -92,12 +113,19 @@ namespace ticonet.Models
             // existingLine.totalStudents = totalStudents; // Can not be modefied in lines grid
             // existingLine.Duration = Duration; // Can not be modefied in lines grid
             existingLine.Sun = Sun;
+            existingLine.SunTime = DateHelper.StringToTime(SunTime);
             existingLine.Mon = Mon;
+            existingLine.MonTime = DateHelper.StringToTime(MonTime);
             existingLine.Tue = Tue;
+            existingLine.TueTime = DateHelper.StringToTime(TueTime);
             existingLine.Wed = Wed;
+            existingLine.WedTime = DateHelper.StringToTime(WedTime);
             existingLine.Thu = Thu;
+            existingLine.ThuTime = DateHelper.StringToTime(ThuTime);
             existingLine.Fri = Fri;
+            existingLine.FriTime = DateHelper.StringToTime(FriTime);
             existingLine.Sut = Sut;
+            existingLine.SutTime = DateHelper.StringToTime(SutTime);
 
             LineHelper.RefreshActive(existingLine);
         }
