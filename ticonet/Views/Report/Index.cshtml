@@ -120,8 +120,10 @@
         function ActiveDayFormatter (cellvalue, options, rowObject){
             if (typeof cellvalue === 'number')
                 return cellvalue
-            return cellvalue ? '<i class="glyphicon glyphicon-road" style="font-size:16px"></i>'
-                : '<i class="glyphicon glyphicon-minus-sign" style="font-size:16px; color:#585858"></i>'
+            let markup = cellvalue !== 'inactive' ? '<i class="glyphicon glyphicon-road" style="font-size:16px"></i><br/> '+cellvalue
+                    : '<i class="glyphicon glyphicon-minus-sign" style="font-size:16px; color:#585858; top:8px"></i>'
+            markup = '<div style="min-height:37px">'+markup+'</div>'
+            return markup
         }
 
         //REPORT GRID ------------------------------------------------------------
@@ -176,8 +178,6 @@
                         sorttype: "text",
                         width: 80,
                         editable: false,
-                        //edittype: "checkbox",
-                        //editoptions: { value: "True:False" },
                         align: 'center',
                         formatter: ActiveDayFormatter,
                         search: false
@@ -196,8 +196,7 @@
                 success: function(result){
                     localData = result.Data.rows
                     localData.forEach(function(ele,ind,arr){
-                        //ele.DayIsScheduled = ArrayToObject(ele.DayIsScheduled,'day')
-                        AppendArrAsFields(ele,ele.DayIsScheduled,'day')
+                        AppendArrAsFields(ele,ele.DayScheduleData,'day')
                     })
                     localData.footer = ArrayToObject( result.Data.footer,'day',function(obj) {return obj.totalPrice} )
                     localData.footer.LineNumber = '@DEBS.Translate("Report.totalPrice")'

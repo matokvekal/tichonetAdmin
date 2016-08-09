@@ -5,6 +5,9 @@ namespace Business_Logic.Dtos
 {
     public class LinePeriodStatisticDto
     {
+        //REMEMBER, THIS IS USED IN JAVASCRIPT
+        public const string DayScheduleData_INACTIVE = "inactive";
+
         public int Id { get; set; }
         public string LineName { get; set; }
         public string LineNumber { get; set; }
@@ -14,7 +17,7 @@ namespace Business_Logic.Dtos
         public double? price { get; set; }
         public string BusCompanyName { get; set; }
 
-        public List<bool> DayIsScheduled { get; set; }
+        public List<string> DayScheduleData { get; set; }
         public List<DateTime> DayDate { get; set; }
 
     }

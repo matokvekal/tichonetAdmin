@@ -76,8 +76,8 @@ namespace ticonet.Helpers {
                 MakeBottomBorder(toSheet.Row(startRow));
                 for (int colomn = 0; colomn < dates.Count; colomn++) {
                     var c = toSheet.Cell(startRow, 2 + colomn);
-                    bool scheduled = data[i].DayIsScheduled[colomn];
-                    c.Value = scheduled ? "+" : "-";
+                    bool scheduled = data[i].DayScheduleData[colomn] != LinePeriodStatisticDto.DayScheduleData_INACTIVE;
+                    c.Value = scheduled ? data[i].DayScheduleData[colomn] : "-";
                     if (scheduled)
                         c.Style.Fill.BackgroundColor = XLColor.SeaGreen;
                 }

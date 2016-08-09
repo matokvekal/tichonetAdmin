@@ -406,11 +406,16 @@ namespace Business_Logic
             return output;
         }
 
+        /// <summary>
+        /// important note: this method only works if dates range covers only one month!
+        /// you should rewrite it if you want use it in any case.
+        /// </summary>
         public LinePeriodStatisticDto GetLinePeriodActivity(int LineID, DateTime periodStart_incl, DateTime periodEnd_excl) {
             var lineQuery = DB.Lines
                 .Where(x => x.Id == LineID);
 
             var line = lineQuery.First();
+            
             var bus = DB.BusesToLines
                 .Where(x => x.LineId == LineID)
                 .Select(x => x.Bus)
@@ -422,7 +427,7 @@ namespace Business_Logic
                 Direction = line.Direction,
                 totalStudents = line.totalStudents ?? 0,
                 BusCompanyName = string.Empty,
-                DayIsScheduled = new List<bool>(),
+                DayScheduleData = new List<string>(),
                 DayDate = new List<DateTime>()
             };
             if (bus != null) {
@@ -431,10 +436,21 @@ namespace Business_Logic
                 LPA.BusCompanyName = bus.BusCompany != null ? bus.BusCompany.companyName : string.Empty;
             }
 
-            var activityDates = lineQuery
+            var schedulesQuery = lineQuery
                 .SelectMany(x => x.tblSchedules)
-                .Where(x => x.Date != null && x.Date >= periodStart_incl && x.Date < periodEnd_excl)
-                .Select(x => x.Date.Value.Day).Distinct().ToDictionary(x => x);
+                .Where(x => x.Date != null && x.Date >= periodStart_incl && x.Date < periodEnd_excl);
+
+            //var activityDates = schedulesQuery
+            //    .Select(x => x.Date.Value.Day).Distinct().ToDictionary(x => x);
+
+            var dayScheduleRawData = schedulesQuery
+                .GroupBy(x => x.Date.Value.Day)
+                .Select(x => x.FirstOrDefault())
+                .Select(x => new {
+                    arrive = x.arriveTime,
+                    leave = x.leaveTime,
+                    dayNumber = x.Date.Value.Day
+                }).ToDictionary(x => x.dayNumber);
 
             //todo its possible to optimize and do without dict
             int days = DateHelper.GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
@@ -442,11 +458,30 @@ namespace Business_Logic
                 throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");
 
             DateHelper.IterDays(days, i => {
-                LPA.DayIsScheduled.Add(activityDates.ContainsKey(i));
+                if (dayScheduleRawData.ContainsKey(i)) {
+                    var a = dayScheduleRawData[i];
+                    LPA.DayScheduleData.Add(encodeDayScheduleDataString(a.leave,a.arrive));
+                }
+                else
+                    LPA.DayScheduleData.Add(LinePeriodStatisticDto.DayScheduleData_INACTIVE);
                 LPA.DayDate.Add(periodStart_incl.AddDays(i - 1));
             });
 
             return LPA;
+        }
+
+        private string encodeDayScheduleDataString (DateTime? leave, DateTime? arrive) {
+            string output = string.Empty;
+            if (leave.HasValue)
+                output += leave.Value.ToShortTimeString();
+            else
+                output += " - ";
+            output += "/";
+            if (arrive.HasValue)
+                output += arrive.Value.ToShortTimeString();
+            else
+                output += " - ";
+            return output;
         }
 
         public List<LinesDatedTotalStatisticDto> GetLineTotalStatisticByDays(DateTime periodStart_incl, DateTime periodEnd_excl) {
