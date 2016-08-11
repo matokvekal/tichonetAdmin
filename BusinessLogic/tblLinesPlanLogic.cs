@@ -31,9 +31,9 @@ namespace Business_Logic {
             }
             switch (sortBy) {
                 case "ParentLineName":
-                    return l => l.Line.LineName;
+                    return l => (l.Line != null ? l.Line.LineName : string.Empty);
                 case "ParentLineNumber":
-                    return l => l.Line.LineNumber;
+                    return l => (l.Line != null ? l.Line.LineNumber : string.Empty);
             }
             return line => line.Id;
         }
