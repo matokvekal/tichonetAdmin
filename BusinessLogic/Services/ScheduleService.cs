@@ -35,9 +35,12 @@ namespace Business_Logic.Services
                 Sut = true,
             };
 
-            // 1 Step - Setting tblLines to LinesPlan state
-            using (var logic = new tblLinesPlanLogic())
+            using (var logic = new tblLinesPlanLogic()) {
+                // 0 Step - Remove all plans that has no line attached to it
+                logic.DeleteAllUnbindedPlans();
+                // 1 Step - Setting tblLines to LinesPlan state
                 logic.SyncLinesToPlans();
+            }
             // 2 Step - Generate new schedule sets by tblLines state
             var schedule = GenerateSchedule(parameters).ToList();
             // 3 Step - save new sets to tblSchedule

@@ -11,6 +11,8 @@ namespace Business_Logic {
         //todo avoid moving data to memory
         public List<tblLinesPlan> GetPaged(bool isSearch, int rows, int page, string sortBy, string sortOrder, string filters) {
             IEnumerable<tblLinesPlan> query = GetFilteredAll(isSearch, filters);
+            //unbinded plans gonna be deleted by scheduler
+            query = query.Where(x => x.Line != null);
 
             if (!string.IsNullOrEmpty(sortBy)) {
                 query = sortOrder == "desc"
@@ -52,7 +54,9 @@ namespace Business_Logic {
             return DB.tblLinesPlans.FirstOrDefault(x => x.Id == tblLinesPlanID);
         }
 
-        //TODO split to SaveOrCreate | SaveOnly
+        /// <summary>
+        /// updates existing entry if one exists, otherwise creates new one
+        /// </summary>
         public tblLinesPlan Save (tblLinesPlan item) {
             var entry = DB.tblLinesPlans.FirstOrDefault(x => x.Id == item.Id);
             if (entry == null)
@@ -84,6 +88,13 @@ namespace Business_Logic {
             DB.SaveChanges();
         }
 
+        /// <summary>
+        /// Deletes Plans that has no line binded to it. 
+        /// </summary>
+        public void DeleteAllUnbindedPlans() {
+            var plansToRemove = DB.tblLinesPlans.Where(x => x.Line == null);
+            DB.tblLinesPlans.RemoveRange(plansToRemove);
+        }
 
     }
 }
