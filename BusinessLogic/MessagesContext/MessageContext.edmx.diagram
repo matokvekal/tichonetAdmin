@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="e059df49dd434671a0062add9be766fa" Name="Diagram1" ZoomLevel="81">
+        <EntityTypeShape EntityType="Messages.tblFilter" Width="1.5" PointX="2.5" PointY="4.75" />
+        <EntityTypeShape EntityType="Messages.tblRecepientFilter" Width="1.5" PointX="3.375" PointY="1.25" />
+        <EntityTypeShape EntityType="Messages.tblRecepientFilterTableName" Width="1.5" PointX="0.5" PointY="0.5" />
+        <EntityTypeShape EntityType="Messages.tblTemplate" Width="1.5" PointX="6.375" PointY="1.25" />
+        <EntityTypeShape EntityType="Messages.tblWildcard" Width="1.5" PointX="4.25" PointY="4.75" />
+        <AssociationConnector Association="Messages.tblRecepientFiltertblRecepientFilterTableName" />
+        <AssociationConnector Association="Messages.tblFiltertblRecepientFilter" />
+        <AssociationConnector Association="Messages.tblWildcardtblRecepientFilter" />
+        <AssociationConnector Association="Messages.tblTemplatetblRecepientFilter" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

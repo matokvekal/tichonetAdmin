@@ -110,9 +110,48 @@
     <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Dtos\TotalDto.cs" />
     <Compile Include="DriverLogic.cs" />
+    <Compile Include="MessagesContext\EntitiesExtensions.cs" />
+    <Compile Include="MessagesContext\MessageContext.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessageContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesContext\MessageContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesContext\MessageContext.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessageContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesContext\MessagesModuleBaseLogic.cs" />
+    <Compile Include="MessagesContext\MessagesModuleLogic.cs" />
+    <Compile Include="MessagesContext\tblFilter.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesContext\tblRecepientFilter.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesContext\tblRecepientFilterTableName.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesContext\tblTemplate.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesContext\tblWildcard.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="ModelsExtensions.cs" />
     <Compile Include="Services\IScheduleService.cs" />
     <Compile Include="Services\ScheduleService.cs" />
+    <Compile Include="SqlContext\DynamicQuery\DQOperator.cs" />
+    <Compile Include="SqlContext\DynamicQuery\DynQuery.cs" />
+    <Compile Include="SqlContext\IDbConnectionFactory.cs" />
+    <Compile Include="SqlContext\ISqlLogic.cs" />
+    <Compile Include="SqlContext\SqlLogic.cs" />
+    <Compile Include="SqlContext\SqlConnectionFactory.cs" />
     <Compile Include="Student.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>
@@ -220,6 +259,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
+    <EntityDeploy Include="MessagesContext\MessageContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>MessageContext.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="MessagesContext\MessageContext.edmx.diagram">
+      <DependentUpon>MessageContext.edmx</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <None Include="registration.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -240,6 +286,18 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MessagesContext\MessageContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MessageContext.edmx</DependentUpon>
+      <LastGenOutput>MessageContext.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="MessagesContext\MessageContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>MessageContext.edmx</DependentUpon>
+      <LastGenOutput>MessageContext.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

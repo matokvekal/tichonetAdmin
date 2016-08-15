@@ -1,0 +1,798 @@
+﻿<!DOCTYPE html>
+@{
+    Layout = "";
+}
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Module</title>
+    @Styles.Render("~/bundles/MessagesModule")
+    <link href="~/Content/AwaitLayer.css" rel="stylesheet" />
+    @*/*Angular Animations*/*@
+    <style>
+        .ngan-fade-slw.ng-enter, 
+        .ngan-fade-slw.ng-leave {
+          transition: all 1.5s;
+        }
+
+        .ngan-hold-pos.ng-enter,
+        .ngan-hold-pos.ng-leave.ng-leave-active {
+            position:absolute
+        }
+
+        .ngan-hold-pos.ng-leave,
+        .ngan-hold-pos.ng-enter.ng-enter-active {
+            position:initial;
+            z-index:3000;
+        }
+
+        .ngan-fade-mid.ng-enter, 
+        .ngan-fade-mid.ng-leave {
+          transition: all 0.7s;
+        }
+
+        .ngan-fade-fst.ng-enter, 
+        .ngan-fade-fst.ng-leave {
+          transition: all 0.3s;
+        }
+
+        .ngan-fade-fst.ng-enter,
+        .ngan-fade-fst.ng-leave.ng-leave-active,
+        .ngan-fade-slw.ng-enter,
+        .ngan-fade-slw.ng-leave.ng-leave-active,
+        .ngan-fade-mid.ng-enter,
+        .ngan-fade-mid.ng-leave.ng-leave-active {
+          opacity:0;
+        }
+   
+        .ngan-fade-fst.ng-leave,
+        .ngan-fade-fst.ng-enter.ng-enter-active, 
+        .ngan-fade-slw.ng-leave,
+        .ngan-fade-slw.ng-enter.ng-enter-active,
+        .ngan-fade-mid.ng-leave,
+        .ngan-fade-mid.ng-enter.ng-enter-active {
+          opacity:1;
+        }
+    </style>
+    
+    @*/*NOTIFICATION*/*@
+    <style>
+        .notification{
+            min-height: 50px;
+            /*border: 1px solid;*/
+            /*border-color: rgba(0, 0, 0, 0.1);*/
+            z-index: 10000;
+            /* margin-top: 20px; */
+            margin-bottom: 20px;
+            cursor: pointer;
+            box-shadow: 0 7px 10px 0 rgba(0,0,0,0.15), 0 0 10px 0 rgba(0,0,0,0.1);
+        }
+        .notification.notification-info .notification-glyphicon{
+            
+        }
+        .notification.notification-error .notification-glyphicon{
+            color: orangered
+        }
+        .notification.notification-alert .notification-glyphicon{
+            color: yellow
+        }
+        .notification.notification-info{
+            background-color: #272727;
+            opacity: 0.95;
+        }
+        .notification.notification-error{
+            background-color: #272727;
+            opacity: 0.95;
+        }
+        .notification.notification-alert{
+            background-color: #272727;
+            opacity: 0.95;  
+        }
+        .notification-text {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .notification-text .notification-header{
+            font-size: 17px;
+        }
+        .notification-container{
+            position: fixed;
+            left: 0;
+            top: 50px;
+            z-index: 10000;
+        }
+        @@media (max-width: 768px) {
+            .notification{
+                width: 80vw;
+                margin-left:10vw;
+                margin-right:10vw;
+            }   
+        }
+        @@media (min-width: 768px) {
+            .notification{
+                width: 25vw;
+                margin-left:1vw;
+                /*margin-right:5vw;*/
+            } 
+        }
+    </style>
+
+    @* Page Styles *@
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 400;
+            color: #c7c7c7;
+            background: #222222
+        }
+
+        .clearfix:before,
+        .clearfix:after {
+            content: '\0020';
+            display: block;
+            overflow: hidden;
+            visibility: hidden;
+            width: 0;
+            height: 0;
+        }
+
+        .clearfix:after {
+            clear: both;
+        }
+
+        .clearfix {
+            zoom: 1;
+        }
+
+        .rotable {
+            transition: all ease 0.5s
+        }
+
+        .rotable.turn90{
+            transform: rotate(90deg)
+        }
+
+/*LAYOUT-PADDINGS*/
+        .no-padding{
+            padding:0
+        }
+        .padd-hor-t{
+            padding-left:2px;
+            padding-right:2px
+        }
+/*LAYOUT*/
+
+        .main-block {
+            padding: 20px;
+            padding-left: 70px;
+        }
+
+        .main-block:first-of-type {
+            padding-left: 40px;
+        }
+
+        .sub-block{
+            padding: 10px;
+        }
+
+        .float-right {
+            float: right;
+        }
+
+        .main-block.bot-bord{
+            border-bottom: 1px solid #333333
+        }
+
+        .main-block.unfolded {
+            padding-bottom:0px;
+        }
+
+        .main-block > .unfold-block {
+            margin-left:7px;
+            padding: 10px;
+            padding-left: 18px;
+            border-left: 1px solid #333333;
+            padding-bottom:20px;
+        }
+
+        .unfold-block{ 
+          transition: all ease 0.7s;
+          overflow: hidden;
+        }
+
+        .unfold-block.ng-enter,
+        .unfold-block.ng-leave.ng-leave-active
+        {
+            padding-bottom:0px;
+            padding-top:0px;
+            height: 0px;
+        }
+
+        .unfold-block.ng-leave,
+        .unfold-block.ng-enter.ng-enter-active
+        {
+            padding-bottom:20px;
+            padding-top:10px;
+            height: 400px;
+        }
+
+        .unfold-block:not(.ng-leave):not(.ng-enter){
+            min-height:400px;
+        }
+
+        .editor-container > * ,
+        .editor-container .ineditor{
+            padding: 7px 0
+        }
+        .enum-container > * {
+            padding: 3px 0
+        }
+
+        .unfold-block-mini {
+            margin-left:7px;
+            padding: 10px;
+            /*padding-left: 18px;*/
+            border-left: 1px solid #333333;
+        }
+
+/*TEXT*/
+
+        .txt-s-huge {
+            font-size: 28px;
+        }
+        .txt-s-big {
+            font-size: 20px;
+        }
+        .txt-s-med {
+            font-size: 18px;
+        }
+
+        .txt-s-small {
+            font-size: 11px;
+        }
+
+        .txt-c-base{
+            color: #c7c7c7
+        }
+        .txt-c-gr{
+            color: #878787
+        }
+        .txt-c-grmore{
+            color: #676767
+        }
+        .txt-c-blue {
+            color: #428bca
+        }
+        .txt-c-green {
+            color: #3a823b
+        }
+
+
+
+        .txt-accent{
+            text-decoration:underline
+        }
+        .txt-c-gr.txt-accent{
+            color: #c7c7c7;
+        }
+        .txt-anim{
+            transition: all ease 0.7s
+        }
+/*INPUTS*/
+        .txtinput {
+            background: inherit;
+            border: none;
+            border-bottom: 1px solid #878787;
+            color: #878787;
+            padding: 0;
+            transition: all ease 0.7s;
+            line-height: 1;
+        }
+
+        .txtinput-big {
+            background: inherit;
+            border: none;
+            border-bottom: 1px solid rgba(135, 135, 135, 0.00);
+            color: inherit;
+            padding: 0;
+            transition: all ease 0.7s;
+            line-height: 1;
+        }
+
+        .txtarea:focus,
+        .txtinput:focus,
+        .txtinput-big:focus
+        {
+            outline:none
+        }
+
+        .txtinput-big:focus,
+        .txtinput:focus{
+            border-bottom: 1px solid #c7c7c7;
+            color: #c7c7c7
+        }
+
+        .txtarea:focus {
+            background-color: white;
+        }
+
+        .txtarea {
+            background-color: #d3d3d3;
+            border-radius: 5px;
+            border: none;
+            transition: background-color ease 0.7s;
+            padding: 10px
+        }
+
+        .selector{
+            background: #222222;
+            border: none;
+            color: #c7c7c7;
+        }
+/*CLICKABLE*/
+        .clickable:hover{
+            cursor:pointer
+        }
+        .asimple {
+            color: inherit
+        }
+        .asimple:focus, .asimple:hover, .asimple:visited{
+            color: inherit;
+        }
+        .asimple:focus, .asimple:hover, .asimple:visited,
+        .iconclick:focus, .iconclick:hover, .iconclick:visited
+        {
+            text-decoration:none;
+        }
+
+        .iconclick{
+            transition: all ease 0.5s;
+        }
+
+        .iconclick:not(.txt-c-gr):not(.txt-c-grmore):not(.txt-c-blue):not(.txt-c-green)
+        {
+            color: inherit;
+        }
+
+        .iconclick:not(.txt-c-gr):not(.txt-c-grmore):not(.txt-c-blue):not(.txt-c-green):hover,
+        .iconclick:hover{
+            cursor:pointer;
+            color:#c7c7c7    
+        }
+
+        .abut {
+            color: #878787;
+            border: 1px solid #484848;
+            padding: 7px 20px;
+            transition: all ease 0.7s;
+        }
+        .abut:hover, .abut:focus{
+            text-decoration: none
+        }
+        .abut:hover{
+            cursor:pointer;
+            color: #c7c7c7;
+            border: 1px solid #6d6d6d;
+        }
+
+/*HIGHLIGHT*/
+        .txt-c-gr.hover-highlight:hover{
+            color: #c7c7c7;
+        }
+        .txt-c-grmore.hover-highlight:hover{
+            color: #c7c7c7;
+        }
+        .txt-c-green.hover-highlight:hover{
+            color: #c7c7c7;
+        }
+        .txt-c-blue.hover-highlight:hover{
+            color: #c7c7c7;
+        }
+
+/*OTHER*/
+        .dropbox{
+            padding: 10px;
+            /*width: 49.5%;*/
+            border: 1px solid;
+            /* margin: 20px; */
+            display: inline-block;
+            /* border-radius: 2px; */
+            text-align: center;
+            border-color: #2f2f2f;
+            color: #424242;
+            transition: all ease 0.7s;
+            /*min-height: 80px*/
+        }
+
+        .dropbox.drag-over{
+            color: #c7c7c7;
+            border-color: #525252;
+        }
+
+        .filter.invalid,
+        .wildcard.invalid
+        {
+            color:red
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,300i,400,400i,700" rel="stylesheet">
+</head>
+<body>
+    <div ng-app="App">
+
+        <!--HoveringNotifications Controller-->
+        <div ng-controller="NotificationController" data-ng-init="init()">
+            <div class="notification-container">
+                <div class="ngan-fade-mid" ng-repeat="msg in va.Messages | orderBy: '+created'">
+                    <div ng-click="CloseMsg(msg)" class="notification notification-{{msg.type.nclass}} move-near">
+                        <div class="notification-text">
+                            <div>
+                                <span class="notification-glyphicon glyphicon glyphicon-{{msg.type.glicon}}"></span>
+                                <span class="notification-header">
+                                    {{msg.header}}
+                                </span>
+                            </div>
+                            <div>
+                                {{msg.body}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Page blocks Controller-->
+        <div ng-controller="MessageModulePageController" data-ng-init="init()">
+
+            <!--Await-Layer-->
+            <div class="await-layer" ng-if="holdview">
+                <div class="floatingBarsIndicator">
+                    <div class="blockG" id="rotateG_01"></div>
+                    <div class="blockG" id="rotateG_02"></div>
+                    <div class="blockG" id="rotateG_03"></div>
+                    <div class="blockG" id="rotateG_04"></div>
+                    <div class="blockG" id="rotateG_05"></div>
+                    <div class="blockG" id="rotateG_06"></div>
+                    <div class="blockG" id="rotateG_07"></div>
+                    <div class="blockG" id="rotateG_08"></div>
+                </div>
+            </div>
+
+            <!--Everything Under Await-Layer-->
+            <div class="main-layer" ng-class="{'blured':holdview}">
+
+                <!--Page Header-->
+                <div class="main-block" style="background: #333333">
+                    <div class="txt-s-huge"><i style="padding:0 10px" class="glyphicon glyphicon-cog"></i> Mailing Module</div>
+                </div>
+                
+                <!--Page Body-->
+
+                <!-- Stored Filters -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.filters_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.filters_folded=!va.filters_folded">
+                            <i ng-class="{'turn90': !va.filters_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Stored Filters
+                    </span>
+
+                    <!-- Content -->
+                    <div class="unfold-block" ng-if="!va.filters_folded" ng-controller="MFiltersController" 
+                            data-ng-init="init({
+                                 urls: {
+                                    getcolomns: '@Url.Action("GetColumns","RFilterTable")',
+                                    gettables: '@Url.Action("Fetch","RFilterTable")',
+                                    getoperators: '@Url.Action("GetOperatorsForType","Filters")',
+                                    getfilters: '@Url.Action("Fetch","Filters")',
+                                    mngmfilter: '@Url.Action("Manage","RFilters")',
+                                    getmfilters: '@Url.Action("Fetch","Rfilters")',
+                                    getwildcards: '@Url.Action("Fetch","Wildcards")',
+                                 }
+                             })">
+
+                        <!-- Enumeration -->
+                        <div class="col-lg-3 enum-container">
+                            <a ng-click="NewMFilt()"> create new </a>
+                            <div ng-repeat="mfil in va.metafilters | orderBy: 'Name'">
+                                <span class="txt-c-gr">
+                                    <a class="iconclick padd-hor-t" ng-click="EditMFilt(mfil)">
+                                        <i class="glyphicon glyphicon-pencil"></i>
+                                    </a>
+                                    <a class="iconclick padd-hor-t" ng-click="RemoveMfilt(mfil)">
+                                        <i class="glyphicon glyphicon-trash"></i>
+                                    </a>
+                                    <span class="padd-hor-t txt-c-gr txt-anim" ng-class="{'txt-accent':mfil.Id===va.curmetafilter.Id}">
+                                        {{mfil.Name}}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    
+                        <!-- Editor -->
+                        <div class="col-lg-9">
+                            <div ng-if="va.curmetafilter!==null">
+                                <div class="col-lg-12 no-padding clearfix" style="min-height:200px">
+                                    <div class="col-lg-8 editor-container">
+                                        <div>
+                                            @*BASIS: {{va.curmetafilter.BaseTableId}}*@
+                                            <!--NAME-->
+                                            <div class="txt-c-base txt-s-med">
+                                                <input class="txtinput-big" style="width:320px" type="text" ng-model="va.curmetafilter.Name" />
+                                            </div>
+                                            <!-- Editing BaseTable -->
+                                            <div class="txt-c-gr">
+                                                <span class="txt-c-grmore">
+                                                    Based on Table: 
+                                                </span>
+                                                <span>
+                                                    {{va.curmetafilterBaseTableName()}}
+                                                </span>
+                                                <!--TURN EDIT-->
+                                                <span ng-if="!va.showTableChoose">
+                                                    <i class="glyphicon iconclick glyphicon-pencil" ng-click="ShowTableChoose(true)"> </i>
+                                                </span>
+                                            </div>
+                                            <!--CHOOSE BaseTable-->
+                                            <div ng-if="va.showTableChoose" class="unfold-block-mini">
+                                                <div ng-repeat="table in va.basetables | orderBy: 'Name'">
+                                                    <div class="txt-c-gr">
+                                                        <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SetCurBaseTable(table)">
+                                                            <i class="glyphicon iconclick" 
+                                                               ng-class="va.curbasetable===table ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
+                                                               ></i>
+                                                            <span>{{table.Name}}</span>
+                                                            <span class="txt-c-grmore">({{table.ReferencedTableName}})</span>
+                                                        </span>
+                                                        <!-- Save Changes -->
+                                                        <span ng-if="(va.curbasetable===table)&&(!IsCurMFiltHasTable(table))">
+                                                            <i class="glyphicon iconclick glyphicon-ok-sign"
+                                                               ng-click="SetCurTableToCurMFilt()"
+                                                               ></i> 
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <!--CANCEL change BaseTable-->
+                                                <div ng-if="va.showTableChoose&&va.curmetafilter.BaseTableId!==-1">
+                                                    <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SetCurTableFromCurMFilt()">
+                                                        <i class="glyphicon glyphicon-ban-circle"> </i>
+                                                        Cancel
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- If base Table is set we can edit rest things -->
+                                        <div ng-if="(!va.showTableChoose)&&IsCurMFiltHasAnyTable()&&IsCurMFiltHasTable(va.curbasetable)">
+                                            <!--FILTERS-->
+                                            <div class="editor-container col-lg-6 no-padding">
+                                                <div class="dropbox" droppable id="{{va.filterCreator_ID}}" drop="NewFilterDrop">
+                                                    New SubFilter 
+                                                    <div class="txt-s-small">
+                                                        (drop key here)
+                                                    </div>
+                                                </div>
+                                                <div ng-repeat="nfilt in va.curmetafilter.filters">
+                                                    <div style="padding:5px" ng-class="{'invalid':nfilt.Invalid}">
+                                                        <div>
+                                                            {{nfilt.Key}}
+                                                            <i class="glyphicon iconclick glyphicon-floppy-remove"
+                                                               ng-click="RemoveFilter(nfilt)"></i>  
+                                                        </div>
+                                                        <div>
+                                                            <span style="width:30%">
+                                                                <select class="selector" ng-model="nfilt.Operator" ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)"></select>
+                                                            </span>
+                                                            <span style="width:70%">
+                                                                <input class="txtinput" style="width:100%" type="{{InputType(nfilt.Type)}}" ng-model="nfilt.Value" />
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <!--WILDCARDS-->
+                                            <div class="editor-container col-lg-6 no-padding">
+                                                <div class="dropbox" droppable id="{{va.wildcardCreator_ID}}" drop="NewWildcardDrop">
+                                                    New WildCard
+                                                    <div class="txt-s-small">
+                                                        (drop key here)
+                                                    </div>
+                                                </div>
+                                                <div ng-repeat="wc in va.curmetafilter.wildcards">
+                                                    <div style="padding:5px" class="wildcard" ng-class="{'invalid':wc.Invalid}">
+                                                        <div>
+                                                            <input class="txtinput" style="width:100%" type="text"
+                                                                   ng-model="wc.Name" />
+                                                        </div>
+                                                        <div>
+                                                            Code: {{wc.Code}}
+                                                            <input class="txtinput" style="width:100%" type="text"
+                                                                   ng-model="wc._Code" ng-change="WildCardUpdateCode(wc)"/>
+                                                        </div>
+                                                        <div>
+                                                            {{wc.Key}}
+                                                            <i class="glyphicon iconclick glyphicon-floppy-remove"
+                                                               ng-click="RemoveWildcard(wc)"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <!-- Possible keys for filter-->
+                                    <div class="col-lg-4">
+                                        <div class="txt-s-med txt-c-gr">Table Keys:</div>
+                                        <div ng-repeat="key in va.possiblekeys">
+                                            <div draggable draggableclass="{{va.keyDragClass}}" id="{{MakeId(va.keyIdPrefix,key.name)}}">
+                                                <span class="txt-c-gr txt-anim hover-highlight clickable">
+                                                    <span class="{{TypeToIcon(key.type)}}"></span>
+                                                    {{key.name}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <!-- save or not-->
+                                <div class="col-lg-12">
+                                    <a class="abut" ng-click="SaveCurMFilt()">Save</a>
+                                    <a class="abut" ng-click="CloseEditor()">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Templates -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.templates_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.templates_folded=!va.templates_folded">
+                            <i ng-class="{'turn90': !va.templates_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Templates
+                    </span>
+
+                    <!-- Content -->
+                    <div class="unfold-block" ng-if="!va.templates_folded" ng-controller="TemplatesController" 
+                         data-ng-init="init({
+                             urls: {
+                                gettemplates: '@Url.Action("Fetch","Templates")',
+                                mngtemplates: '@Url.Action("Manage","Templates")',
+                                getwildcards: '@Url.Action("Fetch","Wildcards")',
+                                getmfilters: '@Url.Action("Fetch","Rfilters")',
+                                mockmsgs: '@Url.Action("MockMessage","Templates")',
+
+                             }
+                         })">
+
+                        <!-- Enumeration -->
+                        <div class="col-lg-3 enum-container">
+                            <a ng-click="templCreate()"> create new </a>
+                            <div ng-repeat="templ in va.templates | orderBy: 'Name'">
+                                <span class="txt-c-gr">
+                                    <a class="iconclick padd-hor-t" ng-click="templEdit(templ)">
+                                        <i class="glyphicon glyphicon-pencil"></i> 
+                                    </a>
+                                    <a class="iconclick padd-hor-t" ng-click="templDelete(templ)">
+                                        <i class="glyphicon glyphicon-trash"></i>
+                                    </a>
+                                    <i class="glyphicon txt-c-green padd-hor-t"
+                                       ng-class="templ.IsSms ? 'glyphicon-comment' : 'glyphicon-envelope'"></i>
+                                    <span class="padd-hor-t txt-c-gr txt-anim" ng-class="{'txt-accent':templ.Id===va.curtemplate.Id}">
+                                        {{templ.Name}}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Editor -->
+                        <div class="col-lg-9">
+                            <div class="editor-container" ng-if="va.curtemplate!==null">
+                                <div>
+                                    <span class="txt-c-grmore" style="padding-right:19px">Name: </span>
+                                    <input class="txtinput" style="width:320px" type="text" ng-model="va.curtemplate.Name" />
+                                </div>
+                                <div>
+                                    <span class="txt-c-grmore clickable" ng-click="va.curtemplate.IsSms=!va.curtemplate.IsSms">
+                                        <i ng-class="va.curtemplate.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> sms
+                                        <i ng-class="!va.curtemplate.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> mail
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="txt-c-grmore" style="padding-right:10px">Header: </span>
+                                    <input class="txtinput" type="text" ng-model="va.curtemplate.MsgHeader" 
+                                           droppable id="{{va.templatesHeader_ElemId}}"
+                                           drop="templatesTextDropped"
+                                           style="width:320px"
+                                           />
+                                </div>
+                                <div class="clearfix">
+                                    <!--Textarea-->
+                                    <div class="col-lg-6 no-padding">
+                                        <textarea class="txtarea" cols="50" rows="10" ng-model="va.curtemplate.MsgBody"
+                                                  droppable id="{{va.templatesBody_ElemId}}"
+                                                  drop="templatesTextDropped"
+                                                  style="resize:vertical"
+                                                  >
+                                        </textarea>
+                                    </div>
+                                    <!--Widlcards-->
+                                    <div class="col-lg-6">
+                                        <div>
+                                            <span class="txt-s-med txt-c-gr">Based on Filter:</span>
+                                            <div ng-repeat="mfilt in va.metafilters">
+                                                <div class="txt-c-gr">
+                                                    <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="setMFilt(mfilt)">
+                                                        <i class="glyphicon iconclick"
+                                                           ng-class="va.curtemplate.RecepientFilterId===mfilt.Id ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
+                                                        <span>{{mfilt.Name}}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="txt-s-med txt-c-gr">Wildcards</span>
+                                            <div ng-repeat="wcard in va.wildcards">
+                                                <span class="txt-c-gr txt-anim hover-highlight" 
+                                                      draggableclass="wildcard" draggable id="wildcard_{{wcard.Id}}">
+                                                    <i class="glyphicon glyphicon-fire"></i> 
+                                                    {{wcard.Name}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <a class="abut" ng-click="templSave()">Save</a>
+                                    <a class="abut" ng-click="hideEditor()">Cancel</a>
+                                </div>
+                                <div>
+                                    <a class="abut" ng-click="DEMO()">Show a Demo (pls save before)</a>
+                                    <hr />
+                                    <div ng-repeat="msg in va.demomsgs">
+                                        <div>{{msg.header}}</div>
+                                        <div>{{msg.body}}</div>
+                                        <hr />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Send Part -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.mails_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.mails_folded=!va.mails_folded">
+                            <i ng-class="{'turn90': !va.mails_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Sending
+                    </span>
+                    <div class="unfold-block" ng-if="!va.mails_folded" ng-controller="SendMessagesController" data-ng-init="init()">
+                        CONTENT....
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/AngularApp")
+    @*@RenderSection("scripts", required: false)*@
+</body>
+</html>
+
+

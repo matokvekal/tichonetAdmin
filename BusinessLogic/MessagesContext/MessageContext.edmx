@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Messages.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="tblFilter">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tblRecepientFilterId" Type="int" Nullable="false" />
+          <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Operator" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblRecepientFilter">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="tblRecepientFilterTableNameId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblRecepientFilterTableName">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ReferncedTableName" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tblRecepientFilterId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="IsSms" Type="bit" Nullable="false" />
+          <Property Name="MsgHeader" Type="nvarchar" MaxLength="500" />
+          <Property Name="MsgBody" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tblWildcard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tblRecepientFilterId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="MessagesStoreContainer">
+          <EntitySet Name="tblFilter" EntityType="Self.tblFilter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRecepientFilter" EntityType="Self.tblRecepientFilter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRecepientFilterTableName" EntityType="Self.tblRecepientFilterTableName" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblTemplate" EntityType="Self.tblTemplate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblWildcard" EntityType="Self.tblWildcard" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Messages" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="MessageContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tblFilters" EntityType="Messages.tblFilter" />
+          <EntitySet Name="tblRecepientFilters" EntityType="Messages.tblRecepientFilter" />
+          <EntitySet Name="tblRecepientFilterTableNames" EntityType="Messages.tblRecepientFilterTableName" />
+          <EntitySet Name="tblTemplates" EntityType="Messages.tblTemplate" />
+          <EntitySet Name="tblWildcards" EntityType="Messages.tblWildcard" />
+          <AssociationSet Name="tblRecepientFiltertblRecepientFilterTableName" Association="Messages.tblRecepientFiltertblRecepientFilterTableName">
+            <End Role="tblRecepientFilter" EntitySet="tblRecepientFilters" />
+            <End Role="tblRecepientFilterTableName" EntitySet="tblRecepientFilterTableNames" />
+          </AssociationSet>
+          <AssociationSet Name="tblFiltertblRecepientFilter" Association="Messages.tblFiltertblRecepientFilter">
+            <End Role="tblFilter" EntitySet="tblFilters" />
+            <End Role="tblRecepientFilter" EntitySet="tblRecepientFilters" />
+          </AssociationSet>
+          <AssociationSet Name="tblWildcardtblRecepientFilter" Association="Messages.tblWildcardtblRecepientFilter">
+            <End Role="tblWildcard" EntitySet="tblWildcards" />
+            <End Role="tblRecepientFilter" EntitySet="tblRecepientFilters" />
+          </AssociationSet>
+          <AssociationSet Name="tblTemplatetblRecepientFilter" Association="Messages.tblTemplatetblRecepientFilter">
+            <End Role="tblTemplate" EntitySet="tblTemplates" />
+            <End Role="tblRecepientFilter" EntitySet="tblRecepientFilters" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="tblFilter">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tblRecepientFilterId" Type="Int32" Nullable="false" />
+          <Property Name="Key" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Operator" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblFiltertblRecepientFilter" FromRole="tblFilter" ToRole="tblRecepientFilter" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblRecepientFilter">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="tblRecepientFilterTableNameId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="tblRecepientFilterTableName" Relationship="Messages.tblRecepientFiltertblRecepientFilterTableName" FromRole="tblRecepientFilter" ToRole="tblRecepientFilterTableName" />
+          <NavigationProperty Name="tblFilters" Relationship="Messages.tblFiltertblRecepientFilter" FromRole="tblRecepientFilter" ToRole="tblFilter" />
+          <NavigationProperty Name="tblWildcards" Relationship="Messages.tblWildcardtblRecepientFilter" FromRole="tblRecepientFilter" ToRole="tblWildcard" />
+          <NavigationProperty Name="tblTemplates" Relationship="Messages.tblTemplatetblRecepientFilter" FromRole="tblRecepientFilter" ToRole="tblTemplate" />
+        </EntityType>
+        <EntityType Name="tblRecepientFilterTableName">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblRecepientFilters" Relationship="Messages.tblRecepientFiltertblRecepientFilterTableName" FromRole="tblRecepientFilterTableName" ToRole="tblRecepientFilter" />
+          <Property Name="ReferncedTableName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblTemplate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tblRecepientFilterId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="IsSms" Type="Boolean" Nullable="false" />
+          <Property Name="MsgHeader" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="MsgBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblTemplatetblRecepientFilter" FromRole="tblTemplate" ToRole="tblRecepientFilter" />
+        </EntityType>
+        <EntityType Name="tblWildcard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tblRecepientFilterId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Key" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblWildcardtblRecepientFilter" FromRole="tblWildcard" ToRole="tblRecepientFilter" />
+        </EntityType>
+        <Association Name="tblRecepientFiltertblRecepientFilterTableName">
+          <End Type="Messages.tblRecepientFilter" Role="tblRecepientFilter" Multiplicity="*" />
+          <End Type="Messages.tblRecepientFilterTableName" Role="tblRecepientFilterTableName" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="tblRecepientFilterTableName">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblRecepientFilter">
+              <PropertyRef Name="tblRecepientFilterTableNameId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="tblFiltertblRecepientFilter">
+          <End Type="Messages.tblFilter" Role="tblFilter" Multiplicity="*" />
+          <End Type="Messages.tblRecepientFilter" Role="tblRecepientFilter" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="tblRecepientFilter">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblFilter">
+              <PropertyRef Name="tblRecepientFilterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="tblWildcardtblRecepientFilter">
+          <End Type="Messages.tblWildcard" Role="tblWildcard" Multiplicity="*" />
+          <End Type="Messages.tblRecepientFilter" Role="tblRecepientFilter" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="tblRecepientFilter">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblWildcard">
+              <PropertyRef Name="tblRecepientFilterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="tblTemplatetblRecepientFilter">
+          <End Type="Messages.tblTemplate" Role="tblTemplate" Multiplicity="*" />
+          <End Type="Messages.tblRecepientFilter" Role="tblRecepientFilter" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="tblRecepientFilter">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblTemplate">
+              <PropertyRef Name="tblRecepientFilterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="MessagesStoreContainer" CdmEntityContainer="MessageContext">
+          <EntitySetMapping Name="tblFilters">
+            <EntityTypeMapping TypeName="Messages.tblFilter">
+              <MappingFragment StoreEntitySet="tblFilter">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Operator" ColumnName="Operator" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="tblRecepientFilterId" ColumnName="tblRecepientFilterId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRecepientFilters">
+            <EntityTypeMapping TypeName="Messages.tblRecepientFilter">
+              <MappingFragment StoreEntitySet="tblRecepientFilter">
+                <ScalarProperty Name="tblRecepientFilterTableNameId" ColumnName="tblRecepientFilterTableNameId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRecepientFilterTableNames">
+            <EntityTypeMapping TypeName="Messages.tblRecepientFilterTableName">
+              <MappingFragment StoreEntitySet="tblRecepientFilterTableName">
+                <ScalarProperty Name="ReferncedTableName" ColumnName="ReferncedTableName" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblTemplates">
+            <EntityTypeMapping TypeName="Messages.tblTemplate">
+              <MappingFragment StoreEntitySet="tblTemplate">
+                <ScalarProperty Name="MsgBody" ColumnName="MsgBody" />
+                <ScalarProperty Name="MsgHeader" ColumnName="MsgHeader" />
+                <ScalarProperty Name="IsSms" ColumnName="IsSms" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="tblRecepientFilterId" ColumnName="tblRecepientFilterId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblWildcards">
+            <EntityTypeMapping TypeName="Messages.tblWildcard">
+              <MappingFragment StoreEntitySet="tblWildcard">
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="tblRecepientFilterId" ColumnName="tblRecepientFilterId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -201,10 +201,7 @@ namespace ticonet
                 return result;
 
             }
-            catch (Exception e)
-            {
-                return szResult;
-            }
+            catch {return szResult;}
         }
 
 

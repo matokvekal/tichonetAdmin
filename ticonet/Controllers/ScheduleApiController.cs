@@ -80,14 +80,8 @@ namespace ticonet.Controllers
         [System.Web.Http.HttpGet]
         public HttpResponseMessage GenerateSchedule([FromUri]ScheduleParamsModel parameters)
         {
-            //var dateFrom = (DateTime?)DateHelper.GetSunday(DateTime.Now); 
-            //var dateTo = (DateTime?)dateFrom.Value.AddDays(7).Date;
-            //parameters.DateFrom = DateHelper.DateToString(dateFrom);
-            //parameters.DateTo = DateHelper.DateToString(dateTo);
-
             var dateFrom = DateHelper.StringToDate(parameters.DateFrom);
             var dateTo = DateHelper.StringToDate(parameters.DateTo);
-            var fakeId = 0;
 
             if (!dateFrom.HasValue || !dateTo.HasValue || string.IsNullOrEmpty(parameters.LinesIds))
             {
