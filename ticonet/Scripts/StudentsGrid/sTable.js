@@ -92,7 +92,7 @@
             sortorder: "asc",
             altclass: "ui-state-default",
             url: "/tblStudent/StudentsForTable",
-            colNames: ["Id", "First Name", "Last Name", "Class", "Shicva", "Address", "Pay", "Active", "Sibiling", "Request", "Distance To School", "Line & Station", "#"],
+            colNames: ["ת.ז", "פרטי", "משפחה", "כיתה", "שיכבה", "Address", "דמי הרשמה", "תשלום שוטף", "פעיל", "אח נוסף", "בקשה", "מרחק מתחנה", "קו ותחנה", "#"],
             colModel: [{
                 name: 'StudentId',
                 index: 'StudentId',
@@ -108,7 +108,7 @@
                 name: 'LastName',
                 index: 'LastName',
                 sorttype: "text",
-                width: 75
+                width: 50
             }, {
                 name: 'Class',
                 index: 'Class',
@@ -128,10 +128,19 @@
                 sorttype: "text",
                 width: 150
             }, {
+                name: 'registrationStatus',
+                index: 'registrationStatus',
+                sorttype: "text",
+                width: 90,
+                align: 'center',
+                formatter: function (cellvalue, options, rowObject) {
+                    return '<input disabled="disabled" type="checkbox"' + (cellvalue == "True" ? ' checked="checked"' : '') + '/>';
+                }
+            }, {
                 name: 'Payment',
                 index: 'Payment',
                 sorttype: "text",
-                width: 50,
+                width: 55,
                 align: 'center',
                 formatter: function (cellvalue, options, rowObject) {
                     return '<input disabled="disabled" type="checkbox"' + (cellvalue == "True" ? ' checked="checked"' : '') + '/>';
@@ -150,7 +159,7 @@
                 name: 'SibilingAtSchool',
                 index: 'SibilingAtSchool',
                 sorttype: "text",
-                width: 60,
+                width: 50,
                 align: 'center',
                 formatter: function (cellvalue, options, rowObject) {
                     return '<input disabled="disabled" type="checkbox"' + (cellvalue == "True" ? ' checked="checked"' : '') + '/>';
@@ -159,7 +168,7 @@
                 name: 'SpecialRequest',
                 index: 'SpecialRequest',
                 sorttype: "text",
-                width: 60,
+                width: 55,
                 align: 'center',
                 formatter: function (cellvalue, options, rowObject) {
                     return '<input disabled="disabled" type="checkbox"' + (cellvalue == "True" ? ' checked="checked"' : '') + '/>';
@@ -169,7 +178,7 @@
                 index: 'Distance',
                 sorttype: "text",
                 align: 'center',
-                width: 150,
+                width: 60,
                 formatter: function (cellvalue, options, rowObject) {
                     var c = parseInt(cellvalue);
                     var u = " m";
@@ -238,6 +247,7 @@
                 Street: function () { return $("#tbStreet").val() },
                 House: function () { return $("#tbHouse").val() },
                 Active: function () { return $("#ddlActive").val() },
+                registrationStatus: function () { return $("#ddlRegistrationStatus").val() },
                 PayStatus: function () { return $("#ddlPayStatus").val() },
                 Subcidy: function () { return $("#ddlSubcidy").val() },
                 Sibiling: function () { return $("#ddlSibiling").val() },
@@ -706,6 +716,7 @@
             Street: function () { return $("#tbStreet").val() },
             House: function () { return $("#tbHouse").val() },
             Active: function () { return $("#ddlActive").val() },
+            registrationStatus: function () { return $("#ddlRegistrationStatus").val() },
             PayStatus: function () { return $("#ddlPayStatus").val() },
             Subcidy: function () { return $("#ddlSubcidy").val() },
             Sibiling: function () { return $("#ddlSibiling").val() },
