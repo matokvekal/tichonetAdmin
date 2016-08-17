@@ -344,7 +344,7 @@ namespace ticonet
             List<ViewAllStudentFamilyLinesStation> lst = ViewAllStudentsLogic.GetAllStudents();
             Response.Cookies.Add(new HttpCookie("fileDownload", "true"));
 
-    
+
 
 
             var workbook = new XLWorkbook();
@@ -397,14 +397,14 @@ namespace ticonet
             worksheet.Cell("K1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             worksheet.Column("K").Width = 16;
 
-            string lineNumberPrev=null;
+            string lineNumberPrev = null;
             var row = 2;
             lst = lst.OrderBy(c => c.LineNumber).ThenBy(c => c.Position).ToList();
 
             foreach (var stud in lst)
             {
-                if (row > 2 && lineNumberPrev!=stud.LineNumber)
-                     row++;
+                if (row > 2 && lineNumberPrev != stud.LineNumber)
+                    row++;
 
                 worksheet.Cell(row, "A").Value = row - 1;
                 worksheet.Cell(row, "B").Value = stud.studentFirstName;
@@ -413,7 +413,7 @@ namespace ticonet
                 worksheet.Cell(row, "E").Value = stud.street;
                 worksheet.Cell(row, "F").Value = stud.houseNumber;
                 worksheet.Cell(row, "G").Value = stud.LineName;
-                worksheet.Cell(row, "H").Value =lineNumberPrev= stud.LineNumber;
+                worksheet.Cell(row, "H").Value = lineNumberPrev = stud.LineNumber;
                 worksheet.Cell(row, "I").Value = stud.Duration;
 
                 //     calculate diferent times in each day for same line(if there are)
@@ -457,7 +457,65 @@ namespace ticonet
             return File(sr.ReadBytes((int)ms.Length), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Students.xlsx"); ;
 
         }
+        public FileContentResult btnExportToExcel3()
+        {
 
+            LineLogic.updateAriveAndDepartureTime();
+
+            List<ViewAlllinesByBusCompnyAndStation> lst = ViewAllStudentsLogic.GetAllLinesAndStations();
+            Response.Cookies.Add(new HttpCookie("fileDownload", "true"));
+
+
+            int headerRow = 3;
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("LINES");
+            worksheet.Cell("A" + headerRow).Value = DEBS.Translate("BusCompany.Name");
+            worksheet.Cell("B" + headerRow).Value = DEBS.Translate("Line.LineName");
+            worksheet.Cell("C" + headerRow).Value = DEBS.Translate("Line.LineNumber");
+            worksheet.Cell("D" + headerRow).Value = DEBS.Translate("Line.Direction");
+            worksheet.Cell("E" + headerRow).Value = DEBS.Translate("Line.Duration");
+            worksheet.Cell("F" + headerRow).Value = DEBS.Translate("Line.BasicArriveTime");
+            worksheet.Cell("G" + headerRow).Value = DEBS.Translate("Line.BasicDepartureTime");
+            worksheet.Cell("H" + headerRow).Value = DEBS.Translate("Stations.StationName");
+            worksheet.Cell("I" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalDate");
+            worksheet.Cell("J" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeSun");
+            worksheet.Cell("K" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeMon");
+            worksheet.Cell("L" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeTue");
+            worksheet.Cell("M" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeWed");
+            worksheet.Cell("N" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeThu");
+            worksheet.Cell("O" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeFri");
+            string lineNumberPrev = null;
+            var row = headerRow+1;
+               lst = lst.OrderBy(c => c.LineNumber).ThenBy(c => c.Position).ToList();
+            foreach (var stud in lst)
+            {
+                if (lineNumberPrev != stud.LineNumber & row > headerRow + 1)
+                    row++;
+                worksheet.Cell(row, "A").Value = stud.companyName;
+                worksheet.Cell(row, "B").Value = stud.LineName;
+                worksheet.Cell(row, "C").Value = lineNumberPrev = stud.LineNumber;
+                worksheet.Cell(row, "D").Value = stud.Direction==0 ? DEBS.Translate("General.To") : DEBS.Translate("General.From");
+                worksheet.Cell(row, "E").Value = stud.Duration != null ? stud.Duration.Value.ToString(@"dd\.hh\:mm\:ss") : null;
+                worksheet.Cell(row, "F").Value = stud.Position;
+                worksheet.Cell(row, "H").Value = stud.StationName;
+                worksheet.Cell(row, "I").Value = stud.ArrivalDate;
+                worksheet.Cell(row, "J").Value = stud.Sun;
+                worksheet.Cell(row, "K").Value = stud.Mon;
+                worksheet.Cell(row, "L").Value = stud.Tue;
+                worksheet.Cell(row, "M").Value = stud.Wed;
+                worksheet.Cell(row, "N").Value = stud.Thu;
+                worksheet.Cell(row, "O").Value = stud.Fri;
+                row++;
+
+            }
+
+            var ms = new MemoryStream();
+            workbook.SaveAs(ms);
+            ms.Position = 0;
+            var sr = new BinaryReader(ms);
+            return File(sr.ReadBytes((int)ms.Length), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "lines.xlsx"); ;
+
+        }
     }
 }
 
