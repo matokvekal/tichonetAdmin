@@ -37,8 +37,9 @@ namespace Business_Logic.Entities
 
         public int[] LineIds { get; set; }
         public int[] StationIds { get; set; }
-
+        public int registrationStatus { get; set; }
         public int PayStatus { get; set; }
+
 
         public int Subcidy { get; set; }
 

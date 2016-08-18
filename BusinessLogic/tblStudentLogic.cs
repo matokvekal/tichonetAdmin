@@ -269,8 +269,9 @@ namespace Business_Logic
                             (string.IsNullOrEmpty(request.Street) || stud.street.ToLower().Contains(request.Street)) &&
                             (string.IsNullOrEmpty(request.House) || stud.houseNumber.ToString().Contains(request.House)) &&
                             (request.Active == 0 || (request.Active == 1 && stud.Active == true) || (request.Active == 2 && stud.Active == false)) &&
+                            (request.registrationStatus == 0 || (request.registrationStatus == 1 && stud.registrationStatus == true) || (request.registrationStatus == 2 && stud.registrationStatus == false)) &&
                             (request.PayStatus == 0 || (request.PayStatus == 1 && stud.paymentStatus == true) || (request.PayStatus == 2 && stud.paymentStatus == false)) &&
-                            (request.Subcidy == 0 || (request.Subcidy == 1 && stud.subsidy == true) || (request.Subcidy == 2 && stud.subsidy == false)) &&
+                             (request.Subcidy == 0 || (request.Subcidy == 1 && stud.subsidy == true) || (request.Subcidy == 2 && stud.subsidy == false)) &&
                             (request.SibilingAtSchool == 0 || (request.SibilingAtSchool == 1 && stud.siblingAtSchool == true) || (request.SibilingAtSchool == 2 && stud.siblingAtSchool == false)) &&
                             (request.SpecialRequest == 0 || (request.SpecialRequest == 1 && stud.specialRequest == true) || (request.SpecialRequest == 2 && stud.specialRequest == false)) &&
                             (request.DistanceFromSchoolFrom == 0 || (stud.distanceFromSchool != null && stud.distanceFromSchool.Value >= request.DistanceFromSchoolFrom)) &&
@@ -287,6 +288,7 @@ namespace Business_Logic
                                Class = stud.@class,
                                Id = stud.pk,
                                StudentId = stud.studentId,
+                               registrationStatus = stud.registrationStatus,
                                PayStatus = stud.paymentStatus,
                                Shicva = stud.Shicva,
                                SibilingAtSchool = stud.siblingAtSchool,
@@ -342,11 +344,17 @@ namespace Business_Logic
                            ? lst.OrderBy(z => z.Class).Skip(skeep).Take(take).ToList()
                            : lst.OrderByDescending(z => z.Class).Skip(skeep).Take(take).ToList();
                         break;
+                    case "registrationstatus":
+                        res = request.SortOrder == "asc"
+                            ? lst.OrderBy(z => z.registrationStatus).Skip(skeep).Take(take).ToList()
+                           : lst.OrderByDescending(z => z.registrationStatus).Skip(skeep).Take(take).ToList();
+                        break;
                     case "payment":
                         res = request.SortOrder == "asc"
                             ? lst.OrderBy(z => z.PayStatus).Skip(skeep).Take(take).ToList()
                            : lst.OrderByDescending(z => z.PayStatus).Skip(skeep).Take(take).ToList();
                         break;
+      
                     case "active":
                         res = request.SortOrder == "asc"
                            ? lst.OrderBy(z => z.Active).Skip(skeep).Take(take).ToList()
@@ -525,6 +533,32 @@ namespace Business_Logic
                 res = false;
             }
             return res;
+        }
+
+        public static int totalStudents()
+        {
+            try
+            {
+                BusProjectEntities db = new BusProjectEntities();
+                int total = db.tblStudents.Count();
+                return total;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        public static int totalRegistrationStudents()
+        {
+            try
+            {
+                BusProjectEntities db = new BusProjectEntities();
+                return db.tblStudents.Count(c => c.registrationStatus == true);
+           }
+            catch
+            {
+                throw;
+            }
         }
     }
 }

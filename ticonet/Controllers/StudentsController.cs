@@ -15,9 +15,13 @@ namespace ticonet
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(StudentsController));
 
+
+        
+         
         [ActionName("StudentsForMap")]
         public List<StudentShortInfo> GetStudentsForMap()
         {
+
             var res = new List<StudentShortInfo>();
             using (var context = new BusProjectEntities())
             {

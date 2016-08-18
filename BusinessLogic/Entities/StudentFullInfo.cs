@@ -25,6 +25,8 @@ namespace Business_Logic.Entities
 
         public bool? PayStatus { get; set; }
 
+        public bool? registrationStatus { get; set; }
+
         public bool? Active { get; set; }
         public bool? SibilingAtSchool { get; set; }
 
