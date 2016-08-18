@@ -23,7 +23,7 @@ namespace ticonet.Controllers.Ng {
             using (var l = new MessagesModuleLogic()) {
                 int allQueryCount;
                 var result = l.GetFiltered<tblFilter>(Skip, Count, filters, out allQueryCount)
-                    .Select(x => VMConstructor.MakeFromObj(x, FilterVM.tblFilterBND));
+                    .Select(x => VMConstructor.MakeFromObj(x, FilterVM.tblFilterPR));
 
                 return FetchResult<FilterVM>.Succes(result, allQueryCount);
             }

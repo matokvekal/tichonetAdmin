@@ -12,15 +12,14 @@ namespace Business_Logic.MessagesContext
     using System;
     using System.Collections.Generic;
     
-    public partial class tblTemplate
+    public partial class tblRecepientCard
     {
         public int Id { get; set; }
         public int tblRecepientFilterId { get; set; }
         public string Name { get; set; }
-        public bool IsSms { get; set; }
-        public string MsgHeader { get; set; }
-        public string MsgBody { get; set; }
-        public string FilterValueContainersJSON { get; set; }
+        public string NameKey { get; set; }
+        public string EmailKey { get; set; }
+        public string PhoneKey { get; set; }
     
         public virtual tblRecepientFilter tblRecepientFilter { get; set; }
     }

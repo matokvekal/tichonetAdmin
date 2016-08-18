@@ -43,17 +43,18 @@ namespace Business_Logic.MessagesContext {
 
         public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IQueryFilter[] filters, out int countWithoutTake)
                         where TEntity : class, IMessagesContextEntity {
-            //TODO Getting entity filtered is not covers all cases yet (types)
             //TODO AVOID DATA MOVE IN MEMORY
             var query = DB.Set<TEntity>().ToArray().AsEnumerable();
             foreach(var filter in filters) {
+                if (!string.IsNullOrWhiteSpace(filter.op))
+                    throw new NotImplementedException("operators are not implemented. to implement it consider reading documentation and use conventions");
                 var propInfo = typeof(TEntity).GetProperty(filter.key);
                 if (propInfo != null) {
                     switch (filter.op) {
-                        //TODO Getting entity filtered is not covers all cases yet (operators)
+                        //TODO Getting entity filtered not covers all cases yet (types is not considered)
                         default:
-                            //TODO filter.val is a boxed valuse type, that is why straight check will fail
-                            query = query.Where(x => propInfo.GetValue(x).ToString() == filter.val.ToString());
+                            //TODO filter.val is a boxed value type, that is why straight check will fail
+                            query = query.Where(x => GetNullableString(propInfo.GetValue(x)) == filter.val.ToString());
                             break;
                     }
                 }
@@ -64,6 +65,12 @@ namespace Business_Logic.MessagesContext {
             if (Take != null)
                 query.Take(Take.Value);
             return query.ToList();
+        }
+
+        string GetNullableString (object obj) {
+            if (obj == null)
+                return "null";
+            return obj.ToString();
         }
 
         //-------------------------------------------
@@ -88,6 +95,9 @@ namespace Business_Logic.MessagesContext {
             return item;
         }
 
+        /// <summary>
+        /// Only Saving Existing Allowed
+        /// </summary>
         public TEntity SaveChanges<TEntity>(TEntity item)
                         where TEntity : class, IMessagesContextEntity {
             DB.Entry(item).State = EntityState.Modified;

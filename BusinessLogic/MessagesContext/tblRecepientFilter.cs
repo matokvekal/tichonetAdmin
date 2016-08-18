@@ -20,6 +20,7 @@ namespace Business_Logic.MessagesContext
             this.tblFilters = new HashSet<tblFilter>();
             this.tblWildcards = new HashSet<tblWildcard>();
             this.tblTemplates = new HashSet<tblTemplate>();
+            this.tblRecepientCards = new HashSet<tblRecepientCard>();
         }
     
         public int Id { get; set; }
@@ -33,5 +34,7 @@ namespace Business_Logic.MessagesContext
         public virtual ICollection<tblWildcard> tblWildcards { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblTemplate> tblTemplates { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<tblRecepientCard> tblRecepientCards { get; set; }
     }
 }

@@ -20,6 +20,8 @@ namespace Business_Logic.MessagesContext
         public string Value { get; set; }
         public string Operator { get; set; }
         public string Type { get; set; }
+        public Nullable<bool> allowUserInput { get; set; }
+        public Nullable<bool> allowMultipleSelection { get; set; }
     
         public virtual tblRecepientFilter tblRecepientFilter { get; set; }
     }

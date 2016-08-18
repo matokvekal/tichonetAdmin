@@ -30,5 +30,6 @@ namespace Business_Logic.MessagesContext
         public virtual DbSet<tblRecepientFilterTableName> tblRecepientFilterTableNames { get; set; }
         public virtual DbSet<tblTemplate> tblTemplates { get; set; }
         public virtual DbSet<tblWildcard> tblWildcards { get; set; }
+        public virtual DbSet<tblRecepientCard> tblRecepientCards { get; set; }
     }
 }

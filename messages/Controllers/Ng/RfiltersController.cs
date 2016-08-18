@@ -1,4 +1,5 @@
 ﻿using Business_Logic.MessagesContext;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,8 @@ namespace ticonet.Controllers.Ng {
     public class RfiltersController : NgController<RFilterVM> {
         protected override NgResult _create(RFilterVM[] models) {
             //TODO OPTIMIZE
-
             using (var l = new MessagesModuleLogic()) {
                 foreach (var model in models) {
-                    //Create RFilter
                     var filt = l.Create<tblRecepientFilter>();
                     filt.Name = model.Name;
                     filt.tblRecepientFilterTableNameId = model.BaseTableId;
@@ -34,75 +33,74 @@ namespace ticonet.Controllers.Ng {
                     filt.Name = model.Name;
                     filt.tblRecepientFilterTableNameId = model.BaseTableId;
                     l.SaveChanges(filt);
+                    model.Id = filt.Id;
                     CreateAndUpdateRFilterParts(model, l);
                 }
             }
             return NgResult.Succes();
         }
 
+        protected void ManagerRFilterPart<TEnitity,TNgViewModel> (MessagesModuleLogic l, IEnumerable<TNgViewModel> items, Action<TEnitity,TNgViewModel> updater) 
+            where TEnitity: class,IMessagesContextEntity
+            where TNgViewModel: class,INgViewModel
+        {
+            if (items == null) return;
+            //TODO OPTIMIZE work with DB
+            foreach (var item in items) {
+                TEnitity ent = null;
+                if (item.ng_ToDelete)
+                    l.Delete<TEnitity>(item.Id);
+                else if (item.ng_JustCreated)
+                    ent = l.Create<TEnitity>();
+                else
+                    ent = l.Get<TEnitity>(item.Id);
+                if (ent != null) {
+                    updater(ent, item);
+                    if (item.ng_JustCreated)
+                        l.Add(ent);
+                    else
+                        l.SaveChanges(ent);
+                }
+            }
+        }
+
         protected void CreateAndUpdateRFilterParts (RFilterVM model, MessagesModuleLogic l) {
-            //TODO OPTIMIZE
-
-            //Add new parts
-            if (model.newfilters != null) {
-                foreach (var item in model.newfilters) {
-                    var ent = l.Create<tblFilter>();
-                    ent.Key = item.Key;
-                    ent.Operator = item.Operator;
-                    ent.Type = item.Type;
-                    ent.Value = item.Value;
-                    ent.tblRecepientFilterId = model.Id;
-                    l.Add(ent);
+            //!!!! IMPLEMENT POCO_AUTOBINDING MECHANISM IF YOU GOING TO DO SAME THINGS IN OTHER PLACE
+            ManagerRFilterPart<tblFilter, FilterVM>(l, model.filters, (e, m) => {
+                e.Key = m.Key;
+                string[] ops = new string[m.ValsOps.Length];
+                string[] vals = new string[m.ValsOps.Length];
+                for (int i = 0; i < m.ValsOps.Length; i++) {
+                    ops[i] = m.ValsOps[i].Operator;
+                    //TODO
+                    //NULL CHECK
+                    vals[i] = m.ValsOps[i].Value.ToString();
                 }
-            }
+                e.allowMultipleSelection = m.allowMultipleSelection;
+                e.allowUserInput = m.allowUserInput;
+                e.Operator = JsonConvert.SerializeObject(ops);
+                e.Value = JsonConvert.SerializeObject(vals);
+                e.Type = m.Type;
+                e.tblRecepientFilterId = model.Id;
+            });
 
-            if (model.newwildcards != null) {
-                foreach (var item in model.newwildcards) {
-                    var ent = l.Create<tblWildcard>();
-                    ent.Key = item.Key;
-                    ent.Name = item.Name;
-                    ent.Code = item.Code;
-                    ent.tblRecepientFilterId = model.Id;
-                    l.Add(ent);
-                }
-            }
+            //!!!! IMPLEMENT POCO_AUTOBINDING MECHANISM IF YOU GOING TO DO SAME THINGS IN OTHER PLACE
+            ManagerRFilterPart<tblWildcard, WildcardVM>(l, model.wildcards, (e, m) => {
+                e.Name = m.Name;
+                e.Key = m.Key;
+                e.Code = m.Code;
+                e.tblRecepientFilterId = model.Id;
+            });
 
-            //Update existing parts (exlude new!, removed parts is excluded already)
-            //TODO -1 check is unserious..... either do some optimization on client side, either here
-            if (model.filters != null) {
-                var excludeNewFilters = model.filters.Where(x => x.Id != -1);
-                foreach (var item in excludeNewFilters) {
-                    var ent = l.Get<tblFilter>(item.Id);
-                    ent.Key = item.Key;
-                    ent.Operator = item.Operator;
-                    ent.Type = item.Type;
-                    ent.Value = item.Value;
-                    ent.tblRecepientFilterId = model.Id;
-                    l.SaveChanges(ent);
-                }
-            }
+            //!!!! IMPLEMENT POCO_AUTOBINDING MECHANISM IF YOU GOING TO DO SAME THINGS IN OTHER PLACE
+            ManagerRFilterPart<tblRecepientCard, RecepientcardVM>(l, model.reccards, (e, m) => {
+                e.Name = m.Name;
+                e.NameKey = m.NameKey;
+                e.PhoneKey = m.PhoneKey;
+                e.EmailKey = m.EmailKey;
+                e.tblRecepientFilterId = model.Id;
+            });
 
-            if (model.wildcards != null) {
-                var excludeNewWildcards = model.wildcards.Where(x => x.Id != -1);
-                foreach (var item in excludeNewWildcards) {
-                    var ent = l.Get<tblWildcard>(item.Id);
-                    ent.Key = item.Key;
-                    ent.Name = item.Name;
-                    ent.Code = item.Code;
-                    ent.tblRecepientFilterId = model.Id;
-                    l.SaveChanges(ent);
-                }
-            }
-
-            //Delete removed parts
-            if (model.removedfilters != null) {
-                foreach (var item in model.removedfilters)
-                    l.Delete<tblFilter>(item.Id);
-            }
-            if (model.removedwildcards != null) {
-                foreach (var item in model.removedwildcards)
-                    l.Delete<tblWildcard>(item.Id);
-            }
         }
 
         protected override NgResult _delete(RFilterVM[] models) {
@@ -112,7 +110,7 @@ namespace ticonet.Controllers.Ng {
         protected override FetchResult<RFilterVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 var items = l.GetAll<tblRecepientFilter>()
-                    .Select(x => VMConstructor.MakeFromObj(x,RFilterVM.tblRecepientFilterBND));
+                    .Select(x => VMConstructor.MakeFromObj(x,RFilterVM.tblRecepientFilterPR));
                 return FetchResult<RFilterVM>.Succes(items,items.Count());
             }
         }

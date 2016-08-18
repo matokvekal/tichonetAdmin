@@ -1,7 +1,11 @@
 ﻿    interface Array<T> {
         firstIndex(predicate: (item: T) => boolean): number;
+        /**returns undefined if no matching item found*/
         first(predicate: (item: T) => boolean): T;
+        any(predicate: (item: T) => boolean): boolean;
         remove(item: T): boolean;
+        max(selector: (item: T) => number): number;
+        count(selector: (item: T) => number): number;
     }
 
     /** returns -1 if nothing was found*/
@@ -26,12 +30,34 @@
         return this[i]
     }
 
+    Array.prototype.any = function (predicate) {
+        return this.firstIndex(predicate) !== -1
+    }
+
     Array.prototype.remove = function (item) {
-        let a = this;
-        let i = a.indexOf(item);
+        let a = this
+        let i = a.indexOf(item)
         if (i === -1) return false
         a.splice(i, 1)
         return true
+    }
+
+    Array.prototype.max = function (selector: (item) => number) {
+        let max = null;
+        this.forEach(ele => {
+            let a = selector(ele)
+            if (max === null || a > max)
+                max = a
+        })
+        return max === null ? 0 : max
+    }
+
+    Array.prototype.count = function (selector: (item) => number) {
+        let count = 0;
+        this.forEach(ele => {
+            count += selector(ele)
+        })
+        return count
     }
     
 

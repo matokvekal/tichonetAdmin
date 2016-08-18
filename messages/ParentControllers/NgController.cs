@@ -32,6 +32,14 @@ namespace ticonet.ParentControllers {
                 message = message
             };
         }
+        public static new FetchResult<TModel> Fail(string message = null) {
+            return new FetchResult<TModel> {
+                successful = false,
+                items = null,
+                allquerycount = 0,
+                message = message
+            };
+        }
 
         public List<TModel> items { get; protected set; }
         public int allquerycount { get; protected set; }

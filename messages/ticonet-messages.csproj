@@ -269,6 +269,7 @@
     <Compile Include="Controllers\Ng\TemplatesController.cs" />
     <Compile Include="Controllers\Ng\ViewModels\ViewModels.cs" />
     <Compile Include="Controllers\Ng\WildcardsController.cs" />
+    <Compile Include="Controllers\Ng\RecepientCardsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -1140,6 +1141,8 @@
     <TypeScriptCompile Include="AngularApp\Controllers\MessageModulePageController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\NotificationController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\SendMessagesController.ts" />
+    <TypeScriptCompile Include="AngularApp\Controllers\SHARED.ts" />
+    <TypeScriptCompile Include="AngularApp\SharedViewModels.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\TemplatesController.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\TSNetLike\Collections\ArrayExtensions.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\TSNetLike\Collections\Dictionary.ts" />

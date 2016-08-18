@@ -13,8 +13,21 @@
           <Property Name="tblRecepientFilterId" Type="int" Nullable="false" />
           <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Operator" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Operator" Type="nvarchar(max)" />
           <Property Name="Type" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="allowUserInput" Type="bit" />
+          <Property Name="allowMultipleSelection" Type="bit" />
+        </EntityType>
+        <EntityType Name="tblRecepientCard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tblRecepientFilterId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="NameKey" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="EmailKey" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="PhoneKey" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="tblRecepientFilter">
           <Key>
@@ -42,6 +55,7 @@
           <Property Name="IsSms" Type="bit" Nullable="false" />
           <Property Name="MsgHeader" Type="nvarchar" MaxLength="500" />
           <Property Name="MsgBody" Type="nvarchar(max)" />
+          <Property Name="FilterValueContainersJSON" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="tblWildcard">
           <Key>
@@ -55,6 +69,7 @@
         </EntityType>
         <EntityContainer Name="MessagesStoreContainer">
           <EntitySet Name="tblFilter" EntityType="Self.tblFilter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRecepientCard" EntityType="Self.tblRecepientCard" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilter" EntityType="Self.tblRecepientFilter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilterTableName" EntityType="Self.tblRecepientFilterTableName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblTemplate" EntityType="Self.tblTemplate" Schema="dbo" store:Type="Tables" />
@@ -86,6 +101,11 @@
             <End Role="tblTemplate" EntitySet="tblTemplates" />
             <End Role="tblRecepientFilter" EntitySet="tblRecepientFilters" />
           </AssociationSet>
+          <EntitySet Name="tblRecepientCards" EntityType="Messages.tblRecepientCard" />
+          <AssociationSet Name="tblRecepientFiltertblRecepientCard" Association="Messages.tblRecepientFiltertblRecepientCard">
+            <End Role="tblRecepientCard" EntitySet="tblRecepientCards" />
+            <End Role="tblRecepientFilter" EntitySet="tblRecepientFilters" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="tblFilter">
           <Key>
@@ -95,9 +115,11 @@
           <Property Name="tblRecepientFilterId" Type="Int32" Nullable="false" />
           <Property Name="Key" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Operator" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Operator" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblFiltertblRecepientFilter" FromRole="tblFilter" ToRole="tblRecepientFilter" />
           <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="allowUserInput" Type="Boolean" />
+          <Property Name="allowMultipleSelection" Type="Boolean" />
         </EntityType>
         <EntityType Name="tblRecepientFilter">
           <Key>
@@ -110,6 +132,7 @@
           <NavigationProperty Name="tblFilters" Relationship="Messages.tblFiltertblRecepientFilter" FromRole="tblRecepientFilter" ToRole="tblFilter" />
           <NavigationProperty Name="tblWildcards" Relationship="Messages.tblWildcardtblRecepientFilter" FromRole="tblRecepientFilter" ToRole="tblWildcard" />
           <NavigationProperty Name="tblTemplates" Relationship="Messages.tblTemplatetblRecepientFilter" FromRole="tblRecepientFilter" ToRole="tblTemplate" />
+          <NavigationProperty Name="tblRecepientCards" Relationship="Messages.tblRecepientFiltertblRecepientCard" FromRole="tblRecepientFilter" ToRole="tblRecepientCard" />
         </EntityType>
         <EntityType Name="tblRecepientFilterTableName">
           <Key>
@@ -131,6 +154,7 @@
           <Property Name="MsgHeader" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="MsgBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblTemplatetblRecepientFilter" FromRole="tblTemplate" ToRole="tblRecepientFilter" />
+          <Property Name="FilterValueContainersJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblWildcard">
           <Key>
@@ -191,6 +215,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="tblRecepientCard">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tblRecepientFilterId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="NameKey" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="EmailKey" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneKey" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblRecepientFiltertblRecepientCard" FromRole="tblRecepientCard" ToRole="tblRecepientFilter" />
+        </EntityType>
+        <Association Name="tblRecepientFiltertblRecepientCard">
+          <End Type="Messages.tblRecepientCard" Role="tblRecepientCard" Multiplicity="*" />
+          <End Type="Messages.tblRecepientFilter" Role="tblRecepientFilter" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="tblRecepientFilter">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblRecepientCard">
+              <PropertyRef Name="tblRecepientFilterId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -200,6 +248,8 @@
           <EntitySetMapping Name="tblFilters">
             <EntityTypeMapping TypeName="Messages.tblFilter">
               <MappingFragment StoreEntitySet="tblFilter">
+                <ScalarProperty Name="allowMultipleSelection" ColumnName="allowMultipleSelection" />
+                <ScalarProperty Name="allowUserInput" ColumnName="allowUserInput" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="Operator" ColumnName="Operator" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
@@ -230,6 +280,7 @@
           <EntitySetMapping Name="tblTemplates">
             <EntityTypeMapping TypeName="Messages.tblTemplate">
               <MappingFragment StoreEntitySet="tblTemplate">
+                <ScalarProperty Name="FilterValueContainersJSON" ColumnName="FilterValueContainersJSON" />
                 <ScalarProperty Name="MsgBody" ColumnName="MsgBody" />
                 <ScalarProperty Name="MsgHeader" ColumnName="MsgHeader" />
                 <ScalarProperty Name="IsSms" ColumnName="IsSms" />
@@ -244,6 +295,18 @@
               <MappingFragment StoreEntitySet="tblWildcard">
                 <ScalarProperty Name="Key" ColumnName="Key" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="tblRecepientFilterId" ColumnName="tblRecepientFilterId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRecepientCards">
+            <EntityTypeMapping TypeName="Messages.tblRecepientCard">
+              <MappingFragment StoreEntitySet="tblRecepientCard">
+                <ScalarProperty Name="PhoneKey" ColumnName="PhoneKey" />
+                <ScalarProperty Name="EmailKey" ColumnName="EmailKey" />
+                <ScalarProperty Name="NameKey" ColumnName="NameKey" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="tblRecepientFilterId" ColumnName="tblRecepientFilterId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />

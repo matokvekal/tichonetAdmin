@@ -1,25 +1,9 @@
-﻿CREATE TABLE [dbo].[tblTESTMSGTBL] (
-    [Id]			INT				IDENTITY (1, 1) NOT NULL,
+﻿CREATE VIEW [dbo].[vStudents]
+AS
+SELECT        dbo.tblStudent.pk, dbo.tblStudent.studentId, dbo.tblStudent.firstName, dbo.tblStudent.lastName, dbo.tblStudent.Email, dbo.tblStudent.CellPhone, dbo.tblFamily.parent1Type, dbo.tblFamily.parent1FirstName, 
+                         dbo.tblFamily.parent1LastName, dbo.tblFamily.parent1Email, dbo.tblFamily.parent1CellPhone, dbo.tblFamily.parent2Type, dbo.tblFamily.parent2FirstName, dbo.tblFamily.parent2LastName, 
+                         dbo.tblFamily.parent2Email, dbo.tblFamily.parent2CellPhone
+FROM            dbo.tblStudent INNER JOIN
+                         dbo.tblFamily ON dbo.tblStudent.familyId = dbo.tblFamily.familyId
 
-	[StudentName]			NVARCHAR (MAX)	NULL,
-	[StudentEmail]					NVARCHAR (MAX)	NULL,
-
-	[MotherName]			NVARCHAR (MAX)	NULL,
-	[MotherEmail]					NVARCHAR (MAX)	NULL,
-
-	[FatherName]			NVARCHAR (MAX)	NULL,
-	[FatherEmail]					NVARCHAR (MAX)	NULL,
-
-	[LineName]			NVARCHAR (MAX) NULL,
-
-	[BusInfo]			NVARCHAR (MAX) NULL,
-	
-	[FirstStationName]			NVARCHAR (MAX) NULL,
-	[LastStationName]			NVARCHAR (MAX) NULL,
-
-	[RouteStartTime]			DATETIME NULL,
-	[RouteEndTime]			DATETIME NULL,
-
-
-    PRIMARY KEY CLUSTERED ([Id] ASC)
-);
+GO

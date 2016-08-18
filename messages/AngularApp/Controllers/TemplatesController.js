@@ -13,6 +13,7 @@ var AngularApp;
                 this.metafilters = [];
                 this.curtemplate = null;
                 this.wildcards = [];
+                this.filters = [];
                 this.templatesHeader_ElemId = 'templates_header';
                 this.templatesBody_ElemId = 'templates_body';
                 //
@@ -20,13 +21,6 @@ var AngularApp;
             }
             return TemplatesVA;
         }());
-        var TemplateVM = (function () {
-            function TemplateVM() {
-                this.RecepientFilterId = -1;
-            }
-            return TemplateVM;
-        }());
-        Controllers.TemplateVM = TemplateVM;
         var TemplatesController = (function (_super) {
             __extends(TemplatesController, _super);
             function TemplatesController($rootScope, $scope, $http) {
@@ -38,24 +32,44 @@ var AngularApp;
                 this.refetchMfilters = function (onSucces) {
                     _this.fetchtoarr(true, { urlalias: "getmfilters" }, _this.va.metafilters, true);
                 };
+                this.refetchFilters = function (mfilt) {
+                    _this.fetchtoarr(true, {
+                        urlalias: "getfilters",
+                        params: new AngularApp.FetchParams()
+                            .addFilt("tblRecepientFilterId", mfilt.Id)
+                            .addFilt("allowUserInput", true),
+                        onSucces: function () {
+                            var arr = [];
+                            _this.va.filters.forEach(function (x) { return arr.push({ FilterId: x.Id, Value: [] }); });
+                            _this.va.curtemplate.FilterValueContainers = arr;
+                        }
+                    }, _this.va.filters, true);
+                };
                 this.refetchWildcards = function (mfilt) {
+                    _this.va.wildcards = [];
                     _this.fetchtoarr(true, {
                         urlalias: "getwildcards",
                         params: new AngularApp.FetchParams().addFilt("tblRecepientFilterId", mfilt.Id),
-                    }, _this.va.wildcards, true);
+                    }, _this.va.wildcards, false);
+                    //this is a reserved wildcards, used for placing recepient credentials
+                    //as convention them has negative ids <= -10
+                    _this.fetchtoarr(true, { urlalias: "getreservedcards" }, _this.va.wildcards, false);
                 };
                 this.turnTemplateCreate = function () {
-                    _this.va.curtemplate = new TemplateVM();
+                    _this.va.curtemplate = new Controllers.TemplateVM();
                     _this.va.curtemplate.Id = -1;
+                    _this.va.filters = [];
                 };
                 this.setMFilter = function (mfilt) {
                     _this.va.curtemplate.RecepientFilterId = mfilt.Id;
                     _this.refetchWildcards(mfilt);
+                    _this.refetchFilters(mfilt);
                 };
                 this.turnTemplateEdit = function (templ) {
                     _this.va.curtemplate = AngularApp.CloneShallow(templ);
                     var filt = _this.va.metafilters.first(function (x) { return x.Id === templ.RecepientFilterId; });
                     _this.refetchWildcards(filt);
+                    _this.refetchFilters(filt);
                 };
                 this.turnOffTemplateEdition = function () {
                     _this.va.curtemplate = null;
@@ -116,10 +130,24 @@ var AngularApp;
                         textArea.value += text;
                     }
                 };
+                this.getFilterValueCont = function (filt) {
+                    var a = _this.va.curtemplate.FilterValueContainers.first(function (x) { return x.FilterId === filt.Id; });
+                    if (a !== undefined)
+                        return a;
+                    _this.va.curtemplate.FilterValueContainers.push({ FilterId: filt.Id, Value: [] });
+                };
             }
             TemplatesController.prototype.buildVa = function () { return new TemplatesVA; };
             TemplatesController.prototype.init = function (data) {
+                //------------------- RequestMsgs
                 var _this = this;
+                this.request_msgHandlerSucces = function (msg) {
+                    _this.ShowNotification("Info", msg, { glicon: "info-sign", nclass: "info" }, 3000);
+                };
+                this.request_msgHandlerFail = function (msg) {
+                    _this.ShowNotification("Error", msg, { glicon: "ban-circle", nclass: "error" });
+                };
+                //------------------- Scope Init
                 this.scope.templCreate = function () { return _this.turnTemplateCreate(); };
                 this.scope.templEdit = function (templ) { return _this.turnTemplateEdit(templ); };
                 this.scope.setMFilt = function (mfilt) { return _this.setMFilter(mfilt); };
@@ -131,11 +159,21 @@ var AngularApp;
                 };
                 this.scope.templDelete = function (templ) { return _this.deleteTemplate(templ); };
                 this.scope.templatesTextDropped = function (x, y, z) { return _this.templatesTextDropped(x, y, z); };
+                this.scope.InputType = function (SQLtype) { return Controllers.inputTypeForSQLType(SQLtype); };
+                this.scope.GetFilterValueCont = function (filt) { return _this.getFilterValueCont(filt); };
+                this.scope.SwitchFilterValueContVal = function (filt, index) {
+                    var val = _this.getFilterValueCont(filt);
+                    if (!filt.allowMultipleSelection)
+                        val.Value = [];
+                    val.Value[index] = !val.Value[index];
+                };
+                this.scope.HasFilterValueContVal = function (filt, index) { return _this.getFilterValueCont(filt).Value[index] === true; };
                 this.scope.DEMO = function () {
                     _this.fetchtoarr(true, {
                         urlalias: "mockmsgs", params: { templateId: _this.va.curtemplate.Id }
                     }, _this.va.demomsgs, true);
                 };
+                //------------------- Inner Init
                 this.initUrlModuleFromRowObj(data.urls);
                 this.refetchTemplates();
                 this.refetchMfilters();

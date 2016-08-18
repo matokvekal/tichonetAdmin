@@ -18,6 +18,9 @@ Array.prototype.first = function (predicate) {
         return undefined;
     return this[i];
 };
+Array.prototype.any = function (predicate) {
+    return this.firstIndex(predicate) !== -1;
+};
 Array.prototype.remove = function (item) {
     var a = this;
     var i = a.indexOf(item);
@@ -25,5 +28,21 @@ Array.prototype.remove = function (item) {
         return false;
     a.splice(i, 1);
     return true;
+};
+Array.prototype.max = function (selector) {
+    var max = null;
+    this.forEach(function (ele) {
+        var a = selector(ele);
+        if (max === null || a > max)
+            max = a;
+    });
+    return max === null ? 0 : max;
+};
+Array.prototype.count = function (selector) {
+    var count = 0;
+    this.forEach(function (ele) {
+        count += selector(ele);
+    });
+    return count;
 };
 //# sourceMappingURL=ArrayExtensions.js.map

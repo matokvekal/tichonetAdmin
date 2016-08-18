@@ -83,8 +83,11 @@ namespace IdentitySample
                     "~/AngularApp/Libraries/TSNetLike/Collections/ArrayExtensions.js",
                     "~/AngularApp/Libraries/TSNetLike/Collections/Dictionary.js",
                     "~/AngularApp/Libraries/TSNetLike/Functors/Functors.js",
+                    //Models
+                    "~/AngularApp/SharedViewModels.js",
                 //Controllers 
                     "~/AngularApp/Controller.js",
+                    "~/AngularApp/Controllers/SHARED.js",
                     "~/AngularApp/Controllers/NotificationController.js",
                     "~/AngularApp/Controllers/FiltersController.js",
                     "~/AngularApp/Controllers/TemplatesController.js",

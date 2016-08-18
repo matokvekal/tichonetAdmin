@@ -131,6 +131,9 @@
     <Compile Include="MessagesContext\tblFilter.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
+    <Compile Include="MessagesContext\tblRecepientCard.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="MessagesContext\tblRecepientFilter.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>

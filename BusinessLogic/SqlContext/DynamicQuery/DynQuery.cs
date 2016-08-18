@@ -18,7 +18,6 @@ namespace Business_Logic.SqlContext.DynamicQuery {
     public class DynQuery {
         public int Id { get; set; }
 
-        //здесь четко привяжем к DbView
         public string DbViewBindedName { get; set; }
 
         public List<string> PossibleKeys { get; set; }
@@ -30,6 +29,11 @@ namespace Business_Logic.SqlContext.DynamicQuery {
             throw new NotImplementedException();
         }
     }
+
+    /*
+        DateTime myDateTime = DateTime.Now;
+        string sqlFormattedDate = myDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
+     */
 
     public class DynEntity {
         //public List<WildcardModel> FilledWildcards { get; set; }

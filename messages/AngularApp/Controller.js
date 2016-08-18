@@ -2,6 +2,54 @@ var AngularApp;
 (function (AngularApp) {
     var col = TSNetLike.Collections;
     var fnc = TSNetLike.Functors;
+    /**
+     This Class used for simultaneously running requests to server.
+     It runs it's callback only when all binded requests will be ended.
+     */
+    var ConcurentRequestHandler = (function () {
+        /**
+        callOnlyOnce = true, means if callback WAS CALLED already, it won't be called again.
+        callOnlyOnce = false, if all requests ended already, callback will be called, even if it was called already.
+        */
+        function ConcurentRequestHandler(callback, callOnlyOnce) {
+            var _this = this;
+            if (callOnlyOnce === void 0) { callOnlyOnce = true; }
+            this.callback = callback;
+            this.callOnlyOnce = callOnlyOnce;
+            this._registered = 0;
+            this.RegisterRequestStart = function () {
+                _this._registered++;
+            };
+            this.TryCall = function (response) {
+                _this._registered--;
+                if (_this._registered < 1) {
+                    if (_this.callOnlyOnce && _this._registered == 0)
+                        fnc.F(_this.callback, response);
+                    else if (!_this.callOnlyOnce)
+                        fnc.F(_this.callback, response);
+                }
+            };
+        }
+        return ConcurentRequestHandler;
+    }());
+    AngularApp.ConcurentRequestHandler = ConcurentRequestHandler;
+    function isEmptyOrSpaces(str) {
+        return str === null || str.match(/^ *$/) !== null;
+    }
+    AngularApp.isEmptyOrSpaces = isEmptyOrSpaces;
+    function IsConcurentRequestHandler(cb) {
+        return !(IsNullOrUndefined(cb) || IsNullOrUndefined(cb.TryCall));
+    }
+    function RunCallbackOrHandler(callback, response) {
+        //argument type check
+        if (IsNullOrUndefined(callback))
+            return;
+        var cb = callback;
+        if (IsConcurentRequestHandler(cb))
+            cb.TryCall(response);
+        else
+            fnc.F(cb, response);
+    }
     var FetchParams = (function () {
         function FetchParams() {
             var _this = this;
@@ -44,7 +92,7 @@ var AngularApp;
         return clone;
     }
     AngularApp.CloneShallow = CloneShallow;
-    /**this doesnt handles with recoursive references!*/
+    /**this doesnt handles recoursive references!*/
     function CloneDeep(original) {
         var clone = {};
         var _loop_1 = function(key) {
@@ -71,6 +119,16 @@ var AngularApp;
         return fullID.split(separator)[1];
     }
     AngularApp.ParseHtmlID = ParseHtmlID;
+    /**
+    Returns Array:
+    array[0] - prefix
+    array[1] - id
+     */
+    function ParseHtmlIDFull(fullID, separator) {
+        if (separator === void 0) { separator = "___::::___"; }
+        return fullID.split(separator);
+    }
+    AngularApp.ParseHtmlIDFull = ParseHtmlIDFull;
     function MakeHtmlID(prefix, id, separator) {
         if (separator === void 0) { separator = "___::::___"; }
         return prefix + separator + id;
@@ -126,48 +184,76 @@ var AngularApp;
                 var msg = new AngularApp.Controllers.NotifMessage(header, body, type, showdelay);
                 _this.rootScope.$broadcast(AngularApp.Controllers.NotificationController.MSGEVENT, { message: msg });
             };
+            this.request_msgHandlerSucces = null;
+            this.request_msgHandlerFail = null;
             this.request = function (holdTillResponse, data) {
+                if (IsConcurentRequestHandler(data.onSucces))
+                    data.onSucces.RegisterRequestStart();
+                if (IsConcurentRequestHandler(data.onFailed))
+                    data.onFailed.RegisterRequestStart();
                 if (holdTillResponse)
                     _this.turnHoldView(true);
                 fnc.F(data.before);
                 _this.http({ method: 'POST', url: _this.url(data.urlalias), data: data.params }).
                     then(function (response) {
-                    fnc.F(data.onSucces, response);
+                    if (_this.request_msgHandlerSucces !== null
+                        && !IsNullOrUndefined(response.data.message))
+                        _this.request_msgHandlerSucces(response.data.message);
+                    RunCallbackOrHandler(data.onSucces, response);
                     if (holdTillResponse)
                         _this.turnHoldView(false);
                 }, function (response) {
-                    fnc.F(data.onFailed, response);
+                    if (!IsNullOrUndefined(response.data)) {
+                        if (_this.request_msgHandlerFail !== null
+                            && !IsNullOrUndefined(response.data.message))
+                            _this.request_msgHandlerFail(response.data.message);
+                        RunCallbackOrHandler(data.onSucces, response);
+                    }
+                    else if (_this.request_msgHandlerFail !== null)
+                        _this.request_msgHandlerFail("no connection to server");
                     if (holdTillResponse)
                         _this.turnHoldView(false);
                 });
             };
             /**looks on response.data.items*/
             this.fetchtodict = function (holdTillResponse, data, container, keyValueSelector, clearContainer) {
+                if (IsConcurentRequestHandler(data.onSucces))
+                    data.onSucces.RegisterRequestStart();
+                if (IsConcurentRequestHandler(data.onFailed))
+                    data.onFailed.RegisterRequestStart();
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
                 data.onSucces = function (response) {
                     if (clearContainer)
                         container.clear();
                     container.addrange(response.data.items, keyValueSelector);
-                    fnc.F(successCB, response);
+                    RunCallbackOrHandler(successCB, response);
                 };
                 _this.request(holdTillResponse, data);
             };
             /**looks on response.data.items*/
             this.fetchtoarr = function (holdTillResponse, data, container, clearContainer) {
+                if (IsConcurentRequestHandler(data.onSucces))
+                    data.onSucces.RegisterRequestStart();
+                if (IsConcurentRequestHandler(data.onFailed))
+                    data.onFailed.RegisterRequestStart();
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
                 data.onSucces = function (response) {
                     if (clearContainer)
                         container.splice(0, container.length);
                     response.data.items.forEach(function (e) { return container.push(e); });
-                    fnc.F(successCB, response);
+                    RunCallbackOrHandler(successCB, response);
                 };
                 _this.request(holdTillResponse, data);
             };
             /**looks on response.data.items*/
             this.updatetoarr = function (holdTillResponse, data, container, equalityPredicate, pushnew) {
                 if (pushnew === void 0) { pushnew = true; }
+                if (IsConcurentRequestHandler(data.onSucces))
+                    data.onSucces.RegisterRequestStart();
+                if (IsConcurentRequestHandler(data.onFailed))
+                    data.onFailed.RegisterRequestStart();
                 var successCB = data.onSucces;
                 data = CloneRequestArgs(data);
                 data.onSucces = function (response) {
@@ -184,7 +270,7 @@ var AngularApp;
                         else if (pushnew)
                             container.push(e1);
                     });
-                    fnc.F(successCB, response);
+                    RunCallbackOrHandler(successCB, response);
                 };
                 _this.request(holdTillResponse, data);
             };

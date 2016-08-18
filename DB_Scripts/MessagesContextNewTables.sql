@@ -20,8 +20,10 @@ CREATE TABLE [dbo].[tblFilter] (
 
 	[Key]			NVARCHAR (MAX)	NOT NULL,
 	[Value]			NVARCHAR (MAX)	NOT NULL,
-	[Operator]		NVARCHAR (10)	NOT NULL,
+	[Operator]		NVARCHAR (MAX)	NOT NULL,
     [Type]          NVARCHAR (100) NOT NULL,
+	[allowUserInput]				BIT            NULL,
+    [allowMultipleSelection]		BIT            NULL,
 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
@@ -36,6 +38,19 @@ CREATE TABLE [dbo].[tblWildcard] (
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
+CREATE TABLE [dbo].[tblRecepientCard] (
+    [Id]			INT				IDENTITY (1, 1) NOT NULL,
+    [tblRecepientFilterId]			INT				NOT NULL,
+
+	[Name]			NVARCHAR (150)	NOT NULL,
+	
+	[NameKey]			NVARCHAR (MAX)	NOT NULL,
+	[EmailKey]			NVARCHAR (MAX)	NOT NULL,
+	[PhoneKey]			NVARCHAR (MAX)	NOT NULL,
+
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
 CREATE TABLE [dbo].[tblTemplate] (
     [Id]			INT				IDENTITY (1, 1) NOT NULL,
     [tblRecepientFilterId]			INT				NOT NULL,
@@ -45,6 +60,7 @@ CREATE TABLE [dbo].[tblTemplate] (
 	[IsSms]			BIT				NOT NULL, 
 	[MsgHeader]		NVARCHAR (500)	NULL,
 	[MsgBody]		NVARCHAR (MAX)	NULL,
+	[FilterValueContainersJSON] NVARCHAR (MAX) NULL,
 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );

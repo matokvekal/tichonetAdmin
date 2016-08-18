@@ -17,73 +17,20 @@ var AngularApp;
                 this.metafilters = [];
                 this.curmetafilter = null;
                 this.curmetafilterBaseTableName = function () {
-                    var t = FindById(_this.basetables, _this.curmetafilter.BaseTableId);
+                    var t = Controllers.FindById(_this.basetables, _this.curmetafilter.BaseTableId);
                     return t === undefined ? "" : t.Name;
                 };
                 this.wildcardCreator_ID = '__wildcardCreator';
                 this.filterCreator_ID = '__filterCreator';
+                this.reccardCreator_ID = '__recepientcardCreator';
+                this.reccardDropName = "___reccardDropName";
+                this.reccardDropEmail = "___reccardDropEmail";
+                this.reccardDropPhone = "___reccardDropPhone";
                 this.keyIdPrefix = '_tablekey';
                 this.keyDragClass = 'tablekey';
             }
             return MFiltersVA;
         }());
-        var BaseTableVM = (function () {
-            function BaseTableVM() {
-            }
-            return BaseTableVM;
-        }());
-        Controllers.BaseTableVM = BaseTableVM;
-        var MetaFilterVM = (function () {
-            function MetaFilterVM() {
-                this.filters = [];
-                this.wildcards = [];
-                this.Name = "New Filter";
-                this.BaseTableId = -1;
-                //this arrays used to check changes on server, after fetch there are empty
-                this.newfilters = [];
-                this.newwildcards = [];
-                this.removedfilters = [];
-                this.removedwildcards = [];
-                //local
-                //not sended ?
-                //TODO
-                //validate filter enitities, Invalid Filter can't be saved
-                this.Invalid = false;
-            }
-            return MetaFilterVM;
-        }());
-        Controllers.MetaFilterVM = MetaFilterVM;
-        var KeyVM = (function () {
-            function KeyVM() {
-            }
-            return KeyVM;
-        }());
-        Controllers.KeyVM = KeyVM;
-        var FilterVM = (function () {
-            function FilterVM() {
-                //local
-                this.Invalid = false;
-            }
-            return FilterVM;
-        }());
-        Controllers.FilterVM = FilterVM;
-        var WildcardVM = (function () {
-            function WildcardVM() {
-                this.Invalid = false;
-            }
-            return WildcardVM;
-        }());
-        Controllers.WildcardVM = WildcardVM;
-        var FiltOperator = (function () {
-            function FiltOperator() {
-            }
-            return FiltOperator;
-        }());
-        Controllers.FiltOperator = FiltOperator;
-        function FindById(arr, Id) {
-            return arr.first(function (x) { return x.Id === Id; });
-        }
-        Controllers.FindById = FindById;
         var MFiltersController = (function (_super) {
             __extends(MFiltersController, _super);
             function MFiltersController($rootScope, $scope, $http) {
@@ -99,19 +46,142 @@ var AngularApp;
                 this.setCurBaseTable = function (table) {
                     _this.va.curbasetable = table;
                     if (table !== null)
-                        _this.refetchPossibleKeys(table);
+                        _this.refetchPossibleKeysAndValidate(table);
                     else
                         _this.clearPossibleKeys();
                 };
+                //VALIDATION
                 this.validateEntities = function () {
-                    _this.va.curmetafilter.wildcards.forEach(function (wc) {
-                        return wc.Invalid = !_this.validateWithKeys(wc, function (item, key) { return key.name === item.Key; });
+                    var filt = _this.va.curmetafilter;
+                    var entitiesInvalid = false;
+                    filt.ValidationErrors = [];
+                    var itemNameInvalid = AngularApp.isEmptyOrSpaces(filt.Name);
+                    if (itemNameInvalid)
+                        filt.ValidationErrors.push("Recepient filter name cannot be empty");
+                    var noRecepients = filt.reccards.filter(function (x) { return !x.ng_ToDelete; }).length === 0;
+                    if (noRecepients)
+                        filt.ValidationErrors.push("Recepient filter should have at least one recepient card");
+                    filt.wildcards.forEach(function (x) {
+                        _this.validateWildcard(x);
+                        if (x.Invalid && !entitiesInvalid)
+                            entitiesInvalid = true;
                     });
-                    _this.va.curmetafilter.filters.forEach(function (wc) {
-                        return wc.Invalid = !_this.validateWithKeys(wc, function (item, key) { return key.name === item.Key && key.type === item.Type; });
+                    filt.filters.forEach(function (x) {
+                        _this.validateFilter(x);
+                        if (x.Invalid && !entitiesInvalid)
+                            entitiesInvalid = true;
                     });
+                    filt.reccards.forEach(function (x) {
+                        _this.validateReccard(x);
+                        if (x.Invalid && !entitiesInvalid)
+                            entitiesInvalid = true;
+                    });
+                    filt.Invalid = entitiesInvalid || itemNameInvalid || noRecepients;
                 };
-                this.refetchPossibleKeys = function (table) {
+                this.validateWildcard = function (item) {
+                    item.ValidationErrors = [];
+                    if (item.ng_ToDelete) {
+                        item.Invalid = false;
+                        return;
+                    }
+                    var itemNameInvalid = AngularApp.isEmptyOrSpaces(item.Name);
+                    if (itemNameInvalid)
+                        item.ValidationErrors.push("name cannot be empty");
+                    var codeEmpty = AngularApp.isEmptyOrSpaces(item._Code);
+                    if (codeEmpty)
+                        item.ValidationErrors.push("code cannot be empty");
+                    var keysInvalid = !_this.validateWithKeys(item, function (item, key) { return key.name === item.Key; });
+                    if (keysInvalid)
+                        item.ValidationErrors.push("base table has no such key [" + item.Key + "]");
+                    var codeDublicated = !_this.validateDublCodeWildcard(item);
+                    if (codeDublicated)
+                        item.ValidationErrors.push("wildcard code is not uniq: " + item.Code);
+                    item.Invalid = keysInvalid || itemNameInvalid || codeDublicated || codeEmpty;
+                };
+                this.validateDublCodeWildcard = function (wc) {
+                    var cards = _this.va.curmetafilter.wildcards;
+                    for (var i = 0; i < cards.length; i++) {
+                        if (cards[i].Code === wc.Code && cards[i] !== wc)
+                            return false;
+                    }
+                    return true;
+                };
+                this.validateReccard = function (item) {
+                    item.ValidationErrors = [];
+                    if (item.ng_ToDelete) {
+                        item.Invalid = false;
+                        return;
+                    }
+                    var itemNameInvalid = AngularApp.isEmptyOrSpaces(item.Name);
+                    if (itemNameInvalid)
+                        item.ValidationErrors.push("name cannot be empty");
+                    var someKeyIsEmpty = AngularApp.isEmptyOrSpaces(item.EmailKey) || AngularApp.isEmptyOrSpaces(item.NameKey) || AngularApp.isEmptyOrSpaces(item.PhoneKey);
+                    if (someKeyIsEmpty)
+                        item.ValidationErrors.push("recepient card can't have empty keys");
+                    var keysInvalid = false;
+                    if (!someKeyIsEmpty) {
+                        var mailInvalid = !_this.validateWithKeys(item, function (item, key) { return key.name === item.EmailKey; });
+                        if (mailInvalid)
+                            item.ValidationErrors.push("base table has no such key [" + item.EmailKey + "]");
+                        var nameInvalid = !_this.validateWithKeys(item, function (item, key) { return key.name === item.NameKey; });
+                        if (nameInvalid)
+                            item.ValidationErrors.push("base table has no such key [" + item.NameKey + "]");
+                        var phoneInvalid = !_this.validateWithKeys(item, function (item, key) { return key.name === item.PhoneKey; });
+                        if (phoneInvalid)
+                            item.ValidationErrors.push("base table has no such key [" + item.PhoneKey + "]");
+                        keysInvalid = mailInvalid || nameInvalid || phoneInvalid;
+                    }
+                    item.Invalid = keysInvalid || itemNameInvalid || someKeyIsEmpty;
+                };
+                this.validateFilter = function (item) {
+                    item.ValidationErrors = [];
+                    if (item.ng_ToDelete) {
+                        item.Invalid = false;
+                        return;
+                    }
+                    var keysInvalid = !_this.validateWithKeys(item, function (item, key) { return key.name === item.Key && key.type === item.Type; });
+                    if (keysInvalid)
+                        item.ValidationErrors.push("base table has no such key [" + item.Key + "] with type [" + item.Type + "]");
+                    item.Invalid = keysInvalid;
+                };
+                this.getMetaFilterValidationString = function (filt) {
+                    var output = "";
+                    var tmp;
+                    tmp = filt.ValidationErrors.join(";\n ");
+                    if (!AngularApp.isEmptyOrSpaces(tmp))
+                        output += tmp + ".\n";
+                    tmp = "";
+                    filt.reccards.forEach(function (x) { return tmp += _this.getValidationString(x, 'Recepient Card "' + x.Name + '"'); });
+                    if (!AngularApp.isEmptyOrSpaces(tmp))
+                        output += tmp + ".\n";
+                    tmp = "";
+                    filt.wildcards.forEach(function (x) { return output += _this.getValidationString(x, 'Wildcard "' + x.Name + '"'); });
+                    if (!AngularApp.isEmptyOrSpaces(tmp))
+                        output += tmp + ".\n";
+                    tmp = "";
+                    filt.filters.forEach(function (x) { return output += _this.getValidationString(x, 'Subfilter "' + x.Key + '"'); });
+                    if (!AngularApp.isEmptyOrSpaces(tmp))
+                        output += tmp + ".\n";
+                    return output;
+                };
+                this.getValidationString = function (item, name, addValid) {
+                    if (addValid === void 0) { addValid = false; }
+                    if (AngularApp.IsNullOrUndefined(item))
+                        throw new Error("can't get validation message from null or undefined");
+                    //it is metafilter silly type check
+                    if (!AngularApp.IsNullOrUndefined(item.BaseTableId))
+                        return _this.getMetaFilterValidationString(item);
+                    if (AngularApp.IsNullOrUndefined(item.ValidationErrors) || item.ValidationErrors.length === 0) {
+                        if (addValid)
+                            return name + " has no noticed validation errors";
+                        else
+                            return "";
+                    }
+                    var output = name + " has " + item.ValidationErrors.length + " errors: \n";
+                    output += item.ValidationErrors.join(";\n ");
+                    return output;
+                };
+                this.refetchPossibleKeysAndValidate = function (table) {
                     var cb = function () {
                         if (_this.va.curmetafilter !== null)
                             _this.validateEntities();
@@ -124,34 +194,45 @@ var AngularApp;
                 //MFilters i.e. MetaFilters i.e. RecepientFilters
                 this.turnMFilterCreate = function () {
                     _this.setCurBaseTable(null);
-                    _this.va.curmetafilter = new MetaFilterVM();
+                    _this.va.curmetafilter = new Controllers.MetaFilterVM();
                     _this.va.curmetafilter.Id = -1;
                     _this.va.showTableChoose = true;
                 };
                 this.turnMFilterEdit = function (mfilt) {
                     _this.va.showTableChoose = false;
-                    var table = FindById(_this.va.basetables, mfilt.BaseTableId);
+                    var table = Controllers.FindById(_this.va.basetables, mfilt.BaseTableId);
                     _this.setCurBaseTable(table);
-                    //TODO clone DEEP ?
                     _this.va.curmetafilter = AngularApp.CloneShallow(mfilt);
                     _this.va.curmetafilter.filters = [];
                     _this.va.curmetafilter.wildcards = [];
-                    _this.fetchtoarr(true, {
-                        urlalias: "getfilters",
-                        //todo this is a very bad : tblRecepientFilterId, avoid this, use convention approach at least
-                        params: new AngularApp.FetchParams().addFilt("tblRecepientFilterId", mfilt.Id),
-                        onSucces: function () { return _this.refetchPossibleKeys(table); }
-                    }, _this.va.curmetafilter.filters, true);
-                    _this.fetchtoarr(true, {
-                        urlalias: "getwildcards",
-                        params: new AngularApp.FetchParams().addFilt("tblRecepientFilterId", mfilt.Id),
-                        onSucces: function () { return _this.refetchPossibleKeys(table); }
-                    }, _this.va.curmetafilter.wildcards, true);
+                    _this.va.curmetafilter.reccards = [];
+                    //todo this is a bit bad : tblRecepientFilterId, avoid this, use convention approach at least
+                    var params = new AngularApp.FetchParams().addFilt("tblRecepientFilterId", mfilt.Id);
+                    var cb = new AngularApp.ConcurentRequestHandler(function () {
+                        _this.refetchPossibleKeysAndValidate(table);
+                        _this.va.curmetafilter.wildcards.forEach(function (wc) {
+                            wc._Code = wc.Code.substr(1, wc.Code.length - 2);
+                        });
+                        _this.va.curmetafilter.filters.forEach(function (ele) {
+                            if (!_this.typeOperators.cont(ele.Type))
+                                _this.fetchTypeOperators(ele.Type);
+                            Controllers.formatValsOps(ele.ValsOps, ele.Type);
+                        });
+                    }, true);
+                    _this.fetchtoarr(true, { urlalias: "getfilters", params: params, onSucces: cb }, _this.va.curmetafilter.filters, true);
+                    _this.fetchtoarr(true, { urlalias: "getwildcards", params: params, onSucces: cb }, _this.va.curmetafilter.wildcards, true);
+                    _this.fetchtoarr(true, { urlalias: "getreccards", params: params, onSucces: cb }, _this.va.curmetafilter.reccards, true);
                 };
                 this.closeMFiltEditor = function () {
                     _this.va.curmetafilter = null;
                 };
                 this.saveOrUpdateCurMFilter = function () {
+                    _this.validateEntities();
+                    if (_this.va.curmetafilter.Invalid) {
+                        var erorrs = _this.getValidationString(_this.va.curmetafilter, _this.va.curmetafilter.Name);
+                        _this.ShowNotification("Validation Errors", "you should fix errors first: \n" + erorrs, { glicon: "ban-circle", nclass: "error" });
+                        return;
+                    }
                     var mode = _this.va.curmetafilter.Id === -1 ? "cr" : "up";
                     _this.request(true, {
                         urlalias: "mngmfilter",
@@ -165,25 +246,66 @@ var AngularApp;
                         }
                     });
                 };
+                //Common for sub-items: (wildcards, recepient cards, filters)
+                this.RemoveItem = function (item) {
+                    item.ng_ToDelete = true;
+                };
+                this.RestoreItem = function (item) {
+                    item.ng_ToDelete = false;
+                };
+                //RecepientCards
+                this.newRecCard = function (key) {
+                    if (AngularApp.IsNullOrUndefined(_this.va.curmetafilter.filters))
+                        _this.va.curmetafilter.reccards = [];
+                    var id = _this.va.curmetafilter.reccards.max(function (x) { return x.Id; }) + 1;
+                    var rc = {
+                        Id: id,
+                        Name: key.name,
+                        NameKey: key.name,
+                        EmailKey: "",
+                        PhoneKey: "",
+                        RecepientFilterId: _this.va.curmetafilter.Id,
+                        Invalid: false,
+                        ValidationErrors: [],
+                        ng_JustCreated: true,
+                        ng_ToDelete: false
+                    };
+                    _this.va.curmetafilter.reccards.unshift(rc);
+                };
+                this.RecCardAddKey = function (card, key, reccardField) {
+                    switch (reccardField) {
+                        case _this.va.reccardDropName:
+                            card.NameKey = key.name;
+                            break;
+                        case _this.va.reccardDropEmail:
+                            card.EmailKey = key.name;
+                            break;
+                        case _this.va.reccardDropPhone:
+                            card.PhoneKey = key.name;
+                            break;
+                    }
+                };
                 //Wildcards
                 this.newWildCard = function (key) {
-                    var wc = new WildcardVM();
-                    wc.Id = -1;
-                    wc.Name = key.name;
-                    wc.Key = key.name;
-                    wc.Code = "{CODE}";
-                    wc.RecepientFilterId = _this.va.curmetafilter.Id;
-                    if (AngularApp.IsNullOrUndefined(_this.va.curmetafilter.newwildcards))
-                        _this.va.curmetafilter.newwildcards = [];
-                    _this.va.curmetafilter.newwildcards.push(wc);
-                    _this.va.curmetafilter.wildcards.push(wc);
-                };
-                this.deleteWildCard = function (wc) {
-                    if (wc.Id != -1)
-                        _this.va.curmetafilter.removedwildcards.push(wc);
-                    else
-                        _this.va.curmetafilter.newwildcards.remove(wc);
-                    _this.va.curmetafilter.wildcards.remove(wc);
+                    var id = _this.va.curmetafilter.wildcards.max(function (x) { return x.Id; }) + 1;
+                    var uniqcode = key.name;
+                    var wc = {
+                        Id: id,
+                        Name: key.name,
+                        Key: key.name,
+                        Code: "{" + uniqcode + "}",
+                        RecepientFilterId: _this.va.curmetafilter.Id,
+                        ng_JustCreated: true,
+                        ng_ToDelete: false,
+                        _Code: uniqcode,
+                        Invalid: false,
+                        ValidationErrors: [],
+                        FilterValueContainers: []
+                    };
+                    if (AngularApp.IsNullOrUndefined(_this.va.curmetafilter.wildcards))
+                        _this.va.curmetafilter.wildcards = [];
+                    _this.va.curmetafilter.wildcards.unshift(wc);
+                    _this.validateWildcard(wc);
                 };
                 this.updateWildCardCode = function (wc) {
                     wc.Code = "{" + wc._Code + "}";
@@ -209,80 +331,52 @@ var AngularApp;
                     var filt = {
                         Id: -1,
                         Key: key.name,
-                        Operator: "=",
                         RecepientFilterId: _this.va.curmetafilter.Id,
-                        Value: "",
+                        //Operator: ["="],
+                        //Value: [""],
+                        ValsOps: [new Controllers.ValOp()],
                         Type: key.type,
-                        Invalid: false
+                        Invalid: false,
+                        ValidationErrors: [],
+                        ng_JustCreated: true,
+                        ng_ToDelete: false,
+                        allowMultipleSelection: false,
+                        allowUserInput: false
                     };
-                    if (AngularApp.IsNullOrUndefined(_this.va.curmetafilter.newfilters))
-                        _this.va.curmetafilter.newfilters = [];
-                    _this.va.curmetafilter.newfilters.push(filt);
-                    _this.va.curmetafilter.filters.push(filt);
-                };
-                this.deleteFilter = function (filt) {
-                    if (filt.Id != -1)
-                        _this.va.curmetafilter.removedfilters.push(filt);
-                    else
-                        _this.va.curmetafilter.newfilters.remove(filt);
-                    _this.va.curmetafilter.filters.remove(filt);
-                };
-                //Styling, others
-                this.glyphiconforSQLTYPE = function (typeName) {
-                    switch (typeName) {
-                        case "int":
-                            return "glyphicon glyphicon-certificate";
-                        case "nvarchar":
-                            return "glyphicon glyphicon-font";
-                        case "datetime":
-                        case "date":
-                            return "glyphicon glyphicon-calendar";
-                        case "time":
-                            return "glyphicon glyphicon-time";
-                        case "bit":
-                            return "glyphicon glyphicon-check";
-                    }
-                    return "glyphicon glyphicon-briefcase";
-                };
-                this.inputTypeForSQLType = function (typeName) {
-                    switch (typeName) {
-                        case "int":
-                            return "number";
-                        case "nvarchar":
-                            return "text";
-                        case "datetime":
-                        case "date":
-                            return "datetime-local";
-                        case "time":
-                            return "time";
-                        case "bit":
-                            return "checkbox";
-                    }
-                    return "text";
+                    if (AngularApp.IsNullOrUndefined(_this.va.curmetafilter.filters))
+                        _this.va.curmetafilter.filters = [];
+                    _this.va.curmetafilter.filters.unshift(filt);
                 };
             }
             MFiltersController.prototype.buildVa = function () { return new MFiltersVA; };
             MFiltersController.prototype.init = function (data) {
-                //------------------- Scope Init
                 var _this = this;
+                //------------------- RequestMsgs
+                this.request_msgHandlerSucces = function (msg) {
+                    _this.ShowNotification("Info", msg, { glicon: "info-sign", nclass: "info" }, 3000);
+                };
+                this.request_msgHandlerFail = function (msg) {
+                    _this.ShowNotification("Error", msg, { glicon: "ban-circle", nclass: "error" });
+                };
+                //------------------- Scope Init
                 this.scope.NewMFilt = function () { return _this.turnMFilterCreate(); };
                 this.scope.EditMFilt = function (mfilt) { return _this.turnMFilterEdit(mfilt); };
                 this.scope.RemoveMfilt = function (mfilt) { return alert("NOT IMPLEMENTED =/"); };
                 this.scope.CloseEditor = function () { return _this.closeMFiltEditor(); };
-                this.scope.TypeToIcon = function (type) { return _this.glyphiconforSQLTYPE(type); };
-                this.scope.InputType = function (type) { return _this.inputTypeForSQLType(type); };
+                this.scope.TypeToIcon = function (type) { return Controllers.glyphiconforSQLTYPE(type); };
+                this.scope.InputType = function (type) { return Controllers.inputTypeForSQLType(type); };
                 this.scope.SetCurBaseTable = function (t) { return _this.setCurBaseTable(t); };
                 this.scope.ShowTableChoose = function () { return _this.va.showTableChoose = true; };
                 this.scope.SetCurTableToCurMFilt = function () {
                     _this.va.curmetafilter.BaseTableId = _this.va.curbasetable.Id;
-                    var table = FindById(_this.va.basetables, _this.va.curmetafilter.BaseTableId);
-                    _this.refetchPossibleKeys(table);
+                    var table = Controllers.FindById(_this.va.basetables, _this.va.curmetafilter.BaseTableId);
+                    _this.refetchPossibleKeysAndValidate(table);
                     _this.va.showTableChoose = false;
                 };
                 this.scope.SetCurTableFromCurMFilt = function () {
-                    var table = FindById(_this.va.basetables, _this.va.curmetafilter.BaseTableId);
+                    var table = Controllers.FindById(_this.va.basetables, _this.va.curmetafilter.BaseTableId);
                     _this.va.curbasetable = table === undefined ? null : table;
-                    _this.refetchPossibleKeys(table);
+                    _this.refetchPossibleKeysAndValidate(table);
                     _this.va.showTableChoose = false;
                 };
                 this.scope.IsCurMFiltHasTable = function (table) {
@@ -299,6 +393,26 @@ var AngularApp;
                     var key = _this.va.possiblekeys.first(function (x) { return x.name === keyname; });
                     _this.newFilter(key);
                 };
+                this.scope.NewRecardDrop = function (dragID, dropID, dragClass) {
+                    if (dragClass != _this.va.keyDragClass)
+                        return;
+                    var keyname = AngularApp.ParseHtmlID(dragID);
+                    var key = _this.va.possiblekeys.first(function (x) { return x.name === keyname; });
+                    _this.newRecCard(key);
+                };
+                this.scope.RecardDropKey = function (dragID, dropID, dragClass) {
+                    if (dragClass != _this.va.keyDragClass)
+                        return;
+                    var keyname = AngularApp.ParseHtmlID(dragID);
+                    var key = _this.va.possiblekeys.first(function (x) { return x.name === keyname; });
+                    var args = AngularApp.ParseHtmlIDFull(dropID);
+                    var cardId = parseInt(args[1]);
+                    var card = _this.va.curmetafilter.reccards.first(function (x) { return x.Id === cardId; });
+                    if (card === null)
+                        return;
+                    _this.RecCardAddKey(card, key, args[0]);
+                    _this.validateReccard(card);
+                };
                 this.scope.NewWildcardDrop = function (dragID, dropID, dragClass) {
                     if (dragClass != _this.va.keyDragClass)
                         return;
@@ -308,9 +422,31 @@ var AngularApp;
                 };
                 this.scope.GetTypeOperators = function (type) { return _this.typeOperators.take(type); };
                 this.scope.GetTypeOperatorsNames = function (type) { return _this.typeOperatorsSQL.take(type); };
-                this.scope.RemoveFilter = function (filter) { return _this.deleteFilter(filter); };
-                this.scope.RemoveWildcard = function (wc) { return _this.deleteWildCard(wc); };
-                this.scope.WildCardUpdateCode = function (wc) { return _this.updateWildCardCode(wc); };
+                this.scope.ValidateItem = function (item, type) {
+                    switch (type) {
+                        case "wildcard":
+                            _this.validateWildcard(item);
+                            break;
+                        case "reccard":
+                            _this.validateReccard(item);
+                            break;
+                        case "filter":
+                            _this.validateFilter(item);
+                    }
+                };
+                this.scope.GetValidationInfo = function (item) { return _this.getValidationString(item, "this"); };
+                this.scope.RemoveItem = function (item) { return _this.RemoveItem(item); };
+                this.scope.RestoreItem = function (item) { return _this.RestoreItem(item); };
+                this.scope.DeleteFiltValue = function (filter, index) {
+                    filter.ValsOps.splice(index, 1);
+                };
+                this.scope.AddFiltValue = function (filter) {
+                    filter.ValsOps.push(new Controllers.ValOp());
+                };
+                this.scope.WildCardUpdateCode = function (wc) {
+                    _this.updateWildCardCode(wc);
+                    _this.va.curmetafilter.wildcards.forEach(function (x) { return _this.validateWildcard(x); });
+                };
                 this.scope.SaveCurMFilt = function () { return _this.saveOrUpdateCurMFilter(); };
                 //------------------- Inner Init
                 this.initUrlModuleFromRowObj(data.urls);

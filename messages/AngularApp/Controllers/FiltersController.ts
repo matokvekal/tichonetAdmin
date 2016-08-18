@@ -17,82 +17,15 @@
 
         wildcardCreator_ID = '__wildcardCreator'
         filterCreator_ID = '__filterCreator'
+        reccardCreator_ID = '__recepientcardCreator'
+
+        reccardDropName = "___reccardDropName"
+        reccardDropEmail = "___reccardDropEmail"
+        reccardDropPhone = "___reccardDropPhone"
+
 
         keyIdPrefix = '_tablekey'
         keyDragClass = 'tablekey'
-    }
-
-    export interface IIndeficated {
-        Id:number
-    }
-
-    export class BaseTableVM implements IIndeficated {
-        Id: number
-        Name: string
-        ReferencedTableName: string
-    }
-
-    export class MetaFilterVM implements IIndeficated {
-        Id: number
-        filters: FilterVM[] = []
-        wildcards: WildcardVM[] = []
-
-        Name: string = "New Filter"
-        BaseTableId: number = -1
-
-        //this arrays used to check changes on server, after fetch there are empty
-        newfilters: FilterVM[] = []
-        newwildcards: WildcardVM[] = []
-
-        removedfilters: FilterVM[] = []
-        removedwildcards: WildcardVM[] = []
-        //local
-        //not sended ?
-
-        //TODO
-        //validate filter enitities, Invalid Filter can't be saved
-        Invalid = false
-    }
-
-    export class KeyVM {
-        name: string
-        type: string
-    }
-
-    export class FilterVM implements IIndeficated {
-        Id: number
-        RecepientFilterId: number
-        Key: string
-        Value: string
-        Operator: string
-        Type: string
-
-        //local
-        Invalid = false
-    }
-
-    export class WildcardVM {
-        Id: number
-        RecepientFilterId: number
-        Name: string
-        Code: string
-        Key: string
-
-        //local
-        _Code: string
-
-        Invalid = false
-    }
-
-    export class FiltOperator {
-        SQLString: string
-        ShortString: string
-        Operator: number
-        RawInt: number
-    }
-
-    export function FindById<T extends IIndeficated>(arr: T[], Id: number) {
-        return arr.first(x => x.Id === Id)
     }
 
     export class MFiltersController extends Controller<MFiltersVA> {
@@ -101,6 +34,14 @@
         }
         buildVa(): MFiltersVA { return new MFiltersVA }
         init(data): void {
+
+            //------------------- RequestMsgs
+            this.request_msgHandlerSucces = (msg) => {
+                this.ShowNotification("Info", msg, { glicon: "info-sign", nclass: "info" }, 3000)
+            }
+            this.request_msgHandlerFail = (msg) => {
+                this.ShowNotification("Error", msg, { glicon:"ban-circle",nclass:"error"})
+            }
 
             //------------------- Scope Init
 
@@ -112,9 +53,9 @@
 
             this.scope.CloseEditor = () => this.closeMFiltEditor()
 
-            this.scope.TypeToIcon = (type: string) => this.glyphiconforSQLTYPE(type)
+            this.scope.TypeToIcon = (type: string) => glyphiconforSQLTYPE(type)
 
-            this.scope.InputType = (type: string) => this.inputTypeForSQLType(type)
+            this.scope.InputType = (type: string) => inputTypeForSQLType(type)
 
             this.scope.SetCurBaseTable = (t: BaseTableVM) => this.setCurBaseTable(t)
 
@@ -123,14 +64,14 @@
             this.scope.SetCurTableToCurMFilt = () => {
                 this.va.curmetafilter.BaseTableId = this.va.curbasetable.Id
                 let table = FindById(this.va.basetables, this.va.curmetafilter.BaseTableId)
-                this.refetchPossibleKeys(table)
+                this.refetchPossibleKeysAndValidate(table)
                 this.va.showTableChoose = false
             }
 
             this.scope.SetCurTableFromCurMFilt = () => {
                 let table = FindById(this.va.basetables, this.va.curmetafilter.BaseTableId)
                 this.va.curbasetable = table === undefined ? null : table
-                this.refetchPossibleKeys(table)
+                this.refetchPossibleKeysAndValidate(table)
                 this.va.showTableChoose = false
             }
 
@@ -151,6 +92,27 @@
                 this.newFilter(key)
             }
 
+            this.scope.NewRecardDrop = (dragID: string, dropID: string, dragClass: string) => {
+                if (dragClass != this.va.keyDragClass) return
+                let keyname = ParseHtmlID(dragID)
+                let key = this.va.possiblekeys.first(x => x.name === keyname)
+                this.newRecCard(key)
+            }
+
+            this.scope.RecardDropKey = (dragID: string, dropID: string, dragClass: string) => {
+                if (dragClass != this.va.keyDragClass) return
+                let keyname = ParseHtmlID(dragID)
+                let key = this.va.possiblekeys.first(x => x.name === keyname)
+
+                let args = ParseHtmlIDFull(dropID)
+                let cardId = parseInt( args[1] )
+                let card = this.va.curmetafilter.reccards.first(x => x.Id === cardId)
+                if (card === null) return
+
+                this.RecCardAddKey(card, key, args[0])
+                this.validateReccard(card)
+            }
+
             this.scope.NewWildcardDrop = (dragID: string, dropID: string, dragClass: string) => {
                 if (dragClass != this.va.keyDragClass) return
                 let keyname = ParseHtmlID(dragID)
@@ -161,10 +123,36 @@
             this.scope.GetTypeOperators = (type: string) => this.typeOperators.take(type)
             this.scope.GetTypeOperatorsNames = (type: string) => this.typeOperatorsSQL.take(type)
 
-            this.scope.RemoveFilter = (filter: FilterVM) => this.deleteFilter(filter)
-            this.scope.RemoveWildcard = (wc: WildcardVM) => this.deleteWildCard(wc)
+            this.scope.ValidateItem = (item, type: string) => {
+                switch (type) {
+                    case "wildcard":
+                        this.validateWildcard(item)
+                        break
+                    case "reccard":
+                        this.validateReccard(item)
+                        break
+                    case "filter":
+                        this.validateFilter(item)
+                }
+            }
 
-            this.scope.WildCardUpdateCode = (wc: WildcardVM) => this.updateWildCardCode(wc)     
+            this.scope.GetValidationInfo = (item: IValidable) => this.getValidationString(item,"this")
+
+            this.scope.RemoveItem = (item: INgViewModel) => this.RemoveItem(item)
+            this.scope.RestoreItem = (item: INgViewModel) => this.RestoreItem(item)
+
+            this.scope.DeleteFiltValue = (filter: FilterVM, index: number) => {
+                filter.ValsOps.splice(index, 1)
+            }
+
+            this.scope.AddFiltValue = (filter: FilterVM) => {
+                filter.ValsOps.push(new ValOp())
+            }
+
+            this.scope.WildCardUpdateCode = (wc: WildcardVM) => {
+                this.updateWildCardCode(wc)
+                this.va.curmetafilter.wildcards.forEach(x => this.validateWildcard(x))
+            }
 
             this.scope.SaveCurMFilt = () => this.saveOrUpdateCurMFilter()
 
@@ -188,21 +176,171 @@
         setCurBaseTable = (table: BaseTableVM) => {
             this.va.curbasetable = table
             if (table !== null)
-                this.refetchPossibleKeys(table)
+                this.refetchPossibleKeysAndValidate(table)
             else
                 this.clearPossibleKeys()
         }
 
+        //VALIDATION
+
         validateEntities = () => {
-            this.va.curmetafilter.wildcards.forEach(wc =>
-                wc.Invalid = !this.validateWithKeys(wc, (item, key) => key.name === item.Key)
-            )
-            this.va.curmetafilter.filters.forEach(wc =>
-                wc.Invalid = !this.validateWithKeys(wc, (item, key) => key.name === item.Key && key.type === item.Type)
-            )
+            let filt = this.va.curmetafilter
+            let entitiesInvalid = false
+            filt.ValidationErrors = []
+            let itemNameInvalid = isEmptyOrSpaces(filt.Name)
+            if (itemNameInvalid)
+                filt.ValidationErrors.push("Recepient filter name cannot be empty");
+            let noRecepients = filt.reccards.filter(x => !x.ng_ToDelete).length === 0
+            if (noRecepients)
+                filt.ValidationErrors.push("Recepient filter should have at least one recepient card");
+            filt.wildcards.forEach(x => {
+                this.validateWildcard(x)
+                if (x.Invalid && !entitiesInvalid)
+                    entitiesInvalid = true
+            })
+            filt.filters.forEach(x => {
+                this.validateFilter(x)
+                if (x.Invalid && !entitiesInvalid)
+                    entitiesInvalid = true
+            })
+            filt.reccards.forEach(x => {
+                this.validateReccard(x)
+                if (x.Invalid && !entitiesInvalid)
+                    entitiesInvalid = true
+            })
+            filt.Invalid = entitiesInvalid || itemNameInvalid || noRecepients
         }
 
-        refetchPossibleKeys = (table: BaseTableVM) => {
+        validateWildcard = (item: WildcardVM) => {
+            item.ValidationErrors = []
+            if (item.ng_ToDelete) {
+                item.Invalid = false
+                return
+            }
+                
+            let itemNameInvalid = isEmptyOrSpaces(item.Name)
+            if (itemNameInvalid)
+                item.ValidationErrors.push("name cannot be empty");
+            let codeEmpty = isEmptyOrSpaces(item._Code)
+            if (codeEmpty)
+                item.ValidationErrors.push("code cannot be empty");
+            let keysInvalid = !this.validateWithKeys(item, (item, key) => key.name === item.Key)
+            if (keysInvalid)
+                item.ValidationErrors.push("base table has no such key [" + item.Key + "]");
+            let codeDublicated = !this.validateDublCodeWildcard(item)
+            if (codeDublicated)
+                item.ValidationErrors.push("wildcard code is not uniq: " + item.Code);
+            item.Invalid = keysInvalid || itemNameInvalid || codeDublicated || codeEmpty
+        }
+
+        validateDublCodeWildcard = (wc: WildcardVM) => {
+            let cards = this.va.curmetafilter.wildcards
+            for (let i = 0; i < cards.length; i++) {
+                if (cards[i].Code === wc.Code && cards[i] !== wc)
+                    return false
+            }
+            return true;
+        }
+
+        validateReccard = (item: RecepientCardVM) => {
+            item.ValidationErrors = []
+
+            if (item.ng_ToDelete) {
+                item.Invalid = false
+                return
+            }
+
+            let itemNameInvalid = isEmptyOrSpaces(item.Name)
+            if (itemNameInvalid)
+                item.ValidationErrors.push("name cannot be empty");
+            let someKeyIsEmpty = isEmptyOrSpaces(item.EmailKey) || isEmptyOrSpaces(item.NameKey) || isEmptyOrSpaces(item.PhoneKey)
+            if (someKeyIsEmpty)
+                item.ValidationErrors.push("recepient card can't have empty keys");
+
+            let keysInvalid = false
+            if (!someKeyIsEmpty) {
+                let mailInvalid = !this.validateWithKeys(item, (item, key) => key.name === item.EmailKey)
+                if (mailInvalid)
+                    item.ValidationErrors.push("base table has no such key [" + item.EmailKey + "]");
+                let nameInvalid = !this.validateWithKeys(item, (item, key) => key.name === item.NameKey)
+                if (nameInvalid)
+                    item.ValidationErrors.push("base table has no such key [" + item.NameKey + "]");
+                let phoneInvalid = !this.validateWithKeys(item, (item, key) => key.name === item.PhoneKey)
+                if (phoneInvalid)
+                    item.ValidationErrors.push("base table has no such key [" + item.PhoneKey + "]");
+                keysInvalid = mailInvalid || nameInvalid || phoneInvalid
+            }
+            item.Invalid = keysInvalid || itemNameInvalid || someKeyIsEmpty
+        }
+
+        validateFilter = (item: FilterVM) => {
+            item.ValidationErrors = []
+
+            if (item.ng_ToDelete) {
+                item.Invalid = false
+                return
+            }
+
+            let keysInvalid = !this.validateWithKeys(item, (item, key) => key.name === item.Key && key.type === item.Type)
+            if (keysInvalid)
+                item.ValidationErrors.push("base table has no such key [" + item.Key + "] with type [" + item.Type + "]");
+
+            item.Invalid = keysInvalid
+        }
+
+        validateWithKeys<T>(item: T, validator: (item: T, key: KeyVM) => boolean): boolean {
+            for (let i = 0; i < this.va.possiblekeys.length; i++) {
+                if (validator(item, this.va.possiblekeys[i]))
+                    return true
+            }
+            return false
+        }
+
+        getMetaFilterValidationString = (filt: MetaFilterVM) => {
+            let output = ""
+            let tmp: string
+            tmp = filt.ValidationErrors.join(";\n ")
+            if (!isEmptyOrSpaces(tmp))
+                output += tmp + ".\n"
+
+            tmp = ""
+            filt.reccards.forEach(x => tmp += this.getValidationString(x, 'Recepient Card "' + x.Name + '"'))
+            if (!isEmptyOrSpaces(tmp))
+                output += tmp + ".\n"
+
+            tmp = ""
+            filt.wildcards.forEach(x => output += this.getValidationString(x, 'Wildcard "' + x.Name + '"'))
+            if (!isEmptyOrSpaces(tmp))
+                output += tmp + ".\n"
+
+            tmp = ""
+            filt.filters.forEach(x => output += this.getValidationString(x, 'Subfilter "' + x.Key + '"'))
+            if (!isEmptyOrSpaces(tmp))
+                output += tmp + ".\n"
+            return output
+        }
+
+        getValidationString = (item: IValidable, name: string, addValid = false) => {
+            if (IsNullOrUndefined(item))
+                throw new Error("can't get validation message from null or undefined")
+
+            //it is metafilter silly type check
+            if (!IsNullOrUndefined((item as MetaFilterVM).BaseTableId))
+                return this.getMetaFilterValidationString(item as MetaFilterVM)
+
+            if (IsNullOrUndefined(item.ValidationErrors) || item.ValidationErrors.length === 0){
+                if (addValid) 
+                    return name + " has no noticed validation errors"
+                else 
+                    return ""
+            }
+
+            let output = name + " has " + item.ValidationErrors.length + " errors: \n"
+            output += item.ValidationErrors.join(";\n ")
+            return output
+        }
+
+        refetchPossibleKeysAndValidate = (table: BaseTableVM) => {
             let cb = () => {
                 if (this.va.curmetafilter !== null)
                     this.validateEntities()
@@ -229,33 +367,49 @@
             let table = FindById(this.va.basetables, mfilt.BaseTableId)
             this.setCurBaseTable(table)
 
-            //TODO clone DEEP ?
             this.va.curmetafilter = CloneShallow(mfilt)
             this.va.curmetafilter.filters = []
             this.va.curmetafilter.wildcards = []
+            this.va.curmetafilter.reccards = []
 
-            this.fetchtoarr(true,
-                {
-                    urlalias: "getfilters",
-                    //todo this is a very bad : tblRecepientFilterId, avoid this, use convention approach at least
-                    params: new FetchParams().addFilt("tblRecepientFilterId", mfilt.Id),
-                    onSucces: () => this.refetchPossibleKeys(table)
-                },
+            //todo this is a bit bad : tblRecepientFilterId, avoid this, use convention approach at least
+            let params = new FetchParams().addFilt("tblRecepientFilterId", mfilt.Id)
+            let cb = new ConcurentRequestHandler(() => {
+                this.refetchPossibleKeysAndValidate(table)
+                this.va.curmetafilter.wildcards.forEach(wc => {
+                    wc._Code = wc.Code.substr(1,wc.Code.length-2)
+                })
+                this.va.curmetafilter.filters.forEach(ele => {
+                    if (!this.typeOperators.cont(ele.Type))
+                        this.fetchTypeOperators(ele.Type)
+                    formatValsOps(ele.ValsOps,ele.Type)
+                })
+            }, true)
+
+            this.fetchtoarr(true, { urlalias: "getfilters", params: params, onSucces: cb },
                 this.va.curmetafilter.filters, true);
-            this.fetchtoarr(true,
-                {
-                    urlalias: "getwildcards",
-                    params: new FetchParams().addFilt("tblRecepientFilterId", mfilt.Id),
-                    onSucces: () => this.refetchPossibleKeys(table)
-                },
+            
+            this.fetchtoarr(true, { urlalias: "getwildcards", params: params, onSucces: cb },
                 this.va.curmetafilter.wildcards, true);
+
+            this.fetchtoarr(true, { urlalias: "getreccards", params: params, onSucces: cb },
+                this.va.curmetafilter.reccards, true);
         }
+
+
 
         closeMFiltEditor = () => {
             this.va.curmetafilter = null
         }
 
         saveOrUpdateCurMFilter = () => {
+            this.validateEntities()
+            if (this.va.curmetafilter.Invalid) {
+                let erorrs = this.getValidationString(this.va.curmetafilter, this.va.curmetafilter.Name)
+                this.ShowNotification("Validation Errors", "you should fix errors first: \n" + erorrs, {glicon:"ban-circle",nclass:"error"})
+                return
+            }
+
             let mode = this.va.curmetafilter.Id === -1 ? "cr" : "up"
             this.request(true, {
                 urlalias: "mngmfilter",
@@ -270,27 +424,72 @@
             })
         }
 
+        //Common for sub-items: (wildcards, recepient cards, filters)
+
+        RemoveItem = (item: INgViewModel) => {
+            item.ng_ToDelete = true;
+        }
+        RestoreItem = (item: INgViewModel) => {
+            item.ng_ToDelete = false;
+        }
+
+        //RecepientCards
+
+        newRecCard = (key: KeyVM) => {
+            if (IsNullOrUndefined(this.va.curmetafilter.filters))
+                this.va.curmetafilter.reccards = []
+            let id = this.va.curmetafilter.reccards.max(x => x.Id) + 1
+            let rc: RecepientCardVM = {
+                Id: id,
+                Name: key.name,
+                NameKey: key.name,
+                EmailKey: "",
+                PhoneKey: "",
+                RecepientFilterId: this.va.curmetafilter.Id,
+                Invalid: false,
+                ValidationErrors: [],
+                ng_JustCreated: true,
+                ng_ToDelete: false
+            }
+            this.va.curmetafilter.reccards.unshift(rc)
+        }
+
+        RecCardAddKey = (card: RecepientCardVM, key: KeyVM, reccardField:string) => {
+            switch (reccardField) {
+                case this.va.reccardDropName:
+                    card.NameKey = key.name
+                    break
+                case this.va.reccardDropEmail:
+                    card.EmailKey = key.name
+                    break
+                case this.va.reccardDropPhone:
+                    card.PhoneKey = key.name
+                    break
+            }
+        }
+
         //Wildcards
 
         newWildCard = (key: KeyVM) => {
-            let wc: WildcardVM = new WildcardVM()
-            wc.Id = -1
-            wc.Name = key.name
-            wc.Key = key.name
-            wc.Code = "{CODE}"
-            wc.RecepientFilterId = this.va.curmetafilter.Id
-            if (IsNullOrUndefined( this.va.curmetafilter.newwildcards) )
-                this.va.curmetafilter.newwildcards = []
-            this.va.curmetafilter.newwildcards.push(wc)
-            this.va.curmetafilter.wildcards.push(wc)
-        }
-
-        deleteWildCard = (wc: WildcardVM) => {
-            if (wc.Id != -1)
-                this.va.curmetafilter.removedwildcards.push(wc)
-            else
-                this.va.curmetafilter.newwildcards.remove(wc)
-            this.va.curmetafilter.wildcards.remove(wc)
+            let id = this.va.curmetafilter.wildcards.max(x => x.Id) + 1
+            let uniqcode = key.name
+            let wc: WildcardVM = {
+                Id: id,
+                Name: key.name,
+                Key: key.name,
+                Code: "{"+uniqcode+"}",
+                RecepientFilterId: this.va.curmetafilter.Id,
+                ng_JustCreated: true,
+                ng_ToDelete: false,
+                _Code: uniqcode,
+                Invalid: false,
+                ValidationErrors: [],
+                FilterValueContainers: []
+            }
+            if (IsNullOrUndefined(this.va.curmetafilter.wildcards))
+                this.va.curmetafilter.wildcards = []
+            this.va.curmetafilter.wildcards.unshift(wc)
+            this.validateWildcard(wc)
         }
 
         updateWildCardCode = (wc: WildcardVM) => {
@@ -321,70 +520,28 @@
             let filt:FilterVM = {
                 Id: -1,
                 Key: key.name,
-                Operator: "=",
                 RecepientFilterId: this.va.curmetafilter.Id,
-                Value: "",
+                //Operator: ["="],
+                //Value: [""],
+                ValsOps: [new ValOp()],
                 Type: key.type,
-                Invalid: false
+                Invalid: false,
+                ValidationErrors: [],
+                ng_JustCreated: true,
+                ng_ToDelete: false,
+                allowMultipleSelection: false,
+                allowUserInput: false
             }
-            if (IsNullOrUndefined(this.va.curmetafilter.newfilters))
-                this.va.curmetafilter.newfilters = []
-            this.va.curmetafilter.newfilters.push(filt)
-            this.va.curmetafilter.filters.push(filt)
+            if (IsNullOrUndefined(this.va.curmetafilter.filters))
+                this.va.curmetafilter.filters = []
+            this.va.curmetafilter.filters.unshift(filt)
         }
 
-        deleteFilter = (filt: FilterVM) => {
-            if (filt.Id != -1)
-                this.va.curmetafilter.removedfilters.push(filt)
-            else
-                this.va.curmetafilter.newfilters.remove(filt)
-            this.va.curmetafilter.filters.remove(filt)
-        }
-
-        validateWithKeys<T>(item: T, validator: (item: T, key: KeyVM) => boolean): boolean {
-            for (let i = 0; i < this.va.possiblekeys.length; i++) {
-                if (validator(item, this.va.possiblekeys[i]))
-                    return true
-            }
-            return false
-        }
 
 
         //Styling, others
 
-        glyphiconforSQLTYPE = (typeName: string) => {
-            switch (typeName) {
-                case "int":
-                    return "glyphicon glyphicon-certificate"
-                case "nvarchar":
-                    return "glyphicon glyphicon-font"
-                case "datetime":
-                case "date":
-                    return "glyphicon glyphicon-calendar"
-                case "time":
-                    return "glyphicon glyphicon-time"
-                case "bit":
-                    return "glyphicon glyphicon-check"
-            }
-            return "glyphicon glyphicon-briefcase"
-        }
 
-        inputTypeForSQLType = (typeName: string) => {
-            switch (typeName) {
-                case "int":
-                    return "number"
-                case "nvarchar":
-                    return "text"
-                case "datetime":
-                case "date":
-                    return "datetime-local"
-                case "time":
-                    return "time"
-                case "bit":
-                    return "checkbox"
-            }
-            return "text"
-        }
 
     }
 }

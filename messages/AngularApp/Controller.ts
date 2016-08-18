@@ -6,8 +6,54 @@
         urlalias: string,
         params?: Object,
         before?: () => void,
-        onSucces?: (response?) => void,
-        onFailed?: (response?) => void
+        onSucces?: ((response?) => void) | ConcurentRequestHandler,
+        onFailed?: ((response?) => void) | ConcurentRequestHandler,
+    }
+
+    /**
+     This Class used for simultaneously running requests to server.
+     It runs it's callback only when all binded requests will be ended.
+     */
+    export class ConcurentRequestHandler {
+        private _registered = 0
+        /** 
+        callOnlyOnce = true, means if callback WAS CALLED already, it won't be called again.
+        callOnlyOnce = false, if all requests ended already, callback will be called, even if it was called already.
+        */
+        constructor(protected callback: (response?) => void, private callOnlyOnce = true) {}
+
+        RegisterRequestStart = () => {
+            this._registered++
+        }
+
+        TryCall = (response) => {
+            this._registered--
+            if (this._registered < 1) {
+                if (this.callOnlyOnce && this._registered == 0)
+                    fnc.F(this.callback,response)
+                else if (!this.callOnlyOnce)
+                    fnc.F(this.callback, response)
+            }
+
+        }
+    }
+
+    export function isEmptyOrSpaces(str: string) {
+        return str === null || str.match(/^ *$/) !== null;
+    }
+
+    function IsConcurentRequestHandler(cb) {
+        return !(IsNullOrUndefined(cb) || IsNullOrUndefined(cb.TryCall))
+    }
+
+    function RunCallbackOrHandler(callback: ((response?) => void) | ConcurentRequestHandler, response) {
+        //argument type check
+        if (IsNullOrUndefined(callback)) return
+        let cb = callback as any
+        if (IsConcurentRequestHandler(cb))
+            cb.TryCall(response)
+        else
+            fnc.F(cb, response)
     }
 
     export class FetchParams {
@@ -50,7 +96,7 @@
         return clone as T
     }
 
-    /**this doesnt handles with recoursive references!*/
+    /**this doesnt handles recoursive references!*/
     export function CloneDeep<T>(original: T) {
         let clone: any = {}
         for (let key in original) {
@@ -71,6 +117,15 @@
 
     export function ParseHtmlID(fullID: string, separator: string = "___::::___") {
         return fullID.split(separator)[1]
+    }
+
+    /**
+    Returns Array:
+    array[0] - prefix
+    array[1] - id
+     */
+    export function ParseHtmlIDFull(fullID: string, separator: string = "___::::___") {
+        return fullID.split(separator)
     }
 
     export function MakeHtmlID (prefix: string, id: string, separator: string = "___::::___") {
@@ -152,19 +207,38 @@
                 Controllers.NotificationController.MSGEVENT,{ message: msg });
         }
 
+        protected request_msgHandlerSucces: (msg: string) => void = null
+
+        protected request_msgHandlerFail: (msg: string) => void = null
+
         protected request = (holdTillResponse: boolean, data: IRequestArgs) => {
+            if (IsConcurentRequestHandler(data.onSucces))
+                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
+            if (IsConcurentRequestHandler(data.onFailed))
+                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
+
             if (holdTillResponse)
                 this.turnHoldView(true)
             fnc.F(data.before)
             this.http({ method: 'POST', url: this.url(data.urlalias), data: data.params }).
                 then(
                     (response) => {
-                        fnc.F(data.onSucces, response)
+                        if (this.request_msgHandlerSucces !== null
+                            && !IsNullOrUndefined(response.data.message))
+                            this.request_msgHandlerSucces(response.data.message)
+                        RunCallbackOrHandler(data.onSucces,response)
                         if (holdTillResponse)
                             this.turnHoldView(false)
                     },
                     (response) => {
-                        fnc.F(data.onFailed, response)
+                        if (!IsNullOrUndefined(response.data)) {
+                            if (this.request_msgHandlerFail !== null
+                                && !IsNullOrUndefined(response.data.message))
+                                this.request_msgHandlerFail(response.data.message)
+                            RunCallbackOrHandler(data.onSucces, response)
+                        }
+                        else if (this.request_msgHandlerFail !== null)
+                            this.request_msgHandlerFail("no connection to server")
                         if (holdTillResponse)
                             this.turnHoldView(false)
                     }
@@ -177,51 +251,67 @@
             keyValueSelector: (obj: any) => col.IKeyValuePair<string, V>,
             clearContainer?: boolean) =>
         {
-            var successCB = data.onSucces
+            if (IsConcurentRequestHandler(data.onSucces))
+                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
+            if (IsConcurentRequestHandler(data.onFailed))
+                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
+
+            let successCB = data.onSucces
             data = CloneRequestArgs(data)
             data.onSucces = (response) => {
                 if (clearContainer) container.clear()
                 container.addrange(response.data.items, keyValueSelector)
-                fnc.F(successCB, response)
+                RunCallbackOrHandler(successCB, response)
             }
             this.request(holdTillResponse, data)
         }
 
         /**looks on response.data.items*/
         protected fetchtoarr =
-            (holdTillResponse: boolean, data: IRequestArgs, container: any[], clearContainer?: boolean) => {
-                var successCB = data.onSucces
-                data = CloneRequestArgs(data)
-                data.onSucces = (response) => {
-                    if (clearContainer) container.splice(0, container.length)
-                    response.data.items.forEach(e => container.push(e))
-                    fnc.F(successCB,response)
-                }
-                this.request(holdTillResponse,data)
+        (holdTillResponse: boolean, data: IRequestArgs, container: any[], clearContainer?: boolean) =>
+        {
+            if (IsConcurentRequestHandler(data.onSucces))
+                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
+            if (IsConcurentRequestHandler(data.onFailed))
+                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
+
+            let successCB = data.onSucces
+            data = CloneRequestArgs(data)
+            data.onSucces = (response) => {
+                if (clearContainer) container.splice(0, container.length)
+                response.data.items.forEach(e => container.push(e))
+                RunCallbackOrHandler(successCB, response)
             }
+            this.request(holdTillResponse,data)
+        }
 
         /**looks on response.data.items*/
         protected updatetoarr =
-            (holdTillResponse: boolean, data: IRequestArgs, container: any[], equalityPredicate: (o1, o2) => boolean, pushnew: boolean = true) => {
-                var successCB = data.onSucces
-                data = CloneRequestArgs(data)
-                data.onSucces = (response) => {
-                    response.data.items.forEach((e1) => {
-                        let index = -1
-                        for (let i = 0; i < container.length; i++) {
-                            if (equalityPredicate(e1, container[i])) {
-                                index = i
-                                break
-                            }
+        (holdTillResponse: boolean, data: IRequestArgs, container: any[], equalityPredicate: (o1, o2) => boolean, pushnew: boolean = true) =>
+        {
+            if (IsConcurentRequestHandler(data.onSucces))
+                (data.onSucces as ConcurentRequestHandler).RegisterRequestStart()
+            if (IsConcurentRequestHandler(data.onFailed))
+                (data.onFailed as ConcurentRequestHandler).RegisterRequestStart()
+            let successCB = data.onSucces
+            data = CloneRequestArgs(data)
+            data.onSucces = (response) => {
+                response.data.items.forEach((e1) => {
+                    let index = -1
+                    for (let i = 0; i < container.length; i++) {
+                        if (equalityPredicate(e1, container[i])) {
+                            index = i
+                            break
                         }
-                        if (index != -1)
-                            container[index] = e1
-                        else if (pushnew)
-                            container.push(e1)
-                    })
-                    fnc.F(successCB, response)
-                }
-                this.request(holdTillResponse, data)
+                    }
+                    if (index != -1)
+                        container[index] = e1
+                    else if (pushnew)
+                        container.push(e1)
+                })
+                RunCallbackOrHandler(successCB, response)
+            }
+            this.request(holdTillResponse, data)
         }
     }
 

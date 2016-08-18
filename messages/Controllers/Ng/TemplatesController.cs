@@ -9,6 +9,7 @@ using Business_Logic.SqlContext;
 using System.Text;
 using Business_Logic.SqlContext.DynamicQuery;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ticonet.Controllers.Ng{
 
@@ -22,8 +23,9 @@ namespace ticonet.Controllers.Ng{
                         IsSms = model.IsSms,
                         MsgHeader = model.MsgHeader,
                         MsgBody = model.MsgBody,
-                        tblRecepientFilterId = model.RecepientFilterId
-                    }, ItemSaveBehaviour.AddOnly);
+                        tblRecepientFilterId = model.RecepientFilterId,
+                        FilterValueContainersJSON = JsonConvert.SerializeObject(model.FilterValueContainers)
+                }, ItemSaveBehaviour.AddOnly);
                 }
             }
             return NgResult.Succes(models.Count() + " new templates was added");
@@ -41,7 +43,7 @@ namespace ticonet.Controllers.Ng{
         protected override FetchResult<TemplateVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 var queryResult = l.GetAll<tblTemplate>()
-                    .Select(x => VMConstructor.MakeFromObj(x, TemplateVM.tblTemplateBND));
+                    .Select(x => VMConstructor.MakeFromObj(x, TemplateVM.tblTemplatePR));
                 return FetchResult<TemplateVM>.Succes(queryResult,queryResult.Count());
             }
         }
@@ -56,6 +58,7 @@ namespace ticonet.Controllers.Ng{
                     item.MsgHeader = model.MsgHeader;
                     item.MsgBody = model.MsgBody;
                     item.tblRecepientFilterId = model.RecepientFilterId;
+                    item.FilterValueContainersJSON = JsonConvert.SerializeObject(model.FilterValueContainers);
                     l.SaveChanges(item);
                 }
             }
@@ -112,6 +115,8 @@ namespace ticonet.Controllers.Ng{
             }
             if (filters.Length > 0)
                 cond.Remove(cond.Length - 5, 5);
+
+
             //BUILD FIELDS
             var colomns = wildcards.Select(x => x.Key);
 

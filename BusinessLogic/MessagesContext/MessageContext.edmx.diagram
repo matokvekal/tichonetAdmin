@@ -14,6 +14,8 @@
         <AssociationConnector Association="Messages.tblFiltertblRecepientFilter" />
         <AssociationConnector Association="Messages.tblWildcardtblRecepientFilter" />
         <AssociationConnector Association="Messages.tblTemplatetblRecepientFilter" />
+        <EntityTypeShape EntityType="Messages.tblRecepientCard" Width="1.5" PointX="6.125" PointY="4.75" />
+        <AssociationConnector Association="Messages.tblRecepientFiltertblRecepientCard" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -185,6 +185,10 @@
             border-bottom: 1px solid #333333
         }
 
+        .bot-bord{
+            border-bottom: 1px solid #333333
+        }
+
         .main-block.unfolded {
             padding-bottom:0px;
         }
@@ -226,6 +230,22 @@
         .editor-container .ineditor{
             padding: 7px 0
         }
+
+        .editor-container .item-row{
+            padding-bottom: 0
+        }
+
+        .item-row{
+            padding-left: 10px;
+            padding-right: 10px;
+            border-left: 1px solid #333333;
+        }
+
+        .item-row > *:not(:first-child){
+            /*background-color:rebeccapurple*/
+            padding-left:20px
+        }
+
         .enum-container > * {
             padding: 3px 0
         }
@@ -284,8 +304,9 @@
         .txtinput {
             background: inherit;
             border: none;
-            border-bottom: 1px solid #878787;
-            color: #878787;
+            /*border-bottom: 1px solid #878787;*/
+            border-bottom: 1px solid rgba(135, 135, 135, 0.00);
+            color: #c7c7c7;
             padding: 0;
             transition: all ease 0.7s;
             line-height: 1;
@@ -295,7 +316,7 @@
             background: inherit;
             border: none;
             border-bottom: 1px solid rgba(135, 135, 135, 0.00);
-            color: inherit;
+            color: #c7c7c7;
             padding: 0;
             transition: all ease 0.7s;
             line-height: 1;
@@ -311,7 +332,7 @@
         .txtinput-big:focus,
         .txtinput:focus{
             border-bottom: 1px solid #c7c7c7;
-            color: #c7c7c7
+            color: white
         }
 
         .txtarea:focus {
@@ -330,6 +351,34 @@
             background: #222222;
             border: none;
             color: #c7c7c7;
+        }
+        .filter-expr .selector{
+            width: 12%
+        }
+        .filter-expr .txtinput{
+            width: 40%
+
+        }
+        .filter-expr.first .txtinput {
+            width: 42.2%;
+        }
+
+        .filter-row .filter-expr{
+            padding-left: 20px;
+        }
+        .filter-row .filter-expr.first{
+            padding-left: 40px;
+        }
+
+        .filter-row hr,
+        .filter-row hr.lite
+        {
+            margin-bottom: 0
+        }
+
+        input[type="checkbox"].checkbox{
+            margin: 0;
+            display: inline-block
         }
 /*CLICKABLE*/
         .clickable:hover{
@@ -394,16 +443,25 @@
 /*OTHER*/
         .dropbox{
             padding: 10px;
-            /*width: 49.5%;*/
+            width:100%;
             border: 1px solid;
-            /* margin: 20px; */
+            margin-bottom: 5px;
             display: inline-block;
-            /* border-radius: 2px; */
             text-align: center;
             border-color: #2f2f2f;
             color: #424242;
             transition: all ease 0.7s;
-            /*min-height: 80px*/
+        }
+        .hover-closer{
+            transition: all ease 0.7s;
+        }
+
+        .hover-closer:hover{
+            color: #585858;
+            border-color: #3e3e3e;
+            -webkit-transform: rotateY(2deg) rotateX(10deg);
+            transform: rotateY(2deg) rotateX(10deg);
+            box-shadow: 0 20px 20px rgba(0,0,0,0.07);
         }
 
         .dropbox.drag-over{
@@ -411,10 +469,33 @@
             border-color: #525252;
         }
 
-        .filter.invalid,
-        .wildcard.invalid
-        {
-            color:red
+        .item-row.invalid{
+            border-left: 1px solid red;
+        }
+
+        hr.lite{
+            margin: 10px 0;
+            border-color: #333333;
+        }
+
+        .recepientkey.drag-over{
+            color: white
+        }
+
+        .reset-pre{
+            display: block; 
+            padding: 0;
+            margin: 0;
+            font-size: inherit; 
+            font-family: inherit;
+            line-height: 1.428571429; 
+            color: inherit;
+            word-break: inherit;
+            word-wrap: inherit; 
+            background-color: inherit; 
+            border: none;
+            border-radius: 0;
+
         }
 
     </style>
@@ -436,7 +517,7 @@
                                 </span>
                             </div>
                             <div>
-                                {{msg.body}}
+                                <pre class="reset-pre">{{msg.body}}</pre>
                             </div>
                         </div>
                     </div>
@@ -446,7 +527,6 @@
 
         <!--Page blocks Controller-->
         <div ng-controller="MessageModulePageController" data-ng-init="init()">
-
             <!--Await-Layer-->
             <div class="await-layer" ng-if="holdview">
                 <div class="floatingBarsIndicator">
@@ -491,6 +571,8 @@
                                     mngmfilter: '@Url.Action("Manage","RFilters")',
                                     getmfilters: '@Url.Action("Fetch","Rfilters")',
                                     getwildcards: '@Url.Action("Fetch","Wildcards")',
+                                    getreccards: '@Url.Action("Fetch","RecepientCards")',
+                                    getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")'
                                  }
                              })">
 
@@ -518,10 +600,11 @@
                                 <div class="col-lg-12 no-padding clearfix" style="min-height:200px">
                                     <div class="col-lg-8 editor-container">
                                         <div>
-                                            @*BASIS: {{va.curmetafilter.BaseTableId}}*@
                                             <!--NAME-->
                                             <div class="txt-c-base txt-s-med">
-                                                <input class="txtinput-big" style="width:320px" type="text" ng-model="va.curmetafilter.Name" />
+                                                <input class="txtinput-big" style="width:320px" type="text" 
+                                                       ng-model="va.curmetafilter.Name" 
+                                                       />
                                             </div>
                                             <!-- Editing BaseTable -->
                                             <div class="txt-c-gr">
@@ -567,64 +650,192 @@
 
                                         <!-- If base Table is set we can edit rest things -->
                                         <div ng-if="(!va.showTableChoose)&&IsCurMFiltHasAnyTable()&&IsCurMFiltHasTable(va.curbasetable)">
-                                            <!--FILTERS-->
-                                            <div class="editor-container col-lg-6 no-padding">
-                                                <div class="dropbox" droppable id="{{va.filterCreator_ID}}" drop="NewFilterDrop">
-                                                    New SubFilter 
+                                            
+                                            <!--Recepients Cards-->
+                                            <div class="editor-container col-lg-12 no-padding">
+                                                <div class="dropbox hover-closer" droppable id="{{va.reccardCreator_ID}}" drop="NewRecardDrop">
+                                                    New Recepient Card
                                                     <div class="txt-s-small">
                                                         (drop key here)
                                                     </div>
                                                 </div>
-                                                <div ng-repeat="nfilt in va.curmetafilter.filters">
-                                                    <div style="padding:5px" ng-class="{'invalid':nfilt.Invalid}">
+                                                <div ng-repeat="rc in va.curmetafilter.reccards" class="ngan-fade-mid">
+                                                    <div ng-if="!rc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':rc.Invalid}">
                                                         <div>
-                                                            {{nfilt.Key}}
-                                                            <i class="glyphicon iconclick glyphicon-floppy-remove"
-                                                               ng-click="RemoveFilter(nfilt)"></i>  
+                                                            <input class="txtinput" style="width:70%" type="text"
+                                                                    ng-model="rc.Name"
+                                                                    ng-model-options='{ debounce: 500 }'
+                                                                    ng-change='ValidateItem(rc,"reccard")' />
+                                                            <i class="glyphicon iconclick glyphicon-trash txt-c-gr"
+                                                               ng-click="RemoveItem(rc)"></i>
                                                         </div>
-                                                        <div>
-                                                            <span style="width:30%">
-                                                                <select class="selector" ng-model="nfilt.Operator" ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)"></select>
+                                                        <div class="txt-anim txt-c-gr recepientkey" droppable id="{{MakeId(va.reccardDropName,rc.Id)}}" drop="RecardDropKey">
+                                                            Recipent Name Key:
+                                                            <span class="txt-c-base">
+                                                                {{rc.NameKey}}
                                                             </span>
-                                                            <span style="width:70%">
-                                                                <input class="txtinput" style="width:100%" type="{{InputType(nfilt.Type)}}" ng-model="nfilt.Value" />
+                                                        </div>
+                                                        <div class="txt-anim txt-c-gr recepientkey" droppable id="{{MakeId(va.reccardDropEmail,rc.Id)}}" drop="RecardDropKey">
+                                                            Email Key:
+                                                            <span class="txt-c-base">
+                                                                {{rc.EmailKey}}
+                                                            </span>
+                                                        </div>
+                                                        <div class="txt-anim txt-c-gr recepientkey" droppable id="{{MakeId(va.reccardDropPhone,rc.Id)}}" drop="RecardDropKey">
+                                                            Phone Key:
+                                                            <span class="txt-c-base">
+                                                                {{rc.PhoneKey}}
                                                             </span>
                                                         </div>
                                                     </div>
+                                                    <!--Restore deleted item-->
+                                                    <div ng-if="rc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':rc.Invalid}">
+                                                        <span class="txt-c-gr">
+                                                            {{rc.Name}} 
+                                                        </span>
+                                                        <span class="txt-c-grmore">
+                                                            (deleted)
+                                                        </span>
+                                                        <span ng-click="RestoreItem(rc)" class="txt-c-gr txt-anim hover-highlight clickable">
+                                                            restore
+                                                        </span>
+                                                    </div>
+                                                    <!--Validation info, if invalid-->
+                                                    <div class="txt-s-small ngan-fade-mid" ng-if="(!rc.ng_ToDelete)&&rc.Invalid">
+                                                        {{GetValidationInfo(rc)}}
+                                                    </div>
 
                                                 </div>
+
                                             </div>
+
                                             <!--WILDCARDS-->
-                                            <div class="editor-container col-lg-6 no-padding">
-                                                <div class="dropbox" droppable id="{{va.wildcardCreator_ID}}" drop="NewWildcardDrop">
+                                            <div class="editor-container col-lg-12 no-padding">
+                                                <div class="dropbox hover-closer" droppable id="{{va.wildcardCreator_ID}}" drop="NewWildcardDrop">
                                                     New WildCard
                                                     <div class="txt-s-small">
                                                         (drop key here)
                                                     </div>
                                                 </div>
-                                                <div ng-repeat="wc in va.curmetafilter.wildcards">
-                                                    <div style="padding:5px" class="wildcard" ng-class="{'invalid':wc.Invalid}">
+                                                <div ng-repeat="wc in va.curmetafilter.wildcards" class="ngan-fade-mid">
+                                                    <div ng-if="!wc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':wc.Invalid}">
                                                         <div>
-                                                            <input class="txtinput" style="width:100%" type="text"
-                                                                   ng-model="wc.Name" />
+                                                            <input class="txtinput" style="width:70%" type="text"
+                                                                    ng-model="wc.Name" 
+                                                                    ng-model-options='{ debounce: 500 }'
+                                                                    ng-change='ValidateItem(wc,"wildcard")' />
+                                                            <i class="glyphicon iconclick glyphicon-trash txt-c-gr"
+                                                               ng-click="RemoveItem(wc)"></i>
                                                         </div>
                                                         <div>
-                                                            Code: {{wc.Code}}
+                                                            <span class="txt-c-grmore">
+                                                                Code Preview:
+                                                            </span>
+                                                            <span class="txt-c-gr">
+                                                                {{wc.Code}}
+                                                            </span>
                                                             <input class="txtinput" style="width:100%" type="text"
-                                                                   ng-model="wc._Code" ng-change="WildCardUpdateCode(wc)"/>
+                                                                    ng-model="wc._Code" ng-change="WildCardUpdateCode(wc)" 
+                                                                    ng-model-options='{ debounce: 500 }'
+                                                                    />
                                                         </div>
                                                         <div>
-                                                            {{wc.Key}}
-                                                            <i class="glyphicon iconclick glyphicon-floppy-remove"
-                                                               ng-click="RemoveWildcard(wc)"></i>
+                                                            <span class="txt-c-grmore">
+                                                                Key:
+                                                            </span>
+                                                            <span class="txt-c-gr">
+                                                                {{wc.Key}}
+                                                            </span>
                                                         </div>
                                                     </div>
+                                                    <!--Restore deleted item-->
+                                                    <div ng-if="wc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':rc.Invalid}">
+                                                        <span class="txt-c-gr">
+                                                            {{wc.Name}}
+                                                        </span>
+                                                        <span class="txt-c-grmore">
+                                                            (deleted)
+                                                        </span>
+                                                        <span ng-click="RestoreItem(wc)" class="txt-c-gr txt-anim hover-highlight clickable">
+                                                            restore
+                                                        </span>
+                                                    </div>
+                                                    <!--Validation info, if invalid-->
+                                                    <div class="txt-s-small ngan-fade-mid" ng-if="(!wc.ng_ToDelete)&&wc.Invalid">
+                                                        {{GetValidationInfo(wc)}}
+                                                    </div>
                                                 </div>
-
                                             </div>
-                                        </div>
 
+                                            <!--FILTERS-->
+                                            <div class="editor-container col-lg-12 no-padding">
+                                                <div class="dropbox hover-closer" droppable id="{{va.filterCreator_ID}}" drop="NewFilterDrop">
+                                                    New SubFilter 
+                                                    <div class="txt-s-small">
+                                                        (drop key here)
+                                                    </div>
+                                                </div>
+                                                <div class="filter-row ngan-fade-mid" ng-repeat="nfilt in va.curmetafilter.filters">
+                                                    <div class="item-row" ng-if="!nfilt.ng_ToDelete" ng-class="{'invalid':nfilt.Invalid}">
+                                                        @* nfilt.ValsOps is array. if there more then 1 value, other values is like "OR" in expression *@
+                                                        <div class="txt-c-gr">
+                                                            <i class="glyphicon glyphicon-filter"></i>
+                                                            {{nfilt.Key}}
+                                                            <i class="txt-c-grmore glyphicon iconclick glyphicon-trash"
+                                                                ng-click="RemoveItem(nfilt)"></i>  
+                                                        </div>
+                                                        <!-- Filter Expression -->
+                                                        <div ng-repeat="nvalop in nfilt.ValsOps" class="filter-expr" ng-class="{'first':$first}">
+                                                            <span style="width:30%" ng-if="!$first">
+                                                                <span class="txt-c-grmore">or: </span>
+                                                            </span>
+                                                            <select text-align:center"
+                                                                    class="selector" ng-model="nvalop.Operator" ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)"></select>
+                                                            <input class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="nvalop.Value" />
+                                                            <i ng-if="nfilt.ValsOps.length>1" class="txt-c-grmore glyphicon iconclick glyphicon-trash"
+                                                               ng-click="DeleteFiltValue(nfilt,$index)"></i>  
+                                                        </div>
+                                                        <!-- Filter add 'OR' to Expression -->
+                                                        <span style="padding-left:20px" class="txt-c-grmore txt-anim hover-highlight clickable" 
+                                                              ng-click="AddFiltValue(nfilt)"> add "or" </span>
+
+                                                        <!-- Templates-user can tune this filter if checked -->
+                                                        <div class="txt-c-gr">
+                                                            <input type="checkbox" class="checkbox" ng-model="nfilt.allowUserInput" />
+                                                            Allow User Input
+                                                        </div>
+
+                                                        <!-- If we have OR options in filter, and if userinput is allowed, it will be shown as selectable list -->
+                                                        <div ng-if="nfilt.ValsOps.length>1&&nfilt.allowUserInput" class="ngan-fade-mid">
+                                                            <div class="txt-s-small txt-c-grmore">this filter will be used like a list of options</div>
+                                                            <div class="txt-c-gr">
+                                                                <input type="checkbox" class="checkbox" ng-model="nfilt.allowMultipleSelection" />
+                                                                Allow multiple selection
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--Restore deleted item-->
+                                                    <div ng-if="nfilt.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':rc.Invalid}">
+                                                        <span class="txt-c-gr">
+                                                            {{nfilt.Key}}
+                                                        </span>
+                                                        <span class="txt-c-grmore">
+                                                            (deleted)
+                                                        </span>
+                                                        <span ng-click="RestoreItem(nfilt)" class="txt-c-gr txt-anim hover-highlight clickable">
+                                                            restore
+                                                        </span>
+                                                    </div>
+                                                    <!--Validation info, if invalid-->
+                                                    <div class="txt-s-small ngan-fade-mid" ng-if="(!nfilt.ng_ToDelete)&&nfilt.Invalid">
+                                                        {{GetValidationInfo(nfilt)}}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
                                     </div>
+
                                     <!-- Possible keys for filter-->
                                     <div class="col-lg-4">
                                         <div class="txt-s-med txt-c-gr">Table Keys:</div>
@@ -640,9 +851,9 @@
 
                                 </div>
 
-
                                 <!-- save or not-->
-                                <div class="col-lg-12">
+                                @* showed only if rfilter has currently selected table *@
+                                <div class="col-lg-12" ng-if="IsCurMFiltHasAnyTable()&&IsCurMFiltHasTable(va.curbasetable)">
                                     <a class="abut" ng-click="SaveCurMFilt()">Save</a>
                                     <a class="abut" ng-click="CloseEditor()">Cancel</a>
                                 </div>
@@ -668,8 +879,9 @@
                                 mngtemplates: '@Url.Action("Manage","Templates")',
                                 getwildcards: '@Url.Action("Fetch","Wildcards")',
                                 getmfilters: '@Url.Action("Fetch","Rfilters")',
+                                getfilters: '@Url.Action("Fetch","Filters")',
                                 mockmsgs: '@Url.Action("MockMessage","Templates")',
-
+                                getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")'
                              }
                          })">
 
@@ -697,8 +909,7 @@
                         <div class="col-lg-9">
                             <div class="editor-container" ng-if="va.curtemplate!==null">
                                 <div>
-                                    <span class="txt-c-grmore" style="padding-right:19px">Name: </span>
-                                    <input class="txtinput" style="width:320px" type="text" ng-model="va.curtemplate.Name" />
+                                    <input class="txtinput-big txt-s-med" style="width:320px" type="text" ng-model="va.curtemplate.Name" />
                                 </div>
                                 <div>
                                     <span class="txt-c-grmore clickable" ng-click="va.curtemplate.IsSms=!va.curtemplate.IsSms">
@@ -714,6 +925,28 @@
                                            style="width:320px"
                                            />
                                 </div>
+                                <!--Filters-->
+                                Filters
+                                <div>
+                                    <div ng-repeat="nfilt in va.filters">
+                                        <!--For direct input-->
+                                        <div ng-if="nfilt.ValsOps.length===1">
+                                            <div class="txt-c-gr">{{nfilt.Key}} {{nfilt.ValsOps[0].Operator}}</div>
+                                            <input class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="GetFilterValueCont(nfilt).Value[0]" />
+                                        </div>
+                                        
+                                        <!--For list choose-->
+                                        <div ng-if="nfilt.ValsOps.length>1">
+                                            <div ng-repeat="valop in nfilt.ValsOps">
+                                                <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchFilterValueContVal(nfilt,$index)">
+                                                    <i class="glyphicon iconclick"
+                                                        ng-class="HasFilterValueContVal(nfilt,$index) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked txt-c-grmore'"></i>
+                                                    <span>{{nfilt.Key}} {{valop.Operator}} {{valop.Value}}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="clearfix">
                                     <!--Textarea-->
                                     <div class="col-lg-6 no-padding">
@@ -724,8 +957,8 @@
                                                   >
                                         </textarea>
                                     </div>
-                                    <!--Widlcards-->
                                     <div class="col-lg-6">
+                                        <!--Base on RFilter-->
                                         <div>
                                             <span class="txt-s-med txt-c-gr">Based on Filter:</span>
                                             <div ng-repeat="mfilt in va.metafilters">
@@ -738,6 +971,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <!--Widlcards-->
                                         <div>
                                             <span class="txt-s-med txt-c-gr">Wildcards</span>
                                             <div ng-repeat="wcard in va.wildcards">
@@ -755,15 +989,15 @@
                                     <a class="abut" ng-click="templSave()">Save</a>
                                     <a class="abut" ng-click="hideEditor()">Cancel</a>
                                 </div>
-                                <div>
+                                @*<div>
                                     <a class="abut" ng-click="DEMO()">Show a Demo (pls save before)</a>
                                     <hr />
                                     <div ng-repeat="msg in va.demomsgs">
                                         <div>{{msg.header}}</div>
-                                        <div>{{msg.body}}</div>
+                                        <div><pre>{{msg.body}}</pre></div>
                                         <hr />
                                     </div>
-                                </div>
+                                </div>*@
                             </div>
                         </div>
                     </div>
