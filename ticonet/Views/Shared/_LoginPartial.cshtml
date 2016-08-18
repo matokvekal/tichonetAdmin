@@ -1,11 +1,31 @@
-﻿
-@using ticonet;
+﻿@using ticonet;
+@using Business_Logic;
+
 @if (Request.IsAuthenticated)
 {
+    {
+        string schoolNameHeb;
+        if (HttpRuntime.Cache["schoolNameHeb"] == null)
+        {
+            using (tblSystemLogic system = new tblSystemLogic())
+            {
+                var school = tblSystemLogic.getSystemValueByKey("schoolNameHeb").value;
+                if (school != null)
+                {
+                    schoolNameHeb = tblSystemLogic.getSystemValueByKey("schoolNameHeb").value.ToString();
+                    HttpRuntime.Cache["schoolNameHeb"] = schoolNameHeb;
+                }
+            }
+        }
+
+        schoolNameHeb = HttpRuntime.Cache["schoolNameHeb"].ToString();
+        ViewBag.schoolName = schoolNameHeb;
+    }
     <text>Hello @User.Identity.Name </text>
     using (Html.BeginForm("Signout", "Account", FormMethod.Post, new { id = "signoutForm", style = "display:inline" }))
     {    @Html.AntiForgeryToken()
         <a href="javascript:document.getElementById('signoutForm').submit()">Signout</a>
+        <strong>@ViewBag.schoolName</strong>
     }
 }
 else
@@ -15,4 +35,3 @@ else
         <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }
-
