@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Business_Logic.SqlContext.DynamicQuery {
+namespace Business_Logic.SqlContext {
 
-    public struct DQOperator {
-        public static IEnumerable<DQOperator> GetAllowedForSqlType (string type) {
+    public struct SqlOperator {
+        public static IEnumerable<SqlOperator> GetAllowedForSqlType (string type) {
             type = type.ToLower();
             switch (type) {
                 case "int":
-                    return ForNumber.Clone() as DQOperator[];
+                    return ForNumber.Clone() as SqlOperator[];
                 case "nvarchar":
-                    return ForString.Clone() as DQOperator[];
+                    return ForString.Clone() as SqlOperator[];
                 case "date":
                 case "datetime":
-                    return ForDate.Clone() as DQOperator[];
+                    return ForDate.Clone() as SqlOperator[];
                 default:
-                    return ForObject.Clone() as DQOperator[];
+                    return ForObject.Clone() as SqlOperator[];
             }
         }
 
-        public static readonly DQOperator[] ForObject = { OP.Equals, OP.NotEquals };
-        public static readonly DQOperator[] ForString = { OP.Equals, OP.NotEquals, OP.LIKE };
-        public static readonly DQOperator[] ForNumber = 
+        public static readonly SqlOperator[] ForObject = { OP.Equals, OP.NotEquals };
+        public static readonly SqlOperator[] ForString = { OP.Equals, OP.NotEquals, OP.LIKE };
+        public static readonly SqlOperator[] ForNumber = 
         {
             OP.Equals,
             OP.NotEquals,
@@ -30,7 +30,7 @@ namespace Business_Logic.SqlContext.DynamicQuery {
             OP.Less,
             OP.LessOrEqual
         };
-        public static readonly DQOperator[] ForDate = ForNumber;
+        public static readonly SqlOperator[] ForDate = ForNumber;
 
 
         public string SQLString { get { return OPToString(val); } }
@@ -38,22 +38,26 @@ namespace Business_Logic.SqlContext.DynamicQuery {
         public OP Operator { get { return val; } }
         public int RawInt { get { return (int)val; } }
 
-        public DQOperator(string NamedOrSQLString) {
+        public SqlOperator(string NamedOrSQLString) {
             val = RawStringToOP(NamedOrSQLString);
         }
 
-        public DQOperator(OP Operator) {
+        public SqlOperator(OP Operator) {
             val = Operator;
         }
 
-        public DQOperator(int OperatorIndex) {
+        public SqlOperator(int OperatorIndex) {
             if (!Enum.IsDefined(typeof(OP), OperatorIndex))
                 throw new InvalidCastException();
             val = (OP)OperatorIndex;
         }
 
-        public static implicit operator DQOperator (OP oper) {
-            return new DQOperator(oper);
+        public static implicit operator SqlOperator (OP oper) {
+            return new SqlOperator(oper);
+        }
+
+        public static implicit operator SqlOperator(string oper) {
+            return new SqlOperator(oper);
         }
 
         OP val;

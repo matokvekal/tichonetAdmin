@@ -26,6 +26,11 @@
 
         keyIdPrefix = '_tablekey'
         keyDragClass = 'tablekey'
+
+        //just for folding
+        SHOW_FILTS = false
+        SHOW_RCARDS = false
+        SHOW_WCARDS = false
     }
 
     export class MFiltersController extends Controller<MFiltersVA> {
@@ -440,6 +445,7 @@
         //RecepientCards
 
         newRecCard = (key: KeyVM) => {
+            this.va.SHOW_RCARDS = true
             if (IsNullOrUndefined(this.va.curmetafilter.filters))
                 this.va.curmetafilter.reccards = []
             let id = this.va.curmetafilter.reccards.max(x => x.Id) + 1
@@ -475,6 +481,7 @@
         //Wildcards
 
         newWildCard = (key: KeyVM) => {
+            this.va.SHOW_WCARDS = true
             let id = this.va.curmetafilter.wildcards.max(x => x.Id) + 1
             let uniqcode = key.name
             let wc: WildcardVM = {
@@ -519,6 +526,7 @@
         }
 
         newFilter = (key: KeyVM) => {
+            this.va.SHOW_FILTS = true
             if (!this.typeOperators.cont(key.type))
                 this.fetchTypeOperators(key.type)
             let filt:FilterVM = {

@@ -28,6 +28,10 @@ var AngularApp;
                 this.reccardDropPhone = "___reccardDropPhone";
                 this.keyIdPrefix = '_tablekey';
                 this.keyDragClass = 'tablekey';
+                //just for folding
+                this.SHOW_FILTS = false;
+                this.SHOW_RCARDS = false;
+                this.SHOW_WCARDS = false;
             }
             return MFiltersVA;
         }());
@@ -258,6 +262,7 @@ var AngularApp;
                 };
                 //RecepientCards
                 this.newRecCard = function (key) {
+                    _this.va.SHOW_RCARDS = true;
                     if (AngularApp.IsNullOrUndefined(_this.va.curmetafilter.filters))
                         _this.va.curmetafilter.reccards = [];
                     var id = _this.va.curmetafilter.reccards.max(function (x) { return x.Id; }) + 1;
@@ -290,6 +295,7 @@ var AngularApp;
                 };
                 //Wildcards
                 this.newWildCard = function (key) {
+                    _this.va.SHOW_WCARDS = true;
                     var id = _this.va.curmetafilter.wildcards.max(function (x) { return x.Id; }) + 1;
                     var uniqcode = key.name;
                     var wc = {
@@ -329,6 +335,7 @@ var AngularApp;
                     });
                 };
                 this.newFilter = function (key) {
+                    _this.va.SHOW_FILTS = true;
                     if (!_this.typeOperators.cont(key.type))
                         _this.fetchTypeOperators(key.type);
                     var filt = {

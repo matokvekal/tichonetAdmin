@@ -23,10 +23,11 @@ namespace Business_Logic.SqlContext{
         /// <summary>
         /// table - name of table,
         /// fieldNames - array of column names,
-        /// condition - raw T-SQL string that starts with "WHERE"
+        /// condition - SqlPredicate Graph
         /// </summary>
-        public IList<IDictionary<string,object>> FetchData (IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null) {
-            string command = MakeCommand(false, fieldNames, table, schema, condition);
+        public IList<IDictionary<string,object>> FetchData (IEnumerable<string> fieldNames, string table, string schema = "dbo", SqlPredicate condition = null) {
+            string cond = condition == null || condition.IsEmpty ? null : "WHERE " + condition.ToSqlString();
+            string command = MakeCommand(false, fieldNames, table, schema, cond);
             return FetchData(command, reader => {
                 var dict = new Dictionary<string, object>();
                 foreach (var field in fieldNames)
@@ -38,10 +39,11 @@ namespace Business_Logic.SqlContext{
         /// <summary>
         /// table - name of table,
         /// fieldNames - array of column names,
-        /// condition - raw T-SQL string that starts with "WHERE"
+        /// condition - SqlPredicate Graph
         /// </summary>
-        public IList<IDictionary<string, object>> FetchDataDistinct(IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null) {
-            string command = MakeCommand(true, fieldNames, table, schema, condition);
+        public IList<IDictionary<string, object>> FetchDataDistinct(IEnumerable<string> fieldNames, string table, string schema = "dbo", SqlPredicate condition = null) {
+            string cond = condition == null || condition.IsEmpty ? null : "WHERE " + condition.ToSqlString();
+            string command = MakeCommand(true, fieldNames, table, schema, cond);
             return FetchData(command, reader => {
                 var dict = new Dictionary<string, object>();
                 foreach (var field in fieldNames)

@@ -33,6 +33,7 @@ namespace Business_Logic.MessagesContext {
         public const string PhoneCode = "{REC_PHONE}";
         public const string EmailCode = "{REC_EMAIL}";
 
+
         public string Apply(string toString, IDictionary<string, object> data) {
             return toString
                 .Replace(NameCode, data[NameKey].ToString())

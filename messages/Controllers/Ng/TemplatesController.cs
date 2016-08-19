@@ -7,7 +7,6 @@ using System.Web.Mvc;
 using Ninject;
 using Business_Logic.SqlContext;
 using System.Text;
-using Business_Logic.SqlContext.DynamicQuery;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -132,48 +131,16 @@ namespace ticonet.Controllers.Ng{
                 table = templ.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName;
             }
             //BUILD CONDITION
-            StringBuilder cond = new StringBuilder();
+            var Condition = SqlPredicate.BuildAndNode();
             if (filters.Length > 0) {
-                cond.Append("WHERE");
-                foreach(var f in filters) {
-                    //TODO HERE A PLACE TO ATTACK!
-                    cond.Append(" (");
-
+                foreach (var f in filters) {
+                    var orNode = SqlPredicate.BuildOrNode();
                     var valops = filtsToValops[f.Id];
-                    int valopsCount = 0;
-                    foreach (var valop in valops)
-                    {
-                        string value = valop.Value.ToString();
-                        if (!string.IsNullOrWhiteSpace(value))
-                        {
-                            valopsCount++;
-                            cond.Append(f.Key);
-                            DQOperator op = new DQOperator(valop.Operator);
-                            cond.Append(" ");
-                            cond.Append(op.SQLString);
-                            cond.Append(" ");
-                            if (f.Type == "nvarchar")
-                            {
-                                cond.Append("'");
-                                //TODO HERE A PLACE TO ATTACK!
-                                cond.Append(value);
-                                cond.Append("'");
-                            }
-                            else
-                            //TODO HERE A PLACE TO ATTACK!
-                                cond.Append(value);
-                            cond.Append(" OR ");
-                        }
+                    foreach(var valop in valops) {
+                        orNode.Append(SqlPredicate.BuildEndNode(f.Key, valop.Operator, valop.Value, f.Type));
                     }
-                    if (valopsCount > 0) {
-                        cond.Remove(cond.Length - 4, 4);
-                        cond.Append(") ");
-                        cond.Append(" AND ");
-                    }
-                    else
-                        cond.Remove(cond.Length - 2, 2);
+                    Condition.Append(orNode);
                 }
-                cond.Remove(cond.Length - 5, 5);
             }
 
             //BUILD FIELDS
@@ -183,7 +150,7 @@ namespace ticonet.Controllers.Ng{
                 .Concat(reccards.Select(x => x.PhoneKey)).Distinct();
 
             //FETCH SQL DATA
-            var data = sqlLogic.FetchData(colomns,table,"dbo",cond.ToString());
+            var data = sqlLogic.FetchData(colomns,table,"dbo", Condition);
 
             //FILL FIELDS
 

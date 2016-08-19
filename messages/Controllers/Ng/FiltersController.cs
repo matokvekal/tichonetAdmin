@@ -1,5 +1,4 @@
 ﻿using Business_Logic.MessagesContext;
-using Business_Logic.SqlContext.DynamicQuery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,8 +59,8 @@ namespace ticonet.Controllers.Ng {
         public JsonResult GetOperatorsForType(string typename) {
             if (string.IsNullOrWhiteSpace(typename))
                 return NgResultToJsonResult(NgResult.Fail("Typename is undefined"));
-            var items = DQOperator.GetAllowedForSqlType(typename);
-            return NgResultToJsonResult(FetchResult<DQOperator>.Succes(items, items.Count()));
+            var items = SqlOperator.GetAllowedForSqlType(typename);
+            return NgResultToJsonResult(FetchResult<SqlOperator>.Succes(items, items.Count()));
         }
     }
 }

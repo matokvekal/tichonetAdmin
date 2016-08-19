@@ -149,12 +149,13 @@
     <Compile Include="ModelsExtensions.cs" />
     <Compile Include="Services\IScheduleService.cs" />
     <Compile Include="Services\ScheduleService.cs" />
-    <Compile Include="SqlContext\DynamicQuery\DQOperator.cs" />
-    <Compile Include="SqlContext\DynamicQuery\DynQuery.cs" />
+    <Compile Include="SqlContext\SqlOperator.cs" />
     <Compile Include="SqlContext\IDbConnectionFactory.cs" />
     <Compile Include="SqlContext\ISqlLogic.cs" />
     <Compile Include="SqlContext\SqlLogic.cs" />
     <Compile Include="SqlContext\SqlConnectionFactory.cs" />
+    <Compile Include="SqlContext\SqlPredicate.cs" />
+    <Compile Include="SqlContext\SqlType.cs" />
     <Compile Include="Student.cs">
       <DependentUpon>registration.tt</DependentUpon>
     </Compile>

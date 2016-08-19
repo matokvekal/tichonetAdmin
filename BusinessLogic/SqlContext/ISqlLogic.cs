@@ -6,16 +6,16 @@ namespace Business_Logic.SqlContext {
         /// <summary>
         /// table - name of table,
         /// fieldNames - array of column names,
-        /// condition - raw T-SQL string that starts with "WHERE"
+        /// condition - SqlPredicate Graph
         /// </summary>
-        IList<IDictionary<string, object>> FetchData(IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null);
+        IList<IDictionary<string, object>> FetchData(IEnumerable<string> fieldNames, string table, string schema = "dbo", SqlPredicate condition = null);
 
         /// <summary>
         /// table - name of table,
         /// fieldNames - array of column names,
-        /// condition - raw T-SQL string that starts with "WHERE"
+        /// condition - SqlPredicate Graph
         /// </summary>
-        IList<IDictionary<string, object>> FetchDataDistinct(IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null);
+        IList<IDictionary<string, object>> FetchDataDistinct(IEnumerable<string> fieldNames, string table, string schema = "dbo", SqlPredicate condition = null);
 
         /// <summary>
         /// returns dictionary:
