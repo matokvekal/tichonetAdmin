@@ -531,7 +531,7 @@ namespace ticonet
                 Direction = int.Parse(Request["Direction"])
             };
             int ttl = 0;
-            List<StudentFullInfo> lst;
+            List<StudentFullInfo> lst = null;
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Students");
             worksheet.Cell("A1").Value = "Id";

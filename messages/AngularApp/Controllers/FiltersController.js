@@ -139,10 +139,13 @@ var AngularApp;
                         item.Invalid = false;
                         return;
                     }
+                    var itemNameInvalid = AngularApp.isEmptyOrSpaces(item.Name);
+                    if (itemNameInvalid)
+                        item.ValidationErrors.push("name cannot be empty");
                     var keysInvalid = !_this.validateWithKeys(item, function (item, key) { return key.name === item.Key && key.type === item.Type; });
                     if (keysInvalid)
                         item.ValidationErrors.push("base table has no such key [" + item.Key + "] with type [" + item.Type + "]");
-                    item.Invalid = keysInvalid;
+                    item.Invalid = keysInvalid || itemNameInvalid;
                 };
                 this.getMetaFilterValidationString = function (filt) {
                     var output = "";
@@ -330,6 +333,7 @@ var AngularApp;
                         _this.fetchTypeOperators(key.type);
                     var filt = {
                         Id: -1,
+                        Name: key.name,
                         Key: key.name,
                         RecepientFilterId: _this.va.curmetafilter.Id,
                         //Operator: ["="],
@@ -341,7 +345,8 @@ var AngularApp;
                         ng_JustCreated: true,
                         ng_ToDelete: false,
                         allowMultipleSelection: false,
-                        allowUserInput: false
+                        allowUserInput: false,
+                        autoUpdatedList: false
                     };
                     if (AngularApp.IsNullOrUndefined(_this.va.curmetafilter.filters))
                         _this.va.curmetafilter.filters = [];
@@ -434,7 +439,7 @@ var AngularApp;
                             _this.validateFilter(item);
                     }
                 };
-                this.scope.GetValidationInfo = function (item) { return _this.getValidationString(item, "this"); };
+                this.scope.GetValidationInfo = function (item) { return _this.getValidationString(item, "this item"); };
                 this.scope.RemoveItem = function (item) { return _this.RemoveItem(item); };
                 this.scope.RestoreItem = function (item) { return _this.RestoreItem(item); };
                 this.scope.DeleteFiltValue = function (filter, index) {

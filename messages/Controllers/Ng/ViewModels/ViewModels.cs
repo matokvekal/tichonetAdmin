@@ -117,24 +117,33 @@ namespace ticonet.Controllers.Ng.ViewModels {
         public static POCOReflector<tblFilter, FilterVM> tblFilterPR =
             POCOReflector<tblFilter, FilterVM>.Create(
                 (o, m) => m.Id = o.Id,
+                (o, m) => m.Name = o.Name,
                 (o, m) => m.RecepientFilterId = o.tblRecepientFilterId,
                 (o, m) => m.Key = o.Key,
                 //(o, m) => m.Value = JsonConvert.DeserializeObject<string[]>( o.Value ),
                 //(o, m) => m.Operator = JsonConvert.DeserializeObject<string[]>( o.Operator ),
                 (o, m) => {
-                    var vals = JsonConvert.DeserializeObject<string[]>(o.Value);
-                    var ops = JsonConvert.DeserializeObject<string[]>(o.Operator);
-                    m.ValsOps = new ValueOperatorPair[vals.Length];
-                    for (int i = 0; i < vals.Length; i++) {
-                        m.ValsOps[i] = new ValueOperatorPair (vals[i],ops[i],o.Type);
+                    //TODO REFACTOR
+                    try {
+                        var vals = JsonConvert.DeserializeObject<string[]>(o.Value);
+                        var ops = JsonConvert.DeserializeObject<string[]>(o.Operator);
+                        m.ValsOps = new ValueOperatorPair[vals.Length];
+                        for (int i = 0; i < vals.Length; i++) {
+                            m.ValsOps[i] = new ValueOperatorPair (vals[i],ops[i],o.Type);
+                        }
+                    }
+                    catch {
+                        m.ValsOps = new ValueOperatorPair[1];
                     }
                 },
                 (o, m) => m.Type = o.Type,
                 (o, m) => m.allowMultipleSelection = o.allowMultipleSelection ?? false,
-                (o, m) => m.allowUserInput = o.allowUserInput ?? false
+                (o, m) => m.allowUserInput = o.allowUserInput ?? false,
+                (o, m) => m.autoUpdatedList = o.autoUpdatedList ?? false
             );
 
         public int Id { get; set; }
+        public string Name { get; set; }
         public int RecepientFilterId { get; set; }
         public string Key { get; set; }
         public ValueOperatorPair[] ValsOps { get; set; }
@@ -145,6 +154,8 @@ namespace ticonet.Controllers.Ng.ViewModels {
 
         public bool allowMultipleSelection { get; set; }
         public bool allowUserInput { get; set; }
+
+        public bool autoUpdatedList { get; set; }
 
         #region INgViewModel
 

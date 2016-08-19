@@ -34,7 +34,7 @@ var AngularApp;
     }());
     AngularApp.ConcurentRequestHandler = ConcurentRequestHandler;
     function isEmptyOrSpaces(str) {
-        return str === null || str.match(/^ *$/) !== null;
+        return typeof str === 'undefined' || str === null || str.match(/^ *$/) !== null;
     }
     AngularApp.isEmptyOrSpaces = isEmptyOrSpaces;
     function IsConcurentRequestHandler(cb) {

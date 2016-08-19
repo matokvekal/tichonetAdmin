@@ -58,6 +58,7 @@
 
     export class FilterVM implements IIndeficated, INgViewModel, IValidable {
         Id: number
+        Name: string
         RecepientFilterId: number
         Key: string
         //Value: string[]
@@ -66,7 +67,8 @@
         Type: string
 
         allowMultipleSelection:boolean
-        allowUserInput:boolean
+        allowUserInput: boolean
+        autoUpdatedList:boolean
 
         ng_JustCreated: boolean
         ng_ToDelete: boolean
@@ -75,6 +77,7 @@
         Invalid = false
         ValidationErrors: string[]
 
+        //Show:? boolean
     }
 
     export class FilterValueContainer {

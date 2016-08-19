@@ -24,6 +24,8 @@ CREATE TABLE [dbo].[tblFilter] (
     [Type]          NVARCHAR (100) NOT NULL,
 	[allowUserInput]				BIT            NULL,
     [allowMultipleSelection]		BIT            NULL,
+	[Name]          NVARCHAR (150) NULL,
+    [autoUpdatedList]				BIT            NULL,
 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );

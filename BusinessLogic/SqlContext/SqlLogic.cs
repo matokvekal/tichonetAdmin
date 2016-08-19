@@ -26,7 +26,22 @@ namespace Business_Logic.SqlContext{
         /// condition - raw T-SQL string that starts with "WHERE"
         /// </summary>
         public IList<IDictionary<string,object>> FetchData (IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null) {
-            string command = MakeCommand(fieldNames, table, schema, condition);
+            string command = MakeCommand(false, fieldNames, table, schema, condition);
+            return FetchData(command, reader => {
+                var dict = new Dictionary<string, object>();
+                foreach (var field in fieldNames)
+                    dict.Add(field, reader[field]);
+                return dict as IDictionary<string, object>;
+            });
+        }
+
+        /// <summary>
+        /// table - name of table,
+        /// fieldNames - array of column names,
+        /// condition - raw T-SQL string that starts with "WHERE"
+        /// </summary>
+        public IList<IDictionary<string, object>> FetchDataDistinct(IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null) {
+            string command = MakeCommand(true, fieldNames, table, schema, condition);
             return FetchData(command, reader => {
                 var dict = new Dictionary<string, object>();
                 foreach (var field in fieldNames)
@@ -51,13 +66,16 @@ namespace Business_Logic.SqlContext{
         }
 
         /// <summary>
+        /// distinct - if true, only different values
         /// table - name of table,
         /// fieldNames - array of column names,
         /// condition - raw T-SQL string that starts with "WHERE"
         /// </summary>
-        string MakeCommand (IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null) {
+        string MakeCommand (bool distinct, IEnumerable<string> fieldNames, string table, string schema = "dbo", string condition = null) {
             StringBuilder command = new StringBuilder();
             command.Append("SELECT ");
+            if (distinct)
+                command.Append("DISTINCT ");
             foreach (var field in fieldNames) {
                 command.Append("[");
                 command.Append(field);
@@ -82,7 +100,7 @@ namespace Business_Logic.SqlContext{
         /// type: colomn SQL type
         /// </summary>
         public IList<IDictionary<string, string>> GetColomnsInfos(string table, string schema = "dbo") {
-            string command = MakeCommand(new[] { "COLUMN_NAME", "DATA_TYPE" }, 
+            string command = MakeCommand(false, new[] { "COLUMN_NAME", "DATA_TYPE" }, 
                 "COLUMNS", "INFORMATION_SCHEMA", "WHERE TABLE_NAME='"+
                 table+ "' AND TABLE_SCHEMA='"+schema+"'");
             return FetchData(command, x => {
@@ -91,6 +109,17 @@ namespace Business_Logic.SqlContext{
                 dict.Add("type", x.GetString(1));
                 return dict as IDictionary<string, string>;
             });
+        }
+
+        /// <summary>
+        /// returns:
+        /// colomn SQL type
+        /// </summary>
+        public string GetColomnType(string table, string colomnName, string schema = "dbo") {
+            string command = MakeCommand(false, new[] { "DATA_TYPE" },
+                "COLUMNS", "INFORMATION_SCHEMA", "WHERE TABLE_NAME='" +
+                table + "' AND COLUMN_NAME='" + colomnName +"' AND TABLE_SCHEMA='" + schema + "'");
+            return FetchData(command, x => x.GetString(0))[0];
         }
     }
 }

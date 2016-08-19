@@ -39,9 +39,9 @@ var AngularApp;
                             .addFilt("tblRecepientFilterId", mfilt.Id)
                             .addFilt("allowUserInput", true),
                         onSucces: function () {
-                            var arr = [];
-                            _this.va.filters.forEach(function (x) { return arr.push({ FilterId: x.Id, Value: [] }); });
-                            _this.va.curtemplate.FilterValueContainers = arr;
+                            //let arr:FilterValueContainer[] = []
+                            //this.va.filters.forEach(x => arr.push( {FilterId: x.Id,Value:new Array(x.ValsOps.length) } ) )
+                            //this.va.curtemplate.FilterValueContainers = arr
                         }
                     }, _this.va.filters, true);
                 };
@@ -64,6 +64,7 @@ var AngularApp;
                     _this.va.curtemplate.RecepientFilterId = mfilt.Id;
                     _this.refetchWildcards(mfilt);
                     _this.refetchFilters(mfilt);
+                    _this.va.curtemplate.FilterValueContainers = [];
                 };
                 this.turnTemplateEdit = function (templ) {
                     _this.va.curtemplate = AngularApp.CloneShallow(templ);
@@ -131,10 +132,16 @@ var AngularApp;
                     }
                 };
                 this.getFilterValueCont = function (filt) {
-                    var a = _this.va.curtemplate.FilterValueContainers.first(function (x) { return x.FilterId === filt.Id; });
-                    if (a !== undefined)
-                        return a;
-                    _this.va.curtemplate.FilterValueContainers.push({ FilterId: filt.Id, Value: [] });
+                    var output = _this.va.curtemplate.FilterValueContainers.first(function (x) { return x.FilterId === filt.Id; });
+                    if (output !== undefined) {
+                        if (AngularApp.IsNullOrUndefined(output.Value))
+                            output.Value = [];
+                    }
+                    else {
+                        output = { FilterId: filt.Id, Value: [] };
+                        _this.va.curtemplate.FilterValueContainers.push(output);
+                    }
+                    return output;
                 };
             }
             TemplatesController.prototype.buildVa = function () { return new TemplatesVA; };
@@ -165,9 +172,13 @@ var AngularApp;
                     var val = _this.getFilterValueCont(filt);
                     if (!filt.allowMultipleSelection)
                         val.Value = [];
-                    val.Value[index] = !val.Value[index];
+                    val.Value[index] = AngularApp.IsNullOrUndefined(val.Value[index]) ?
+                        filt.ValsOps[index].Value
+                        : null;
                 };
-                this.scope.HasFilterValueContVal = function (filt, index) { return _this.getFilterValueCont(filt).Value[index] === true; };
+                this.scope.HasFilterValueContVal = function (filt, value) {
+                    return _this.getFilterValueCont(filt).Value.any(function (x) { return x === value; });
+                };
                 this.scope.DEMO = function () {
                     _this.fetchtoarr(true, {
                         urlalias: "mockmsgs", params: { templateId: _this.va.curtemplate.Id }

@@ -189,6 +189,10 @@
             border-bottom: 1px solid #333333
         }
 
+        .top-bord{
+            border-top: 1px solid #333333
+        }
+
         .main-block.unfolded {
             padding-bottom:0px;
         }
@@ -321,6 +325,13 @@
             transition: all ease 0.7s;
             line-height: 1;
         }
+
+        /*.txtinput:before{
+            content:"..."
+        }
+        .txtinput:focus:before{
+            content:""
+        }*/
 
         .txtarea:focus,
         .txtinput:focus,
@@ -779,34 +790,50 @@
                                                     <div class="item-row" ng-if="!nfilt.ng_ToDelete" ng-class="{'invalid':nfilt.Invalid}">
                                                         @* nfilt.ValsOps is array. if there more then 1 value, other values is like "OR" in expression *@
                                                         <div class="txt-c-gr">
-                                                            <i class="glyphicon glyphicon-filter"></i>
-                                                            {{nfilt.Key}}
-                                                            <i class="txt-c-grmore glyphicon iconclick glyphicon-trash"
-                                                                ng-click="RemoveItem(nfilt)"></i>  
+                                                            <div>
+                                                                <i class="glyphicon glyphicon-filter"></i>
+                                                                <input class="txtinput" type="text" ng-model="nfilt.Name" 
+                                                                    ng-model-options='{ debounce: 500 }'
+                                                                    ng-change='ValidateItem(nfilt,"filter")'/>
+                                                            </div>
+                                                            <div class="txt-c-grmore">
+                                                                {{nfilt.Key}}
+                                                                <i class="txt-c-grmore glyphicon iconclick glyphicon-trash"
+                                                                    ng-click="RemoveItem(nfilt)"></i>  
+                                                            </div>
                                                         </div>
+
                                                         <!-- Filter Expression -->
-                                                        <div ng-repeat="nvalop in nfilt.ValsOps" class="filter-expr" ng-class="{'first':$first}">
-                                                            <span style="width:30%" ng-if="!$first">
-                                                                <span class="txt-c-grmore">or: </span>
-                                                            </span>
-                                                            <select text-align:center"
-                                                                    class="selector" ng-model="nvalop.Operator" ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)"></select>
-                                                            <input class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="nvalop.Value" />
-                                                            <i ng-if="nfilt.ValsOps.length>1" class="txt-c-grmore glyphicon iconclick glyphicon-trash"
-                                                               ng-click="DeleteFiltValue(nfilt,$index)"></i>  
+                                                        @* if user input is allowed and autoupdated list is showed, this part won't be showed *@
+                                                        <div ng-if="!(nfilt.allowUserInput&&nfilt.autoUpdatedList)" class="ngan-fade-mid">
+                                                            <div ng-repeat="nvalop in nfilt.ValsOps" class="filter-expr" ng-class="{'first':$first}">
+                                                                <span style="width:30%" ng-if="!$first">
+                                                                    <span class="txt-c-grmore">or: </span>
+                                                                </span>
+                                                                <select text-align:center"
+                                                                        class="selector" ng-model="nvalop.Operator" ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)"></select>
+                                                                <input placeholder="..." class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="nvalop.Value" />
+                                                                <i ng-if="nfilt.ValsOps.length>1" class="txt-c-grmore glyphicon iconclick glyphicon-trash"
+                                                                   ng-click="DeleteFiltValue(nfilt,$index)"></i>  
+                                                            </div>
+                                                            <!-- Filter add 'OR' to Expression -->
+                                                            <span style="padding-left:20px" class="txt-c-grmore txt-anim hover-highlight clickable" 
+                                                                  ng-click="AddFiltValue(nfilt)"> add "or" </span>
                                                         </div>
-                                                        <!-- Filter add 'OR' to Expression -->
-                                                        <span style="padding-left:20px" class="txt-c-grmore txt-anim hover-highlight clickable" 
-                                                              ng-click="AddFiltValue(nfilt)"> add "or" </span>
+
 
                                                         <!-- Templates-user can tune this filter if checked -->
                                                         <div class="txt-c-gr">
                                                             <input type="checkbox" class="checkbox" ng-model="nfilt.allowUserInput" />
                                                             Allow User Input
                                                         </div>
+                                                        <div class="txt-c-gr" ng-if="nfilt.allowUserInput">
+                                                            <input type="checkbox" class="checkbox" ng-model="nfilt.autoUpdatedList" />
+                                                            Get list fields from db
+                                                        </div>
 
-                                                        <!-- If we have OR options in filter, and if userinput is allowed, it will be shown as selectable list -->
-                                                        <div ng-if="nfilt.ValsOps.length>1&&nfilt.allowUserInput" class="ngan-fade-mid">
+                                                        <!-- If we have OR options in filter or filter is autoUpdated, and if userinput is allowed, it will be shown as selectable list -->
+                                                        <div ng-if="(nfilt.ValsOps.length>1||nfilt.autoUpdatedList)&&nfilt.allowUserInput" class="ngan-fade-mid">
                                                             <div class="txt-s-small txt-c-grmore">this filter will be used like a list of options</div>
                                                             <div class="txt-c-gr">
                                                                 <input type="checkbox" class="checkbox" ng-model="nfilt.allowMultipleSelection" />
@@ -920,31 +947,40 @@
                                 <div>
                                     <span class="txt-c-grmore" style="padding-right:10px">Header: </span>
                                     <input class="txtinput" type="text" ng-model="va.curtemplate.MsgHeader" 
+                                           placeholder="..."
                                            droppable id="{{va.templatesHeader_ElemId}}"
                                            drop="templatesTextDropped"
                                            style="width:320px"
                                            />
                                 </div>
+
                                 <!--Filters-->
-                                Filters
-                                <div>
+                                <div class="top-bord">
                                     <div ng-repeat="nfilt in va.filters">
-                                        <!--For direct input-->
-                                        <div ng-if="nfilt.ValsOps.length===1">
-                                            <div class="txt-c-gr">{{nfilt.Key}} {{nfilt.ValsOps[0].Operator}}</div>
-                                            <input class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="GetFilterValueCont(nfilt).Value[0]" />
+                                        <div class="txt-c-gr txt-anim hover-highlight clickable" ng-click="nfilt.Show=!nfilt.Show">
+                                            <i class="glyphicon glyphicon-filter"></i>
+                                            {{nfilt.Name}}
                                         </div>
+                                        <div ng-if="nfilt.Show" class="ngan-fade-mid" style="padding-left:15px">
+                                            
+                                            <!--For direct input-->
+                                            <div ng-if="nfilt.ValsOps.length===1&&!nfilt.autoUpdatedList">
+                                                <span class="txt-c-gr">{{nfilt.Key}} {{nfilt.ValsOps[0].Operator}}</span>
+                                                <input placeholder="..." class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="GetFilterValueCont(nfilt).Value[0]" />
+                                            </div>
                                         
-                                        <!--For list choose-->
-                                        <div ng-if="nfilt.ValsOps.length>1">
-                                            <div ng-repeat="valop in nfilt.ValsOps">
-                                                <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchFilterValueContVal(nfilt,$index)">
-                                                    <i class="glyphicon iconclick"
-                                                        ng-class="HasFilterValueContVal(nfilt,$index) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked txt-c-grmore'"></i>
-                                                    <span>{{nfilt.Key}} {{valop.Operator}} {{valop.Value}}</span>
-                                                </span>
+                                            <!--For list choose-->
+                                            <div ng-if="nfilt.ValsOps.length>1||nfilt.autoUpdatedList">
+                                                <div ng-repeat="valop in nfilt.ValsOps">
+                                                    <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchFilterValueContVal(nfilt,$index)">
+                                                        <i class="glyphicon iconclick"
+                                                            ng-class="HasFilterValueContVal(nfilt,valop.Value) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked txt-c-grmore'"></i>
+                                                        <span>{{nfilt.Key}} {{valop.Operator}} {{valop.Value}}</span>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
                                 <div class="clearfix">
@@ -989,7 +1025,7 @@
                                     <a class="abut" ng-click="templSave()">Save</a>
                                     <a class="abut" ng-click="hideEditor()">Cancel</a>
                                 </div>
-                                @*<div>
+                                <div>
                                     <a class="abut" ng-click="DEMO()">Show a Demo (pls save before)</a>
                                     <hr />
                                     <div ng-repeat="msg in va.demomsgs">
@@ -997,7 +1033,7 @@
                                         <div><pre>{{msg.body}}</pre></div>
                                         <hr />
                                     </div>
-                                </div>*@
+                                </div>
                             </div>
                         </div>
                     </div>

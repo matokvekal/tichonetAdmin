@@ -73,69 +73,142 @@ namespace ticonet.Controllers.Ng{
             sqlLogic = logic;
         }
 
+        string ToStringSafe(object obj){
+            if (obj == null)
+                return "";
+            return obj.ToString();
+        }
+
         public JsonResult MockMessage (int templateId) {
-            //GET NEEDED DATA
             tblTemplate templ;
             tblFilter[] filters;
+            var filtsToValops = new Dictionary<int, ValueOperatorPair[]>();
+
             tblWildcard[] wildcards;
+            tblRecepientCard[] reccards;
+
+            FilterValueContainer[] userFilterValues;
+
             string table;
             string msg_h;
             string msg_b;
+
+            //GET NEEDED DATA
             using (var l = new MessagesModuleLogic()) {
                 templ = l.Get<tblTemplate>(templateId);
                 if (templ == null)
                     return NgResultToJsonResult(NgResult.Fail("Save Template First"));
-                msg_h = templ.MsgHeader;
-                msg_b = templ.MsgBody;
+                userFilterValues = JsonConvert.DeserializeObject<FilterValueContainer[]>(templ.FilterValueContainersJSON);
+                msg_h = templ.MsgHeader ?? string.Empty;
+                msg_b = templ.MsgBody ?? string.Empty;
                 filters = templ.tblRecepientFilter.tblFilters.ToArray();
+
+                foreach (var filt in filters){
+                    if (filt.autoUpdatedList.HasValue && filt.autoUpdatedList.Value) {
+                        //if user-inputed
+                        var tableName = templ.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName;
+                        var type = sqlLogic.GetColomnType(tableName, filt.Key);
+                        var valops = sqlLogic.FetchDataDistinct(new[] { filt.Key }, tableName)
+                            .Select(x => new ValueOperatorPair(x[filt.Key].ToString(), "=", type))
+                            //HERE WE USE STRING CHECK
+                            .Where(x => userFilterValues.Any(y => y.FilterId==filt.Id && y.Value !=null && y.Value.Any( z => ToStringSafe(z) == x.Value.ToString() )))
+                            .ToArray();
+                        filtsToValops.Add(filt.Id, valops);
+                    }
+                    else {
+                        //if no user-inputed
+                        var vals = JsonConvert.DeserializeObject<string[]>(filt.Value);
+                        var ops = JsonConvert.DeserializeObject<string[]>(filt.Operator);
+                        var valops = new ValueOperatorPair[vals.Length];
+                        for (int i = 0; i < vals.Length; i++) {
+                            valops[i] = new ValueOperatorPair(vals[i], ops[i], filt.Type);
+                        }
+                        filtsToValops.Add(filt.Id, valops);
+                    }
+
+                }
                 wildcards = templ.tblRecepientFilter.tblWildcards.ToArray();
+                reccards = templ.tblRecepientFilter.tblRecepientCards.ToArray();
                 table = templ.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName;
             }
             //BUILD CONDITION
             StringBuilder cond = new StringBuilder();
-            cond.Append("WHERE ");
-            foreach(var f in filters) {
-                //TODO HERE A PLACE TO ATTACK!
-                cond.Append(f.Key);
-                cond.Append(" ");
-                DQOperator op = new DQOperator(f.Operator);
-                cond.Append(op.SQLString);
-                cond.Append(" ");
-                if (f.Type == "nvarchar") {
-                    cond.Append("'");
+            if (filters.Length > 0) {
+                cond.Append("WHERE");
+                foreach(var f in filters) {
                     //TODO HERE A PLACE TO ATTACK!
-                    cond.Append(f.Value);
-                    cond.Append("'");
+                    cond.Append(" (");
+
+                    var valops = filtsToValops[f.Id];
+                    int valopsCount = 0;
+                    foreach (var valop in valops)
+                    {
+                        string value = valop.Value.ToString();
+                        if (!string.IsNullOrWhiteSpace(value))
+                        {
+                            valopsCount++;
+                            cond.Append(f.Key);
+                            DQOperator op = new DQOperator(valop.Operator);
+                            cond.Append(" ");
+                            cond.Append(op.SQLString);
+                            cond.Append(" ");
+                            if (f.Type == "nvarchar")
+                            {
+                                cond.Append("'");
+                                //TODO HERE A PLACE TO ATTACK!
+                                cond.Append(value);
+                                cond.Append("'");
+                            }
+                            else
+                            //TODO HERE A PLACE TO ATTACK!
+                                cond.Append(value);
+                            cond.Append(" OR ");
+                        }
+                    }
+                    if (valopsCount > 0) {
+                        cond.Remove(cond.Length - 4, 4);
+                        cond.Append(") ");
+                        cond.Append(" AND ");
+                    }
+                    else
+                        cond.Remove(cond.Length - 2, 2);
                 }
-                else
-                    //TODO HERE A PLACE TO ATTACK!
-                    cond.Append(f.Value);
-
-                cond.Append(" AND ");
-            }
-            if (filters.Length > 0)
                 cond.Remove(cond.Length - 5, 5);
-
+            }
 
             //BUILD FIELDS
-            var colomns = wildcards.Select(x => x.Key);
+            var colomns = wildcards.Select(x => x.Key)
+                .Concat(reccards.Select(x => x.EmailKey))
+                .Concat(reccards.Select(x => x.NameKey))
+                .Concat(reccards.Select(x => x.PhoneKey)).Distinct();
 
             //FETCH SQL DATA
             var data = sqlLogic.FetchData(colomns,table,"dbo",cond.ToString());
 
             //FILL FIELDS
+
             var messages = new List<Dictionary<string, string>>();
             foreach (var kv in data) {
-                var dict = new Dictionary<string, string>();
                 var header = msg_h;
                 var body = msg_b;
+
                 foreach (var card in wildcards) {
-                    header = card.Apply(header, kv);
-                    body = card.Apply(body, kv);
+                    //if(!string.IsNullOrWhiteSpace(header))
+                        header = card.Apply(header, kv);
+                    //if (!string.IsNullOrWhiteSpace(body))
+                        body = card.Apply(body, kv);
                 }
-                dict.Add("header", header);
-                dict.Add("body", body);
-                messages.Add(dict);
+
+                //applying recepients
+                foreach (var reccard in reccards) {
+                    var dict = new Dictionary<string, string>();
+                    var nheader = reccard.Apply(header, kv);
+                    var nbody = reccard.Apply(body, kv);
+
+                    dict.Add("header", nheader);
+                    dict.Add("body", nbody);
+                    messages.Add(dict);
+                }
             }
             //
             return NgResultToJsonResult(FetchResult<Dictionary<string, string>>.Succes(messages,messages.Count));

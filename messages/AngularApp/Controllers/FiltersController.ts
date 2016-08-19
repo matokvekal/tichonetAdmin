@@ -136,7 +136,7 @@
                 }
             }
 
-            this.scope.GetValidationInfo = (item: IValidable) => this.getValidationString(item,"this")
+            this.scope.GetValidationInfo = (item: IValidable) => this.getValidationString(item,"this item")
 
             this.scope.RemoveItem = (item: INgViewModel) => this.RemoveItem(item)
             this.scope.RestoreItem = (item: INgViewModel) => this.RestoreItem(item)
@@ -281,11 +281,15 @@
                 return
             }
 
+            let itemNameInvalid = isEmptyOrSpaces(item.Name)
+            if (itemNameInvalid)
+                item.ValidationErrors.push("name cannot be empty");
+
             let keysInvalid = !this.validateWithKeys(item, (item, key) => key.name === item.Key && key.type === item.Type)
             if (keysInvalid)
                 item.ValidationErrors.push("base table has no such key [" + item.Key + "] with type [" + item.Type + "]");
 
-            item.Invalid = keysInvalid
+            item.Invalid = keysInvalid || itemNameInvalid
         }
 
         validateWithKeys<T>(item: T, validator: (item: T, key: KeyVM) => boolean): boolean {
@@ -519,6 +523,7 @@
                 this.fetchTypeOperators(key.type)
             let filt:FilterVM = {
                 Id: -1,
+                Name: key.name,
                 Key: key.name,
                 RecepientFilterId: this.va.curmetafilter.Id,
                 //Operator: ["="],
@@ -530,7 +535,8 @@
                 ng_JustCreated: true,
                 ng_ToDelete: false,
                 allowMultipleSelection: false,
-                allowUserInput: false
+                allowUserInput: false,
+                autoUpdatedList: false
             }
             if (IsNullOrUndefined(this.va.curmetafilter.filters))
                 this.va.curmetafilter.filters = []

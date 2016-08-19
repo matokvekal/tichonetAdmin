@@ -39,7 +39,7 @@
     }
 
     export function isEmptyOrSpaces(str: string) {
-        return str === null || str.match(/^ *$/) !== null;
+        return typeof str === 'undefined' || str === null || str.match(/^ *$/) !== null;
     }
 
     function IsConcurentRequestHandler(cb) {

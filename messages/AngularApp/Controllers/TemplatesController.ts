@@ -52,10 +52,14 @@
                 let val = this.getFilterValueCont(filt)
                 if (!filt.allowMultipleSelection)
                     val.Value = []
-                val.Value[index] = !val.Value[index]
+                val.Value[index] = IsNullOrUndefined(val.Value[index]) ?
+                    filt.ValsOps[index].Value
+                    : null
             }
 
-            this.scope.HasFilterValueContVal = (filt: FilterVM, index: number) => this.getFilterValueCont(filt).Value[index] === true
+            this.scope.HasFilterValueContVal = (filt: FilterVM, value: any) => {
+                return this.getFilterValueCont(filt).Value.any(x => x === value)
+            }
 
             this.scope.DEMO = () => {
                 this.fetchtoarr(true, {
@@ -85,9 +89,9 @@
                     .addFilt("tblRecepientFilterId", mfilt.Id)
                     .addFilt("allowUserInput", true),
                 onSucces: () => {
-                    let arr:FilterValueContainer[] = []
-                    this.va.filters.forEach(x => arr.push( {FilterId: x.Id,Value:[] } ) )
-                    this.va.curtemplate.FilterValueContainers = arr
+                    //let arr:FilterValueContainer[] = []
+                    //this.va.filters.forEach(x => arr.push( {FilterId: x.Id,Value:new Array(x.ValsOps.length) } ) )
+                    //this.va.curtemplate.FilterValueContainers = arr
                 }
             }, this.va.filters, true)
         }
@@ -115,6 +119,7 @@
             this.va.curtemplate.RecepientFilterId = mfilt.Id
             this.refetchWildcards(mfilt)
             this.refetchFilters(mfilt)
+            this.va.curtemplate.FilterValueContainers = []
         }
 
         turnTemplateEdit = (templ: TemplateVM) => {
@@ -188,9 +193,16 @@
         }
 
         getFilterValueCont = (filt: FilterVM) => {
-            let a = this.va.curtemplate.FilterValueContainers.first(x => x.FilterId === filt.Id)
-            if (a !== undefined) return a
-            this.va.curtemplate.FilterValueContainers.push({FilterId: filt.Id, Value:[]})
+            let output = this.va.curtemplate.FilterValueContainers.first(x => x.FilterId === filt.Id)
+            if (output !== undefined) {
+                if (IsNullOrUndefined(output.Value))
+                    output.Value = []
+            }
+            else {
+                output = { FilterId: filt.Id, Value: [] }
+                this.va.curtemplate.FilterValueContainers.push(output)
+            }
+            return output
         }
 
     }

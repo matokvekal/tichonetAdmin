@@ -17,6 +17,8 @@
           <Property Name="Type" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="allowUserInput" Type="bit" />
           <Property Name="allowMultipleSelection" Type="bit" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" />
+          <Property Name="autoUpdatedList" Type="bit" />
         </EntityType>
         <EntityType Name="tblRecepientCard">
           <Key>
@@ -120,6 +122,8 @@
           <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="allowUserInput" Type="Boolean" />
           <Property Name="allowMultipleSelection" Type="Boolean" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="autoUpdatedList" Type="Boolean" />
         </EntityType>
         <EntityType Name="tblRecepientFilter">
           <Key>
@@ -248,6 +252,8 @@
           <EntitySetMapping Name="tblFilters">
             <EntityTypeMapping TypeName="Messages.tblFilter">
               <MappingFragment StoreEntitySet="tblFilter">
+                <ScalarProperty Name="autoUpdatedList" ColumnName="autoUpdatedList" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="allowMultipleSelection" ColumnName="allowMultipleSelection" />
                 <ScalarProperty Name="allowUserInput" ColumnName="allowUserInput" />
                 <ScalarProperty Name="Type" ColumnName="Type" />

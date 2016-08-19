@@ -22,6 +22,8 @@ namespace Business_Logic.MessagesContext
         public string Type { get; set; }
         public Nullable<bool> allowUserInput { get; set; }
         public Nullable<bool> allowMultipleSelection { get; set; }
+        public string Name { get; set; }
+        public Nullable<bool> autoUpdatedList { get; set; }
     
         public virtual tblRecepientFilter tblRecepientFilter { get; set; }
     }

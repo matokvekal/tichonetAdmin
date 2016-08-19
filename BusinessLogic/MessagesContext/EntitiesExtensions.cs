@@ -10,6 +10,7 @@ namespace Business_Logic.MessagesContext {
     }
 
     public partial class tblFilter: IMessagesContextEntity {
+
     }
     public partial class tblRecepientFilter: IMessagesContextEntity {
     }
@@ -37,7 +38,6 @@ namespace Business_Logic.MessagesContext {
                 .Replace(NameCode, data[NameKey].ToString())
                 .Replace(EmailCode, data[EmailKey].ToString())
                 .Replace(PhoneCode, data[PhoneKey].ToString());
-
         }
     }
 }

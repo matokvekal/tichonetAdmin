@@ -68,18 +68,24 @@ namespace ticonet.Controllers.Ng {
             //!!!! IMPLEMENT POCO_AUTOBINDING MECHANISM IF YOU GOING TO DO SAME THINGS IN OTHER PLACE
             ManagerRFilterPart<tblFilter, FilterVM>(l, model.filters, (e, m) => {
                 e.Key = m.Key;
-                string[] ops = new string[m.ValsOps.Length];
-                string[] vals = new string[m.ValsOps.Length];
-                for (int i = 0; i < m.ValsOps.Length; i++) {
-                    ops[i] = m.ValsOps[i].Operator;
-                    //TODO
-                    //NULL CHECK
-                    vals[i] = m.ValsOps[i].Value.ToString();
+                e.Name = m.Name;
+                e.autoUpdatedList = m.autoUpdatedList;
+                if (!m.autoUpdatedList){
+                    string[] ops = new string[m.ValsOps.Length];
+                    string[] vals = new string[m.ValsOps.Length];
+                    for (int i = 0; i < m.ValsOps.Length; i++) {
+                        ops[i] = m.ValsOps[i].Operator;
+                        vals[i] = m.ValsOps[i].Value == null ? "": m.ValsOps[i].Value.ToString();
+                    }
+                    e.Operator = JsonConvert.SerializeObject(ops);
+                    e.Value = JsonConvert.SerializeObject(vals);
+                }
+                else {
+                    e.Operator = ".";
+                    e.Value = ".";
                 }
                 e.allowMultipleSelection = m.allowMultipleSelection;
                 e.allowUserInput = m.allowUserInput;
-                e.Operator = JsonConvert.SerializeObject(ops);
-                e.Value = JsonConvert.SerializeObject(vals);
                 e.Type = m.Type;
                 e.tblRecepientFilterId = model.Id;
             });
