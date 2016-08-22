@@ -457,7 +457,7 @@ namespace ticonet
             return File(sr.ReadBytes((int)ms.Length), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Students.xlsx"); ;
 
         }
-        public FileContentResult btnExportToExcel3()
+        public FileContentResult btnExportToExcel3()//lines
         {
 
             LineLogic.updateAriveAndDepartureTime();
@@ -466,46 +466,91 @@ namespace ticonet
             Response.Cookies.Add(new HttpCookie("fileDownload", "true"));
 
 
-            int headerRow = 3;
+       
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add("LINES");
-            worksheet.Cell("A" + headerRow).Value = DEBS.Translate("BusCompany.Name");
-            worksheet.Cell("B" + headerRow).Value = DEBS.Translate("Line.LineName");
-            worksheet.Cell("C" + headerRow).Value = DEBS.Translate("Line.LineNumber");
-            worksheet.Cell("D" + headerRow).Value = DEBS.Translate("Line.Direction");
-            worksheet.Cell("E" + headerRow).Value = DEBS.Translate("Line.Duration");
-            worksheet.Cell("F" + headerRow).Value = DEBS.Translate("Line.BasicArriveTime");
-            worksheet.Cell("G" + headerRow).Value = DEBS.Translate("Line.BasicDepartureTime");
-            worksheet.Cell("H" + headerRow).Value = DEBS.Translate("Stations.StationName");
-            worksheet.Cell("I" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalDate");
-            worksheet.Cell("J" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeSun");
-            worksheet.Cell("K" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeMon");
-            worksheet.Cell("L" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeTue");
-            worksheet.Cell("M" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeWed");
-            worksheet.Cell("N" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeThu");
-            worksheet.Cell("O" + headerRow).Value = DEBS.Translate("StationsToLines.ArrivalTimeFri");
+            var worksheet = workbook.Worksheets.Add("אקסל  קוים ותחנות ");
+            //worksheet.Cell("A" + headerRow).Value = DEBS.Translate("BusCompany.Name");
+            //worksheet.Cell("B" + headerRow).Value = DEBS.Translate("Line.LineName");
+            //worksheet.Cell("C" + headerRow).Value = DEBS.Translate("Line.LineNumber");
+            //worksheet.Cell("D" + headerRow).Value = DEBS.Translate("Line.Direction");
+            //worksheet.Cell("E" + headerRow).Value = DEBS.Translate("Line.Duration");
+            //worksheet.Cell("F" + headerRow).Value = DEBS.Translate("Line.totalStudents");
+            //worksheet.Cell("G" + headerRow).Value = DEBS.Translate("Line.BasicArriveTime");
+            //worksheet.Cell("H" + headerRow).Value = DEBS.Translate("Line.BasicDepartureTime");
+
+
+
+            int headerRow = 0;
+            //bool start = true;
             string lineNumberPrev = null;
-            var row = headerRow+1;
+            var row = 3;
+
+
+
                lst = lst.OrderBy(c => c.LineNumber).ThenBy(c => c.Position).ToList();
             foreach (var stud in lst)
             {
-                if (lineNumberPrev != stud.LineNumber & row > headerRow + 1)
+                if (lineNumberPrev != stud.LineNumber)
+                {//main header + data for line
+                    headerRow = row + 2;
+                    worksheet.Cell("A" + headerRow).Value = DEBS.Translate("BusCompany.Name");
+                    worksheet.Cell("B" + headerRow).Value = stud.companyName;
+                    worksheet.Cell("C" + headerRow).Value = DEBS.Translate("Line.LineName");
+                    worksheet.Cell("D" + headerRow).Value = stud.LineName;
+                    worksheet.Cell("E" + headerRow).Value = DEBS.Translate("Line.LineNumber");
+                    worksheet.Cell("F" + headerRow).Value = stud.LineNumber;
+                    worksheet.Cell("G" + headerRow).Value = DEBS.Translate("Line.Direction");
+                    worksheet.Cell("H" + headerRow).Value = stud.Direction == 0 ? DEBS.Translate("General.To") : DEBS.Translate("General.From");
+                    worksheet.Cell("I" + headerRow).Value = DEBS.Translate("Line.Duration");
+                    worksheet.Cell("J" + headerRow).Value = stud.Duration != null ? stud.Duration.Value.ToString(@"dd\.hh\:mm\:ss") : null;
+                    worksheet.Cell("K" + headerRow).Value = DEBS.Translate("Line.totalStudents");
+                    worksheet.Cell("L" + headerRow).Value = stud.totalStudents;
+                    //design
+                    worksheet.Cell("A" + headerRow).Style.Font.Bold = true;
+                    worksheet.Cell("C" + headerRow).Style.Font.Bold = true;
+                    worksheet.Cell("E" + headerRow).Style.Font.Bold = true;
+                    worksheet.Cell("G" + headerRow).Style.Font.Bold = true;
+                    worksheet.Cell("I" + headerRow).Style.Font.Bold = true;
+                    worksheet.Cell("K" + headerRow).Style.Font.Bold = true;
+
+
+                    //headers for stations
+                    worksheet.Cell("A" + (headerRow + 1)).Value = DEBS.Translate("Stations.Position");
+                    worksheet.Cell("B" + (headerRow + 1)).Value = DEBS.Translate("Stations.StationName");
+                    worksheet.Cell("C" + (headerRow + 1)).Value = DEBS.Translate("StationsToLines.ArrivalDate");
+                    worksheet.Cell("D" + (headerRow + 1)).Value = DEBS.Translate("StationsToLines.ArrivalTimeSun");
+                    worksheet.Cell("E" + (headerRow + 1)).Value = DEBS.Translate("StationsToLines.ArrivalTimeMon");
+                    worksheet.Cell("F" + (headerRow + 1)).Value = DEBS.Translate("StationsToLines.ArrivalTimeTue");
+                    worksheet.Cell("G" + (headerRow + 1)).Value = DEBS.Translate("StationsToLines.ArrivalTimeWed");
+                    worksheet.Cell("H" + (headerRow + 1)).Value = DEBS.Translate("StationsToLines.ArrivalTimeThu");
+                    worksheet.Cell("I" + (headerRow + 1)).Value = DEBS.Translate("StationsToLines.ArrivalTimeFri");
+
+
+                    lineNumberPrev = stud.LineNumber;
+                    row = headerRow + 1;
+                }
+          
                     row++;
-                worksheet.Cell(row, "A").Value = stud.companyName;
-                worksheet.Cell(row, "B").Value = stud.LineName;
-                worksheet.Cell(row, "C").Value = lineNumberPrev = stud.LineNumber;
-                worksheet.Cell(row, "D").Value = stud.Direction==0 ? DEBS.Translate("General.To") : DEBS.Translate("General.From");
-                worksheet.Cell(row, "E").Value = stud.Duration != null ? stud.Duration.Value.ToString(@"dd\.hh\:mm\:ss") : null;
-                worksheet.Cell(row, "F").Value = stud.Position;
-                worksheet.Cell(row, "H").Value = stud.StationName;
-                worksheet.Cell(row, "I").Value = stud.ArrivalDate;
-                worksheet.Cell(row, "J").Value = stud.Sun;
-                worksheet.Cell(row, "K").Value = stud.Mon;
-                worksheet.Cell(row, "L").Value = stud.Tue;
-                worksheet.Cell(row, "M").Value = stud.Wed;
-                worksheet.Cell(row, "N").Value = stud.Thu;
-                worksheet.Cell(row, "O").Value = stud.Fri;
-                row++;
+
+             
+
+
+                //worksheet.Cell(row, "A").Value = stud.companyName;
+                //worksheet.Cell(row, "B").Value = stud.LineName;
+                //worksheet.Cell(row, "C").Value = lineNumberPrev = stud.LineNumber;
+                //worksheet.Cell(row, "D").Value = stud.Direction==0 ? DEBS.Translate("General.To") : DEBS.Translate("General.From");
+                //worksheet.Cell(row, "E").Value = stud.Duration != null ? stud.Duration.Value.ToString(@"dd\.hh\:mm\:ss") : null;
+                //worksheet.Cell(row, "F").Value = stud.totalStudents;
+                worksheet.Cell(row, "A").Value = stud.Position;
+                worksheet.Cell(row, "B").Value = stud.StationName;
+                worksheet.Cell(row, "C").Value = stud.ArrivalDate;
+                worksheet.Cell(row, "D").Value = stud.Sun;
+                worksheet.Cell(row, "E").Value = stud.Mon;
+                worksheet.Cell(row, "F").Value = stud.Tue;
+                worksheet.Cell(row, "G").Value = stud.Wed;
+                worksheet.Cell(row, "H").Value = stud.Thu;
+                worksheet.Cell(row, "I").Value = stud.Fri;
+
 
             }
 
