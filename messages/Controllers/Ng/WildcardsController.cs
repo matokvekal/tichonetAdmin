@@ -22,7 +22,7 @@ namespace ticonet.Controllers.Ng
             using (var l = new MessagesModuleLogic()) {
                 int fullQueryCount;
                 var queryResult = l.GetFiltered<tblWildcard>(Skip, Count, filters, out fullQueryCount)
-                    .Select(x => VMConstructor.MakeFromObj(x, WildcardVM.tblWildcardPR));
+                    .Select(x => PocoConstructor.MakeFromObj(x, WildcardVM.tblWildcardPR));
                 return FetchResult<WildcardVM>.Succes(queryResult, fullQueryCount);
             }
         }

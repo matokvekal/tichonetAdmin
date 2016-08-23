@@ -33,7 +33,7 @@ namespace ticonet.Controllers.Ng {
             int allQueryCount;
             using (var l = new MessagesModuleLogic()) {
                 var result = l.GetFiltered<tblFilter>(Skip, Count, filters, out allQueryCount);
-                filts = result.Select(x => VMConstructor.MakeFromObj(x, FilterVM.tblFilterPR)).ToArray();
+                filts = result.Select(x => PocoConstructor.MakeFromObj(x, FilterVM.tblFilterPR)).ToArray();
                 result.ForEach(x => filtsToTables.Add(x.Id, x.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName));
             }
 

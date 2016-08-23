@@ -19,8 +19,8 @@ CREATE TABLE [dbo].[tblFilter] (
     [tblRecepientFilterId]			INT				NOT NULL,
 
 	[Key]			NVARCHAR (MAX)	NOT NULL,
-	[Value]			NVARCHAR (MAX)	NOT NULL,
-	[Operator]		NVARCHAR (MAX)	NOT NULL,
+	[ValuesJSON]					NVARCHAR (MAX)	NOT NULL,
+	[OperatorsJSON]					NVARCHAR (MAX)	NOT NULL,
     [Type]          NVARCHAR (100) NOT NULL,
 	[allowUserInput]				BIT            NULL,
     [allowMultipleSelection]		BIT            NULL,
@@ -63,6 +63,8 @@ CREATE TABLE [dbo].[tblTemplate] (
 	[MsgHeader]		NVARCHAR (500)	NULL,
 	[MsgBody]		NVARCHAR (MAX)	NULL,
 	[FilterValueContainersJSON] NVARCHAR (MAX) NULL,
+    [ChoosenReccardIdsJSON]				NVARCHAR (MAX) NULL,
+
 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );

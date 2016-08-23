@@ -530,7 +530,7 @@ namespace Business_Logic
                     dayNumber = x.Date.Value.Day
                 }).ToDictionary(x => x.dayNumber);
 
-            //todo its possible to optimize and do without dict
+            //its possible to optimize and do without dict
             int days = DateHelper.GetDatesPeriodInDays(periodStart_incl, periodEnd_excl);
             if (days <= 0)
                 throw new ArgumentException("start date and end date periods must be in one day range at least, start should come first");

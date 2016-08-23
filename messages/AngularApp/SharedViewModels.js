@@ -75,6 +75,7 @@ var AngularApp;
                 this.RecepientFilterId = -1;
                 this.Name = "New Template";
                 this.FilterValueContainers = [];
+                this.ChoosenReccards = [];
             }
             return TemplateVM;
         }());

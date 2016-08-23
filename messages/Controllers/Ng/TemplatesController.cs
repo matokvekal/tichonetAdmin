@@ -23,8 +23,9 @@ namespace ticonet.Controllers.Ng{
                         MsgHeader = model.MsgHeader,
                         MsgBody = model.MsgBody,
                         tblRecepientFilterId = model.RecepientFilterId,
-                        FilterValueContainersJSON = JsonConvert.SerializeObject(model.FilterValueContainers)
-                }, ItemSaveBehaviour.AddOnly);
+                        FilterValueContainersJSON = JsonConvert.SerializeObject(model.FilterValueContainers),
+                        ChoosenReccardIdsJSON = JsonConvert.SerializeObject(model.ChoosenReccards)
+                    }, ItemSaveBehaviour.AddOnly);
                 }
             }
             return NgResult.Succes(models.Count() + " new templates was added");
@@ -42,7 +43,7 @@ namespace ticonet.Controllers.Ng{
         protected override FetchResult<TemplateVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 var queryResult = l.GetAll<tblTemplate>()
-                    .Select(x => VMConstructor.MakeFromObj(x, TemplateVM.tblTemplatePR));
+                    .Select(x => PocoConstructor.MakeFromObj(x, TemplateVM.tblTemplatePR));
                 return FetchResult<TemplateVM>.Succes(queryResult,queryResult.Count());
             }
         }
@@ -58,6 +59,7 @@ namespace ticonet.Controllers.Ng{
                     item.MsgBody = model.MsgBody;
                     item.tblRecepientFilterId = model.RecepientFilterId;
                     item.FilterValueContainersJSON = JsonConvert.SerializeObject(model.FilterValueContainers);
+                    item.ChoosenReccardIdsJSON = JsonConvert.SerializeObject(model.ChoosenReccards);
                     l.SaveChanges(item);
                 }
             }
@@ -103,21 +105,32 @@ namespace ticonet.Controllers.Ng{
                 filters = templ.tblRecepientFilter.tblFilters.ToArray();
 
                 foreach (var filt in filters){
-                    if (filt.autoUpdatedList.HasValue && filt.autoUpdatedList.Value) {
-                        //if user-inputed
-                        var tableName = templ.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName;
-                        var type = sqlLogic.GetColomnType(tableName, filt.Key);
-                        var valops = sqlLogic.FetchDataDistinct(new[] { filt.Key }, tableName)
-                            .Select(x => new ValueOperatorPair(x[filt.Key].ToString(), "=", type))
-                            //HERE WE USE STRING CHECK
-                            .Where(x => userFilterValues.Any(y => y.FilterId==filt.Id && y.Value !=null && y.Value.Any( z => ToStringSafe(z) == x.Value.ToString() )))
-                            .ToArray();
-                        filtsToValops.Add(filt.Id, valops);
+                    //if user-inputed
+                    if (filt.allowUserInput.HasValue && filt.allowUserInput.Value) {
+                        //if user selected value from existing values from DB
+                        if (filt.autoUpdatedList.HasValue && filt.autoUpdatedList.Value) {
+                            var tableName = templ.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName;
+                            var type = sqlLogic.GetColomnType(tableName, filt.Key);
+                            var valops = sqlLogic.FetchDataDistinct(new[] { filt.Key }, tableName)
+                                .Select(x => new ValueOperatorPair(x[filt.Key].ToString(), "=", type))
+                                //HERE WE USE STRING CHECK
+                                .Where(x => userFilterValues.Any(y => y.FilterId == filt.Id && y.Value != null && y.Value.Any(z => ToStringSafe(z) == x.Value.ToString())))
+                                .ToArray();
+                            filtsToValops.Add(filt.Id, valops);
+                        }
+                        //if strongly-enter by user
+                        else {
+                            var ops = JsonConvert.DeserializeObject<string[]>(filt.OperatorsJSON);
+                            var valop = userFilterValues.First(x => x.FilterId == filt.Id);
+                            filtsToValops.Add(filt.Id, new[]
+                                { new ValueOperatorPair (valop.Value == null? null : valop.Value[0].ToString(),ops[0],filt.Type) }
+                            );
+                        }
                     }
+                    //if no user-inputed
                     else {
-                        //if no user-inputed
-                        var vals = JsonConvert.DeserializeObject<string[]>(filt.Value);
-                        var ops = JsonConvert.DeserializeObject<string[]>(filt.Operator);
+                        var vals = JsonConvert.DeserializeObject<string[]>(filt.ValuesJSON);
+                        var ops = JsonConvert.DeserializeObject<string[]>(filt.OperatorsJSON);
                         var valops = new ValueOperatorPair[vals.Length];
                         for (int i = 0; i < vals.Length; i++) {
                             valops[i] = new ValueOperatorPair(vals[i], ops[i], filt.Type);
@@ -127,7 +140,10 @@ namespace ticonet.Controllers.Ng{
 
                 }
                 wildcards = templ.tblRecepientFilter.tblWildcards.ToArray();
-                reccards = templ.tblRecepientFilter.tblRecepientCards.ToArray();
+
+                int[] allowedReccardsIds = JsonConvert.DeserializeObject<int[]>(templ.ChoosenReccardIdsJSON);
+
+                reccards = templ.tblRecepientFilter.tblRecepientCards.Where(x => allowedReccardsIds.Any(y => y == x.Id)).ToArray();
                 table = templ.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName;
             }
             //BUILD CONDITION

@@ -1136,6 +1136,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="AngularApp\App.ts" />
+    <TypeScriptCompile Include="AngularApp\AppGlobal.ts" />
     <TypeScriptCompile Include="AngularApp\Controller.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\FiltersController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\MessageModulePageController.ts" />

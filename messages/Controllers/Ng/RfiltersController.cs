@@ -77,12 +77,12 @@ namespace ticonet.Controllers.Ng {
                         ops[i] = m.ValsOps[i].Operator;
                         vals[i] = m.ValsOps[i].Value == null ? "": m.ValsOps[i].Value.ToString();
                     }
-                    e.Operator = JsonConvert.SerializeObject(ops);
-                    e.Value = JsonConvert.SerializeObject(vals);
+                    e.OperatorsJSON = JsonConvert.SerializeObject(ops);
+                    e.ValuesJSON = JsonConvert.SerializeObject(vals);
                 }
                 else {
-                    e.Operator = ".";
-                    e.Value = ".";
+                    e.OperatorsJSON = "[]";
+                    e.ValuesJSON = "[]";
                 }
                 e.allowMultipleSelection = m.allowMultipleSelection;
                 e.allowUserInput = m.allowUserInput;
@@ -116,7 +116,7 @@ namespace ticonet.Controllers.Ng {
         protected override FetchResult<RFilterVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 var items = l.GetAll<tblRecepientFilter>()
-                    .Select(x => VMConstructor.MakeFromObj(x,RFilterVM.tblRecepientFilterPR));
+                    .Select(x => PocoConstructor.MakeFromObj(x,RFilterVM.tblRecepientFilterPR));
                 return FetchResult<RFilterVM>.Succes(items,items.Count());
             }
         }

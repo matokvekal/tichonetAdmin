@@ -12,8 +12,8 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="tblRecepientFilterId" Type="int" Nullable="false" />
           <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Operator" Type="nvarchar(max)" />
+          <Property Name="ValuesJSON" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="OperatorsJSON" Type="nvarchar(max)" />
           <Property Name="Type" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="allowUserInput" Type="bit" />
           <Property Name="allowMultipleSelection" Type="bit" />
@@ -58,6 +58,7 @@
           <Property Name="MsgHeader" Type="nvarchar" MaxLength="500" />
           <Property Name="MsgBody" Type="nvarchar(max)" />
           <Property Name="FilterValueContainersJSON" Type="nvarchar(max)" />
+          <Property Name="ChoosenReccardIdsJSON" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="tblWildcard">
           <Key>
@@ -116,14 +117,14 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="tblRecepientFilterId" Type="Int32" Nullable="false" />
           <Property Name="Key" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Operator" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblFiltertblRecepientFilter" FromRole="tblFilter" ToRole="tblRecepientFilter" />
           <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="allowUserInput" Type="Boolean" />
           <Property Name="allowMultipleSelection" Type="Boolean" />
           <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="autoUpdatedList" Type="Boolean" />
+          <Property Name="ValuesJSON" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OperatorsJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblRecepientFilter">
           <Key>
@@ -159,6 +160,7 @@
           <Property Name="MsgBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblTemplatetblRecepientFilter" FromRole="tblTemplate" ToRole="tblRecepientFilter" />
           <Property Name="FilterValueContainersJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ChoosenReccardIdsJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblWildcard">
           <Key>
@@ -252,13 +254,13 @@
           <EntitySetMapping Name="tblFilters">
             <EntityTypeMapping TypeName="Messages.tblFilter">
               <MappingFragment StoreEntitySet="tblFilter">
+                <ScalarProperty Name="OperatorsJSON" ColumnName="OperatorsJSON" />
+                <ScalarProperty Name="ValuesJSON" ColumnName="ValuesJSON" />
                 <ScalarProperty Name="autoUpdatedList" ColumnName="autoUpdatedList" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="allowMultipleSelection" ColumnName="allowMultipleSelection" />
                 <ScalarProperty Name="allowUserInput" ColumnName="allowUserInput" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Operator" ColumnName="Operator" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Key" ColumnName="Key" />
                 <ScalarProperty Name="tblRecepientFilterId" ColumnName="tblRecepientFilterId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -286,6 +288,7 @@
           <EntitySetMapping Name="tblTemplates">
             <EntityTypeMapping TypeName="Messages.tblTemplate">
               <MappingFragment StoreEntitySet="tblTemplate">
+                <ScalarProperty Name="ChoosenReccardIdsJSON" ColumnName="ChoosenReccardIdsJSON" />
                 <ScalarProperty Name="FilterValueContainersJSON" ColumnName="FilterValueContainersJSON" />
                 <ScalarProperty Name="MsgBody" ColumnName="MsgBody" />
                 <ScalarProperty Name="MsgHeader" ColumnName="MsgHeader" />

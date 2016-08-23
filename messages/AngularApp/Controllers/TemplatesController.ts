@@ -7,6 +7,8 @@
         wildcards: WildcardVM[] = []
         filters: FilterVM[] = []
 
+        reccards: RecepientCardVM[] = []
+
         templatesHeader_ElemId = 'templates_header'
         templatesBody_ElemId = 'templates_body'
 
@@ -61,10 +63,14 @@
                 return this.getFilterValueCont(filt).Value.any(x => x === value)
             }
 
+            this.scope.HasReccard = this.hasRecepient
+            this.scope.SwitchReccard = this.switchRecepient
+
             this.scope.DEMO = () => {
-                this.fetchtoarr(true, {
+                let func = () => this.fetchtoarr(true, {
                     urlalias: "mockmsgs", params: { templateId: this.va.curtemplate.Id }
-                }, this.va.demomsgs, true )
+                }, this.va.demomsgs, true)
+                this.pushCurtemplate(this.va.curtemplate.Id === -1, func)
             }
 
             //------------------- Inner Init
@@ -74,8 +80,8 @@
             this.refetchMfilters()
         }
 
-        refetchTemplates = () => {
-            this.fetchtoarr(true, { urlalias: "gettemplates" }, this.va.templates, true)
+        refetchTemplates = (onSucces?: (response) => void) => {
+            this.fetchtoarr(true, { urlalias: "gettemplates", onSucces: onSucces }, this.va.templates, true)
         }
 
         refetchMfilters = (onSucces?) => {
@@ -88,12 +94,16 @@
                 params: new FetchParams()
                     .addFilt("tblRecepientFilterId", mfilt.Id)
                     .addFilt("allowUserInput", true),
-                onSucces: () => {
-                    //let arr:FilterValueContainer[] = []
-                    //this.va.filters.forEach(x => arr.push( {FilterId: x.Id,Value:new Array(x.ValsOps.length) } ) )
-                    //this.va.curtemplate.FilterValueContainers = arr
-                }
             }, this.va.filters, true)
+        }
+
+        refetchReccards = (mfilt: MetaFilterVM) => {
+            this.fetchtoarr(true,
+                {
+                    urlalias: "getreccards",
+                    params: new FetchParams().addFilt("tblRecepientFilterId", mfilt.Id),
+                },
+                this.va.reccards, true);
         }
 
         refetchWildcards = (mfilt: MetaFilterVM) => {
@@ -117,6 +127,7 @@
 
         setMFilter = (mfilt: MetaFilterVM) => {
             this.va.curtemplate.RecepientFilterId = mfilt.Id
+            this.refetchReccards(mfilt)
             this.refetchWildcards(mfilt)
             this.refetchFilters(mfilt)
             this.va.curtemplate.FilterValueContainers = []
@@ -124,22 +135,23 @@
 
         turnTemplateEdit = (templ: TemplateVM) => {
             this.va.curtemplate = CloneShallow(templ)
-            let filt = this.va.metafilters.first(x => x.Id === templ.RecepientFilterId)
-            this.refetchWildcards(filt)
-            this.refetchFilters(filt)
+            let mfilt = this.va.metafilters.first(x => x.Id === templ.RecepientFilterId)
+            this.refetchReccards(mfilt)
+            this.refetchWildcards(mfilt)
+            this.refetchFilters(mfilt)
         }
 
         turnOffTemplateEdition = () => {
             this.va.curtemplate = null
         }
 
-        pushCurtemplate = (asNew: boolean) => {
+        pushCurtemplate = (asNew: boolean, onSucces?: (response) => void) => {
             let params = { models: [this.va.curtemplate], mode: "" }
             params.mode = asNew ? "cr" : "up"
             this.request(true, {
                 urlalias: "mngtemplates",
                 params: params,
-                onSucces: (response) => this.refetchTemplates()
+                onSucces: (response) => this.refetchTemplates(onSucces)
             })
         }
 
@@ -203,6 +215,18 @@
                 this.va.curtemplate.FilterValueContainers.push(output)
             }
             return output
+        }
+
+        hasRecepient = (rc: RecepientCardVM) => {
+            return this.va.curtemplate.ChoosenReccards.any(x => x === rc.Id)
+        }
+
+        switchRecepient = (rc: RecepientCardVM) => {
+            let has: boolean = this.hasRecepient(rc);
+            if (has)
+                this.va.curtemplate.ChoosenReccards.remove(rc.Id)
+            else
+                this.va.curtemplate.ChoosenReccards.push(rc.Id)
         }
 
     }

@@ -31,7 +31,7 @@ namespace ticonet.Controllers.Ng {
         protected override FetchResult<RFilterTableVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 var items = l.GetAll<tblRecepientFilterTableName>().Select(x =>
-                    VMConstructor.MakeFromObj(x, RFilterTableVM.tblRecepientFilterTableNamePR)
+                    PocoConstructor.MakeFromObj(x, RFilterTableVM.tblRecepientFilterTableNamePR)
                     );
                 if (items.Count() == 0)
                     return FetchResult<RFilterTableVM>.Fail("There is no base tables in database");

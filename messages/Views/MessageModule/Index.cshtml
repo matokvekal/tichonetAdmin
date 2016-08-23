@@ -951,7 +951,8 @@
                                 getmfilters: '@Url.Action("Fetch","Rfilters")',
                                 getfilters: '@Url.Action("Fetch","Filters")',
                                 mockmsgs: '@Url.Action("MockMessage","Templates")',
-                                getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")'
+                                getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")',
+                                getreccards: '@Url.Action("Fetch","RecepientCards")',
                              }
                          })">
 
@@ -1027,14 +1028,25 @@
                                     </div>
                                 </div>
                                 <div class="clearfix">
-                                    <!--Textarea-->
                                     <div class="col-lg-6 no-padding">
+                                        <!--Textarea-->
                                         <textarea class="txtarea" cols="50" rows="10" ng-model="va.curtemplate.MsgBody"
                                                   droppable id="{{va.templatesBody_ElemId}}"
                                                   drop="templatesTextDropped"
                                                   style="resize:vertical"
                                                   >
                                         </textarea>
+                                        <!--SendTo-->
+                                        <span class="txt-s-med txt-c-gr">Send to Recepient Groups:</span>
+                                        <div ng-repeat="rc in va.reccards">
+                                            <div class="txt-c-gr">
+                                                <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchReccard(rc)">
+                                                    <i class="glyphicon iconclick"
+                                                       ng-class="HasReccard(rc) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
+                                                    <span>{{rc.Name}}</span>
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <!--Base on RFilter-->
@@ -1069,7 +1081,7 @@
                                     <a class="abut" ng-click="hideEditor()">Cancel</a>
                                 </div>
                                 <div>
-                                    <a class="abut" ng-click="DEMO()">Show a Demo (pls save before)</a>
+                                    <a class="abut" ng-click="DEMO()">Save and Get Demo Messages</a>
                                     <hr />
                                     <div ng-repeat="msg in va.demomsgs">
                                         <div>{{msg.header}}</div>

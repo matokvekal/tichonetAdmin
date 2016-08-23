@@ -2,6 +2,15 @@ var AngularApp;
 (function (AngularApp) {
     var col = TSNetLike.Collections;
     var fnc = TSNetLike.Functors;
+    function CloneRequestArgs(data) {
+        return {
+            urlalias: data.urlalias,
+            params: data.params,
+            before: data.before,
+            onSucces: data.onSucces,
+            onFailed: data.onFailed
+        };
+    }
     /**
      This Class used for simultaneously running requests to server.
      It runs it's callback only when all binded requests will be ended.
@@ -33,16 +42,12 @@ var AngularApp;
         return ConcurentRequestHandler;
     }());
     AngularApp.ConcurentRequestHandler = ConcurentRequestHandler;
-    function isEmptyOrSpaces(str) {
-        return typeof str === 'undefined' || str === null || str.match(/^ *$/) !== null;
-    }
-    AngularApp.isEmptyOrSpaces = isEmptyOrSpaces;
     function IsConcurentRequestHandler(cb) {
-        return !(IsNullOrUndefined(cb) || IsNullOrUndefined(cb.TryCall));
+        return !(AngularApp.IsNullOrUndefined(cb) || AngularApp.IsNullOrUndefined(cb.TryCall));
     }
     function RunCallbackOrHandler(callback, response) {
         //argument type check
-        if (IsNullOrUndefined(callback))
+        if (AngularApp.IsNullOrUndefined(callback))
             return;
         var cb = callback;
         if (IsConcurentRequestHandler(cb))
@@ -73,71 +78,6 @@ var AngularApp;
         return FetchParams;
     }());
     AngularApp.FetchParams = FetchParams;
-    function CloneRequestArgs(data) {
-        return {
-            urlalias: data.urlalias,
-            params: data.params,
-            before: data.before,
-            onSucces: data.onSucces,
-            onFailed: data.onFailed
-        };
-    }
-    function CloneShallow(original) {
-        var clone = {};
-        for (var key in original) {
-            if (original.hasOwnProperty(key)) {
-                clone[key] = original[key];
-            }
-        }
-        return clone;
-    }
-    AngularApp.CloneShallow = CloneShallow;
-    /**this doesnt handles recoursive references!*/
-    function CloneDeep(original) {
-        var clone = {};
-        var _loop_1 = function(key) {
-            if (original.hasOwnProperty(key)) {
-                if (original[key] instanceof Array) {
-                    clone[key] = [];
-                    var arr_1 = clone[key];
-                    original[key].forEach(function (ele) { return arr_1.push(CloneDeep(ele)); });
-                }
-                else if (typeof original[key] === "object")
-                    clone[key] = CloneDeep(original[key]);
-                else
-                    clone[key] = original[key];
-            }
-        };
-        for (var key in original) {
-            _loop_1(key);
-        }
-        return clone;
-    }
-    AngularApp.CloneDeep = CloneDeep;
-    function ParseHtmlID(fullID, separator) {
-        if (separator === void 0) { separator = "___::::___"; }
-        return fullID.split(separator)[1];
-    }
-    AngularApp.ParseHtmlID = ParseHtmlID;
-    /**
-    Returns Array:
-    array[0] - prefix
-    array[1] - id
-     */
-    function ParseHtmlIDFull(fullID, separator) {
-        if (separator === void 0) { separator = "___::::___"; }
-        return fullID.split(separator);
-    }
-    AngularApp.ParseHtmlIDFull = ParseHtmlIDFull;
-    function MakeHtmlID(prefix, id, separator) {
-        if (separator === void 0) { separator = "___::::___"; }
-        return prefix + separator + id;
-    }
-    AngularApp.MakeHtmlID = MakeHtmlID;
-    function IsNullOrUndefined(obj) {
-        return typeof obj === 'undefined' || obj === null;
-    }
-    AngularApp.IsNullOrUndefined = IsNullOrUndefined;
     var Controller = (function () {
         function Controller(rootScope, scope, http) {
             var _this = this;
@@ -197,15 +137,15 @@ var AngularApp;
                 _this.http({ method: 'POST', url: _this.url(data.urlalias), data: data.params }).
                     then(function (response) {
                     if (_this.request_msgHandlerSucces !== null
-                        && !IsNullOrUndefined(response.data.message))
+                        && !AngularApp.IsNullOrUndefined(response.data.message))
                         _this.request_msgHandlerSucces(response.data.message);
                     RunCallbackOrHandler(data.onSucces, response);
                     if (holdTillResponse)
                         _this.turnHoldView(false);
                 }, function (response) {
-                    if (!IsNullOrUndefined(response.data)) {
+                    if (!AngularApp.IsNullOrUndefined(response.data)) {
                         if (_this.request_msgHandlerFail !== null
-                            && !IsNullOrUndefined(response.data.message))
+                            && !AngularApp.IsNullOrUndefined(response.data.message))
                             _this.request_msgHandlerFail(response.data.message);
                         RunCallbackOrHandler(data.onSucces, response);
                     }

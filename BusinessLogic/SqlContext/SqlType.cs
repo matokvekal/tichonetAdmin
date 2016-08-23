@@ -67,7 +67,9 @@ namespace Business_Logic.SqlContext {
                     return ((float)obj).ToString();
                 case sqlt.BIT:
                     bool value = false;
-                    if (obj.GetType() == typeof(String))
+                    if (obj == null)
+                        value = false;
+                    else if (obj is string)
                         value = bool.Parse(obj.ToString());
                     else
                         value = (bool) obj;

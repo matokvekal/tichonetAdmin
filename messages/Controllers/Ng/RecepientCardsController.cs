@@ -21,7 +21,7 @@ namespace ticonet.Controllers {
             using (var l = new MessagesModuleLogic()) {
                 int fullQueryCount;
                 var queryResult = l.GetFiltered<tblRecepientCard>(Skip, Count, filters, out fullQueryCount)
-                    .Select(x => VMConstructor.MakeFromObj(x, RecepientcardVM.tblRecepientCardPR));
+                    .Select(x => PocoConstructor.MakeFromObj(x, RecepientcardVM.tblRecepientCardPR));
                 return FetchResult<RecepientcardVM>.Succes(queryResult, fullQueryCount);
             }
         }

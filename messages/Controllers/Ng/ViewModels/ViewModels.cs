@@ -73,6 +73,10 @@ namespace ticonet.Controllers.Ng.ViewModels {
             Operator = oper;
             //TODO EXCEPTION HANDLE
             switch (sqltype) {
+                case "bit":
+                    bool val;
+                    Value = bool.TryParse(value, out val) ? val : false;
+                    break;
                 case "int":
                     int i = 0;
                     Value = int.TryParse(value, out i) ? i : 0;
@@ -125,8 +129,8 @@ namespace ticonet.Controllers.Ng.ViewModels {
                 (o, m) => {
                     //TODO REFACTOR
                     try {
-                        var vals = JsonConvert.DeserializeObject<string[]>(o.Value);
-                        var ops = JsonConvert.DeserializeObject<string[]>(o.Operator);
+                        var vals = JsonConvert.DeserializeObject<string[]>(o.ValuesJSON);
+                        var ops = JsonConvert.DeserializeObject<string[]>(o.OperatorsJSON);
                         m.ValsOps = new ValueOperatorPair[vals.Length];
                         for (int i = 0; i < vals.Length; i++) {
                             m.ValsOps[i] = new ValueOperatorPair (vals[i],ops[i],o.Type);
@@ -234,6 +238,12 @@ namespace ticonet.Controllers.Ng.ViewModels {
                         m.FilterValueContainers = new FilterValueContainer[] { new FilterValueContainer() };
                     else
                         m.FilterValueContainers = JsonConvert.DeserializeObject<FilterValueContainer[]>(o.FilterValueContainersJSON);
+                },
+                (o, m) => {
+                    if (o.ChoosenReccardIdsJSON == null)
+                        m.ChoosenReccards = new int[0];
+                    else
+                        m.ChoosenReccards = JsonConvert.DeserializeObject<int[]>(o.ChoosenReccardIdsJSON);
                 }
             );
 
@@ -246,6 +256,7 @@ namespace ticonet.Controllers.Ng.ViewModels {
         public string MsgHeader { get; set; }
         public string MsgBody { get; set; }
         public FilterValueContainer[] FilterValueContainers { get; set; }
+        public int [] ChoosenReccards { get; set; }
 
         #region INgViewModel
 
@@ -257,7 +268,7 @@ namespace ticonet.Controllers.Ng.ViewModels {
 
     //--------------------------------------------------
 
-    public static class VMConstructor {
+    public static class PocoConstructor {
         public static TModel MakeFromObj<TOrig, TModel>(TOrig obj, POCOReflector<TOrig, TModel> reflector) where TModel : class, new() {
             var vm = Activator.CreateInstance<TModel>();
             //TODO EXCEPTION HANDLING

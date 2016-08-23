@@ -139,6 +139,7 @@
         ng_ToDelete: boolean
 
         FilterValueContainers: FilterValueContainer[] = []
+        ChoosenReccards: number[] = []
     }
 
     export function FindById<T extends IIndeficated>(arr: T[], Id: number) {

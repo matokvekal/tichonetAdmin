@@ -79,6 +79,7 @@ namespace Business_Logic.SqlContext {
             }
             else {
                 if (childNodes.Count > 0) {
+                    RevalidateEmptiness();
                     var conc = predicateType == ptype.and ? " AND " : " OR ";
                     childNodes.ForEach(x => {
                         if (x.isEmpty) return;
@@ -87,10 +88,26 @@ namespace Business_Logic.SqlContext {
                         output.Append(") ");
                         output.Append(conc);
                     });
-                    output.Remove(output.Length - conc.Length, conc.Length);
+                    if (output.Length > conc.Length)
+                        //it guaranties to us that at least one condition was written 
+                        //to sql string 
+                        //(because even if there are some childNodes,
+                        //we should check here some way if there are all empty)
+                        output.Remove(output.Length - conc.Length, conc.Length);
                 }
             }
             return output.ToString();
+        }
+
+        protected void RevalidateEmptiness() {
+            if (predicateType != ptype.body) {
+                isEmpty = true;
+                childNodes.ForEach(x => {
+                    x.RevalidateEmptiness();
+                    if (!x.IsEmpty)
+                        isEmpty = false;
+                });
+            }
         }
 
         private SqlPredicate() { }

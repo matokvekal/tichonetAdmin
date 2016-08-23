@@ -21,6 +21,7 @@ namespace Business_Logic.MessagesContext
         public string MsgHeader { get; set; }
         public string MsgBody { get; set; }
         public string FilterValueContainersJSON { get; set; }
+        public string ChoosenReccardIdsJSON { get; set; }
     
         public virtual tblRecepientFilter tblRecepientFilter { get; set; }
     }
