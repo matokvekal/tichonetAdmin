@@ -1,3 +1,4 @@
+﻿
 ﻿@using Business_Logic;
 @{
     ViewBag.Title = "Index";
@@ -7,13 +8,14 @@
         <h2>ניהול מידע</h2>
         <p> <a href=@Url.Action("btnExportToExcel_Click", "Manage") download> הורד אקסל סטודנטים </a></p>
         <p> <a href=@Url.Action("btnExportToExcel2", "Manage") >  הורד אקסל סטודנטים מקוצר</a></p>
+        <p> <a href=@Url.Action("btnExportToExcel3", "Manage")>  הורד אקסל רכבים </a></p>
 
     </div>
     <div class="navbar-inner" style="float:right;">
-        <ul class="list-group" >
-            <li class="list-group-item">סך משפחות במערכת <span class="badge">@ViewBag.totalStudents</span></li>
-            <li class="list-group-item">סך סטודנטים במערכת<span class="badge">@ViewBag.totalFamilies</span></li>
-            <li class="list-group-item">סך סטודנטים רשומים במערכת <span class="badge">@ViewBag.totalRegistrationStudents</span></li>
+        <ul class="list-group">
+            <li class="list-group-item">סך משפחות במערכת <span class="badge">@ViewBag.totalFamilies</span></li>
+            <li class="list-group-item">סך סטודנטים במערכת<span class="badge">@ViewBag.totalStudents</span></li>
+            <li class="list-group-item">סך סטודנטים רשומים במערכת-שולמו דמי רישום <span class="badge">@ViewBag.totalRegistrationStudents</span></li>
         </ul>
     </div>
 
@@ -26,4 +28,5 @@
     background-color:black;
 
 }
+
 </style>
