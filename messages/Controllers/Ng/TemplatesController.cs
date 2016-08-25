@@ -2,7 +2,7 @@
 using System.Linq;
 using ticonet.ParentControllers;
 using ticonet.Controllers.Ng.ViewModels;
-using Business_Logic.MessagesContext;
+using Business_Logic.MessagesModule;
 using System.Web.Mvc;
 using Ninject;
 using Business_Logic.SqlContext;
@@ -114,16 +114,18 @@ namespace ticonet.Controllers.Ng{
                             var valops = sqlLogic.FetchDataDistinct(new[] { filt.Key }, tableName)
                                 .Select(x => new ValueOperatorPair(x[filt.Key].ToString(), "=", type))
                                 //HERE WE USE STRING CHECK
-                                .Where(x => userFilterValues.Any(y => y.FilterId == filt.Id && y.Value != null && y.Value.Any(z => ToStringSafe(z) == x.Value.ToString())))
+                                .Where(x => userFilterValues.Any(y => y.FilterId == filt.Id && y.Values != null && y.Values.Any(z => ToStringSafe(z) == x.Value.ToString())))
                                 .ToArray();
                             filtsToValops.Add(filt.Id, valops);
                         }
                         //if strongly-enter by user
                         else {
+                            //TODO
+                            //here's no situation when we have a multi-selected values
                             var ops = JsonConvert.DeserializeObject<string[]>(filt.OperatorsJSON);
                             var valop = userFilterValues.First(x => x.FilterId == filt.Id);
                             filtsToValops.Add(filt.Id, new[]
-                                { new ValueOperatorPair (valop.Value == null? null : valop.Value[0].ToString(),ops[0],filt.Type) }
+                                { new ValueOperatorPair (valop.Values == null? null : valop.Values[0].ToString(),ops[0],filt.Type) }
                             );
                         }
                     }
@@ -166,35 +168,27 @@ namespace ticonet.Controllers.Ng{
                 .Concat(reccards.Select(x => x.PhoneKey)).Distinct();
 
             //FETCH SQL DATA
-            var data = sqlLogic.FetchData(colomns,table,"dbo", Condition);
+            var sqlData = sqlLogic.FetchData(colomns, table, "dbo", Condition);
 
-            //FILL FIELDS
+            //Create Message Producer
 
-            var messages = new List<Dictionary<string, string>>();
-            foreach (var kv in data) {
-                var header = msg_h;
-                var body = msg_b;
+            var MPwildcards = wildcards.SelectMany(x => x.ToKeyValues());
+            var MP = new MessageProducer(templ.MsgHeader,templ.MsgBody,null);
 
-                foreach (var card in wildcards) {
-                    //if(!string.IsNullOrWhiteSpace(header))
-                        header = card.Apply(header, kv);
-                    //if (!string.IsNullOrWhiteSpace(body))
-                        body = card.Apply(body, kv);
-                }
+            List<Message> messages = new List<Message>();
 
-                //applying recepients
-                foreach (var reccard in reccards) {
-                    var dict = new Dictionary<string, string>();
-                    var nheader = reccard.Apply(header, kv);
-                    var nbody = reccard.Apply(body, kv);
-
-                    dict.Add("header", nheader);
-                    dict.Add("body", nbody);
-                    messages.Add(dict);
-                }
+            //Produce
+            foreach (var rc in reccards) {
+                var data = sqlData.GroupBy(x => x[rc.EmailKey].ToString());
+                var cards = MPwildcards.Concat(rc.ToKeyValues());
+                MP.ChangeWildCards(cards);
+                foreach (var d in data)
+                    messages.Add(MP.Produce(d, MessageType.Email));
             }
-            //
-            return NgResultToJsonResult(FetchResult<Dictionary<string, string>>.Succes(messages,messages.Count));
+
+            //Send to client
+
+            return NgResultToJsonResult(FetchResult<Message>.Succes(messages,messages.Count));
         }
     }
 }

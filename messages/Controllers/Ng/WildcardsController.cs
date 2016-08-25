@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ticonet.Controllers.Ng.ViewModels;
-using Business_Logic.MessagesContext;
+using Business_Logic.MessagesModule;
 using ticonet.ParentControllers;
 
 namespace ticonet.Controllers.Ng

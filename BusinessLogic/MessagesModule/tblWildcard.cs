@@ -7,21 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Business_Logic.MessagesContext
+namespace Business_Logic.MessagesModule
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class tblTemplate
+    public partial class tblWildcard
     {
         public int Id { get; set; }
         public int tblRecepientFilterId { get; set; }
         public string Name { get; set; }
-        public bool IsSms { get; set; }
-        public string MsgHeader { get; set; }
-        public string MsgBody { get; set; }
-        public string FilterValueContainersJSON { get; set; }
-        public string ChoosenReccardIdsJSON { get; set; }
+        public string Code { get; set; }
+        public string Key { get; set; }
     
         public virtual tblRecepientFilter tblRecepientFilter { get; set; }
     }

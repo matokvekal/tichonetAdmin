@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ticonet.Controllers.Ng.ViewModels;
-using Business_Logic.MessagesContext;
+using Business_Logic.MessagesModule;
 using ticonet.ParentControllers;
 
 namespace ticonet.Controllers {
@@ -30,6 +30,7 @@ namespace ticonet.Controllers {
             throw new NotImplementedException();
         }
 
+        //TODO make a parametr to this action: should it send only recepients_reserved, or program reserved, or all
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
         public JsonResult GetReservedCodes() {
             var items = new List<WildcardVM>() {

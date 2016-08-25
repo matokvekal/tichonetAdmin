@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ticonet.ParentControllers;
 using ticonet.Controllers.Ng.ViewModels;
-using Business_Logic.MessagesContext;
+using Business_Logic.MessagesModule;
 using Business_Logic.SqlContext;
 using System.Collections.Generic;
 using Ninject;

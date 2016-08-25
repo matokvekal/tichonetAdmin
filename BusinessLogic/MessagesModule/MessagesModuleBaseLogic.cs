@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Business_Logic.MessagesContext {
+namespace Business_Logic.MessagesModule {
 
     public interface IQueryFilter {
         string key { get; set; }

@@ -1,4 +1,5 @@
 ﻿namespace AngularApp.Controllers {
+    import fnc = TSNetLike.Functors
 
     class TemplatesVA {
         templates: TemplateVM[] = []
@@ -53,14 +54,14 @@
             this.scope.SwitchFilterValueContVal = (filt: FilterVM, index: number) => {
                 let val = this.getFilterValueCont(filt)
                 if (!filt.allowMultipleSelection)
-                    val.Value = []
-                val.Value[index] = IsNullOrUndefined(val.Value[index]) ?
+                    val.Values = []
+                val.Values[index] = IsNullOrUndefined(val.Values[index]) ?
                     filt.ValsOps[index].Value
                     : null
             }
 
             this.scope.HasFilterValueContVal = (filt: FilterVM, value: any) => {
-                return this.getFilterValueCont(filt).Value.any(x => x === value)
+                return this.getFilterValueCont(filt).Values.any(x => x === value)
             }
 
             this.scope.HasReccard = this.hasRecepient
@@ -81,19 +82,28 @@
         }
 
         refetchTemplates = (onSucces?: (response) => void) => {
-            this.fetchtoarr(true, { urlalias: "gettemplates", onSucces: onSucces }, this.va.templates, true)
+            this.fetchtoarr(true, {
+                urlalias: "gettemplates",
+                onSucces: onSucces,
+            }, this.va.templates, true)
         }
 
         refetchMfilters = (onSucces?) => {
             this.fetchtoarr(true, { urlalias: "getmfilters" }, this.va.metafilters, true)
         }
 
-        refetchFilters = (mfilt: MetaFilterVM) => {
+        refetchFilters = (mfilt: MetaFilterVM, onSucces?: (response?) => void) => {
             this.fetchtoarr(true, {
                 urlalias: "getfilters",
                 params: new FetchParams()
                     .addFilt("tblRecepientFilterId", mfilt.Id)
                     .addFilt("allowUserInput", true),
+                onSucces: (r) => {
+                    this.va.filters.forEach(ele => {
+                        formatValsOps(ele.ValsOps, ele.Type)
+                    })
+                    fnc.F(onSucces,r)
+                }
             }, this.va.filters, true)
         }
 
@@ -138,7 +148,13 @@
             let mfilt = this.va.metafilters.first(x => x.Id === templ.RecepientFilterId)
             this.refetchReccards(mfilt)
             this.refetchWildcards(mfilt)
-            this.refetchFilters(mfilt)
+            this.refetchFilters(mfilt, r => {
+                this.va.filters.forEach(x => {
+                    let filtValCont = this.va.curtemplate.FilterValueContainers.first(y => y.FilterId === x.Id)
+                    if (filtValCont !== undefined && !IsNullOrUndefined(filtValCont.Values))
+                        filtValCont.Values.forEach((ele, ind) => filtValCont.Values[ind] = formatVal(ele,x.Type) )
+                })
+            })
         }
 
         turnOffTemplateEdition = () => {
@@ -207,11 +223,11 @@
         getFilterValueCont = (filt: FilterVM) => {
             let output = this.va.curtemplate.FilterValueContainers.first(x => x.FilterId === filt.Id)
             if (output !== undefined) {
-                if (IsNullOrUndefined(output.Value))
-                    output.Value = []
+                if (IsNullOrUndefined(output.Values))
+                    output.Values = []
             }
             else {
-                output = { FilterId: filt.Id, Value: [] }
+                output = { FilterId: filt.Id, Values: [] }
                 this.va.curtemplate.FilterValueContainers.push(output)
             }
             return output

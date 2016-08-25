@@ -7,6 +7,7 @@ var AngularApp;
 (function (AngularApp) {
     var Controllers;
     (function (Controllers) {
+        var fnc = TSNetLike.Functors;
         var TemplatesVA = (function () {
             function TemplatesVA() {
                 this.templates = [];
@@ -28,17 +29,26 @@ var AngularApp;
                 var _this = this;
                 _super.call(this, $rootScope, $scope, $http);
                 this.refetchTemplates = function (onSucces) {
-                    _this.fetchtoarr(true, { urlalias: "gettemplates", onSucces: onSucces }, _this.va.templates, true);
+                    _this.fetchtoarr(true, {
+                        urlalias: "gettemplates",
+                        onSucces: onSucces,
+                    }, _this.va.templates, true);
                 };
                 this.refetchMfilters = function (onSucces) {
                     _this.fetchtoarr(true, { urlalias: "getmfilters" }, _this.va.metafilters, true);
                 };
-                this.refetchFilters = function (mfilt) {
+                this.refetchFilters = function (mfilt, onSucces) {
                     _this.fetchtoarr(true, {
                         urlalias: "getfilters",
                         params: new AngularApp.FetchParams()
                             .addFilt("tblRecepientFilterId", mfilt.Id)
                             .addFilt("allowUserInput", true),
+                        onSucces: function (r) {
+                            _this.va.filters.forEach(function (ele) {
+                                Controllers.formatValsOps(ele.ValsOps, ele.Type);
+                            });
+                            fnc.F(onSucces, r);
+                        }
                     }, _this.va.filters, true);
                 };
                 this.refetchReccards = function (mfilt) {
@@ -74,7 +84,13 @@ var AngularApp;
                     var mfilt = _this.va.metafilters.first(function (x) { return x.Id === templ.RecepientFilterId; });
                     _this.refetchReccards(mfilt);
                     _this.refetchWildcards(mfilt);
-                    _this.refetchFilters(mfilt);
+                    _this.refetchFilters(mfilt, function (r) {
+                        _this.va.filters.forEach(function (x) {
+                            var filtValCont = _this.va.curtemplate.FilterValueContainers.first(function (y) { return y.FilterId === x.Id; });
+                            if (filtValCont !== undefined && !AngularApp.IsNullOrUndefined(filtValCont.Values))
+                                filtValCont.Values.forEach(function (ele, ind) { return filtValCont.Values[ind] = Controllers.formatVal(ele, x.Type); });
+                        });
+                    });
                 };
                 this.turnOffTemplateEdition = function () {
                     _this.va.curtemplate = null;
@@ -138,11 +154,11 @@ var AngularApp;
                 this.getFilterValueCont = function (filt) {
                     var output = _this.va.curtemplate.FilterValueContainers.first(function (x) { return x.FilterId === filt.Id; });
                     if (output !== undefined) {
-                        if (AngularApp.IsNullOrUndefined(output.Value))
-                            output.Value = [];
+                        if (AngularApp.IsNullOrUndefined(output.Values))
+                            output.Values = [];
                     }
                     else {
-                        output = { FilterId: filt.Id, Value: [] };
+                        output = { FilterId: filt.Id, Values: [] };
                         _this.va.curtemplate.FilterValueContainers.push(output);
                     }
                     return output;
@@ -185,13 +201,13 @@ var AngularApp;
                 this.scope.SwitchFilterValueContVal = function (filt, index) {
                     var val = _this.getFilterValueCont(filt);
                     if (!filt.allowMultipleSelection)
-                        val.Value = [];
-                    val.Value[index] = AngularApp.IsNullOrUndefined(val.Value[index]) ?
+                        val.Values = [];
+                    val.Values[index] = AngularApp.IsNullOrUndefined(val.Values[index]) ?
                         filt.ValsOps[index].Value
                         : null;
                 };
                 this.scope.HasFilterValueContVal = function (filt, value) {
-                    return _this.getFilterValueCont(filt).Value.any(function (x) { return x === value; });
+                    return _this.getFilterValueCont(filt).Values.any(function (x) { return x === value; });
                 };
                 this.scope.HasReccard = this.hasRecepient;
                 this.scope.SwitchReccard = this.switchRecepient;

@@ -44,7 +44,7 @@ var AngularApp;
         Controllers.FilterVM = FilterVM;
         var FilterValueContainer = (function () {
             function FilterValueContainer() {
-                this.Value = [];
+                this.Values = [];
             }
             return FilterValueContainer;
         }());

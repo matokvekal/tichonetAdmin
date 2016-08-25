@@ -1009,8 +1009,9 @@
                                             
                                             <!--For direct input-->
                                             <div ng-if="nfilt.ValsOps.length===1&&!nfilt.autoUpdatedList">
+                                                <div>VALUE:{{GetFilterValueCont(nfilt).Values[0]}} </div>
                                                 <span class="txt-c-gr">{{nfilt.Key}} {{nfilt.ValsOps[0].Operator}}</span>
-                                                <input placeholder="..." class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="GetFilterValueCont(nfilt).Value[0]" />
+                                                <input placeholder="..." class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="GetFilterValueCont(nfilt).Values[0]" />
                                             </div>
                                         
                                             <!--For list choose-->
@@ -1084,8 +1085,9 @@
                                     <a class="abut" ng-click="DEMO()">Save and Get Demo Messages</a>
                                     <hr />
                                     <div ng-repeat="msg in va.demomsgs">
-                                        <div>{{msg.header}}</div>
-                                        <div><pre>{{msg.body}}</pre></div>
+                                        <div>{{msg.Header}}</div>
+                                        <div>{{msg.Adress}}</div>
+                                        <div><pre>{{msg.Body}}</pre></div>
                                         <hr />
                                     </div>
                                 </div>

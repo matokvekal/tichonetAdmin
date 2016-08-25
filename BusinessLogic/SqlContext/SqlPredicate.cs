@@ -75,7 +75,7 @@ namespace Business_Logic.SqlContext {
                 output.Append(" ");
                 output.Append(op.SQLString);
                 output.Append(" ");
-                output.Append(type.NetObjectToSqlString(value));
+                output.Append(SqlType.NetObjectToSqlQueryFormat(type,value));
             }
             else {
                 if (childNodes.Count > 0) {

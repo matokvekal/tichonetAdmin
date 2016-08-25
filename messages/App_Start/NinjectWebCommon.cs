@@ -12,7 +12,7 @@ namespace ticonet.App_Start
     using Ninject.Web.Common;
     using Scheduler.Tasks;
     using System.Data.Entity;
-    using Business_Logic.MessagesContext;
+    using Business_Logic.MessagesModule;
     using Business_Logic.SqlContext;
     using System.Web.Configuration;
 

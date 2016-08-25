@@ -8,17 +8,35 @@
                 break
             case "datetime":
             case "date":
-                items.forEach(x => {
-                    let s = x.Value as string
-                    if (s.lastIndexOf && s.lastIndexOf("/Date", 0) === 0)
-                        x.Value = new Date(parseInt(x.Value.substr(6)))
-                })
+                for (let i = 0; i < items.length; i++) {
+                    items[i].Value = formatVal(items[i].Value,typeName)
+                }
                 break
             case "time":
                 break
             case "bit":
                 break
         }
+    }
+
+    export function formatVal(value, typeName: string) {
+        switch (typeName) {
+            case "int":
+                return value
+            case "nvarchar":
+                return value
+            case "datetime":
+            case "date":
+                let s = value as string
+                if (s.lastIndexOf && s.lastIndexOf("/Date", 0) === 0)
+                    return new Date(parseInt(s.substr(6)))
+                break
+            case "time":
+                return value
+            case "bit":
+                return value
+        }
+        return value
     }
 
     export function glyphiconforSQLTYPE (typeName: string) {
@@ -46,7 +64,7 @@
                 return "text"
             case "datetime":
             case "date":
-                return "datetime-local"
+                return "datetime"
             case "time":
                 return "time"
             case "bit":

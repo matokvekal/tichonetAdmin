@@ -267,7 +267,13 @@
     <Compile Include="Controllers\Ng\RfiltersController.cs" />
     <Compile Include="Controllers\Ng\RFilterTableController.cs" />
     <Compile Include="Controllers\Ng\TemplatesController.cs" />
-    <Compile Include="Controllers\Ng\ViewModels\ViewModels.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\FilterVM.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\RecepientcardVM.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\RFilterTableVM.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\RFilterVM.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\TemplateVM.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\SHARED.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\WildcardVM.cs" />
     <Compile Include="Controllers\Ng\WildcardsController.cs" />
     <Compile Include="Controllers\Ng\RecepientCardsController.cs" />
     <Compile Include="Global.asax.cs">

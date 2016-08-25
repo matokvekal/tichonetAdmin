@@ -1,4 +1,4 @@
-﻿using Business_Logic.MessagesContext;
+﻿using Business_Logic.MessagesModule;
 using System.Collections.Generic;
 using System.Web.Mvc;
 

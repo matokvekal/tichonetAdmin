@@ -110,40 +110,42 @@
     <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Dtos\TotalDto.cs" />
     <Compile Include="DriverLogic.cs" />
-    <Compile Include="MessagesContext\EntitiesExtensions.cs" />
-    <Compile Include="MessagesContext\MessageContext.Context.cs">
+    <Compile Include="MessagesModule\EntitiesExtensions.cs" />
+    <Compile Include="MessagesModule\InnerLibs\Text2Graph.cs" />
+    <Compile Include="MessagesModule\MessageContext.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MessageContext.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\MessageContext.cs">
+    <Compile Include="MessagesModule\MessageContext.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\MessageContext.Designer.cs">
+    <Compile Include="MessagesModule\MessageContext.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MessageContext.edmx</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\MessagesModuleBaseLogic.cs" />
-    <Compile Include="MessagesContext\MessagesModuleLogic.cs" />
-    <Compile Include="MessagesContext\tblFilter.cs">
+    <Compile Include="MessagesModule\MessageProducer.cs" />
+    <Compile Include="MessagesModule\MessagesModuleBaseLogic.cs" />
+    <Compile Include="MessagesModule\MessagesModuleLogic.cs" />
+    <Compile Include="MessagesModule\tblFilter.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\tblRecepientCard.cs">
+    <Compile Include="MessagesModule\tblRecepientCard.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\tblRecepientFilter.cs">
+    <Compile Include="MessagesModule\tblRecepientFilter.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\tblRecepientFilterTableName.cs">
+    <Compile Include="MessagesModule\tblRecepientFilterTableName.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\tblTemplate.cs">
+    <Compile Include="MessagesModule\tblTemplate.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="MessagesContext\tblWildcard.cs">
+    <Compile Include="MessagesModule\tblWildcard.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
     <Compile Include="ModelsExtensions.cs" />
@@ -263,11 +265,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
-    <EntityDeploy Include="MessagesContext\MessageContext.edmx">
+    <EntityDeploy Include="MessagesModule\MessageContext.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>MessageContext.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="MessagesContext\MessageContext.edmx.diagram">
+    <None Include="MessagesModule\MessageContext.edmx.diagram">
       <DependentUpon>MessageContext.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
@@ -292,12 +294,12 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MessagesContext\MessageContext.Context.tt">
+    <Content Include="MessagesModule\MessageContext.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>MessageContext.edmx</DependentUpon>
       <LastGenOutput>MessageContext.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="MessagesContext\MessageContext.tt">
+    <Content Include="MessagesModule\MessageContext.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>MessageContext.edmx</DependentUpon>
       <LastGenOutput>MessageContext.cs</LastGenOutput>

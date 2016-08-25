@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Business_Logic.MessagesContext
+namespace Business_Logic.MessagesModule
 {
     using System;
     using System.Collections.Generic;

@@ -10,11 +10,9 @@ var AngularApp;
                     break;
                 case "datetime":
                 case "date":
-                    items.forEach(function (x) {
-                        var s = x.Value;
-                        if (s.lastIndexOf && s.lastIndexOf("/Date", 0) === 0)
-                            x.Value = new Date(parseInt(x.Value.substr(6)));
-                    });
+                    for (var i = 0; i < items.length; i++) {
+                        items[i].Value = formatVal(items[i].Value, typeName);
+                    }
                     break;
                 case "time":
                     break;
@@ -23,6 +21,26 @@ var AngularApp;
             }
         }
         Controllers.formatValsOps = formatValsOps;
+        function formatVal(value, typeName) {
+            switch (typeName) {
+                case "int":
+                    return value;
+                case "nvarchar":
+                    return value;
+                case "datetime":
+                case "date":
+                    var s = value;
+                    if (s.lastIndexOf && s.lastIndexOf("/Date", 0) === 0)
+                        return new Date(parseInt(s.substr(6)));
+                    break;
+                case "time":
+                    return value;
+                case "bit":
+                    return value;
+            }
+            return value;
+        }
+        Controllers.formatVal = formatVal;
         function glyphiconforSQLTYPE(typeName) {
             switch (typeName) {
                 case "int":
@@ -48,7 +66,7 @@ var AngularApp;
                     return "text";
                 case "datetime":
                 case "date":
-                    return "datetime-local";
+                    return "datetime";
                 case "time":
                     return "time";
                 case "bit":

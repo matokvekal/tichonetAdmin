@@ -7,9 +7,11 @@
         showTableChoose: boolean = false
 
         possiblekeys: KeyVM[] = []
+        reservedwildcards: WildcardVM[] = []
 
         metafilters: MetaFilterVM[] = []
         curmetafilter: MetaFilterVM = null
+
         curmetafilterBaseTableName = () => {
             let t = FindById(this.basetables, this.curmetafilter.BaseTableId)
             return t === undefined ? "" : t.Name
@@ -166,6 +168,8 @@
             this.initUrlModuleFromRowObj(data.urls)
             this.refetchTables()
             this.refetchMfilters()     
+            this.fetchtoarr(true, { urlalias: "getreservedcards" }, this.va.reservedwildcards, false);
+
         }
 
         //BaseTables i.e. RecepientFilterTableName
@@ -242,6 +246,11 @@
             let cards = this.va.curmetafilter.wildcards
             for (let i = 0; i < cards.length; i++) {
                 if (cards[i].Code === wc.Code && cards[i] !== wc)
+                    return false
+            }
+            cards = this.va.reservedwildcards
+            for (let i = 0; i < cards.length; i++) {
+                if (cards[i].Code === wc.Code)
                     return false
             }
             return true;

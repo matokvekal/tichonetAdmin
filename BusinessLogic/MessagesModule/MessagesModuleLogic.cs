@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 
-namespace Business_Logic.MessagesContext {
+namespace Business_Logic.MessagesModule {
 
     public enum ItemSaveBehaviour {
         AddOnly = 1,
@@ -21,7 +21,7 @@ namespace Business_Logic.MessagesContext {
         /// Creates Enity that tracked by EF
         /// </summary>
         public TEntity Create<TEntity>()
-                        where TEntity : class, IMessagesContextEntity {
+                        where TEntity : class, IMessagesModuleEntity {
             return DB.Set<TEntity>().Create();
         }
 
@@ -31,18 +31,18 @@ namespace Business_Logic.MessagesContext {
         //---------------------
 
         public List<TEntity> GetAll <TEntity>()
-            where TEntity: class,IMessagesContextEntity 
+            where TEntity: class,IMessagesModuleEntity 
         {
             return DB.Set<TEntity>().ToList();
         }
 
         public TEntity Get<TEntity>(int Id)
-                        where TEntity : class, IMessagesContextEntity {
+                        where TEntity : class, IMessagesModuleEntity {
             return DB.Set<TEntity>().FirstOrDefault(x => x.Id == Id);
         }
 
         public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IQueryFilter[] filters, out int countWithoutTake)
-                        where TEntity : class, IMessagesContextEntity {
+                        where TEntity : class, IMessagesModuleEntity {
             //TODO AVOID DATA MOVE IN MEMORY
             var query = DB.Set<TEntity>().ToArray().AsEnumerable();
             foreach(var filter in filters) {
@@ -78,7 +78,7 @@ namespace Business_Logic.MessagesContext {
         //---------------------
 
         public TEntity Save<TEntity> (TEntity item, ItemSaveBehaviour ISB = ItemSaveBehaviour.AllowAll)
-                        where TEntity : class, IMessagesContextEntity {
+                        where TEntity : class, IMessagesModuleEntity {
             var dbSet = DB.Set<TEntity>();
             var exsItem = Get<TEntity>(item.Id);
             if (exsItem != null) {
@@ -99,7 +99,7 @@ namespace Business_Logic.MessagesContext {
         /// Only Saving Existing Allowed
         /// </summary>
         public TEntity SaveChanges<TEntity>(TEntity item)
-                        where TEntity : class, IMessagesContextEntity {
+                        where TEntity : class, IMessagesModuleEntity {
             DB.Entry(item).State = EntityState.Modified;
             DB.SaveChanges();
             return item;
@@ -109,7 +109,7 @@ namespace Business_Logic.MessagesContext {
         /// Only Adding New Allowed
         /// </summary>
         public TEntity Add<TEntity>(TEntity item)
-                where TEntity : class, IMessagesContextEntity {
+                where TEntity : class, IMessagesModuleEntity {
             DB.Entry(item).State = EntityState.Added;
             DB.SaveChanges();
             return item;
@@ -119,7 +119,7 @@ namespace Business_Logic.MessagesContext {
         /// Only Adding New Allowed
         /// </summary>
         public void AddRange<TEntity>(ICollection<TEntity> items)
-                        where TEntity : class, IMessagesContextEntity {
+                        where TEntity : class, IMessagesModuleEntity {
             DB.Set<TEntity>().AddRange(items);
             
             DB.SaveChanges();
@@ -130,14 +130,14 @@ namespace Business_Logic.MessagesContext {
         //---------------------
 
         public void Delete<TEntity> (TEntity item)
-            where TEntity : class, IMessagesContextEntity 
+            where TEntity : class, IMessagesModuleEntity 
         {
             DB.Set<TEntity>().Remove(item);
             DB.SaveChanges();
         }
 
         public bool Delete<TEntity>(int Id)
-            where TEntity : class, IMessagesContextEntity 
+            where TEntity : class, IMessagesModuleEntity 
         {
             var item = Get<TEntity>(Id);
             if (item == null) 

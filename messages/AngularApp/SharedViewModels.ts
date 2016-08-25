@@ -61,8 +61,6 @@
         Name: string
         RecepientFilterId: number
         Key: string
-        //Value: string[]
-        //Operator: string[]
         ValsOps: ValOp[]
         Type: string
 
@@ -82,7 +80,7 @@
 
     export class FilterValueContainer {
         FilterId: number
-        Value: any[] = []
+        Values: any[] = []
     }
 
     export class WildcardVM implements IIndeficated, INgViewModel, IValidable {

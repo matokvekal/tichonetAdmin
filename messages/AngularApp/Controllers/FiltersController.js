@@ -14,6 +14,7 @@ var AngularApp;
                 this.basetables = [];
                 this.showTableChoose = false;
                 this.possiblekeys = [];
+                this.reservedwildcards = [];
                 this.metafilters = [];
                 this.curmetafilter = null;
                 this.curmetafilterBaseTableName = function () {
@@ -106,6 +107,11 @@ var AngularApp;
                     var cards = _this.va.curmetafilter.wildcards;
                     for (var i = 0; i < cards.length; i++) {
                         if (cards[i].Code === wc.Code && cards[i] !== wc)
+                            return false;
+                    }
+                    cards = _this.va.reservedwildcards;
+                    for (var i = 0; i < cards.length; i++) {
+                        if (cards[i].Code === wc.Code)
                             return false;
                     }
                     return true;
@@ -464,6 +470,7 @@ var AngularApp;
                 this.initUrlModuleFromRowObj(data.urls);
                 this.refetchTables();
                 this.refetchMfilters();
+                this.fetchtoarr(true, { urlalias: "getreservedcards" }, this.va.reservedwildcards, false);
             };
             MFiltersController.prototype.validateWithKeys = function (item, validator) {
                 for (var i = 0; i < this.va.possiblekeys.length; i++) {

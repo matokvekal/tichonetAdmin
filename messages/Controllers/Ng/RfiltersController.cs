@@ -1,4 +1,4 @@
-﻿using Business_Logic.MessagesContext;
+﻿using Business_Logic.MessagesModule;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ namespace ticonet.Controllers.Ng {
         }
 
         protected void ManagerRFilterPart<TEnitity,TNgViewModel> (MessagesModuleLogic l, IEnumerable<TNgViewModel> items, Action<TEnitity,TNgViewModel> updater) 
-            where TEnitity: class,IMessagesContextEntity
+            where TEnitity: class,IMessagesModuleEntity
             where TNgViewModel: class,INgViewModel
         {
             if (items == null) return;
