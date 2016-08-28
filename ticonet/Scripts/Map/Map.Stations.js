@@ -360,6 +360,7 @@
     },
     showBorders: function () {//show areas around all stations
         var z = (23 - smap.mainMap.getZoom()) / 4;
+        var c = 0;
         for (var i = 0; i < smap.stations.list.length; i++) {
             //smap.stations.list[i].Marker.setAnimation(google.maps.Animation.BOUNCE);
             if (smap.stations.list[i].Marker != null) {
@@ -373,22 +374,29 @@
                     center: smap.stations.list[i].Marker.getPosition(),
                     radius: z * 30
                 });
+                c++;
             }
         }
+        console.log("show: " + c);
     },
     studentDargEnd: function (position, student) {// check where was moved studen
+        console.log("drag end");
+        var c = 0;
         for (var i = 0; i < smap.stations.list.length; i++) {
             var m = smap.stations.list[i].Marker;
-            if (m == null) return;
-            var d = google.maps.geometry.spherical.computeDistanceBetween(m.getPosition(), position);
-            var r = m.Circle.getRadius();
-            if (d <= r) {//marker in circle
-                smap.stations.attachStudentToStation(student, smap.stations.list[i]);
+            if (m != null) {
+                var d = google.maps.geometry.spherical.computeDistanceBetween(m.getPosition(), position);
+                var r = m.Circle.getRadius();
+                if (d <= r) {//marker in circle
+                    smap.stations.attachStudentToStation(student, smap.stations.list[i]);
+                }
+                m.setAnimation(null);
+                m.Circle.setMap(null);
+                m.Circle = null;
+                c++;
             }
-            m.setAnimation(null);
-            m.Circle.setMap(null);
-            m.Circle = null;
         }
+        console.log("hide: " + c);
     },
     attachStudentToStation: function (student, station) {
         $("#dConfirmAttach").html("Do you want to attach " + student.Name + " to station '" + station.Name + "'?");

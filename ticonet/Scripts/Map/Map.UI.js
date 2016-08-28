@@ -183,6 +183,7 @@
         content += "<h4>" + this.objectToString(student.Name) + "</h4>";
         content += "<div>" + this.objectToString(student.CellPhone) + "...." + this.objectToString(student.Email) + "</div>";
         content += "<div>" + this.objectToString(student.Address) + "</div>";
+        content += "<div>" + this.objectToString(student.schoolName) + "</div>";
         content += "<div class='request'><strong>" + this.objectToString(student.request) + "</strong></div>";
         content += "<div rel='family'><img src='/Content/img/ajax-loader.gif' /></div>";
         content += "</div>";
