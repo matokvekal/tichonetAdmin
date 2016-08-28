@@ -100,9 +100,9 @@ namespace Business_Logic.MessagesModule.InnerLibs.Text2Graph {
         public void AddChild(TextNode tn) {
             if (type == TextNodeType.plain)
                 throw new InvalidOperationException("plain node can not have childs!");
-            childs.Add(tn);
             if (tn.parent != null)
                 throw new InvalidOperationException("textNode already has parent!");
+            childs.Add(tn);
             tn.parent = this;
         }
 

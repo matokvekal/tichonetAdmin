@@ -596,10 +596,44 @@
 
                 <!--Page Header-->
                 <div class="main-block" style="background: #333333">
-                    <div class="txt-s-huge"><i style="padding:0 10px" class="glyphicon glyphicon-cog"></i> Mailing Module</div>
+                    <div class="txt-s-huge">
+                        <i style="padding:0 10px" 
+                           class="glyphicon glyphicon-cog iconclick" 
+                           ng-click="va.showSettings=!va.showSettings">
+                        </i> Mailing Module
+                    </div>
                 </div>
                 
                 <!--Page Body-->
+                <style>
+                    .settings-window{
+                        position:fixed;
+                        top:10%;
+                        left:10%;
+                        width:80%;
+                        height:80%;
+                        background: #222222;
+                        border: 1px solid #878787;
+                        padding: 30px;
+                    }
+                </style>
+
+                <!-- Settings Window -->
+                <div class="settings-window ngan-fade-mid txt-c-grmore" ng-if="va.showSettings">
+                    <div class="txt-s-huge txt-c-base">
+                        Settings
+                    </div>
+                    <div class="txt-s-med txt-c-gr bot-bord">
+                        Mail service
+                    </div>
+                    <div>sender adress</div>
+                    <div>port...</div>
+                    <div class="txt-s-med txt-c-gr bot-bord">
+                        Sms service
+                    </div>
+                    <div>sender adress</div>
+                    <div>...</div>
+                </div>
 
                 <!-- Stored Filters -->
                 <div class="main-block bot-bord" ng-class="{'unfolded': !va.filters_folded}">
@@ -949,6 +983,7 @@
                         </a>
                         Templates
                     </span>
+
 
                     <!-- Content -->
                     <div class="unfold-block" ng-if="!va.templates_folded" ng-controller="TemplatesController" 
