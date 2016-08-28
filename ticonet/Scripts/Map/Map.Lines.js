@@ -69,7 +69,7 @@
         var request = {
             origin: new google.maps.LatLng(st1.StrLat, st1.StrLng),
             destination: new google.maps.LatLng(st2.StrLat, st2.StrLng),
-            travelMode: google.maps.DirectionsTravelMode.DRIVING
+            travelMode: google.maps.DirectionsTravelMode.DRIVING // TRANSIT  DRIVING
         };
         smap.directionsService.route(request, function (response, status) {
 

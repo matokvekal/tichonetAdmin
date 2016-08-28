@@ -532,6 +532,10 @@ namespace ticonet
             };
             int ttl = 0;
             List<StudentFullInfo> lst = null;
+            using (var logic = new tblStudentLogic())
+            {
+                lst = logic.GetStudentsForTable(req, out ttl);
+            }
             var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Students");
             worksheet.Cell("A1").Value = "Id";
