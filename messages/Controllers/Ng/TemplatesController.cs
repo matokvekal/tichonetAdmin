@@ -9,23 +9,19 @@ using Business_Logic.SqlContext;
 using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Business_Logic.MessagesModule.InnerLibs.Text2Graph;
 
 namespace ticonet.Controllers.Ng{
 
+    [Authorize]
     public class TemplatesController : NgController<TemplateVM> {
 
         protected override NgResult _create(TemplateVM[] models) {
             using (var l = new MessagesModuleLogic()) {
                 foreach (var model in models) {
-                    l.Save(new tblTemplate {
-                        Name = model.Name,
-                        IsSms = model.IsSms,
-                        MsgHeader = model.MsgHeader,
-                        MsgBody = model.MsgBody,
-                        tblRecepientFilterId = model.RecepientFilterId,
-                        FilterValueContainersJSON = JsonConvert.SerializeObject(model.FilterValueContainers),
-                        ChoosenReccardIdsJSON = JsonConvert.SerializeObject(model.ChoosenReccards)
-                    }, ItemSaveBehaviour.AddOnly);
+                    var item = l.Create<tblTemplate>();
+                    TemplateVM.ReflectToTblTemplate.Run(model, item);
+                    l.Add(item);
                 }
             }
             return NgResult.Succes(models.Count() + " new templates was added");
@@ -52,14 +48,7 @@ namespace ticonet.Controllers.Ng{
             using (var l = new MessagesModuleLogic()) {
                 foreach (var model in models) {
                     var item = l.Get<tblTemplate>(model.Id);
-                    item.Id = model.Id;
-                    item.Name = model.Name;
-                    item.IsSms = model.IsSms;
-                    item.MsgHeader = model.MsgHeader;
-                    item.MsgBody = model.MsgBody;
-                    item.tblRecepientFilterId = model.RecepientFilterId;
-                    item.FilterValueContainersJSON = JsonConvert.SerializeObject(model.FilterValueContainers);
-                    item.ChoosenReccardIdsJSON = JsonConvert.SerializeObject(model.ChoosenReccards);
+                    TemplateVM.ReflectToTblTemplate.Run(model, item);
                     l.SaveChanges(item);
                 }
             }
@@ -173,13 +162,15 @@ namespace ticonet.Controllers.Ng{
             //Create Message Producer
 
             var MPwildcards = wildcards.SelectMany(x => x.ToKeyValues());
-            var MP = new MessageProducer(templ.MsgHeader,templ.MsgBody,null);
+        
+            var specs = new DefaultMarkUpSpecification { NewLineSymbol = "\n" };
+            var MP = new MessageProducer(templ.MsgHeader,templ.MsgBody,null,specs);
 
             List<Message> messages = new List<Message>();
 
             //Produce
             foreach (var rc in reccards) {
-                var data = sqlData.GroupBy(x => x[rc.EmailKey].ToString());
+                var data = sqlData.Where(x => !String.IsNullOrWhiteSpace(x[rc.EmailKey].ToString())).GroupBy(x => x[rc.EmailKey].ToString());
                 var cards = MPwildcards.Concat(rc.ToKeyValues());
                 MP.ChangeWildCards(cards);
                 foreach (var d in data)

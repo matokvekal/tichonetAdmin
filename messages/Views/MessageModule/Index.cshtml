@@ -319,6 +319,9 @@
         .txt-c-blue {
             color: #428bca
         }
+        .txt-c-red {
+            color: #c20c0c
+        }
         .txt-c-green {
             color: #3a823b
         }
@@ -537,6 +540,12 @@
             border: none;
             border-radius: 0;
 
+        }
+
+        .sched-mini{
+            border: 1px solid #464646;
+            padding: 10px;
+            margin: 5px;
         }
 
     </style>
@@ -1104,8 +1113,63 @@
                         </a>
                         Sending
                     </span>
-                    <div class="unfold-block" ng-if="!va.mails_folded" ng-controller="SendMessagesController" data-ng-init="init()">
-                        CONTENT....
+                    <div class="unfold-block" ng-if="!va.mails_folded" ng-controller="SendMessagesController"
+                                                data-ng-init="init({
+                                                     urls: {
+                                                        gettemplates: '@Url.Action("Fetch","Templates")',
+                                                        getwildcards: '@Url.Action("Fetch","Wildcards")',
+                                                        getfilters: '@Url.Action("Fetch","Filters")',
+                                                        getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")',
+                                                        getreccards: '@Url.Action("Fetch","RecepientCards")',
+                                                        getmschedules: '@Url.Action("Fetch","MessageSchedules")',
+                                                        mngmschedules: '@Url.Action("Manage","MessageSchedules")',
+                                                        getrepeatmodes: '@Url.Action("GetRepeatModes","MessageSchedules")',
+
+                                                     }
+                                                 })">
+            
+                        <!-- Enumeration -->
+                        <div class="col-lg-6 no-padding clearfix">
+                            <div>
+                                Search string and filters...
+                            </div>
+                            <a ng-click="SchedCreate()">Create New</a>
+                            <div ng-repeat="sched in va.mschedules" class="ngan-fade-mid">
+                                <div class="sched-mini">
+                                    <div>
+                                        <input style="width: 100%" type="text" class="txtinput" 
+                                               ng-model="sched.Name"
+                                               ng-model-options='{ debounce: 500 }'
+                                               ng-change='sched.ng_Unsaved=true' />
+                                    </div>
+                                    <div class="txt-c-grmore txt-s-small">
+                                        sent {{sched.BatchesCount}} times
+                                    </div>
+                                    <div class="txt-c-gr">
+                                        Based on template:...(edit content)
+                                        @*<select
+                                                class="selector" ng-model="nvalop.Operator" 
+                                                ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)">
+                                        </select>*@
+                                    </div>
+                                    <div class="txt-c-gr">
+                                        IsActive
+                                    </div>
+                                    <div class="txt-c-gr">
+                                        Repeat Mode and Date
+                                    </div>
+                                    <div class="txt-c-gr">
+                                        Send now
+                                    </div>
+                                    <div ng-if="sched.ng_Unsaved" class="txt-c-red ngan-fade-fst">
+                                        <div>
+                                            Unsaved!
+                                        </div>
+                                        <a ng-click="SchedCreate()">Save Changes</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

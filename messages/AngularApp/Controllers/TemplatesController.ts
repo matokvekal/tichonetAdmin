@@ -69,8 +69,8 @@
 
             this.scope.DEMO = () => {
                 let func = () => this.fetchtoarr(true, {
-                    urlalias: "mockmsgs", params: { templateId: this.va.curtemplate.Id }
-                }, this.va.demomsgs, true)
+                        urlalias: "mockmsgs", params: { templateId: this.va.curtemplate.Id }
+                    }, this.va.demomsgs, true)
                 this.pushCurtemplate(this.va.curtemplate.Id === -1, func)
             }
 

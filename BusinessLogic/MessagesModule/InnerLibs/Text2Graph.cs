@@ -122,7 +122,13 @@ namespace Business_Logic.MessagesModule.InnerLibs.Text2Graph {
                     break;
                 }
                 proc.Move(specs.OpenMark.Length); // skips "{|"
-                var newNodeHeader = new NodeHeader(proc.NextTill(specs.CloseMark), specs); //look for "}"
+                NodeHeader newNodeHeader = null;
+                try {
+                    newNodeHeader = new NodeHeader(proc.NextTill(specs.CloseMark), specs); //look for "}"
+                }
+                catch (TextParseException e) {
+                    throw new TextParseException(e.Message + " at: " + proc.AllTextTillCurent());
+                }
                 proc.Move(specs.CloseMark.Length); // skips "}"
                 if (specs.DestroyNewLineAfterMarkUp)
                     proc.TryEat(specs.NewLineSymbol);
@@ -241,6 +247,8 @@ namespace Business_Logic.MessagesModule.InnerLibs.Text2Graph {
             return sb.ToString();
         }
 
+
+        //TODO FIX BUG WHEN NODE AT THE TEXT END!
         /// <summary>
         /// returns string from current position to specific string 'str'.
         /// string 'str' WILL NOT be included, current position will be on first symbol of the 'str'.
@@ -268,6 +276,11 @@ namespace Business_Logic.MessagesModule.InnerLibs.Text2Graph {
             if (result)
                 Move(str.Length);
             return result;
+        }
+
+        public string AllTextTillCurent() {
+            int _pos = pos >= text.Length ? text.Length - 1 : pos;
+            return text.ToString(0, _pos);
         }
     }
 

@@ -7,6 +7,11 @@ using Business_Logic.MessagesModule.InnerLibs.Text2Graph;
 
 namespace Business_Logic.MessagesModule {
 
+    public class MessageProducerException : Exception {
+        public MessageProducerException (string Message) : base (Message) {
+        }
+    }
+
     public enum MessageType {
         Sms,
         Email
@@ -29,18 +34,20 @@ namespace Business_Logic.MessagesModule {
     }
 
     public class MessageProducer {
+
         TextNode headerTempl;
         TextNode bodyTempl;
         IEnumerable<KeyValuePair<string,string>> wildcards;
-        MessageProductionErrorContainer errors = new MessageProductionErrorContainer();
+        MessageProductionErrorContainer errorContainer = new MessageProductionErrorContainer();
 
-        public MessageProducer(string headerTempl, string bodyTempl, IEnumerable<KeyValuePair<string, string>> wildcards) {
+        public MessageProducer(string headerTempl, string bodyTempl, IEnumerable<KeyValuePair<string, string>> wildcards, INodeMarkUpSpecification specs) {
             try {
-                this.headerTempl = TextNode.SplitTextToNodes(headerTempl);
-                this.bodyTempl = TextNode.SplitTextToNodes(bodyTempl);
+                this.headerTempl = TextNode.SplitTextToNodes(headerTempl + "  ", specs);
+                this.bodyTempl = TextNode.SplitTextToNodes(bodyTempl + "  ", specs);
             }
             catch (TextParseException e) {
-                errors.parseExceptions.Add(e);
+                errorContainer.parseExceptions.Add(e);
+                throw new MessageProducerException("Text parse Exception: " + e.Message);
             }
             this.wildcards = wildcards;
         }
@@ -55,11 +62,9 @@ namespace Business_Logic.MessagesModule {
         public Message Produce(IGrouping<string,IDictionary<string,object>> data, MessageType type) {
             Message msg = new Message();
             msg.Adress = data.Key;
-            //msg.Header = FillATemplate(headerTempl, data, errors);
-            //msg.Body = FillATemplate(bodyTempl, data, errors);
 
-            msg.Header = ProcNode(headerTempl, data);
-            msg.Body = ProcNode(bodyTempl, data);
+            msg.Header = ProcNode(headerTempl, data).Trim();
+            msg.Body = ProcNode(bodyTempl, data).Trim();
 
             msg.Type = type;
             return msg;
@@ -107,8 +112,8 @@ namespace Business_Logic.MessagesModule {
             return sb.ToString();
         }
 
-        string GetStringWithReplacements(string nodeContent, IDictionary<string, object> data) {
-            StringBuilder sb = new StringBuilder(nodeContent);
+        string GetStringWithReplacements(string stringWithWildcards, IDictionary<string, object> data) {
+            StringBuilder sb = new StringBuilder(stringWithWildcards);
             foreach (var kv in wildcards) {
                 //TODO CHECK AND ADD AN ERROR IF NO FIELD IN DICTIONARY
                 sb.Replace(kv.Key, data[kv.Value].ToString());

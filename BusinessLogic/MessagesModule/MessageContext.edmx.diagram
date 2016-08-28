@@ -16,6 +16,12 @@
         <AssociationConnector Association="Messages.tblTemplatetblRecepientFilter" />
         <EntityTypeShape EntityType="Messages.tblRecepientCard" Width="1.5" PointX="6.125" PointY="4.75" />
         <AssociationConnector Association="Messages.tblRecepientFiltertblRecepientCard" />
+        <EntityTypeShape EntityType="Messages.tblMessage" Width="1.5" PointX="8.5" PointY="6" />
+        <EntityTypeShape EntityType="Messages.tblMessageBatch" Width="1.5" PointX="10.5" PointY="4.75" />
+        <EntityTypeShape EntityType="Messages.tblMessageSchedule" Width="1.5" PointX="8.5" PointY="1.625" />
+        <AssociationConnector Association="Messages.tblMessageScheduletblTemplate" />
+        <AssociationConnector Association="Messages.tblMessageBatchtblMessageSchedule" />
+        <AssociationConnector Association="Messages.tblMessageBatchtblMessage" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

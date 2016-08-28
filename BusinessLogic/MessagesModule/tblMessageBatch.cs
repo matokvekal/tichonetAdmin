@@ -12,25 +12,22 @@ namespace Business_Logic.MessagesModule
     using System;
     using System.Collections.Generic;
     
-    public partial class tblTemplate
+    public partial class tblMessageBatch
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public tblTemplate()
+        public tblMessageBatch()
         {
-            this.tblMessageSchedules = new HashSet<tblMessageSchedule>();
+            this.tblMessages = new HashSet<tblMessage>();
         }
     
         public int Id { get; set; }
-        public int tblRecepientFilterId { get; set; }
-        public string Name { get; set; }
-        public bool IsSms { get; set; }
-        public string MsgHeader { get; set; }
-        public string MsgBody { get; set; }
-        public string FilterValueContainersJSON { get; set; }
-        public string ChoosenReccardIdsJSON { get; set; }
+        public int tblMessageScheduleId { get; set; }
+        public Nullable<System.DateTime> CreatedOn { get; set; }
+        public Nullable<System.DateTime> FinishedOn { get; set; }
+        public string Errors { get; set; }
     
-        public virtual tblRecepientFilter tblRecepientFilter { get; set; }
+        public virtual tblMessageSchedule tblMessageSchedule { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblMessageSchedule> tblMessageSchedules { get; set; }
+        public virtual ICollection<tblMessage> tblMessages { get; set; }
     }
 }

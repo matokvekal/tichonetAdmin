@@ -20,6 +20,45 @@
           <Property Name="Name" Type="nvarchar" MaxLength="150" />
           <Property Name="autoUpdatedList" Type="bit" />
         </EntityType>
+        <EntityType Name="tblMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Header" Type="nvarchar(max)" />
+          <Property Name="Body" Type="nvarchar(max)" />
+          <Property Name="Adress" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IsSms" Type="bit" Nullable="false" />
+          <Property Name="SentOn" Type="datetime" />
+          <Property Name="tblMessageBatchId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblMessageBatch">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="tblMessageScheduleId" Type="int" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="FinishedOn" Type="datetime" />
+          <Property Name="Errors" Type="nvarchar" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="tblMessageSchedule">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="tblTemplateId" Type="int" Nullable="false" />
+          <Property Name="ScheduleDate" Type="datetime" />
+          <Property Name="RepeatMode" Type="nvarchar" MaxLength="10" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="InArchive" Type="bit" />
+          <Property Name="IsSms" Type="bit" Nullable="false" />
+          <Property Name="MsgHeader" Type="nvarchar" MaxLength="500" />
+          <Property Name="MsgBody" Type="nvarchar(max)" />
+          <Property Name="FilterValueContainersJSON" Type="nvarchar(max)" />
+          <Property Name="ChoosenReccardIdsJSON" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="tblRecepientCard">
           <Key>
             <PropertyRef Name="Id" />
@@ -72,6 +111,9 @@
         </EntityType>
         <EntityContainer Name="MessagesStoreContainer">
           <EntitySet Name="tblFilter" EntityType="Self.tblFilter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblMessage" EntityType="Self.tblMessage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblMessageBatch" EntityType="Self.tblMessageBatch" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblMessageSchedule" EntityType="Self.tblMessageSchedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientCard" EntityType="Self.tblRecepientCard" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilter" EntityType="Self.tblRecepientFilter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilterTableName" EntityType="Self.tblRecepientFilterTableName" Schema="dbo" store:Type="Tables" />
@@ -108,6 +150,21 @@
           <AssociationSet Name="tblRecepientFiltertblRecepientCard" Association="Messages.tblRecepientFiltertblRecepientCard">
             <End Role="tblRecepientCard" EntitySet="tblRecepientCards" />
             <End Role="tblRecepientFilter" EntitySet="tblRecepientFilters" />
+          </AssociationSet>
+          <EntitySet Name="tblMessages" EntityType="Messages.tblMessage" />
+          <EntitySet Name="tblMessageBatches" EntityType="Messages.tblMessageBatch" />
+          <EntitySet Name="tblMessageSchedules" EntityType="Messages.tblMessageSchedule" />
+          <AssociationSet Name="tblMessageScheduletblTemplate" Association="Messages.tblMessageScheduletblTemplate">
+            <End Role="tblMessageSchedule" EntitySet="tblMessageSchedules" />
+            <End Role="tblTemplate" EntitySet="tblTemplates" />
+          </AssociationSet>
+          <AssociationSet Name="tblMessageBatchtblMessageSchedule" Association="Messages.tblMessageBatchtblMessageSchedule">
+            <End Role="tblMessageBatch" EntitySet="tblMessageBatches" />
+            <End Role="tblMessageSchedule" EntitySet="tblMessageSchedules" />
+          </AssociationSet>
+          <AssociationSet Name="tblMessageBatchtblMessage" Association="Messages.tblMessageBatchtblMessage">
+            <End Role="tblMessageBatch" EntitySet="tblMessageBatches" />
+            <End Role="tblMessage" EntitySet="tblMessages" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="tblFilter">
@@ -161,6 +218,7 @@
           <NavigationProperty Name="tblRecepientFilter" Relationship="Messages.tblTemplatetblRecepientFilter" FromRole="tblTemplate" ToRole="tblRecepientFilter" />
           <Property Name="FilterValueContainersJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ChoosenReccardIdsJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblMessageSchedules" Relationship="Messages.tblMessageScheduletblTemplate" FromRole="tblTemplate" ToRole="tblMessageSchedule" />
         </EntityType>
         <EntityType Name="tblWildcard">
           <Key>
@@ -245,6 +303,86 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="tblMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Header" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Adress" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsSms" Type="Boolean" Nullable="false" />
+          <Property Name="SentOn" Type="DateTime" Precision="3" />
+          <Property Name="tblMessageBatchId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="tblMessageBatch" Relationship="Messages.tblMessageBatchtblMessage" FromRole="tblMessage" ToRole="tblMessageBatch" />
+        </EntityType>
+        <EntityType Name="tblMessageBatch">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tblMessageScheduleId" Type="Int32" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="FinishedOn" Type="DateTime" Precision="3" />
+          <Property Name="Errors" Type="String" MaxLength="1" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblMessageSchedule" Relationship="Messages.tblMessageBatchtblMessageSchedule" FromRole="tblMessageBatch" ToRole="tblMessageSchedule" />
+          <NavigationProperty Name="tblMessages" Relationship="Messages.tblMessageBatchtblMessage" FromRole="tblMessageBatch" ToRole="tblMessage" />
+        </EntityType>
+        <EntityType Name="tblMessageSchedule">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="tblTemplateId" Type="Int32" Nullable="false" />
+          <Property Name="ScheduleDate" Type="DateTime" Precision="3" />
+          <Property Name="RepeatMode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="InArchive" Type="Boolean" />
+          <Property Name="IsSms" Type="Boolean" Nullable="false" />
+          <Property Name="MsgHeader" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="MsgBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FilterValueContainersJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ChoosenReccardIdsJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblTemplate" Relationship="Messages.tblMessageScheduletblTemplate" FromRole="tblMessageSchedule" ToRole="tblTemplate" />
+          <NavigationProperty Name="tblMessageBatches" Relationship="Messages.tblMessageBatchtblMessageSchedule" FromRole="tblMessageSchedule" ToRole="tblMessageBatch" />
+        </EntityType>
+        <Association Name="tblMessageScheduletblTemplate">
+          <End Type="Messages.tblMessageSchedule" Role="tblMessageSchedule" Multiplicity="*" />
+          <End Type="Messages.tblTemplate" Role="tblTemplate" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="tblTemplate">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessageSchedule">
+              <PropertyRef Name="tblTemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="tblMessageBatchtblMessageSchedule">
+          <End Type="Messages.tblMessageBatch" Role="tblMessageBatch" Multiplicity="*" />
+          <End Type="Messages.tblMessageSchedule" Role="tblMessageSchedule" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="tblMessageSchedule">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessageBatch">
+              <PropertyRef Name="tblMessageScheduleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="tblMessageBatchtblMessage">
+          <End Type="Messages.tblMessageBatch" Role="tblMessageBatch" Multiplicity="1" />
+          <End Type="Messages.tblMessage" Role="tblMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblMessageBatch">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessage">
+              <PropertyRef Name="tblMessageBatchId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -318,6 +456,48 @@
                 <ScalarProperty Name="NameKey" ColumnName="NameKey" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="tblRecepientFilterId" ColumnName="tblRecepientFilterId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblMessages">
+            <EntityTypeMapping TypeName="Messages.tblMessage">
+              <MappingFragment StoreEntitySet="tblMessage">
+                <ScalarProperty Name="tblMessageBatchId" ColumnName="tblMessageBatchId" />
+                <ScalarProperty Name="SentOn" ColumnName="SentOn" />
+                <ScalarProperty Name="IsSms" ColumnName="IsSms" />
+                <ScalarProperty Name="Adress" ColumnName="Adress" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="Header" ColumnName="Header" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblMessageBatches">
+            <EntityTypeMapping TypeName="Messages.tblMessageBatch">
+              <MappingFragment StoreEntitySet="tblMessageBatch">
+                <ScalarProperty Name="Errors" ColumnName="Errors" />
+                <ScalarProperty Name="FinishedOn" ColumnName="FinishedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="tblMessageScheduleId" ColumnName="tblMessageScheduleId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblMessageSchedules">
+            <EntityTypeMapping TypeName="Messages.tblMessageSchedule">
+              <MappingFragment StoreEntitySet="tblMessageSchedule">
+                <ScalarProperty Name="ChoosenReccardIdsJSON" ColumnName="ChoosenReccardIdsJSON" />
+                <ScalarProperty Name="FilterValueContainersJSON" ColumnName="FilterValueContainersJSON" />
+                <ScalarProperty Name="MsgBody" ColumnName="MsgBody" />
+                <ScalarProperty Name="MsgHeader" ColumnName="MsgHeader" />
+                <ScalarProperty Name="IsSms" ColumnName="IsSms" />
+                <ScalarProperty Name="InArchive" ColumnName="InArchive" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="RepeatMode" ColumnName="RepeatMode" />
+                <ScalarProperty Name="ScheduleDate" ColumnName="ScheduleDate" />
+                <ScalarProperty Name="tblTemplateId" ColumnName="tblTemplateId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

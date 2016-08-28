@@ -133,6 +133,15 @@
     <Compile Include="MessagesModule\tblFilter.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>
+    <Compile Include="MessagesModule\tblMessage.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesModule\tblMessageBatch.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MessagesModule\tblMessageSchedule.cs">
+      <DependentUpon>MessageContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="MessagesModule\tblRecepientCard.cs">
       <DependentUpon>MessageContext.tt</DependentUpon>
     </Compile>

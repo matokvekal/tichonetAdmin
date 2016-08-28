@@ -264,10 +264,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MessageModuleController.cs" />
     <Compile Include="Controllers\Ng\FiltersController.cs" />
+    <Compile Include="Controllers\Ng\MessageSchedulesController.cs" />
     <Compile Include="Controllers\Ng\RfiltersController.cs" />
     <Compile Include="Controllers\Ng\RFilterTableController.cs" />
     <Compile Include="Controllers\Ng\TemplatesController.cs" />
     <Compile Include="Controllers\Ng\ViewModels\FilterVM.cs" />
+    <Compile Include="Controllers\Ng\ViewModels\MessageScheduleVM.cs" />
     <Compile Include="Controllers\Ng\ViewModels\RecepientcardVM.cs" />
     <Compile Include="Controllers\Ng\ViewModels\RFilterTableVM.cs" />
     <Compile Include="Controllers\Ng\ViewModels\RFilterVM.cs" />

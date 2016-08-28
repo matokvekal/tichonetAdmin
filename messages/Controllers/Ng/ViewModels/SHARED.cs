@@ -62,6 +62,11 @@ namespace ticonet.Controllers.Ng.ViewModels {
             return vm;
         }
 
+        public static void Reflect<TFrom, TTo>(TFrom from, TTo to, POCOReflector<TFrom, TTo> reflector) {
+            //TODO EXCEPTION HANDLING
+            reflector.Run(from, to);
+        }
+
         public static PropertyInfo GetPropertyInfo<TSource, TProperty>
             (Expression<Func<TSource, TProperty>> propertySelector) {
 

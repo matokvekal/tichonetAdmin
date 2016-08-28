@@ -31,5 +31,8 @@ namespace Business_Logic.MessagesModule
         public virtual DbSet<tblTemplate> tblTemplates { get; set; }
         public virtual DbSet<tblWildcard> tblWildcards { get; set; }
         public virtual DbSet<tblRecepientCard> tblRecepientCards { get; set; }
+        public virtual DbSet<tblMessage> tblMessages { get; set; }
+        public virtual DbSet<tblMessageBatch> tblMessageBatches { get; set; }
+        public virtual DbSet<tblMessageSchedule> tblMessageSchedules { get; set; }
     }
 }

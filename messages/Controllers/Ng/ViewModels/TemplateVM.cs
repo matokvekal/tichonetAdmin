@@ -26,6 +26,17 @@ namespace ticonet.Controllers.Ng.ViewModels {
                 }
             );
 
+        public static POCOReflector<TemplateVM, tblTemplate> ReflectToTblTemplate =
+            POCOReflector<TemplateVM, tblTemplate>.Create(
+                (o, m) => m.tblRecepientFilterId = o.RecepientFilterId,
+                (o, m) => m.Name = o.Name,
+                (o, m) => m.IsSms = o.IsSms,
+                (o, m) => m.MsgHeader = o.MsgHeader,
+                (o, m) => m.MsgBody = o.MsgBody,
+                (o, m) => m.FilterValueContainersJSON = JsonConvert.SerializeObject(o.FilterValueContainers),
+                (o, m) => m.ChoosenReccardIdsJSON = JsonConvert.SerializeObject(o.ChoosenReccards)
+            );
+
         public int Id { get; set; }
         public int RecepientFilterId { get; set; }
 
