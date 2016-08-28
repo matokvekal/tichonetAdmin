@@ -38,7 +38,8 @@ namespace ticonet
                     Address = (data.city ?? "") + ", " + (data.street ?? "") + ", " + data.houseNumber,
                     Shicva = data.Shicva,
                     Class = data.@class,
-                    Active = data.Active ?? false
+                    Active = data.Active ?? false,
+                    schoolName=data.schoolName
                 }).ToList();
             }
             return res;
