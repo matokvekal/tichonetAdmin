@@ -289,7 +289,7 @@
     <Compile Include="Scheduler\NinjectTaskFactory.cs" />
     <Compile Include="Scheduler\TaskException.cs" />
     <Compile Include="Scheduler\TaskRegistry.cs" />
-    <Compile Include="Scheduler\Tasks\TaskExample.cs" />
+    <Compile Include="Scheduler\Tasks\TaskEveryHours.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\AwaitLayer.css" />

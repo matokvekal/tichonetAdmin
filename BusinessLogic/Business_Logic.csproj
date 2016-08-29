@@ -111,6 +111,7 @@
     <Compile Include="Dtos\TotalDto.cs" />
     <Compile Include="DriverLogic.cs" />
     <Compile Include="MessagesModule\EntitiesExtensions.cs" />
+    <Compile Include="MessagesModule\InnerLibs\EmailSender.cs" />
     <Compile Include="MessagesModule\InnerLibs\Text2Graph.cs" />
     <Compile Include="MessagesModule\MessageContext.Context.cs">
       <AutoGen>True</AutoGen>
