@@ -90,6 +90,20 @@ namespace ticonet.Controllers
             return res;
         }
 
+        [ActionName("SaveGeometry")]
+        public void PostSaveGeometry(SaveGeometryModel model)
+        {
+            using (var logic = new LineLogic())
+            {
+                var line = logic.GetLine(model.Id);
+                if (line!= null)
+                {
+                    line.PathGeometry = model.Data;
+                    logic.SaveChanges();
+                }
+            }
+        }
+
         [ActionName("deleteLine")]
         public EditLineResultModel PostDeleteLine(int id)
         {

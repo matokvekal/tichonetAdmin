@@ -8,6 +8,7 @@ using Business_Logic.Entities;
 using Business_Logic.Helpers;
 using log4net;
 using ticonet.Models;
+using ticonet.Models.viewModels;
 
 namespace ticonet
 {
@@ -93,7 +94,68 @@ namespace ticonet
             return new StudentFamilyInfo { Id = id, Family = (res != null ? new FamilyModel(res) : new FamilyModel()) };
         }
 
+        [ActionName("Address")]
+        public StudentAddressViewModel GetAddress(int id)
+        {
+            StudentAddressViewModel res = null;
+            using (var logic = new tblStudentLogic())
+            {
+                var st = logic.getStudentByPk(id);
+                if (st != null)
+                {
+                    res = new StudentAddressViewModel
+                    {
+                        StudentId = st.pk,
+                        City = st.city,
+                        CityId = st.cityId ?? 0,
+                        Street = st.street,
+                        StreetId = st.streetId??0,
+                        HouseNumber = st.houseNumber,
+                        Confirm = st.registrationStatus
+                    };
+                }
+            }
+            return res;
+        }
 
+        [ActionName("Address")]
+        public StudentShortInfo PostAddress(StudentAddressViewModel data)
+        {
+            StudentShortInfo res = null;
+            try
+            {
+                using (var logic = new tblStudentLogic())
+                {
+                    var st = logic.getStudentByPk(data.StudentId);
+                    if (st != null)
+                    {
+                        if (st.cityId != data.CityId ||
+                            st.streetId != data.StreetId ||
+                            st.houseNumber != data.HouseNumber)
+                        {
+                            st.street = data.Street;
+                            st.streetId = data.StreetId;
+                            st.city = data.City;
+                            st.cityId = data.CityId;
+                            st.Lat = null;
+                            st.Lng = null;
+                            tblStudentLogic.update(st);
+                            logic.RemoveStudentFromAllStations(st.pk);
+                            res = new StudentShortInfo(st);
+                        }else
+                        {
+                            //nothing chanhges
+                        }
+                    }
+                }
+               
+            }
+            catch(Exception ex)
+            {
+                res = null;
+            }
+            return res;
+        }
     }
 
     public class StudentFamilyInfo

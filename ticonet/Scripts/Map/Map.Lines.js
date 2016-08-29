@@ -2,6 +2,7 @@
     list: [],
     ttGrid: null,
     durations: null,
+    notSaveGeometry: false,
     preSwitch: function (id) {
         var sel = $("input[ref=cbLn][rel=" + id + "]").prop("checked");
         if (sel) {
@@ -11,17 +12,17 @@
         }
     },
     updateLine: function (line, show) {
-        console.log(line);
+
         line.show = (show == true);
         if (show == true) smap.lines.hideLine(line.Id);
+
         var oldline = smap.getLine(line.Id);
         if (oldline) {
             var index = smap.lines.list.indexOf(oldline);
             smap.lines.list[index] = line;
             smap.table.linesGrid.setRowData(line.Id, line);
+            //smap.ways = null; //TODO: Redid for save old ways
         } else {
-            //console.log("Add");
-            //console.log(line);
             smap.lines.list.push(line);
             smap.table.linesGrid.jqGrid('addRowData', line.Id, line);
         }
@@ -29,20 +30,18 @@
 
     },
     showLine: function (id) {
-        //console.log(id);
+
         var line = smap.getLine(id);
-        //console.log(line);
+
         if (!(line.Stations)) return;
         if (line.Stations.length < 2) return;
-
-        line.route = null;
-        line.gDirectionsDisplay = null;
-        line.currentStationsList = [];
-        for (var i = 0; i < line.Stations.length; i++) {
-            line.currentStationsList.push(line.Stations[i].StationId);
-        }
-        smap.lines.showSegment(line);
         line.show = true;
+
+        smap.lines.calcLine(id, function (line) {
+            for (var i in line.ways) {
+                line.ways[i].display.setMap(smap.mainMap);
+            }
+        });
     },
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
@@ -52,24 +51,20 @@
         if (smap.directionsService == null) smap.directionsService = new google.maps.DirectionsService();
 
 
-        var rendererOptions = {
-            draggable: false,
-            hideRouteList: true,
-            preserveViewport: true,
-            markerOptions: {
-                visible: false
-            },
-            polylineOptions: {
-                strokeColor: smap.lines.getColor(line.Id)
-            }
-        };
+        var rendererOptions = smap.lines.getRenderOptions(line);
         if (line.gDirectionsDisplay == null) line.gDirectionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
         line.gDirectionsDisplay.setMap(smap.mainMap);
+
+        google.maps.event.addListener(line.gDirectionsDisplay, "directions_changed", function (result) {
+            console.log(line.gDirectionsDisplay.getDirections());
+        });
+
 
         var request = {
             origin: new google.maps.LatLng(st1.StrLat, st1.StrLng),
             destination: new google.maps.LatLng(st2.StrLat, st2.StrLng),
-            travelMode: google.maps.DirectionsTravelMode.DRIVING // TRANSIT  DRIVING
+            travelMode: google.maps.DirectionsTravelMode.DRIVING,
+            transitOptions: { modes: ["BUS"] }
         };
         smap.directionsService.route(request, function (response, status) {
 
@@ -110,12 +105,201 @@
             }
         });
     },
+    getRenderOptions: function (line) {
+        var rendererOptions = {
+            draggable: true,
+            hideRouteList: true,
+            preserveViewport: true,
+            markerOptions: {
+                visible: false
+            },
+            polylineOptions: {
+                strokeColor: smap.lines.getColor(line.Id)
+            }
+        };
+        return rendererOptions;
+    },
+    addDirectionChangedListener: function (way, line) {
+        google.maps.event.addListener(way.display, "directions_changed", function () {
+
+
+            for (var j in line.ways) {
+                if (line.ways[j].path) {
+                    var d = line.ways[j].display.getDirections()
+                    var dur = 0;
+                    var dist = 0;
+                    for (var z in d.routes[0].legs) {
+                        dist += d.routes[0].legs[z].distance.value;
+                        dur += d.routes[0].legs[z].duration.value;
+                    }
+
+                    line.ways[j].path = { routes: [d.routes[0]], request: d.request };                  
+                    line.ways[j].distance = dist;
+                    line.ways[j].duration = dur;
+                }
+            }
+            if (!smap.lines.notSaveGeometry) smap.lines.saveGeometry(line);
+        });
+    },
+    calcValues: null,
+    calcLine: function (id, callback) {
+        var line = smap.getLine(id);
+        if (line.ways == null) line.ways = [];
+        if (!(line.Stations)) return;
+        if (line.Stations.length < 2) return;
+
+
+
+        var rendererOptions = smap.lines.getRenderOptions(line);
+        for (var i = 0; i < line.Stations.length - 1; i++) {
+            var oldWay = null;
+            for (var j in line.ways) {
+                if (line.ways[j].startStationId == line.Stations[i].StationId &&
+                    line.ways[j].endStationId == line.Stations[i + 1].StationId) {
+                    oldWay = line.ways[j];
+                    break;
+                }
+            }
+            if (oldWay == null) {
+                var way = {
+                    startStationId: line.Stations[i].StationId,
+                    endStationId: line.Stations[i + 1].StationId,
+                    position: i,
+                    display: new google.maps.DirectionsRenderer(rendererOptions)
+                };
+                line.ways.push(way);
+                smap.lines.addDirectionChangedListener(way, line);
+            } else {
+                oldWay.position= i;
+            }
+        }
+        for (var i = 0; i < line.ways.length;) { //remove ways with incorrect stations
+            if (smap.lines.checkStationsInLine(line.Id, [line.ways[i].startStationId, line.ways[i].endStationId])) {
+                i++;
+            }
+            else {
+                console.log("Remove way from station " + line.ways[i].startStationId + " to station " + line.ways[i].endStationId);
+                line.ways[i].display.setMap(null);
+                line.ways.splice(i, 1);
+            }
+        }
+
+        line.ways.sort(function (a, b) {
+            var compA = a.position;
+            var compB = b.position;
+            return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
+        });
+
+        smap.lines.calcValues = {
+            line: line,
+            index: 0,
+            callback: callback
+        };
+        smap.lines.calcSegment();
+    },
+    calcSegment() {
+        if (smap.lines.calcValues == null) return;
+        var i = smap.lines.calcValues.index;
+        var line = smap.lines.calcValues.line;
+        var callback = smap.lines.calcValues.callback;
+
+
+        if (line.ways[i].path) {// do not calc
+            if ((i + 1) < line.ways.length) {
+                smap.lines.calcValues = {
+                    line: line,
+                    index: i + 1,
+                    callback: callback
+                };
+                smap.lines.calcSegment();
+            }
+            else {
+                callback(line);
+            }
+            return;
+        }
+        var st1 = smap.stations.getStation(line.ways[i].startStationId);
+        var st2 = smap.stations.getStation(line.ways[i].endStationId);
+
+        if (smap.directionsService == null) smap.directionsService = new google.maps.DirectionsService();
+
+        var request = {
+            origin: new google.maps.LatLng(st1.StrLat, st1.StrLng),
+            destination: new google.maps.LatLng(st2.StrLat, st2.StrLng),
+            travelMode: google.maps.DirectionsTravelMode.DRIVING,
+            transitOptions: { modes: ["BUS"] }
+        };
+
+        smap.directionsService.route(request, function (response, status) {
+
+            if (status == "OK") {
+
+                var route = response.routes[0];
+
+                var dur = 0;
+                var dist = 0;
+                for (var z in route.legs) {
+                    dist += route.legs[z].distance.value;
+                    dur += route.legs[z].duration.value;
+                }
+
+                line.ways[i].path = { routes: [route], request: request };
+
+                line.ways[i].distance = dist;
+                line.ways[i].duration = dur;
+
+                line.ways[i].display.setDirections(line.ways[i].path);
+                if (line.show) line.ways[i].display.setMap(smap.mainMap);
+
+                if ((i + 1) < line.ways.length) {
+
+                    smap.lines.calcValues = {
+                        line: line,
+                        index: i + 1,
+                        callback: callback
+                    };
+                    window.setTimeout("smap.lines.calcSegment();", 500);
+
+                }
+                else {
+                    callback(line);
+                }
+            }
+            else {
+                if (status == "OVER_QUERY_LIMIT") {
+                    window.setTimeout("smap.lines.calcSegment();", 5000);
+                }
+                else {
+                    console.log("Navigation error: " + status);
+                }
+            }
+        });
+    },
+    saveGeometry: function (line) {
+        var data = [];
+        for (var i in line.ways) {
+            var way = line.ways[i];
+            data.push({
+                path: way.path,
+                startStationId: way.startStationId,
+                endStationId: way.endStationId,
+                distance: way.distance,
+                duration: way.duration,
+                position: way.position
+            });
+        }
+        // console.log(data);
+        $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)) });
+
+    },
     hideLine: function (id) {
+
         var line = smap.getLine(id);
         if (line != null) {
             line.show = false;
-            if (line.gDirectionsDisplay != null)
-                line.gDirectionsDisplay.setMap(null);
+            for (var i in line.ways) {
+                line.ways[i].display.setMap(null);
+            }
         }
     },
     getColor: function (id) {
@@ -285,15 +469,22 @@
             LineId: lnId,
             Durations: []
         };
-
-        $("#spStatus").html("Update time table for line " + ln.LineNumber);
-        smap.lines.showLine(lnId, false);
+        for (var i in ln.ways) {
+            smap.lines.durations.Durations.push({
+                StationId: ln.ways[i].startStationId,
+                Duration: ln.ways[i].duration
+            });
+        }
+        smap.lines.saveDurations();
+        //$("#spStatus").html("Update time table for line " + ln.LineNumber);
+        //smap.lines.showLine(lnId, false);
 
     },
     saveDurations: function () {
         $.post("/api/map/SaveDurations", smap.lines.durations).done(function (loader) {
+            smap.restoryWays(loader);
             console.log(loader);
-            smap.lines.updateLine(loader, false);
+            smap.lines.updateLine(loader, true);
             if (smap.lines.ttGrid != null)
                 for (var i in loader.Stations) {
                     var st = loader.Stations[i];
@@ -336,5 +527,15 @@
             }
 
         }
+    },
+    checkStationsInLine: function (lineId, stationIds) {// check line have all stations in list
+        var line = smap.getLine(lineId);
+        var res = 0;
+        for (var i in stationIds) {
+            for (var j in line.Stations) {
+                if (line.Stations[j].StationId == stationIds[i]) res++;
+            }
+        }
+        return res == stationIds.length;
     }
 }

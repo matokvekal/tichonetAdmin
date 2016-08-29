@@ -90,7 +90,7 @@
                         width: 178,
                         formatter: function (cellvalue, options, rowObject) {
                             var res = cellvalue;
-                            res += "&nbsp;&nbsp;<a href='javascript:smap.UI.openAddressEditDialog(" + rowObject.StudentId + ");'><span class='glyphicon glyphicon-edit' title='Edit'></span></a>";
+                            res += "&nbsp;&nbsp;<a href='javascript:smap.UI.openAddressEditDialog(" + rowObject.Id + ");'><span class='glyphicon glyphicon-edit' title='Edit'></span></a>";
                             return res;
                         }
                     },
