@@ -294,17 +294,18 @@
                             smap.stations.updateStation(loader.Data.Station);
                             for (var i = 0; i < loader.Data.Lines.length; i++) {
                                 smap.restoryWays(loader.Data.Lines[i]);
-                               
-                                for (var j = 0; j < loader.Data.Lines[i].ways.length; ) {
-                                    if (loader.Data.Lines[i].ways[j].startStationId == loader.Data.Station.Id ||
-                                        loader.Data.Lines[i].ways[j].endStationId == loader.Data.Station.Id) {
-                                        loader.Data.Lines[i].ways.splice(j, 1);
-                                    }
-                                    else {
-                                        j++;
+                                console.dir(loader.Data.Lines[i]);
+                                if (loader.Data.Lines[i].ways != null) {
+                                    for (var j = 0; j < loader.Data.Lines[i].ways.length;) {
+                                        if (loader.Data.Lines[i].ways[j].startStationId == loader.Data.Station.Id ||
+                                            loader.Data.Lines[i].ways[j].endStationId == loader.Data.Station.Id) {
+                                            loader.Data.Lines[i].ways.splice(j, 1);
+                                        }
+                                        else {
+                                            j++;
+                                        }
                                     }
                                 }
-                               
                                 smap.lines.updateLine(loader.Data.Lines[i], true);
                             }
 
