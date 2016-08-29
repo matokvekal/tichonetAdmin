@@ -1,14 +1,12 @@
 ﻿@using System.Web.Optimization
 @using Business_Logic.Helpers
-
 @Styles.Render("~/bundles/Home")
 @section scripts{
     @Scripts.Render("http://maps.googleapis.com/maps/api/js?language=he&libraries=places&key=" + MapHelper.ApiKey)
-  @*@Scripts.Render("http://maps.googleapis.com/maps/api/js?libraries=places&key=" + MapHelper.ApiKey)*@
+    @*@Scripts.Render("http://maps.googleapis.com/maps/api/js?libraries=places&key=" + MapHelper.ApiKey)*@
 
- 
-   
-     @Scripts.Render("~/bundles/map")
+
+    @Scripts.Render("~/bundles/map")
     <script type="text/javascript">
         $(document).ready(smap.init);
     </script>
@@ -22,14 +20,10 @@
 @Html.Hidden("hfHiddenStations", (string)ViewBag.HiddenStations, new { @id = "hfHiddenStations" })
 @Html.Hidden("hfHiddenStudents", (string)ViewBag.HiddenStudents, new { @id = "hfHiddenStudents" })
 @Html.Hidden("hfShowStations", (bool)ViewBag.ShowStations, new { @id = "hfShowStations" })
-
 <div class="map-canvas" id="map-canvas" style=""></div>
 
-
 <div id="dSearchBar" class="row">
-
     <div class="glyphicon glyphicon-search col-lg-1 col-md-1 col-sm-1 col-xs-1" aria-hidden="true" id="btSearch"></div>
-
 
     <div id="dSearchForm" class=" col-lg-11 col-md-11 col-sm-11 col-xs-11">
         <div class="input-group">
@@ -38,7 +32,6 @@
         </div>
     </div>
 </div>
-
 <div class="students-fly">
     <div class="header" style="padding-left: 10px; border-bottom: 1px solid #999; ">
         <h2>
@@ -75,11 +68,8 @@
         <div id="pgStudents"></div>
     </div>
 </div>
-
 @*Dialogs*@
-
 <div id="dialog-form" title="Add / Edit station" style="display: none; overflow: hidden;">
-
     <form action="/api/stations/Save" id="frmCreate" method="POST" class="form-horizontal">
         <div class="form-group" id="dCSAddrBlock">
             <div class="row">
@@ -99,7 +89,6 @@
                         <span title="Address not found" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" id="spCSWarnIcon"></span>
                     </div>
                 </div>
-
             </div>
         </div>
         <div class="form-group row">
@@ -124,7 +113,6 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding-top: 6px;">School</div>
             </div>
         </div>
-
         <input type="hidden" id="hfStationId" name="Id" />
         <input type="hidden" id="hfCreateColor" name="Color" />
         <input type="hidden" id="hfCreateLat" name="StrLat" />
@@ -157,10 +145,8 @@
                 <input type="radio" name="UseColor" value="1" id="rAttachStation" />
                 <span>Station</span>
                 <div class="color-indicator-small" id="ciAttachStation"></div>
-
                 <div rel="AttachLines">
                     <input type="radio" name="UseColor" value="2" id="rAttachLine" />
-
                     <span>Line</span>
                     <div class="color-indicator-small" id="ciAttachLine"></div>
                 </div>
@@ -204,9 +190,7 @@
             <label for="ddlAddPosition" class="col-xs-3 control-label">Position</label>
             <select id="ddlAddPosition" name="Position" class="text form-control input-sm" style="width: 50px"></select>
         </div>
-
         <div class="row form-group">
-
             <label for="ddlAddLine" class="col-xs-3 col-sm-3 col-md-3 col-lg-3 control-label">Color</label>
             <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <input type="radio" name="ChangeColor" value="false" id="rAddStation" />
@@ -216,18 +200,15 @@
                 <div class="color-indicator" id="dAddStation"></div>
             </div>
         </div>
-
         <div class="row form-group">
             <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 col-xs-offset-3  col-lg-offset-3 col-sm-offset-3 col-md-offset-3">
                 <input type="radio" name="ChangeColor" value="true" id="rAddLine" />
                 <span style="margin-left: 5px; margin-right: 5px;">Line</span>
-
             </div>
             <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                 <div class="color-indicator" id="dAddLine"></div>
             </div>
         </div>
-
 
     </form>
 </div>
@@ -258,7 +239,6 @@
 </div>
 <div id="dlgDeleteFromLine" title="Delete station from line" style="display: none;">
     <div id="dDeleteLines">
-
     </div>
     <input type="hidden" id="hfDeleteFromLineStationId" />
 </div>
@@ -306,5 +286,33 @@
     <div class="row">
         <table id="tblTTGrid"></table>
     </div>
+</div>
+
+<div id="dlgStudAddr" title="Student Address" style="display: none;">
+    <form id="frmStudAddr" class="form-inline">
+
+        <input type="hidden" name="StudentId" />
+        <div class="container">
+            
+                <div >
+                    <div class="label">City</div>
+
+                    <input type="text" class="form-control input-xs" placeholder="City" name="City" />
+
+                    <input type="hidden" name="CityId" />
+                </div>
+                <div >
+                    <div class="label">Street</div>
+                    <input type="text" class="form-control input-xs has-error" placeholder="Street" name="Street" />
+                    <input type="hidden" name="StreetId" />
+                </div>
+                <div >
+                    <div class="label">House</div>
+                    <input type="text" class="form-control input-xs" placeholder="House" name="HouseNumber" />
+                </div>
+          
+        </div>
+    </form>
+
 </div>
 @*End Dialogs*@

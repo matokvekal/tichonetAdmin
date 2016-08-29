@@ -183,7 +183,6 @@
         content += "<h4>" + this.objectToString(student.Name) + "</h4>";
         content += "<div>" + this.objectToString(student.CellPhone) + "...." + this.objectToString(student.Email) + "</div>";
         content += "<div>" + this.objectToString(student.Address) + "</div>";
-        content += "<div>" + this.objectToString(student.schoolName) + "</div>";
         content += "<div class='request'><strong>" + this.objectToString(student.request) + "</strong></div>";
         content += "<div rel='family'><img src='/Content/img/ajax-loader.gif' /></div>";
         content += "</div>";
@@ -199,7 +198,7 @@
         } else {
             smap.UI.loadFamily(student.Id);
         }
-        
+
 
         //show stations connect lines
         var stations = smap.getAttachInfo(student.Id);
@@ -232,7 +231,7 @@
         });
         if (tabIndex == 1) smap.UI.showBuses(studentId);
     },
-    loadFamily: function (id) {//load info about family for show in InfoWindow
+    loadFamily: function (id) { //load info about family for show in InfoWindow
         $.get("/api/Students/Family", { id: id }).done(function (loader) {
 
             var cont = $("#dIW" + loader.Id).find("div[rel=family]");
@@ -282,7 +281,66 @@
             $("<div class='iw-bus-info-small'>" + t + "</div>").appendTo(cont);
         }
     },
-    openAddressEditDialog:function(id) {
-        alert(id);
+    openAddressEditDialog: function (id) {
+        $("#frmStudAddr").find("input[name=StudentId]").val(id);
+        $.get("/api/Students/Address/" + id).done(function (loader) {
+            var st = loader;
+            for (var key in st) {
+                var ctrl = $("#frmStudAddr").find("input[name=" + key + "]");
+
+                if ($(ctrl).attr("type") == "text") $(ctrl).val(st[key]);
+                if ($(ctrl).attr("type") == "hidden") $(ctrl).val(st[key]);
+                if ($(ctrl).attr("type") == "checkbox") $(ctrl).prop("checked", st[key]);
+            }
+        });
+
+
+        $("#frmStudAddr").find("input[name='City']").autocomplete({
+            minLength: 3,
+            appendTo: "#dlgStudAddr",
+            source: function (request, response) {
+                $.post("/tblStudent/CitiesAutocomplete", { term: request.term }).done(function (loader) { response(loader); });
+            },
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#dlgStudAddr").find("input[name='CityId']").val(ui.item.id);
+                    // stbl.switchStreetEnabled();
+                }
+            }
+        });
+        $("#frmStudAddr").find("input[name='Street']").autocomplete({
+            minLength: 3,
+            appendTo: "#dlgStudAddr",
+            source: function (request, response) {
+                var cityId = $("#dlgStudAddr").find("input[name='CityId']").val();
+                $.post("/tblStudent/StreetsAutocomplete", { term: request.term, cityId: cityId }).done(function (loader) { response(loader); });
+            },
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#dlgStudAddr").find("input[name='StreetId']").val(ui.item.id);
+                }
+            }
+        });
+
+        var dialog = $("#dlgStudAddr").dialog({
+            autoOpen: true,
+            width: 370,
+            modal: true,
+            buttons: {
+                "Save": function () {
+                    var data = $("#frmStudAddr").serialize();
+                    console.log(data);
+                    $.post("/api/students/address", data).done(function (loader) {
+                        console.log(loader);
+                        smap.up
+
+                    });
+                },
+                Cancel: function () {
+                    dialog.dialog("close");
+                }
+            }
+        });
+        $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
     }
 }

@@ -424,6 +424,7 @@
     <Compile Include="Models\BusCompanyModel.cs" />
     <Compile Include="Models\FamilyModel.cs" />
     <Compile Include="Models\LinesPlanApiModel.cs" />
+    <Compile Include="Models\SaveGeometryModel.cs" />
     <Compile Include="Models\ScheduleItemModel.cs" />
     <Compile Include="Models\EventModel.cs" />
     <Compile Include="Models\GridLineBusModel.cs" />
@@ -442,6 +443,7 @@
     <Compile Include="Models\StudentToLineModel.cs" />
     <Compile Include="Models\viewModels\familyViewModel.cs" />
     <Compile Include="Models\viewModels\LoginModel.cs" />
+    <Compile Include="Models\viewModels\StudentAddressViewModel.cs" />
     <Compile Include="Models\viewModels\studentViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler\AbstractTask.cs" />

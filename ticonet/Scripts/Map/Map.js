@@ -82,11 +82,8 @@
         $("#hfHiddenLines").val(JSON.stringify(lns));
         $("#hfHiddenStations").val(JSON.stringify(stts));
         $("#hfHiddenStudents").val(JSON.stringify(sts));
-        //console.log(JSON.stringify(lns));
-        //console.log(JSON.stringify(stts));
-        //console.log(JSON.stringify(sts));
 
-        
+
 
         smap.loadData();
     },
@@ -96,8 +93,6 @@
             var hLines = $.parseJSON($("#hfHiddenLines").val());
             var hStations = $.parseJSON($("#hfHiddenStations").val());
             var hStudents = $.parseJSON($("#hfHiddenStudents").val());
-            console.log(hStudents);
-            console.log(smap.students);
             smap.lines.list = loader.Lines;
 
             for (var i = 0; i < loader.Stations.length; i++) {//load stations
@@ -122,6 +117,7 @@
                 if (student.Lat != null && student.Lng != null) smap.setMarker(student);
             }
             for (var j = 0; j < smap.lines.list.length; j++) {
+                smap.restoryWays(smap.lines.list[j]);
                 smap.lines.list[j].show = (hLines.indexOf(smap.lines.list[j].Id) == -1);
                 if (smap.lines.list[j].show == true) smap.lines.showLine(smap.lines.list[j].Id);
             }
@@ -131,6 +127,50 @@
             $("#icoReloadBtn").addClass("glyphicon-refresh");
 
         });
+    },
+    restoryWays: function (line) {
+        var ways = $.parseJSON(unescape(line.Geometry));
+        for (var k in ways) {
+            ways[k].display = new google.maps.DirectionsRenderer(smap.lines.getRenderOptions(line));
+            smap.fixGeometry(ways[k].path);            
+            ways[k].display.setDirections(ways[k].path);
+            smap.lines.addDirectionChangedListener(ways[k], line);
+        }
+        line.ways = ways;
+    },
+    fixGeometry: function (g) {
+        g.request.destination = smap.fixCoords(g.request.destination);
+        g.request.origin = smap.fixCoords(g.request.origin);
+        for (var r in g.request.waypoints) {
+            g.request.waypoints[r] = smap.fixCoords(g.request.waypoints[r]);
+        }
+        var rt = g.routes[0];
+        for (var r in rt.legs) {
+            rt.legs[r].start_location = smap.fixCoords(rt.legs[r].start_location);
+            rt.legs[r].end_location = smap.fixCoords(rt.legs[r].end_location);
+            for (var s in rt.legs[r].steps) {
+                rt.legs[r].steps[s].start_location = smap.fixCoords(rt.legs[r].steps[s].start_location);
+                rt.legs[r].steps[s].end_location = smap.fixCoords(rt.legs[r].steps[s].end_location);
+                rt.legs[r].steps[s].start_point = smap.fixCoords(rt.legs[r].steps[s].start_point);
+                rt.legs[r].steps[s].end_point = smap.fixCoords(rt.legs[r].steps[s].end_point);
+                for (var l in rt.legs[r].steps[s].lat_lngs) {
+                    rt.legs[r].steps[s].lat_lngs[l] = smap.fixCoords(rt.legs[r].steps[s].lat_lngs[l]);
+                }
+                for (var l in rt.legs[r].steps[s].path) {
+                    rt.legs[r].steps[s].path[l] = smap.fixCoords(rt.legs[r].steps[s].path[l]);
+                }
+            }
+            for (var s in rt.legs[r].via_waypoint) {
+                rt.legs[r].via_waypoint[s].location = smap.fixCoords(rt.legs[r].via_waypoint[s].location);
+            }
+            for (var s in rt.legs[r].via_waypoints) {
+                rt.legs[r].via_waypoints[s] = smap.fixCoords(rt.legs[r].via_waypoints[s]);
+            }
+
+        }
+    },
+    fixCoords: function (o) {
+        return new google.maps.LatLng(o.lat, o.lng);
     },
     loadStudents: function () {
         $.get("/api/Students/StudentsForMap").done(function (loader) {
@@ -196,7 +236,8 @@
         var res = null;
         for (var i = 0; i < smap.lines.list.length; i++) {
             if (smap.lines.list[i].Id == id) {
-                res = smap.lines.list[i];
+                res = smap.lines.list[i];         
+
                 break;
             }
         }
@@ -369,6 +410,11 @@
             return;
         }
         var st = smap.getStudent(smap.checkDistanceStudents[0]);
+        if (st == null) {
+            smap.checkDistanceStudents.splice(0, 1);
+            smap.updateDistance();
+            return;
+        }
         $("#spStatus").html("Calculatedistance for " + st.Name);
 
         if (smap.directionsService == null) smap.directionsService = new google.maps.DirectionsService();
