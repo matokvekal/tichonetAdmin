@@ -11,9 +11,6 @@ namespace Business_Logic
 {
     public class tblStudentLogic : baseLogic
     {
-
-
-
         public tblStudent getStudentByFamilyId(int familyId)
         {
             try
@@ -199,10 +196,8 @@ namespace Business_Logic
 
         public static void update(tblStudent c)
         {
-
             try
             {
-
                 var db = new BusProjectEntities();
                 db.Entry<tblStudent>(c).State = EntityState.Modified;
                 db.SaveChanges();

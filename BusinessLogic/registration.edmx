@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="BusProjectModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Buses">
           <Key>
             <PropertyRef Name="Id" />
@@ -71,6 +71,8 @@
           <Property Name="FriTime" Type="datetime" />
           <Property Name="Sut" Type="bit" />
           <Property Name="SutTime" Type="datetime" />
+          <Property Name="BasicArriveTime" Type="time" Precision="7" />
+          <Property Name="BasicDepartureTime" Type="time" Precision="7" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -141,6 +143,13 @@
           <Property Name="color" Type="nvarchar" MaxLength="50" />
           <Property Name="distanceFromStation" Type="int" />
           <Property Name="PathGeometry" Type="nvarchar(max)" />
+          <Property Name="sun" Type="bit" />
+          <Property Name="mon" Type="bit" />
+          <Property Name="tue" Type="bit" />
+          <Property Name="wed" Type="bit" />
+          <Property Name="thu" Type="bit" />
+          <Property Name="fri" Type="bit" />
+          <Property Name="sat" Type="bit" />
         </EntityType>
         <EntityType Name="tblAlertsQueue">
           <Key>
@@ -210,8 +219,8 @@
           <Property Name="DateCreatedUTC" Type="datetime" />
           <Property Name="cantBeChange" Type="bit" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'BusProject.dbo.tblFamily' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <!--Ошибки, обнаруженные при создании:
+предупреждение 6002: В таблице или представлении "BusProject.dbo.tblFamily" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
         <EntityType Name="tblFamily">
           <Key>
             <PropertyRef Name="familyId" />
@@ -724,7 +733,9 @@ warning 6002: The table/view 'BusProject.dbo.tblFamily' does not have a primary 
           <NavigationProperty Name="BusesToLines" Relationship="BusProjectModel.FK_BusesToLines_ToLines" FromRole="Line" ToRole="BusesToLine" />
           <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
           <NavigationProperty Name="tblSchedules" Relationship="BusProjectModel.LinetblSchedule" FromRole="Line" ToRole="tblSchedule" />
-          <NavigationProperty Name="tblLinesPlan" Relationship="BusProjectModel.tblLinesPlanLine" FromRole="Line" ToRole="tblLinesPlan" />		  
+          <NavigationProperty Name="tblLinesPlan" Relationship="BusProjectModel.tblLinesPlanLine" FromRole="Line" ToRole="tblLinesPlan" />
+          <Property Name="BasicArriveTime" Type="Time" Precision="7" />
+          <Property Name="BasicDepartureTime" Type="Time" Precision="7" />		  
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -800,6 +811,13 @@ warning 6002: The table/view 'BusProject.dbo.tblFamily' does not have a primary 
           <Property Name="distanceFromStation" Type="Int32" />
           <Property Name="PathGeometry" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Station" Relationship="BusProjectModel.FK_StudentsToLines_ToStations" FromRole="StudentsToLine" ToRole="Station" />
+          <Property Name="sun" Type="Boolean" />
+          <Property Name="mon" Type="Boolean" />
+          <Property Name="tue" Type="Boolean" />
+          <Property Name="wed" Type="Boolean" />
+          <Property Name="thu" Type="Boolean" />
+          <Property Name="fri" Type="Boolean" />
+          <Property Name="sat" Type="Boolean" />
         </EntityType>
         <EntityType Name="tblAlertsQueue">
           <Key>
@@ -1257,6 +1275,8 @@ warning 6002: The table/view 'BusProject.dbo.tblFamily' does not have a primary 
           <EntitySetMapping Name="Lines">
             <EntityTypeMapping TypeName="BusProjectModel.Line">
               <MappingFragment StoreEntitySet="Lines">
+                <ScalarProperty Name="BasicDepartureTime" ColumnName="BasicDepartureTime" />
+                <ScalarProperty Name="BasicArriveTime" ColumnName="BasicArriveTime" />
                 <ScalarProperty Name="SutTime" ColumnName="SutTime" />
                 <ScalarProperty Name="Sut" ColumnName="Sut" />
                 <ScalarProperty Name="FriTime" ColumnName="FriTime" />
@@ -1346,6 +1366,13 @@ warning 6002: The table/view 'BusProject.dbo.tblFamily' does not have a primary 
           <EntitySetMapping Name="StudentsToLines">
             <EntityTypeMapping TypeName="BusProjectModel.StudentsToLine">
               <MappingFragment StoreEntitySet="StudentsToLines">
+                <ScalarProperty Name="sat" ColumnName="sat" />
+                <ScalarProperty Name="fri" ColumnName="fri" />
+                <ScalarProperty Name="thu" ColumnName="thu" />
+                <ScalarProperty Name="wed" ColumnName="wed" />
+                <ScalarProperty Name="tue" ColumnName="tue" />
+                <ScalarProperty Name="mon" ColumnName="mon" />
+                <ScalarProperty Name="sun" ColumnName="sun" />
                 <ScalarProperty Name="PathGeometry" ColumnName="PathGeometry" />
                 <ScalarProperty Name="distanceFromStation" ColumnName="distanceFromStation" />
                 <ScalarProperty Name="color" ColumnName="color" />
