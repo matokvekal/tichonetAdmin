@@ -79,7 +79,7 @@ var AngularApp;
                     _this.refetchFilters(mfilt);
                     _this.va.curtemplate.FilterValueContainers = [];
                 };
-                this.turnTemplateEdit = function (templ) {
+                this.turnTemplateEdit = function (templ, callback) {
                     _this.va.curtemplate = AngularApp.CloneShallow(templ);
                     var mfilt = _this.va.metafilters.first(function (x) { return x.Id === templ.RecepientFilterId; });
                     _this.refetchReccards(mfilt);
@@ -91,6 +91,7 @@ var AngularApp;
                                 filtValCont.Values.forEach(function (ele, ind) { return filtValCont.Values[ind] = Controllers.formatVal(ele, x.Type); });
                         });
                     });
+                    fnc.F(callback);
                 };
                 this.turnOffTemplateEdition = function () {
                     _this.va.curtemplate = null;
@@ -185,8 +186,25 @@ var AngularApp;
                     _this.ShowNotification("Error", msg, { glicon: "ban-circle", nclass: "error" });
                 };
                 //------------------- Scope Init
-                this.scope.templCreate = function () { return _this.turnTemplateCreate(); };
-                this.scope.templEdit = function (templ) { return _this.turnTemplateEdit(templ); };
+                //textArea Highlighting
+                //this is temporary cos it should be in directive
+                var TextArea;
+                this.scope.InitCodeArea = function (divID) {
+                    TextArea = new CodeArea(divID);
+                    //setTimeout(() => TextArea.HandleInput(),100)
+                };
+                this.scope.HandleCodeArea = function () {
+                    TextArea.HandleInput();
+                };
+                //---
+                this.scope.templCreate = function () {
+                    _this.turnTemplateCreate();
+                    TextArea.Clear();
+                };
+                this.scope.templEdit = function (templ) {
+                    //this is temporary cos it should be in directive
+                    return _this.turnTemplateEdit(templ, function () { return setTimeout(function () { return TextArea.HandleInput(); }, 100); });
+                };
                 this.scope.setMFilt = function (mfilt) { return _this.setMFilter(mfilt); };
                 this.scope.hideEditor = function () { return _this.turnOffTemplateEdition(); };
                 this.scope.templSave = function () {
@@ -195,7 +213,10 @@ var AngularApp;
                     _this.turnOffTemplateEdition();
                 };
                 this.scope.templDelete = function (templ) { return _this.deleteTemplate(templ); };
-                this.scope.templatesTextDropped = function (x, y, z) { return _this.templatesTextDropped(x, y, z); };
+                this.scope.templatesTextDropped = function (x, y, z) {
+                    _this.templatesTextDropped(x, y, z);
+                    TextArea.HandleInput();
+                };
                 this.scope.InputType = function (SQLtype) { return Controllers.inputTypeForSQLType(SQLtype); };
                 this.scope.GetFilterValueCont = function (filt) { return _this.getFilterValueCont(filt); };
                 this.scope.SwitchFilterValueContVal = function (filt, index) {
@@ -227,4 +248,3 @@ var AngularApp;
         Controllers.TemplatesController = TemplatesController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=TemplatesController.js.map

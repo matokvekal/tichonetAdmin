@@ -295,6 +295,7 @@
     <Content Include="Content\AwaitLayer.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\CodeArea.css" />
     <Content Include="Content\Home.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -1122,6 +1123,9 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\MessageModule\Index.cshtml" />
     <Content Include="Scripts\version.json" />
+    <Content Include="Views\MessageModule\_ngMFilters.cshtml" />
+    <Content Include="Views\MessageModule\_ngSchedules.cshtml" />
+    <Content Include="Views\MessageModule\_ngTemplates.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AngularApp\Directives\" />
@@ -1151,6 +1155,7 @@
     <TypeScriptCompile Include="AngularApp\Controllers\NotificationController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\SendMessagesController.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\SHARED.ts" />
+    <TypeScriptCompile Include="AngularApp\Libraries\CodeArea.ts" />
     <TypeScriptCompile Include="AngularApp\SharedViewModels.ts" />
     <TypeScriptCompile Include="AngularApp\Controllers\TemplatesController.ts" />
     <TypeScriptCompile Include="AngularApp\Libraries\TSNetLike\Collections\ArrayExtensions.ts" />

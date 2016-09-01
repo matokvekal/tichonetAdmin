@@ -484,4 +484,3 @@ var AngularApp;
         Controllers.MFiltersController = MFiltersController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=FiltersController.js.map

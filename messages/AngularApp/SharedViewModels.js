@@ -86,4 +86,3 @@ var AngularApp;
         Controllers.FindById = FindById;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=SharedViewModels.js.map

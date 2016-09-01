@@ -77,4 +77,3 @@ var AngularApp;
         Controllers.inputTypeForSQLType = inputTypeForSQLType;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
-//# sourceMappingURL=SHARED.js.map

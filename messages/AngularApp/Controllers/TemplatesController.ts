@@ -35,8 +35,29 @@
 
             //------------------- Scope Init
 
-            this.scope.templCreate = () => this.turnTemplateCreate()
-            this.scope.templEdit = (templ) => this.turnTemplateEdit(templ)
+            //textArea Highlighting
+            //this is temporary cos it should be in directive
+            let TextArea
+
+            this.scope.InitCodeArea = (divID: string) => {
+                TextArea = new CodeArea(divID)
+                //setTimeout(() => TextArea.HandleInput(),100)
+            }
+            this.scope.HandleCodeArea = () => {
+                TextArea.HandleInput()
+            }
+
+            //---
+
+            this.scope.templCreate = () => {
+                this.turnTemplateCreate()
+                TextArea.Clear()
+            }
+
+            this.scope.templEdit = (templ) =>
+                //this is temporary cos it should be in directive
+                this.turnTemplateEdit(templ, () => setTimeout(() => TextArea.HandleInput(), 100))
+
             this.scope.setMFilt = (mfilt) => this.setMFilter(mfilt)
             this.scope.hideEditor = () => this.turnOffTemplateEdition()
             this.scope.templSave = () => {
@@ -45,7 +66,10 @@
                 this.turnOffTemplateEdition()
             }
             this.scope.templDelete = (templ) => this.deleteTemplate(templ)
-            this.scope.templatesTextDropped = (x, y, z) => this.templatesTextDropped(x, y, z)
+            this.scope.templatesTextDropped = (x, y, z) => {
+                this.templatesTextDropped(x, y, z)
+                TextArea.HandleInput()
+            }
 
             this.scope.InputType = (SQLtype: string) => inputTypeForSQLType(SQLtype)
 
@@ -73,6 +97,8 @@
                     }, this.va.demomsgs, true)
                 this.pushCurtemplate(this.va.curtemplate.Id === -1, func)
             }
+
+
 
             //------------------- Inner Init
 
@@ -143,7 +169,7 @@
             this.va.curtemplate.FilterValueContainers = []
         }
 
-        turnTemplateEdit = (templ: TemplateVM) => {
+        turnTemplateEdit = (templ: TemplateVM, callback?: () => void) => {
             this.va.curtemplate = CloneShallow(templ)
             let mfilt = this.va.metafilters.first(x => x.Id === templ.RecepientFilterId)
             this.refetchReccards(mfilt)
@@ -155,6 +181,7 @@
                         filtValCont.Values.forEach((ele, ind) => filtValCont.Values[ind] = formatVal(ele,x.Type) )
                 })
             })
+            fnc.F(callback)
         }
 
         turnOffTemplateEdition = () => {

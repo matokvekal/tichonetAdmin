@@ -79,7 +79,9 @@ namespace IdentitySample
                     "~/Scripts/angular.js",
                     "~/Scripts/angular-route.js",
                     "~/Scripts/angular-animate.js",
-                //Libraries
+                    //Libraries
+                    "~/AngularApp/Libraries/CodeArea.js",
+
                     "~/AngularApp/Libraries/TSNetLike/Collections/ArrayExtensions.js",
                     "~/AngularApp/Libraries/TSNetLike/Collections/Dictionary.js",
                     "~/AngularApp/Libraries/TSNetLike/Functors/Functors.js",

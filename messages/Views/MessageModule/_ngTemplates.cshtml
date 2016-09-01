@@ -1,0 +1,165 @@
+﻿<div ng-controller="TemplatesController"
+     data-ng-init="init({
+        urls: {
+        gettemplates: '@Url.Action("Fetch","Templates")',
+        mngtemplates: '@Url.Action("Manage","Templates")',
+        getwildcards: '@Url.Action("Fetch","Wildcards")',
+        getmfilters: '@Url.Action("Fetch","Rfilters")',
+        getfilters: '@Url.Action("Fetch","Filters")',
+        mockmsgs: '@Url.Action("MockMessage","Templates")',
+        getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")',
+        getreccards: '@Url.Action("Fetch","RecepientCards")',
+        }
+    })">
+
+    <!-- Enumeration -->
+    <div class="col-lg-3 enum-container">
+        <a ng-click="templCreate()"> create new </a>
+        <div ng-repeat="templ in va.templates | orderBy: 'Name'">
+            <span class="txt-c-gr">
+                <a class="iconclick padd-hor-t" ng-click="templEdit(templ)">
+                    <i class="glyphicon glyphicon-pencil"></i>
+                </a>
+                <a class="iconclick padd-hor-t" ng-click="templDelete(templ)">
+                    <i class="glyphicon glyphicon-trash"></i>
+                </a>
+                <i class="glyphicon txt-c-green padd-hor-t"
+                   ng-class="templ.IsSms ? 'glyphicon-comment' : 'glyphicon-envelope'"></i>
+                <span class="padd-hor-t txt-c-gr txt-anim" ng-class="{'txt-accent':templ.Id===va.curtemplate.Id}">
+                    {{templ.Name}}
+                </span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Editor -->
+    <div class="col-lg-9">
+        <div class="editor-container" ng-if="va.curtemplate!==null">
+            <div>
+                <input class="txtinput-big txt-s-med" style="width:320px" type="text" ng-model="va.curtemplate.Name" />
+            </div>
+            <div>
+                <span class="txt-c-grmore clickable" ng-click="va.curtemplate.IsSms=!va.curtemplate.IsSms">
+                    <i ng-class="va.curtemplate.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> sms
+                    <i ng-class="!va.curtemplate.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> mail
+                </span>
+            </div>
+            <div>
+                <span class="txt-c-grmore" style="padding-right:10px">Header: </span>
+                <input class="txtinput" type="text" ng-model="va.curtemplate.MsgHeader"
+                       placeholder="..."
+                       droppable id="{{va.templatesHeader_ElemId}}"
+                       drop="templatesTextDropped"
+                       style="width:320px" />
+            </div>
+
+            <!--Filters-->
+            <div class="top-bord">
+                <div ng-repeat="nfilt in va.filters">
+                    <div class="txt-c-gr txt-anim hover-highlight clickable" ng-click="nfilt.Show=!nfilt.Show">
+                        <i class="glyphicon glyphicon-filter"></i>
+                        {{nfilt.Name}}
+                    </div>
+                    <div ng-if="nfilt.Show" class="ngan-fade-mid" style="padding-left:15px">
+
+                        <!--For direct input-->
+                        <div ng-if="nfilt.ValsOps.length===1&&!nfilt.autoUpdatedList">
+                            @*<div>VALUE:{{GetFilterValueCont(nfilt).Values[0]}} </div>*@
+                            <span class="txt-c-gr">{{nfilt.Key}} {{nfilt.ValsOps[0].Operator}}</span>
+                            <input placeholder="..." class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="GetFilterValueCont(nfilt).Values[0]" />
+                        </div>
+
+                        <!--For list choose-->
+                        <div ng-if="nfilt.ValsOps.length>1||nfilt.autoUpdatedList">
+                            <div ng-repeat="valop in nfilt.ValsOps">
+                                <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchFilterValueContVal(nfilt,$index)">
+                                    <i class="glyphicon iconclick"
+                                       ng-class="HasFilterValueContVal(nfilt,valop.Value) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked txt-c-grmore'"></i>
+                                    <span>{{nfilt.Key}} {{valop.Operator}} {{valop.Value}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="clearfix">
+                <div class="col-lg-6 no-padding">
+                    <!--Textarea-->
+                    @*<textarea class="txtarea" cols="50" rows="10" ng-model="va.curtemplate.MsgBody"
+                              droppable id="{{va.templatesBody_ElemId}}"
+                              drop="templatesTextDropped"
+                              style="resize:vertical"></textarea>*@
+                    <div id="codearea" class="textarea-highlighted-container" data-ng-init="InitCodeArea('codearea')">
+                        <div class="textareabackdrop">
+                            <div class="highlights"></div>
+                        </div>
+                        <textarea class='textarea-highlighted txtarea'
+                                    ng-change="HandleCodeArea()"
+                                    @*ng-model-options='{ debounce: 200 }'*@
+                                    ng-model="va.curtemplate.MsgBody"
+                                    droppable id="{{va.templatesBody_ElemId}}"
+                                    drop="templatesTextDropped">
+                        </textarea>
+                    </div>
+                    <!--SendTo-->
+                    <div>
+                        <span class="txt-s-med txt-c-gr">Send to Recepient Groups:</span>
+                        <div ng-repeat="rc in va.reccards">
+                            <div class="txt-c-gr">
+                                <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchReccard(rc)">
+                                    <i class="glyphicon iconclick"
+                                       ng-class="HasReccard(rc) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
+                                    <span>{{rc.Name}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <!--Base on RFilter-->
+                    <div>
+                        <span class="txt-s-med txt-c-gr">Based on Filter:</span>
+                        <div ng-repeat="mfilt in va.metafilters">
+                            <div class="txt-c-gr">
+                                <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="setMFilt(mfilt)">
+                                    <i class="glyphicon iconclick"
+                                       ng-class="va.curtemplate.RecepientFilterId===mfilt.Id ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
+                                    <span>{{mfilt.Name}}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Widlcards-->
+                    <div>
+                        <span class="txt-s-med txt-c-gr">Wildcards</span>
+                        <div class="bounded-block-m">
+                            <div ng-repeat="wcard in va.wildcards">
+                                <span class="txt-c-gr txt-anim hover-highlight"
+                                      draggableclass="wildcard" draggable id="wildcard_{{wcard.Id}}">
+                                    <i class="glyphicon glyphicon-fire"></i>
+                                    {{wcard.Name}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <a class="abut" ng-click="templSave()">Save</a>
+                <a class="abut" ng-click="hideEditor()">Cancel</a>
+            </div>
+            <div>
+                <a class="abut" ng-click="DEMO()">Save and Get Demo Messages</a>
+                <hr />
+                <div ng-repeat="msg in va.demomsgs">
+                    <div>{{msg.Header}}</div>
+                    <div>{{msg.Adress}}</div>
+                    <div><pre>{{msg.Body}}</pre></div>
+                    <hr />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

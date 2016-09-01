@@ -27,4 +27,3 @@ var TSNetLike;
         Functors.PF = PF;
     })(Functors = TSNetLike.Functors || (TSNetLike.Functors = {}));
 })(TSNetLike || (TSNetLike = {}));
-//# sourceMappingURL=Functors.js.map

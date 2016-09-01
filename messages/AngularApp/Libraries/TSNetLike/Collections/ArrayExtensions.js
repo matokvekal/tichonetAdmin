@@ -45,4 +45,3 @@ Array.prototype.count = function (selector) {
     });
     return count;
 };
-//# sourceMappingURL=ArrayExtensions.js.map

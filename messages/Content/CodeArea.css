@@ -1,0 +1,69 @@
+﻿@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+.textareabackdrop,
+.textareabackdrop::before,
+.textarea-highlighted::after,
+.textarea-highlighted,
+.textareabackdrop>.highlights
+{
+    box-sizing: border-box;
+}
+
+.textareabackdrop, .textarea-highlighted, .textarea-highlighted-container {
+  width: 100%;
+  height: 500px;
+}
+
+.textareabackdrop>.highlights, .textarea-highlighted {
+  padding: 10px;
+  font: 13px/18px 'Open Sans', sans-serif;
+  letter-spacing: 1px;
+}
+
+.textareabackdrop {
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+  overflow: auto;
+  pointer-events: none;
+  transition: transform 1s;
+}
+
+.textareabackdrop>.highlights {
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	color: transparent;
+}
+
+.textarea-highlighted {
+  display: block;
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  /*border: 2px solid #74637f;
+  border-radius: 0;
+  color: #444;*/
+  background-color: transparent !important;
+  overflow: auto;
+  resize: none;
+}
+
+mark.codeopen {
+  border-radius: 3px;
+  color: transparent;
+  background-color: #b1F1e5;
+}
+
+mark.codeclose {
+  border-radius: 3px;
+  color: transparent;
+  background-color: #b1d5e5;
+}
+
+mark.wc {
+  border-radius: 3px;
+  color: transparent;
+  background-color: #c3c3c3
+}
+
+
