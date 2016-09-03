@@ -62,3 +62,4 @@ var AngularApp;
         Controllers.NotificationController = NotificationController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
+//# sourceMappingURL=NotificationController.js.map

@@ -297,6 +297,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\CodeArea.css" />
     <Content Include="Content\Home.css" />
+    <Content Include="Content\MessageModule_PrototypeStyles.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

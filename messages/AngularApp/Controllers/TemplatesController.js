@@ -123,46 +123,14 @@ var AngularApp;
                     if (typeof wc === 'undefined')
                         return;
                     var textarea = document.getElementById(dropID);
-                    _this.insertTextAtCursor(textarea, wc.Code);
+                    Controllers.InputBoxInsertTextAtCursor(textarea, wc.Code);
                     var val = textarea.value;
                     //dunno why $apply doesnt work (cos 'ondrop' is already wrapped in $apply)
                     if (dropID === _this.va.templatesHeader_ElemId)
                         _this.va.curtemplate.MsgHeader = val;
-                    else
+                    else if (dropID === _this.va.templatesBody_ElemId)
                         _this.va.curtemplate.MsgBody = val;
                     textarea.focus();
-                };
-                this.insertTextAtCursor = function (textArea, text) {
-                    //TODO check in IE
-                    //IE support
-                    var doc = document;
-                    if (doc.selection) {
-                        textArea.focus();
-                        var sel = doc.selection.createRange();
-                        sel.text = text;
-                    }
-                    else if (textArea.selectionStart || textArea.selectionStart == '0') {
-                        var startPos = textArea.selectionStart;
-                        var endPos = textArea.selectionEnd;
-                        textArea.value = textArea.value.substring(0, startPos)
-                            + text
-                            + textArea.value.substring(endPos, textArea.value.length);
-                    }
-                    else {
-                        textArea.value += text;
-                    }
-                };
-                this.getFilterValueCont = function (filt) {
-                    var output = _this.va.curtemplate.FilterValueContainers.first(function (x) { return x.FilterId === filt.Id; });
-                    if (output !== undefined) {
-                        if (AngularApp.IsNullOrUndefined(output.Values))
-                            output.Values = [];
-                    }
-                    else {
-                        output = { FilterId: filt.Id, Values: [] };
-                        _this.va.curtemplate.FilterValueContainers.push(output);
-                    }
-                    return output;
                 };
                 this.hasRecepient = function (rc) {
                     return _this.va.curtemplate.ChoosenReccards.any(function (x) { return x === rc.Id; });
@@ -186,7 +154,7 @@ var AngularApp;
                     _this.ShowNotification("Error", msg, { glicon: "ban-circle", nclass: "error" });
                 };
                 //------------------- Scope Init
-                //textArea Highlighting
+                //---textArea Highlighting
                 //this is temporary cos it should be in directive
                 var TextArea;
                 this.scope.InitCodeArea = function (divID) {
@@ -218,17 +186,14 @@ var AngularApp;
                     TextArea.HandleInput();
                 };
                 this.scope.InputType = function (SQLtype) { return Controllers.inputTypeForSQLType(SQLtype); };
-                this.scope.GetFilterValueCont = function (filt) { return _this.getFilterValueCont(filt); };
+                this.scope.GetFilterValueCont = function (filt) {
+                    return Controllers.GetFilterValueCont(_this.va.curtemplate, filt);
+                };
                 this.scope.SwitchFilterValueContVal = function (filt, index) {
-                    var val = _this.getFilterValueCont(filt);
-                    if (!filt.allowMultipleSelection)
-                        val.Values = [];
-                    val.Values[index] = AngularApp.IsNullOrUndefined(val.Values[index]) ?
-                        filt.ValsOps[index].Value
-                        : null;
+                    return Controllers.SwitchFilterValueContVal(_this.va.curtemplate, filt, index);
                 };
                 this.scope.HasFilterValueContVal = function (filt, value) {
-                    return _this.getFilterValueCont(filt).Values.any(function (x) { return x === value; });
+                    return Controllers.HasFilterValueContVal(_this.va.curtemplate, filt, value);
                 };
                 this.scope.HasReccard = this.hasRecepient;
                 this.scope.SwitchReccard = this.switchRecepient;
@@ -248,3 +213,4 @@ var AngularApp;
         Controllers.TemplatesController = TemplatesController;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
+//# sourceMappingURL=TemplatesController.js.map

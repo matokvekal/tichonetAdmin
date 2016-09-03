@@ -5,9 +5,9 @@
         templates: TemplateVM[] = []
         metafilters: MetaFilterVM[] = []
         curtemplate: TemplateVM = null
+
         wildcards: WildcardVM[] = []
         filters: FilterVM[] = []
-
         reccards: RecepientCardVM[] = []
 
         templatesHeader_ElemId = 'templates_header'
@@ -35,7 +35,7 @@
 
             //------------------- Scope Init
 
-            //textArea Highlighting
+            //---textArea Highlighting
             //this is temporary cos it should be in directive
             let TextArea
 
@@ -59,6 +59,7 @@
                 this.turnTemplateEdit(templ, () => setTimeout(() => TextArea.HandleInput(), 100))
 
             this.scope.setMFilt = (mfilt) => this.setMFilter(mfilt)
+
             this.scope.hideEditor = () => this.turnOffTemplateEdition()
             this.scope.templSave = () => {
                 //new from scratch template starts with id == -1
@@ -66,6 +67,7 @@
                 this.turnOffTemplateEdition()
             }
             this.scope.templDelete = (templ) => this.deleteTemplate(templ)
+
             this.scope.templatesTextDropped = (x, y, z) => {
                 this.templatesTextDropped(x, y, z)
                 TextArea.HandleInput()
@@ -73,20 +75,14 @@
 
             this.scope.InputType = (SQLtype: string) => inputTypeForSQLType(SQLtype)
 
-            this.scope.GetFilterValueCont = (filt: FilterVM) => this.getFilterValueCont(filt)
+            this.scope.GetFilterValueCont = (filt: FilterVM) =>
+                GetFilterValueCont(this.va.curtemplate, filt)
 
-            this.scope.SwitchFilterValueContVal = (filt: FilterVM, index: number) => {
-                let val = this.getFilterValueCont(filt)
-                if (!filt.allowMultipleSelection)
-                    val.Values = []
-                val.Values[index] = IsNullOrUndefined(val.Values[index]) ?
-                    filt.ValsOps[index].Value
-                    : null
-            }
+            this.scope.SwitchFilterValueContVal = (filt: FilterVM, index: number) => 
+                SwitchFilterValueContVal(this.va.curtemplate,filt,index)
 
-            this.scope.HasFilterValueContVal = (filt: FilterVM, value: any) => {
-                return this.getFilterValueCont(filt).Values.any(x => x === value)
-            }
+            this.scope.HasFilterValueContVal = (filt: FilterVM, value: any) =>
+                HasFilterValueContVal(this.va.curtemplate, filt,value)
 
             this.scope.HasReccard = this.hasRecepient
             this.scope.SwitchReccard = this.switchRecepient
@@ -215,50 +211,16 @@
             let wc = this.va.wildcards.first(x => x.Id === clearID)
             if (typeof wc === 'undefined') return
             let textarea = document.getElementById(dropID)
-            this.insertTextAtCursor(textarea, wc.Code)
+            InputBoxInsertTextAtCursor(textarea, wc.Code)
             let val = (<HTMLInputElement>textarea).value
             //dunno why $apply doesnt work (cos 'ondrop' is already wrapped in $apply)
             if (dropID === this.va.templatesHeader_ElemId)
                 this.va.curtemplate.MsgHeader = val
-            else
+            else if (dropID === this.va.templatesBody_ElemId)
                 this.va.curtemplate.MsgBody = val
             textarea.focus()
         }
 
-        insertTextAtCursor = (textArea, text: string) => {
-            //TODO check in IE
-            //IE support
-            let doc = document as any
-            if (doc.selection) {
-                textArea.focus()
-                let sel = doc.selection.createRange()
-                sel.text = text
-            }
-            //MOZILLA and others
-            else if (textArea.selectionStart || textArea.selectionStart == '0') {
-                let startPos = textArea.selectionStart
-                let endPos = textArea.selectionEnd
-                textArea.value = textArea.value.substring(0, startPos)
-                    + text
-                    + textArea.value.substring(endPos, textArea.value.length);
-            }
-            else {
-                textArea.value += text;
-            }
-        }
-
-        getFilterValueCont = (filt: FilterVM) => {
-            let output = this.va.curtemplate.FilterValueContainers.first(x => x.FilterId === filt.Id)
-            if (output !== undefined) {
-                if (IsNullOrUndefined(output.Values))
-                    output.Values = []
-            }
-            else {
-                output = { FilterId: filt.Id, Values: [] }
-                this.va.curtemplate.FilterValueContainers.push(output)
-            }
-            return output
-        }
 
         hasRecepient = (rc: RecepientCardVM) => {
             return this.va.curtemplate.ChoosenReccards.any(x => x === rc.Id)

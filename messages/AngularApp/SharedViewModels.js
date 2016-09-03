@@ -80,9 +80,20 @@ var AngularApp;
             return TemplateVM;
         }());
         Controllers.TemplateVM = TemplateVM;
+        var MessageScheduleVM = (function () {
+            function MessageScheduleVM() {
+                this.TemplateId = -1;
+                this.Name = "New Template";
+                this.FilterValueContainers = [];
+                this.ChoosenReccards = [];
+            }
+            return MessageScheduleVM;
+        }());
+        Controllers.MessageScheduleVM = MessageScheduleVM;
         function FindById(arr, Id) {
             return arr.first(function (x) { return x.Id === Id; });
         }
         Controllers.FindById = FindById;
     })(Controllers = AngularApp.Controllers || (AngularApp.Controllers = {}));
 })(AngularApp || (AngularApp = {}));
+//# sourceMappingURL=SharedViewModels.js.map

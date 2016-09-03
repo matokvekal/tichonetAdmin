@@ -14,6 +14,10 @@
         ValidationErrors: string[]
     }
 
+    export interface IHasFilterValueContainer {
+        FilterValueContainers: FilterValueContainer[]
+    }
+
     export class BaseTableVM implements IIndeficated, INgViewModel {
         Id: number
         Name: string
@@ -125,7 +129,7 @@
         RawInt: number
     }
 
-    export class TemplateVM implements IIndeficated, INgViewModel {
+    export class TemplateVM implements IIndeficated, INgViewModel, IHasFilterValueContainer {
         Id: number
         RecepientFilterId: number = -1
         Name: string = "New Template"
@@ -138,6 +142,30 @@
 
         FilterValueContainers: FilterValueContainer[] = []
         ChoosenReccards: number[] = []
+    }
+
+    export class MessageScheduleVM implements IIndeficated, INgViewModel, IHasFilterValueContainer {
+        Id: number
+        TemplateId: number = -1
+        Name: string = "New Template"
+
+        ScheduleDate: Date
+        RepeatMode: string
+
+        IsActive: boolean
+        InArchive: boolean
+
+        IsSms: boolean
+        MsgHeader: string
+        MsgBody: string
+
+        BatchesCount: number
+
+        FilterValueContainers: FilterValueContainer[] = []
+        ChoosenReccards: number[] = []
+
+        ng_JustCreated: boolean
+        ng_ToDelete: boolean
     }
 
     export function FindById<T extends IIndeficated>(arr: T[], Id: number) {

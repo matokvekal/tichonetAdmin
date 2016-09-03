@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Business_Logic.MessagesModule {
 
@@ -42,29 +44,74 @@ namespace Business_Logic.MessagesModule {
         }
 
         public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IQueryFilter[] filters, out int countWithoutTake)
-                        where TEntity : class, IMessagesModuleEntity {
-            //TODO AVOID DATA MOVE IN MEMORY
-            var query = DB.Set<TEntity>().ToArray().AsEnumerable();
-            foreach(var filter in filters) {
-                if (!string.IsNullOrWhiteSpace(filter.op))
-                    throw new NotImplementedException("operators are not implemented. to implement it consider reading documentation and use conventions");
-                var propInfo = typeof(TEntity).GetProperty(filter.key);
+                where TEntity : class, IMessagesModuleEntity {
+
+            var query = DB.Set<TEntity>().AsQueryable();
+            var entityType = typeof(TEntity);
+            var entityTypeExpr = Expression.Parameter(entityType);
+            foreach (var filter in filters) {
+                var propInfo = entityType.GetProperty(filter.key);
                 if (propInfo != null) {
-                    switch (filter.op) {
-                        //TODO Getting entity filtered not covers all cases yet (types is not considered)
-                        default:
-                            //TODO filter.val is a boxed value type, that is why straight check will fail
-                            query = query.Where(x => GetNullableString(propInfo.GetValue(x)) == filter.val.ToString());
-                            break;
-                    }
+                    var leftExpr = Expression.Property(entityTypeExpr, propInfo);
+                    var rightExpr = Expression.Convert( Expression.Constant(filter.val), propInfo.PropertyType);
+                    var condition = Expression.Lambda<Func<TEntity, bool>>(
+                        BuildExpressionByOperator(filter.op, leftExpr, rightExpr), 
+                        entityTypeExpr);
+                    query = query.Where(condition);
                 }
             }
+
             countWithoutTake = query.Count();
             if (Skip != null)
                 query.Skip(Skip.Value);
             if (Take != null)
                 query.Take(Take.Value);
             return query.ToList();
+        }
+
+        static MethodInfo StringContains_methodInfo = typeof(string).GetMethod("Contains");
+
+        static Expression BuildExpressionByOperator(string Operator, MemberExpression property, Expression constant) {
+            Operator = Operator == null ? string.Empty : Operator.ToLower();
+            switch (Operator) {
+                case "<>":
+                case "notequals":
+                case "notequal":
+                case "noeq":
+                    return Expression.NotEqual(property, constant);
+                case ">":
+                case "greater":
+                case "great":
+                case "gr":
+                    return Expression.GreaterThan(property, constant);
+                case "<":
+                case "less":
+                case "le":
+                    return Expression.LessThan(property, constant);
+                case ">=":
+                case "greaterorequals":
+                case "greaterorequal":
+                case "greatoreq":
+                case "greq":
+                    return Expression.GreaterThanOrEqual(property, constant);
+                case "lessorequals":
+                case "lessorequal":
+                case "lessoreq":
+                case "leeq":
+                case "<=":
+                    return Expression.LessThanOrEqual(property, constant);
+                case "like":
+                case "contains":
+                    return Expression.Call(property, StringContains_methodInfo, constant);
+                case "=":
+                case "==":
+                case "===":
+                case "equals":
+                case "equal":
+                case "eq":
+                default:
+                    return Expression.Equal(property, constant);
+            }
         }
 
         string GetNullableString (object obj) {

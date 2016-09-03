@@ -15,7 +15,6 @@
 }
 
 .textareabackdrop>.highlights, .textarea-highlighted {
-  padding: 10px;
   font: 13px/18px 'Open Sans', sans-serif;
   letter-spacing: 1px;
 }
@@ -29,6 +28,12 @@
   transition: transform 1s;
 }
 
+.textareabackdrop,
+.textarea-highlighted
+{
+    border-radius: 5px;
+    padding: 15px !important
+}
 .textareabackdrop>.highlights {
 	white-space: pre-wrap;
 	word-wrap: break-word;
@@ -40,9 +45,6 @@
   position: absolute;
   z-index: 2;
   margin: 0;
-  /*border: 2px solid #74637f;
-  border-radius: 0;
-  color: #444;*/
   background-color: transparent !important;
   overflow: auto;
   resize: none;

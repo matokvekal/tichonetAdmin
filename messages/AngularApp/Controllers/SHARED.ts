@@ -27,6 +27,8 @@
                 return value
             case "datetime":
             case "date":
+                if (IsNullOrUndefined(value))
+                    return null
                 let s = value as string
                 if (s.lastIndexOf && s.lastIndexOf("/Date", 0) === 0)
                     return new Date(parseInt(s.substr(6)))
@@ -64,13 +66,61 @@
                 return "text"
             case "datetime":
             case "date":
-                return "datetime"
+                return "datetime-local"
             case "time":
                 return "time"
             case "bit":
                 return "checkbox"
         }
         return "text"
+    }
+
+    export function InputBoxInsertTextAtCursor (textArea, text: string) {
+        //TODO check in IE
+        //IE support
+        let doc = document as any
+        if (doc.selection) {
+            textArea.focus()
+            let sel = doc.selection.createRange()
+            sel.text = text
+        }
+        //MOZILLA and others
+        else if (textArea.selectionStart || textArea.selectionStart == '0') {
+            let startPos = textArea.selectionStart
+            let endPos = textArea.selectionEnd
+            textArea.value = textArea.value.substring(0, startPos)
+                + text
+                + textArea.value.substring(endPos, textArea.value.length);
+        }
+        else {
+            textArea.value += text;
+        }
+    }
+
+    export function GetFilterValueCont (containerOnwer: IHasFilterValueContainer, filt: FilterVM) {
+        let output = containerOnwer.FilterValueContainers.first(x => x.FilterId === filt.Id)
+        if (output !== undefined) {
+            if (IsNullOrUndefined(output.Values))
+                output.Values = []
+        }
+        else {
+            output = { FilterId: filt.Id, Values: [] }
+            containerOnwer.FilterValueContainers.push(output)
+        }
+        return output
+    }
+
+    export function SwitchFilterValueContVal(containerOnwer: IHasFilterValueContainer, filt: FilterVM, index: number) {
+        let val = GetFilterValueCont(containerOnwer,filt)
+        if (!filt.allowMultipleSelection)
+            val.Values = []
+        val.Values[index] = IsNullOrUndefined(val.Values[index]) ?
+            filt.ValsOps[index].Value
+            : null
+    }
+
+    export function HasFilterValueContVal(containerOnwer: IHasFilterValueContainer, filt: FilterVM, value: any) {
+        return GetFilterValueCont(containerOnwer,filt).Values.any(x => x === value)
     }
 
 }

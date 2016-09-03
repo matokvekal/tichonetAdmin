@@ -245,8 +245,12 @@
                                                     <span class="txt-c-grmore">or: </span>
                                                 </span>
                                                 <select text-align:center"
-                                                        class="selector" ng-model="nvalop.Operator" ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)"></select>
-                                                <input placeholder="..." class="txtinput" type="{{InputType(nfilt.Type)}}" ng-model="nvalop.Value" />
+                                                        class="selector" ng-model="nvalop.Operator" 
+                                                        ng-options="x for x in GetTypeOperatorsNames(nfilt.Type)"></select>
+                                                <input placeholder="..." class="txtinput" 
+                                                       type="{{InputType(nfilt.Type)}}" 
+                                                       ng-model="nvalop.Value" 
+                                                       ng-model-options="{timezone: '+0000'}"/>
                                                 <i ng-if="nfilt.ValsOps.length>1" class="txt-c-grmore glyphicon iconclick glyphicon-trash"
                                                    ng-click="DeleteFiltValue(nfilt,$index)"></i>
                                             </div>

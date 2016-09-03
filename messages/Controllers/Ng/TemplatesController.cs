@@ -6,7 +6,6 @@ using Business_Logic.MessagesModule;
 using System.Web.Mvc;
 using Ninject;
 using Business_Logic.SqlContext;
-using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Business_Logic.MessagesModule.InnerLibs.Text2Graph;
@@ -170,7 +169,7 @@ namespace ticonet.Controllers.Ng{
 
             //Produce
             foreach (var rc in reccards) {
-                var data = sqlData.Where(x => !String.IsNullOrWhiteSpace(x[rc.EmailKey].ToString())).GroupBy(x => x[rc.EmailKey].ToString());
+                var data = sqlData.Where(x => !string.IsNullOrWhiteSpace(x[rc.EmailKey].ToString())).GroupBy(x => x[rc.EmailKey].ToString());
                 var cards = MPwildcards.Concat(rc.ToKeyValues());
                 MP.ChangeWildCards(cards);
                 foreach (var d in data)
