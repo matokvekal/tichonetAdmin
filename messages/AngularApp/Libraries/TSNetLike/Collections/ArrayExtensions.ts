@@ -6,6 +6,7 @@
         remove(item: T): boolean;
         max(selector: (item: T) => number): number;
         count(selector: (item: T) => number): number;
+        select<Tnew>(selector: (item: T) => Tnew): Tnew[];
     }
 
     /** returns -1 if nothing was found*/
@@ -58,6 +59,14 @@
             count += selector(ele)
         })
         return count
+    }
+
+    Array.prototype.select = function <Tnew>(selector: (item) => Tnew) {
+        let newarr = []
+        this.forEach(ele => {
+            newarr.push(selector(ele))
+        })
+        return newarr
     }
     
 

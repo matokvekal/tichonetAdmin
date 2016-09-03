@@ -276,8 +276,8 @@
 
 
 
-        .editor-container .editor-container-sub > *,
-        .editor-container > * ,
+        .editor-container .editor-container-sub > *:not(.nolayout),
+        .editor-container > *:not(.nolayout) ,
         .editor-container .ineditor{
             padding: 7px 0
         }

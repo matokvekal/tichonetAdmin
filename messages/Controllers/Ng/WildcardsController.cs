@@ -18,7 +18,7 @@ namespace ticonet.Controllers.Ng
             throw new NotImplementedException();
         }
 
-        protected override FetchResult<WildcardVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
+        protected override FetchResult<WildcardVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 int fullQueryCount;
                 var queryResult = l.GetFiltered<tblWildcard>(Skip, Count, filters, out fullQueryCount)

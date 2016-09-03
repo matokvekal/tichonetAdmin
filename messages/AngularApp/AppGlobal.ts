@@ -2,6 +2,7 @@
     import col = TSNetLike.Collections
     import fnc = TSNetLike.Functors
 
+    /**returns true if string is undefined, null, empty, or contains only spaces*/
     export function isEmptyOrSpaces(str: string) {
         return typeof str === 'undefined' || str === null || str.match(/^ *$/) !== null;
     }

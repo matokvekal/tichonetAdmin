@@ -32,11 +32,28 @@ namespace ticonet.Controllers.Ng {
             return NgResult.Succes(models.Count() + " schedules was removed");
         }
 
-        protected override FetchResult<MessageScheduleVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
+        protected override FetchResult<MessageScheduleVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             using (var l = new MessagesModuleLogic()) {
-                var queryResult = l.GetAll<tblMessageSchedule>()
+                IQueryable<tblMessageSchedule> baseQuery = null;
+
+                //Special instructions filtration. 
+                //this SHOULD be incapsulated sometime.
+                //Special instructions is query filters that not relies on main enitity POCO parametrs
+                //such as tblMessageSchedule in this case, and we need special logick to handle it, 
+                var specialInstructions = filters == null ? null : filters.Where(x => x.isSpecial);
+                NgControllerInstruct filter;
+                if (specialInstructions !=null 
+                    && (filter = specialInstructions.FirstOrDefault(x => x.key == "TemplateName"))!=null) {
+                    baseQuery = l.GetFilteredQueryable<tblTemplate>
+                        (new[] {
+                             new NgControllerInstruct {key = "Name", op = filter.op, val = filter.val }
+                        }).SelectMany(x => x.tblMessageSchedules);
+                }
+
+                int count;
+                var queryResult = l.GetFiltered(Skip,Count,filters, out count, baseQuery)
                     .Select(x => PocoConstructor.MakeFromObj(x, MessageScheduleVM.tblMessageSchedulePR));
-                return FetchResult<MessageScheduleVM>.Succes(queryResult, queryResult.Count());
+                return FetchResult<MessageScheduleVM>.Succes(queryResult, count);
             }
         }
 

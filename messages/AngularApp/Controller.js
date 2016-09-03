@@ -69,9 +69,13 @@ var AngularApp;
                 _this.Count = val;
                 return _this;
             };
-            this.addFilt = function (key, value, operator) {
+            /**isSpecial=true informs server that this filter won't be used in query
+            and controller on server should handle this filter on it's own
+             */
+            this.addFilt = function (key, value, operator, isSpecial) {
+                if (isSpecial === void 0) { isSpecial = false; }
                 //let val = typeof value === 'undefined' ? null : value.toString()
-                _this.filters.push({ key: key, val: value, op: operator });
+                _this.filters.push({ key: key, val: value, op: operator, isSpecial: isSpecial });
                 return _this;
             };
         }

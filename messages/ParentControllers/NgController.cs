@@ -4,10 +4,13 @@ using System.Web.Mvc;
 
 namespace ticonet.ParentControllers {
 
-    public class QueryFilter : IQueryFilter {
+    public class NgControllerInstruct : IQueryFilter {
         public string key { get; set; }
         public object val { get; set; }
         public string op { get; set; }
+        public bool isSpecial { get; set; }
+
+        public bool Valid { get { return !isSpecial; } }
     }
 
     public class NgResult {
@@ -50,7 +53,7 @@ namespace ticonet.ParentControllers {
     public abstract class NgController<TModel> : JsonController {
 
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
-        public JsonResult Fetch(int? Skip, int? Count, QueryFilter[] filters) {
+        public JsonResult Fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             var result = _fetch(Skip, Count, filters);
             return NgResultToJsonResult(result);
         }
@@ -85,7 +88,7 @@ namespace ticonet.ParentControllers {
                 MakeBadRequest(result.message);
         }
 
-        protected abstract FetchResult<TModel> _fetch(int? Skip, int? Count, QueryFilter[] filters);
+        protected abstract FetchResult<TModel> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters);
         protected abstract NgResult _create(TModel[] models);
         protected abstract NgResult _update(TModel[] models);
         protected abstract NgResult _delete(TModel[] models);

@@ -41,13 +41,19 @@
 }
 
 .textarea-highlighted {
-  display: block;
-  position: absolute;
-  z-index: 2;
-  margin: 0;
-  background-color: transparent !important;
-  overflow: auto;
-  resize: none;
+    display: block;
+    position: absolute;
+    z-index: 2;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.65) !important;
+    overflow: auto;
+    resize: none;
+    color: #c7c7c7;
+}
+
+.textarea-highlighted:focus {
+    background-color: transparent !important;
+    color: black
 }
 
 mark.codeopen {

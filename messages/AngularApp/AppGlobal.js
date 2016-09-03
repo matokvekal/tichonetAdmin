@@ -1,5 +1,6 @@
 var AngularApp;
 (function (AngularApp) {
+    /**returns true if string is undefined, null, empty, or contains only spaces*/
     function isEmptyOrSpaces(str) {
         return typeof str === 'undefined' || str === null || str.match(/^ *$/) !== null;
     }

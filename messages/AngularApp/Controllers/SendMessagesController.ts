@@ -14,6 +14,67 @@
         schedsHeader_ElemId = 'schedss_header'
         schedsBody_ElemId = 'schedss_body'
 
+        gridSettings: GridSettingsManager;
+    }
+
+    class GridSettingsManager {
+        constructor(RepeatModes: string[], DateOperators: string[]) {
+            this.repeatmodes = RepeatModes.concat("");
+            this.dateoperators = DateOperators.concat("");
+            this.ClearSettings()
+        }
+
+
+        //Settings
+        IsActive: boolean
+        IsUnActive: boolean
+
+        IsSms: boolean
+        IsEmail: boolean
+
+        Name: string
+        TemplateName: string
+        DateOperator: string
+        Date: Date
+        RepeatMode: string
+
+        //Utility Values
+        repeatmodes: string[]
+        dateoperators: string[]
+        //-------
+
+        ClearSettings = () => {
+            this.IsActive = false
+            this.IsUnActive = false
+
+            this.IsSms = false
+            this.IsEmail = false
+
+            this.Name = ""
+            this.TemplateName = ""
+            this.DateOperator = ""
+            this.Date = null
+            this.RepeatMode = ""
+        }
+
+        GetFetchParams = () => {
+            let fp = new FetchParams();
+            if (this.IsActive !== this.IsUnActive)
+                fp.addFilt("IsActive", this.IsActive, "=")
+            if (this.IsSms !== this.IsEmail)
+                fp.addFilt("IsSms", this.IsSms, "=")
+            if (!isEmptyOrSpaces(this.Name))
+                fp.addFilt("Name", this.Name, "like")
+            if (!isEmptyOrSpaces(this.TemplateName))
+                //TODO this is a temporary implementation, need some dictionary-based solution,
+                //to avoid hardcode in querring...
+                fp.addFilt("TemplateName", this.TemplateName, "like", true)
+            if (!isEmptyOrSpaces(this.DateOperator) && !IsNullOrUndefined(this.Date))
+                fp.addFilt("ScheduleDate", this.Date, this.DateOperator)
+            if (!isEmptyOrSpaces(this.RepeatMode))
+                fp.addFilt("RepeatMode", this.RepeatMode, "=")
+            return fp
+        }
     }
 
     export class SendMessagesController extends Controller<SendMessagesVA> {
@@ -54,7 +115,7 @@
             this.scope.hideEditor = this.turnOffSchedEdition
             this.scope.SaveSched = (sched: MessageScheduleVM, boolDontRefetch = true) => {
                 sched = sched || this.va.cursched
-                //new from scratch template starts with id == -1
+                //new from scratch starts with id == -1
                 this.pushSched(sched, sched.Id === -1, this.va.cursched !== sched, boolDontRefetch)
                 if (this.va.cursched !== null && this.va.cursched.Id === sched.Id)
                     this.turnOffSchedEdition()
@@ -62,7 +123,12 @@
 
             this.scope.GetTemplName = (id: number) => FindById(this.va.templates, id).Name
 
-            this.scope.GetRepeatMode = (sched: MessageScheduleVM) => this.va.repeatmodes.first(x => x === sched.RepeatMode)
+            this.scope.GetRepeatMode = (sched: MessageScheduleVM) => {
+                let mode = this.va.repeatmodes.first(x => x === sched.RepeatMode)
+                if (mode === this.va.repeatmodes[0])
+                    return "never repeat"
+                return "repeat every " + mode;
+            }
 
             this.scope.setTempl = this.setTemplateToCurrent
 
@@ -85,17 +151,42 @@
             this.scope.HasFilterValueContVal = (filt: FilterVM, value: any) =>
                 HasFilterValueContVal(this.va.cursched, filt, value)
 
+            this.scope.RefetchSchedules = this.refetchSchedules
+
             //------------------- Inner Init
 
             this.initUrlModuleFromRowObj(data.urls)
+
+            // Grid Manager Init
+            let CreateGridManagerAndFetchSchedules =
+                new ConcurentRequestHandler(
+                    () => {
+                        this.va.gridSettings = new GridSettingsManager(this.va.repeatmodes, dateOperators.select(x => x.SQLString))
+                        this.refetchSchedules()
+                    },
+                    true)
+
+            let dateOperators = []
+            
+            this.fetchtoarr(true, {
+                urlalias: "getoperators",
+                params: { typename: "datetime" },
+                onSucces: CreateGridManagerAndFetchSchedules
+            }, dateOperators)
+
+            this.fetchtoarr(true, {
+                urlalias: "getrepeatmodes",
+                onSucces: CreateGridManagerAndFetchSchedules
+            }, this.va.repeatmodes, true)
+
             this.fetchtoarr(true, { urlalias: "gettemplates" }, this.va.templates, true)
-            this.fetchtoarr(true, { urlalias: "getrepeatmodes" }, this.va.repeatmodes, true)
-            this.refetchSchedules()
+           
         }
 
         refetchSchedules = () => {
             this.fetchtoarr(true, {
                 urlalias: "getmschedules",
+                params: this.va.gridSettings.GetFetchParams(),
                 onSucces: () => {
                     this.va.mschedules.forEach(x => x.ScheduleDate = formatVal(x.ScheduleDate,"datetime"))
                 }

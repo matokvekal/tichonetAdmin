@@ -28,7 +28,7 @@ namespace ticonet.Controllers.Ng {
             throw new NotImplementedException();
         }
 
-        protected override FetchResult<RFilterTableVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
+        protected override FetchResult<RFilterTableVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 var items = l.GetAll<tblRecepientFilterTableName>().Select(x =>
                     PocoConstructor.MakeFromObj(x, RFilterTableVM.tblRecepientFilterTableNamePR)

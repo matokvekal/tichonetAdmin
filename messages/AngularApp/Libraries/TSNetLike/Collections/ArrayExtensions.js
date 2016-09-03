@@ -45,4 +45,11 @@ Array.prototype.count = function (selector) {
     });
     return count;
 };
+Array.prototype.select = function (selector) {
+    var newarr = [];
+    this.forEach(function (ele) {
+        newarr.push(selector(ele));
+    });
+    return newarr;
+};
 //# sourceMappingURL=ArrayExtensions.js.map

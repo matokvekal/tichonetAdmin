@@ -43,81 +43,41 @@ namespace Business_Logic.MessagesModule {
             return DB.Set<TEntity>().FirstOrDefault(x => x.Id == Id);
         }
 
-        public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IQueryFilter[] filters, out int countWithoutTake)
+        public IQueryable<TEntity> GetFilteredQueryable<TEntity>(IEnumerable<IQueryFilter> filters, IQueryable<TEntity> baseQuery = null)
                 where TEntity : class, IMessagesModuleEntity {
 
-            var query = DB.Set<TEntity>().AsQueryable();
+            var query = baseQuery ?? DB.Set<TEntity>().AsQueryable();
             var entityType = typeof(TEntity);
             var entityTypeExpr = Expression.Parameter(entityType);
+            if (filters == null)
+                return query;
+            filters = filters.Where(x => x.Valid);
             foreach (var filter in filters) {
                 var propInfo = entityType.GetProperty(filter.key);
                 if (propInfo != null) {
                     var leftExpr = Expression.Property(entityTypeExpr, propInfo);
-                    var rightExpr = Expression.Convert( Expression.Constant(filter.val), propInfo.PropertyType);
+                    var rightExpr = Expression.Convert(
+                        Expression.Constant(ValidateToType(filter.val, propInfo.PropertyType)), 
+                        propInfo.PropertyType);
                     var condition = Expression.Lambda<Func<TEntity, bool>>(
-                        BuildExpressionByOperator(filter.op, leftExpr, rightExpr), 
+                        BuildExpressionByOperator(filter.op, leftExpr, rightExpr),
                         entityTypeExpr);
                     query = query.Where(condition);
                 }
             }
+            return query;
+        }
 
+        public List<TEntity> GetFiltered<TEntity>(int? Skip, int? Take, IEnumerable<IQueryFilter> filters, out int countWithoutTake, IQueryable<TEntity> baseQuery = null)
+        where TEntity : class, IMessagesModuleEntity {
+
+            var query = GetFilteredQueryable<TEntity>(filters, baseQuery);
             countWithoutTake = query.Count();
             if (Skip != null)
                 query.Skip(Skip.Value);
             if (Take != null)
                 query.Take(Take.Value);
             return query.ToList();
-        }
-
-        static MethodInfo StringContains_methodInfo = typeof(string).GetMethod("Contains");
-
-        static Expression BuildExpressionByOperator(string Operator, MemberExpression property, Expression constant) {
-            Operator = Operator == null ? string.Empty : Operator.ToLower();
-            switch (Operator) {
-                case "<>":
-                case "notequals":
-                case "notequal":
-                case "noeq":
-                    return Expression.NotEqual(property, constant);
-                case ">":
-                case "greater":
-                case "great":
-                case "gr":
-                    return Expression.GreaterThan(property, constant);
-                case "<":
-                case "less":
-                case "le":
-                    return Expression.LessThan(property, constant);
-                case ">=":
-                case "greaterorequals":
-                case "greaterorequal":
-                case "greatoreq":
-                case "greq":
-                    return Expression.GreaterThanOrEqual(property, constant);
-                case "lessorequals":
-                case "lessorequal":
-                case "lessoreq":
-                case "leeq":
-                case "<=":
-                    return Expression.LessThanOrEqual(property, constant);
-                case "like":
-                case "contains":
-                    return Expression.Call(property, StringContains_methodInfo, constant);
-                case "=":
-                case "==":
-                case "===":
-                case "equals":
-                case "equal":
-                case "eq":
-                default:
-                    return Expression.Equal(property, constant);
-            }
-        }
-
-        string GetNullableString (object obj) {
-            if (obj == null)
-                return "null";
-            return obj.ToString();
         }
 
         //-------------------------------------------
@@ -191,6 +151,65 @@ namespace Business_Logic.MessagesModule {
                 return false;
             Delete(item);
             return true;
+        }
+
+        //-------------------------------------------
+        //Private part
+        //---------------------
+
+        static MethodInfo StringContains_methodInfo = typeof(string).GetMethod("Contains");
+
+        static Expression BuildExpressionByOperator(string Operator, MemberExpression property, Expression constant) {
+            Operator = Operator == null ? string.Empty : Operator.ToLower();
+            switch (Operator) {
+                case "<>":
+                case "notequals":
+                case "notequal":
+                case "noeq":
+                    return Expression.NotEqual(property, constant);
+                case ">":
+                case "greater":
+                case "great":
+                case "gr":
+                    return Expression.GreaterThan(property, constant);
+                case "<":
+                case "less":
+                case "le":
+                    return Expression.LessThan(property, constant);
+                case ">=":
+                case "greaterorequals":
+                case "greaterorequal":
+                case "greatoreq":
+                case "greq":
+                    return Expression.GreaterThanOrEqual(property, constant);
+                case "lessorequals":
+                case "lessorequal":
+                case "lessoreq":
+                case "leeq":
+                case "<=":
+                    return Expression.LessThanOrEqual(property, constant);
+                case "like":
+                case "contains":
+                    return Expression.Call(property, StringContains_methodInfo, constant);
+                case "=":
+                case "==":
+                case "===":
+                case "equals":
+                case "equal":
+                case "eq":
+                default:
+                    return Expression.Equal(property, constant);
+            }
+        }
+
+        Type dateNullableType = typeof(DateTime?);
+        Type dateType = typeof(DateTime);
+
+        object ValidateToType(object val, Type type) {
+            //date time for some reason comes here as string....
+            if (type == dateType || type == dateNullableType)
+                return DateTime.Parse(val.ToString());
+            return val;
         }
     }
 

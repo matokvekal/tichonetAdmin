@@ -1,24 +1,47 @@
 ﻿<div ng-controller="SendMessagesController"
      data-ng-init="init({
         urls: {
-        gettemplates: '@Url.Action("Fetch","Templates")',
-        getwildcards: '@Url.Action("Fetch","Wildcards")',
-        getfilters: '@Url.Action("Fetch","Filters")',
-        getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")',
-        getreccards: '@Url.Action("Fetch","RecepientCards")',
-        getmschedules: '@Url.Action("Fetch","MessageSchedules")',
-        mngmschedules: '@Url.Action("Manage","MessageSchedules")',
-        getrepeatmodes: '@Url.Action("GetRepeatModes","MessageSchedules")',
-
+            gettemplates: '@Url.Action("Fetch","Templates")',
+            getwildcards: '@Url.Action("Fetch","Wildcards")',
+            getfilters: '@Url.Action("Fetch","Filters")',
+            getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")',
+            getreccards: '@Url.Action("Fetch","RecepientCards")',
+            getmschedules: '@Url.Action("Fetch","MessageSchedules")',
+            mngmschedules: '@Url.Action("Manage","MessageSchedules")',
+            getrepeatmodes: '@Url.Action("GetRepeatModes","MessageSchedules")',
+            getoperators: '@Url.Action("GetOperatorsForType","Filters")',
         }
     })">
 
     <style>
-        .slideable{
-            /*position: absolute;*/
-            /*top:0;
-            left:0;*/
+        .slideable-container{
+            overflow-x:hidden
         }
+        .slideable{
+            transition: all ease /*cubic-bezier(0.6, 0.03, 0.77, 1.3)*/ 0.7s
+        }
+        
+        .slideable.ng-leave.ng-leave-active{
+            left: -10%;
+            opacity: 0;
+            width: 100%;
+            position: absolute
+        }
+
+        .slideable.ng-enter{
+            left: -10%;
+            opacity: 0;
+            position: absolute
+        }
+
+        .slideable.ng-leave,
+        .slideable.ng-enter.ng-enter-active{
+            left: 100px;
+            opacity: 1;
+        }
+
+
+
         .sched-grid-row{
             padding-top: 5px;
             padding-bottom: 5px;
@@ -26,10 +49,18 @@
         .sched-grid-row > div {
             padding: 0 5px
         }
+
+
+        .grid-settings-box{
+            padding: 10px;
+            border: 1px solid #262d31;
+            margin: 17px 0;
+            box-shadow: 0 0 7px 0 rgba(29, 29, 29, 0.6) inset;
+        }
     </style>
 
     
-    <div class="clearfix"><!-- Slideables Container  -->
+    <div class="clearfix slideable-container"><!-- Slideables Container  -->
     
         <!-- Grid/Enumeration -->
         <div class="slideable" ng-if="va.cursched===null">
@@ -38,35 +69,110 @@
             </div>
 
             <!-- Grid/Enumeration Settings -->
-            
-            <div>Grid Query placeholder</div>
+            <div class="grid-settings-box col-xs-12 clearfix txt-c-gr">
+                <div class="col-xs-1">
+                    <div class="txt-anim hover-highlight clickable txt-c-gr" 
+                          ng-click="va.gridSettings.IsSms=!va.gridSettings.IsSms; RefetchSchedules()">
+                        <i ng-class="va.gridSettings.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" 
+                           class="glyphicon"></i> sms
+                    </div>
+                    <div class="txt-anim hover-highlight clickable txt-c-gr"
+                          ng-click="va.gridSettings.IsEmail=!va.gridSettings.IsEmail; RefetchSchedules()">
+                        <i ng-class="va.gridSettings.IsEmail ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
+                           class="glyphicon"></i> mail
+                    </div>
+                </div>
+
+                <div class="col-xs-1 no-padding">
+                    <div class="txt-anim hover-highlight clickable txt-c-gr"
+                          ng-click="va.gridSettings.IsActive=!va.gridSettings.IsActive; RefetchSchedules()">
+                        <i ng-class="va.gridSettings.IsActive ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
+                           class="glyphicon"></i> active
+                    </div>
+                    <div class="txt-anim hover-highlight clickable txt-c-gr"
+                          ng-click="va.gridSettings.IsUnActive=!va.gridSettings.IsUnActive; RefetchSchedules()">
+                        <i ng-class="va.gridSettings.IsUnActive ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"
+                           class="glyphicon"></i> inactive
+                    </div>
+                </div>
+
+                <div class="col-xs-2">
+                    Name:
+                    <input class="txtinput" type="text" placeholder="..." 
+                           ng-model="va.gridSettings.Name" 
+                           ng-model-options='{ debounce: 500 }'
+                           ng-change='RefetchSchedules()'/>
+                </div>
+
+                <div class="col-xs-3">
+                    Base Template Name:
+                    <input class="txtinput" type="text" placeholder="..." 
+                           ng-model="va.gridSettings.TemplateName" 
+                           ng-model-options='{ debounce: 500 }'
+                           ng-change='RefetchSchedules()'/>
+                </div>
+
+                <div class="col-xs-2">
+                    Date:
+                    <select text-align:center"
+                            class="selector" ng-model="va.gridSettings.DateOperator"
+                            ng-options="x for x in va.gridSettings.dateoperators"
+                            ng-model-options='{ debounce: 500 }'
+                            ng-change='RefetchSchedules()'>
+                    </select>
+                    <input class="txtinput" type="datetime-local" 
+                           ng-model="va.gridSettings.Date" 
+                           ng-model-options="{timezone: '+0000', debounce: 500}"
+                           ng-change='RefetchSchedules()'/>
+                </div>
+
+                <div class="col-xs-2">
+                    Reapeat Mode:
+                    <select text-align:center"
+                            class="selector" ng-model="va.gridSettings.RepeatMode"
+                            ng-options="x for x in va.gridSettings.repeatmodes"
+                            ng-model-options='{ debounce: 500 }'
+                            ng-change='RefetchSchedules()'>
+                    </select>
+                </div>
+
+                <div class="col-xs-1">
+                    <span class="txt-anim hover-highlight clickable txt-c-gr txt-s-med"
+                          ng-click="va.gridSettings.ClearSettings();RefetchSchedules()">
+                        <i class="glyphicon glyphicon-remove-sign"></i>
+                    </span>
+                </div>
+            </div>
             
             <!-- Grid/Enumeration -->
-            <div class="col-lg-12 no-padding clearfix txt-c-gr">
-                <div ng-repeat="sched in va.mschedules">
+            <div class="col-xs-12 no-padding clearfix txt-c-gr">
+                <div class="txt-c-grmore txt-s-med" ng-if="va.mschedules.length===0">
+                    There is no matching the query items.
+                </div>
+                <div ng-repeat="sched in va.mschedules" class="ngan-fade-mid">
                     <div class="sched-grid-row row">
-                        <div class="col-lg-3">
-                            <div class="clickable txt-anim hover-highlight">
+                        <div class="col-xs-3">
+                            <div>
                                 <i class="glyphicon glyphicon-off clickable txt-anim"
                                    ng-click="sched.IsActive=!sched.IsActive; SaveSched(sched)"
                                    ng-class="sched.IsActive ? 'txt-c-green' : 'txt-c-red'"></i>
-                                <span ng-click="EditSched(sched)">
-                                    {{sched.Name}}
-                                </span>
                                 <i class="glyphicon txt-c-green padd-hor-t"
                                     ng-class="sched.IsSms ? 'glyphicon-comment' : 'glyphicon-envelope'"></i>
+                                <span class="clickable txt-anim hover-highlight txt-c-gr" ng-click="EditSched(sched)">
+                                    {{sched.Name}}
+                                </span>
                             </div>
                             <div class="txt-c-grmore txt-s-small">
                                 sent {{sched.BatchesCount}} times
                             </div>
                         </div>
-                        <div class="col-lg-3 txt-c-grmore">
+                        <div class="col-xs-3 txt-c-grmore">
                             {{GetTemplName(sched.TemplateId)}}
                         </div>
-                        <div class="col-lg-2">
-                            {{sched.ScheduleDate}}
+                        <div class="col-xs-2">
+                            {{sched.ScheduleDate | date:'medium'}}
                         </div>
-                        <div class="col-lg-2 txt-c-grmore">
+                        <div class="col-xs-2 txt-c-grmore">
                             ({{GetRepeatMode(sched)}})
                         </div>
                     </div>
@@ -77,142 +183,134 @@
 
         <!-- Editor -->
         <div class="slideable editor-container" ng-if="va.cursched!==null">
-            <!--Name -->
-            <div>
-                <input class="txtinput-big txt-s-med" style="width:320px" type="text"
-                       ng-model="va.cursched.Name" />
-            </div>
-            <!--Based on template -->
-            <div>
-                <span class="txt-c-grmore">Based on Template:</span>
-                <div ng-repeat="templ in va.templates">
-                    <div class="txt-c-gr">
-                        <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="setTempl(templ)">
-                            <i class="glyphicon iconclick"
-                               ng-class="va.cursched.TemplateId===templ.Id ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
-                            <span>{{templ.Name}}</span>
-                        </span>
+            <a ng-click="hideEditor()">back</a>
+
+            <!--If Template NOT choosen -->
+            <div ng-if="va.cursched.TemplateId===-1" class="editor-container-sub nolayout ngan-fade-fst">
+                
+                <!--Name -->
+                <div>
+                    <input class="txtinput-big txt-s-med" style="width:320px" type="text"
+                           ng-model="va.cursched.Name" />
+                </div>
+                <!--Based on template -->
+                <div>
+                    <span class="txt-c-grmore">Based on Template:</span>
+                    <div ng-repeat="templ in va.templates">
+                        <div class="txt-c-gr">
+                            <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="setTempl(templ)">
+                                <i class="glyphicon iconclick"
+                                   ng-class="va.cursched.TemplateId===templ.Id ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
+                                <span>{{templ.Name}}</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
             <!--If Template choosen -->
-            <div ng-if="va.cursched.TemplateId!==-1" class="editor-container-sub">
+            <div ng-if="va.cursched.TemplateId!==-1" class="editor-container-sub nolayout ngan-fade-fst">
 
-                <!--Type (sms or email) -->
-                <div>
-                    <span class="txt-c-grmore clickable" ng-click="va.cursched.IsSms=!va.cursched.IsSms">
-                        <i ng-class="va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> sms
-                        <i ng-class="!va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> mail
-                    </span>
-                </div>
+                <div class="col-xs-12 no-padding nolayout clearfix">
+                    <div class="col-xs-5 no-padding editor-container-sub nolayout">
 
-                <!--Schedule Date -->
-                <div>
-                    <span class="txt-c-grmore">Schedule Date </span>
-                    <input class="txtinput"
-                           type="datetime-local"
-                           ng-model="va.cursched.ScheduleDate"
-                           ng-model-options="{timezone: '+0000'}" />
-                </div>
-
-                <!--Repeat Mode -->
-                <div>
-                    <span class="txt-c-grmore">Repeat Mode </span>
-                    <select text-align:center"
-                            class="selector" ng-model="va.cursched.RepeatMode"
-                            ng-options="x for x in va.repeatmodes"></select>
-                </div>
-
-                <!--Is Active? -->
-                <div>
-                    <i class="glyphicon glyphicon-off clickable txt-anim"
-                       ng-class="va.cursched.IsActive ? 'txt-c-green' : 'txt-c-red'"
-                       ng-click="va.cursched.IsActive=!va.cursched.IsActive"
-                       ></i>
-                    <span ng-if="va.cursched.IsActive" class="txt-c-grmore">Active </span>
-                    <span ng-if="!va.cursched.IsActive" class="txt-c-grmore">Inactive </span>
-                </div>
-
-                <!--Filters-->
-                <div class="top-bord bot-bord">
-                    <div ng-repeat="nfilt in va.filters">
-                        <div class="txt-c-gr txt-anim hover-highlight clickable" ng-click="nfilt.Show=!nfilt.Show">
-                            <i class="glyphicon glyphicon-filter"></i>
-                            {{nfilt.Name}}
+                        <!--Name -->
+                        <div>
+                            <input class="txtinput-big txt-s-med" style="width:320px" type="text"
+                                   ng-model="va.cursched.Name" />
                         </div>
-                        <div ng-if="nfilt.Show" class="ngan-fade-mid" style="padding-left:15px">
 
-                            <!--For direct input-->
-                            <div ng-if="nfilt.ValsOps.length===1&&!nfilt.autoUpdatedList">
+                        <!--Type (sms or email) -->
+                        <div>
+                            <span class="txt-c-grmore clickable" ng-click="va.cursched.IsSms=!va.cursched.IsSms">
+                                <i ng-class="va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> sms
+                                <i ng-class="!va.cursched.IsSms ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'" class="glyphicon iconclick"></i> mail
+                            </span>
+                        </div>
 
-                                <span class="txt-c-gr">{{nfilt.Key}} {{nfilt.ValsOps[0].Operator}}</span>
-                                <input placeholder="..." class="txtinput"
-                                       type="{{InputType(nfilt.Type)}}"
-                                       ng-model="GetFilterValueCont(nfilt).Values[0]"
-                                       ng-model-options="{timezone: '+0000'}" />
-                            </div>
+                        <!--Schedule Date -->
+                        <div>
+                            <span class="txt-c-grmore">Schedule Date </span>
+                            <input class="txtinput"
+                                   type="datetime-local"
+                                   ng-model="va.cursched.ScheduleDate"
+                                   ng-model-options="{timezone: '+0000'}" />
+                        </div>
 
-                            <!--For list choose-->
-                            <div ng-if="nfilt.ValsOps.length>1||nfilt.autoUpdatedList">
-                                <div ng-repeat="valop in nfilt.ValsOps">
-                                    <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchFilterValueContVal(nfilt,$index)">
-                                        <i class="glyphicon iconclick"
-                                           ng-class="HasFilterValueContVal(nfilt,valop.Value) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked txt-c-grmore'"></i>
-                                        <span>{{nfilt.Key}} {{valop.Operator}} {{valop.Value}}</span>
-                                    </span>
-                                </div>
-                            </div>
+                        <!--Repeat Mode -->
+                        <div>
+                            <span class="txt-c-grmore">Repeat Mode </span>
+                            <select text-align:center"
+                                    class="selector" ng-model="va.cursched.RepeatMode"
+                                    ng-options="x for x in va.repeatmodes"></select>
+                        </div>
+
+                        <!--Is Active? -->
+                        <div>
+                            <i class="glyphicon glyphicon-off clickable txt-anim"
+                               ng-class="va.cursched.IsActive ? 'txt-c-green' : 'txt-c-red'"
+                               ng-click="va.cursched.IsActive=!va.cursched.IsActive"></i>
+                            <span ng-if="va.cursched.IsActive" class="txt-c-grmore">Active </span>
+                            <span ng-if="!va.cursched.IsActive" class="txt-c-grmore">Inactive </span>
                         </div>
 
                     </div>
-                </div>
+                    <div class="col-xs-7 editor-container-sub nolayout">
 
-                <!--Header -->
-                <div>
-                    <span class="txt-c-grmore" style="padding-right:10px">Header: </span>
-                    <input class="txtinput" type="text" ng-model="va.cursched.MsgHeader"
-                           placeholder="..."
-                           droppable id="{{va.schedsHeader_ElemId}}"
-                           drop="shedulesTextDropped"
-                           style="width:320px" />
-                </div>
-
-                <div class="clearfix">
-                    <div class="col-lg-6 no-padding">
-
-                        <!--Message -->
-                        <div id="codearea2" class="textarea-highlighted-container" data-ng-init="InitCodeArea('codearea2')">
-                            <div class="textareabackdrop">
-                                <div class="highlights"></div>
-                            </div>
-                            <textarea class='textarea-highlighted txtarea'
-                                      ng-change="HandleCodeArea()"
-                                      ng-model="va.cursched.MsgBody"
-                                      droppable id="{{va.schedsBody_ElemId}}"
-                                      drop="shedulesTextDropped"></textarea>
-                        </div>
-
-                        <!--SendTo-->
+                        <!--Based on template -->
                         <div>
-                            <span class="txt-s-med txt-c-gr">Send to Recepient Groups:</span>
-                            <div ng-repeat="rc in va.reccards">
+                            <span class="txt-c-grmore">Based on Template:</span>
+                            <div ng-repeat="templ in va.templates">
                                 <div class="txt-c-gr">
-                                    <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchReccard(rc)">
+                                    <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="setTempl(templ)">
                                         <i class="glyphicon iconclick"
-                                           ng-class="HasReccard(rc) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
-                                        <span>{{rc.Name}}</span>
+                                           ng-class="va.cursched.TemplateId===templ.Id ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
+                                        <span>{{templ.Name}}</span>
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                     </div>
-                    <div class="col-lg-6">
+                </div>
 
-                        <!--Widlcards-->
+
+                <div class="col-xs-12 top-bord bot-bord no-padding nolayout clearfix">
+
+                    <div class="col-xs-5 no-padding editor-container-sub nolayout">
+
+                        <!--Header -->
                         <div>
-                            <span class="txt-s-med txt-c-gr">Wildcards</span>
+                            <span class="txt-c-grmore" style="padding-right:10px">Header: </span>
+                            <input class="txtinput" type="text" ng-model="va.cursched.MsgHeader"
+                                   placeholder="..."
+                                   droppable id="{{va.schedsHeader_ElemId}}"
+                                   drop="shedulesTextDropped"
+                                   style="width:320px" />
+                        </div>
+
+                        <div class="clearfix">
+                            <!--Message -->
+                            <div id="codearea2" class="textarea-highlighted-container" data-ng-init="InitCodeArea('codearea2')">
+                                <div class="textareabackdrop">
+                                    <div class="highlights"></div>
+                                </div>
+                                <textarea class='textarea-highlighted txtarea'
+                                            ng-change="HandleCodeArea()"
+                                            ng-model="va.cursched.MsgBody"
+                                            droppable id="{{va.schedsBody_ElemId}}"
+                                            drop="shedulesTextDropped"></textarea>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-xs-4 editor-container-sub nolayout">
+                        <!--Widlcards-->
+                        <div class="txt-s-med txt-c-gr">Wildcards</div>
+
+                        <div>
                             <div class="bounded-block-m">
                                 <div ng-repeat="wcard in va.wildcards">
                                     <span class="txt-c-gr txt-anim hover-highlight"
@@ -225,11 +323,66 @@
                         </div>
 
                     </div>
+
+                    <div class="col-xs-3 no-padding editor-container-sub nolayout">
+                        <!--Filters-->
+                        <div class="txt-s-med txt-c-gr">Filters</div>
+
+                        <div class="bot-bord">
+                            <div ng-repeat="nfilt in va.filters">
+                                <div class="txt-c-gr txt-anim hover-highlight clickable" ng-click="nfilt.Show=!nfilt.Show">
+                                    <i class="glyphicon glyphicon-filter"></i>
+                                    {{nfilt.Name}}
+                                </div>
+                                <div ng-if="nfilt.Show" class="ngan-fade-mid" style="padding-left:15px">
+
+                                    <!--For direct input-->
+                                    <div ng-if="nfilt.ValsOps.length===1&&!nfilt.autoUpdatedList">
+
+                                        <span class="txt-c-gr">{{nfilt.Key}} {{nfilt.ValsOps[0].Operator}}</span>
+                                        <input placeholder="..." class="txtinput"
+                                               type="{{InputType(nfilt.Type)}}"
+                                               ng-model="GetFilterValueCont(nfilt).Values[0]"
+                                               ng-model-options="{timezone: '+0000'}" />
+                                    </div>
+
+                                    <!--For list choose-->
+                                    <div ng-if="nfilt.ValsOps.length>1||nfilt.autoUpdatedList">
+                                        <div ng-repeat="valop in nfilt.ValsOps">
+                                            <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchFilterValueContVal(nfilt,$index)">
+                                                <i class="glyphicon iconclick"
+                                                   ng-class="HasFilterValueContVal(nfilt,valop.Value) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked txt-c-grmore'"></i>
+                                                <span>{{nfilt.Key}} {{valop.Operator}} {{valop.Value}}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!--Recepients-->
+                        <div class="txt-s-med txt-c-gr">Send to Recepient Groups:</div>
+                        <div>
+                            <div ng-repeat="rc in va.reccards">
+                                <div class="txt-c-gr">
+                                    <span class="txt-anim hover-highlight txt-c-gr clickable" ng-click="SwitchReccard(rc)">
+                                        <i class="glyphicon iconclick"
+                                           ng-class="HasReccard(rc) ? 'glyphicon-check txt-c-gr' : 'glyphicon-unchecked'"></i>
+                                        <span>{{rc.Name}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
+
 
                 <!--Save/Cancel-->
                 <div>
-                    <a class="abut" ng-click="SaveSched()">Save</a>
+                    <a class="abut" ng-click="SaveSched(va.cursched,false)">Save</a>
                     <a class="abut" ng-click="hideEditor()">Cancel</a>
                 </div>
 

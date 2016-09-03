@@ -1,19 +1,19 @@
 ﻿<div ng-controller="TemplatesController"
      data-ng-init="init({
         urls: {
-        gettemplates: '@Url.Action("Fetch","Templates")',
-        mngtemplates: '@Url.Action("Manage","Templates")',
-        getwildcards: '@Url.Action("Fetch","Wildcards")',
-        getmfilters: '@Url.Action("Fetch","Rfilters")',
-        getfilters: '@Url.Action("Fetch","Filters")',
-        mockmsgs: '@Url.Action("MockMessage","Templates")',
-        getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")',
-        getreccards: '@Url.Action("Fetch","RecepientCards")',
+            gettemplates: '@Url.Action("Fetch","Templates")',
+            mngtemplates: '@Url.Action("Manage","Templates")',
+            getwildcards: '@Url.Action("Fetch","Wildcards")',
+            getmfilters: '@Url.Action("Fetch","Rfilters")',
+            getfilters: '@Url.Action("Fetch","Filters")',
+            mockmsgs: '@Url.Action("MockMessage","Templates")',
+            getreservedcards: '@Url.Action("GetReservedCodes","RecepientCards")',
+            getreccards: '@Url.Action("Fetch","RecepientCards")',
         }
     })">
 
     <!-- Enumeration -->
-    <div class="col-lg-3 enum-container">
+    <div class="col-xs-3 enum-container">
         <a ng-click="templCreate()"> create new </a>
         <div ng-repeat="templ in va.templates | orderBy: 'Name'">
             <span class="txt-c-gr">
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Editor -->
-    <div class="col-lg-9">
+    <div class="col-xs-9">
         <div class="editor-container" ng-if="va.curtemplate!==null">
             <!--Name -->
             <div>
@@ -106,7 +106,7 @@
             </div>
 
             <div class="clearfix">
-                <div class="col-lg-6 no-padding">
+                <div class="col-xs-6 no-padding">
 
                     <!--Message -->
                     <div id="codearea" class="textarea-highlighted-container" data-ng-init="InitCodeArea('codearea')">
@@ -134,7 +134,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-xs-6">
                     <!--Widlcards-->
                     <div>
                         <span class="txt-s-med txt-c-gr">Wildcards</span>

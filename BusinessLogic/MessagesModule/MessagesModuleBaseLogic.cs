@@ -6,6 +6,8 @@ namespace Business_Logic.MessagesModule {
         string key { get; set; }
         object val { get; set; }
         string op { get; set; }
+
+        bool Valid { get; }
     }
 
     public abstract class MessagesModuleBaseLogic : IDisposable {

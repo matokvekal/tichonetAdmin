@@ -10,10 +10,12 @@ namespace ticonet
         [localizedSystemDisplayName("Login.userName")]
         [DataType(DataType.Text)]
         public string userName { get; set; }
-          [Required(ErrorMessage = "שדה חובה")]
+
+        [Required(ErrorMessage = "שדה חובה")]
         [localizedSystemDisplayName("Login.password")]
         [DataType(DataType.Password)]
         public string password { get; set; }
+
         [localizedSystemDisplayName("Login.RemmemberMe")]
         public bool RememberMe { get; set; }
     }

@@ -35,7 +35,7 @@ namespace ticonet.Controllers.Ng{
             return NgResult.Succes(models.Count() + " templates was removed");
         }
 
-        protected override FetchResult<TemplateVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
+        protected override FetchResult<TemplateVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             using (var l = new MessagesModuleLogic()) {
                 var queryResult = l.GetAll<tblTemplate>()
                     .Select(x => PocoConstructor.MakeFromObj(x, TemplateVM.tblTemplatePR));

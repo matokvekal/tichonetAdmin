@@ -75,9 +75,13 @@
             this.Count = val
             return this
         }
-        addFilt = (key: string, value?: any, operator?: string) => {
+
+        /**isSpecial=true informs server that this filter won't be used in query 
+        and controller on server should handle this filter on it's own
+         */
+        addFilt = (key: string, value?: any, operator?: string, isSpecial = false) => {
             //let val = typeof value === 'undefined' ? null : value.toString()
-            this.filters.push({ key: key, val: value,op:operator})
+            this.filters.push({ key: key, val: value, op: operator, isSpecial: isSpecial})
             return this
         }
     }

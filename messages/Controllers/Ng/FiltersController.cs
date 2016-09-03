@@ -27,7 +27,7 @@ namespace ticonet.Controllers.Ng {
             throw new NotImplementedException();
         }
 
-        protected override FetchResult<FilterVM> _fetch(int? Skip, int? Count, QueryFilter[] filters) {
+        protected override FetchResult<FilterVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             IEnumerable<FilterVM> filts;
             IDictionary<int, string> filtsToTables = new Dictionary<int, string>();
             int allQueryCount;

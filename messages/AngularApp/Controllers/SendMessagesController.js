@@ -22,6 +22,45 @@ var AngularApp;
             }
             return SendMessagesVA;
         }());
+        var GridSettingsManager = (function () {
+            function GridSettingsManager(RepeatModes, DateOperators) {
+                var _this = this;
+                //-------
+                this.ClearSettings = function () {
+                    _this.IsActive = false;
+                    _this.IsUnActive = false;
+                    _this.IsSms = false;
+                    _this.IsEmail = false;
+                    _this.Name = "";
+                    _this.TemplateName = "";
+                    _this.DateOperator = "";
+                    _this.Date = null;
+                    _this.RepeatMode = "";
+                };
+                this.GetFetchParams = function () {
+                    var fp = new AngularApp.FetchParams();
+                    if (_this.IsActive !== _this.IsUnActive)
+                        fp.addFilt("IsActive", _this.IsActive, "=");
+                    if (_this.IsSms !== _this.IsEmail)
+                        fp.addFilt("IsSms", _this.IsSms, "=");
+                    if (!AngularApp.isEmptyOrSpaces(_this.Name))
+                        fp.addFilt("Name", _this.Name, "like");
+                    if (!AngularApp.isEmptyOrSpaces(_this.TemplateName))
+                        //TODO this is a temporary implementation, need some dictionary-based solution,
+                        //to avoid hardcode in querring...
+                        fp.addFilt("TemplateName", _this.TemplateName, "like", true);
+                    if (!AngularApp.isEmptyOrSpaces(_this.DateOperator) && !AngularApp.IsNullOrUndefined(_this.Date))
+                        fp.addFilt("ScheduleDate", _this.Date, _this.DateOperator);
+                    if (!AngularApp.isEmptyOrSpaces(_this.RepeatMode))
+                        fp.addFilt("RepeatMode", _this.RepeatMode, "=");
+                    return fp;
+                };
+                this.repeatmodes = RepeatModes.concat("");
+                this.dateoperators = DateOperators.concat("");
+                this.ClearSettings();
+            }
+            return GridSettingsManager;
+        }());
         var SendMessagesController = (function (_super) {
             __extends(SendMessagesController, _super);
             function SendMessagesController($rootScope, $scope, $http) {
@@ -30,6 +69,7 @@ var AngularApp;
                 this.refetchSchedules = function () {
                     _this.fetchtoarr(true, {
                         urlalias: "getmschedules",
+                        params: _this.va.gridSettings.GetFetchParams(),
                         onSucces: function () {
                             _this.va.mschedules.forEach(function (x) { return x.ScheduleDate = Controllers.formatVal(x.ScheduleDate, "datetime"); });
                         }
@@ -190,13 +230,18 @@ var AngularApp;
                 this.scope.SaveSched = function (sched, boolDontRefetch) {
                     if (boolDontRefetch === void 0) { boolDontRefetch = true; }
                     sched = sched || _this.va.cursched;
-                    //new from scratch template starts with id == -1
+                    //new from scratch starts with id == -1
                     _this.pushSched(sched, sched.Id === -1, _this.va.cursched !== sched, boolDontRefetch);
                     if (_this.va.cursched !== null && _this.va.cursched.Id === sched.Id)
                         _this.turnOffSchedEdition();
                 };
                 this.scope.GetTemplName = function (id) { return Controllers.FindById(_this.va.templates, id).Name; };
-                this.scope.GetRepeatMode = function (sched) { return _this.va.repeatmodes.first(function (x) { return x === sched.RepeatMode; }); };
+                this.scope.GetRepeatMode = function (sched) {
+                    var mode = _this.va.repeatmodes.first(function (x) { return x === sched.RepeatMode; });
+                    if (mode === _this.va.repeatmodes[0])
+                        return "never repeat";
+                    return "repeat every " + mode;
+                };
                 this.scope.setTempl = this.setTemplateToCurrent;
                 this.scope.HasReccard = this.hasRecepient;
                 this.scope.SwitchReccard = this.switchRecepient;
@@ -214,11 +259,25 @@ var AngularApp;
                 this.scope.HasFilterValueContVal = function (filt, value) {
                     return Controllers.HasFilterValueContVal(_this.va.cursched, filt, value);
                 };
+                this.scope.RefetchSchedules = this.refetchSchedules;
                 //------------------- Inner Init
                 this.initUrlModuleFromRowObj(data.urls);
+                // Grid Manager Init
+                var CreateGridManagerAndFetchSchedules = new AngularApp.ConcurentRequestHandler(function () {
+                    _this.va.gridSettings = new GridSettingsManager(_this.va.repeatmodes, dateOperators.select(function (x) { return x.SQLString; }));
+                    _this.refetchSchedules();
+                }, true);
+                var dateOperators = [];
+                this.fetchtoarr(true, {
+                    urlalias: "getoperators",
+                    params: { typename: "datetime" },
+                    onSucces: CreateGridManagerAndFetchSchedules
+                }, dateOperators);
+                this.fetchtoarr(true, {
+                    urlalias: "getrepeatmodes",
+                    onSucces: CreateGridManagerAndFetchSchedules
+                }, this.va.repeatmodes, true);
                 this.fetchtoarr(true, { urlalias: "gettemplates" }, this.va.templates, true);
-                this.fetchtoarr(true, { urlalias: "getrepeatmodes" }, this.va.repeatmodes, true);
-                this.refetchSchedules();
             };
             return SendMessagesController;
         }(AngularApp.Controller));
