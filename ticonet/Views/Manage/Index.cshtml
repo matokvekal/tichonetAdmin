@@ -1,29 +1,77 @@
-﻿@using Business_Logic;
+﻿﻿@using Business_Logic;
+@using Business_Logic;
+@model excelLinesViewModel
 @{
     ViewBag.Title = "Index";
 }
+
 <content style="direction:rtl">
-    <div >
+    <div>
         <h2>ניהול מידע</h2>
+        <div><strong>@ViewBag.manageMessage</strong></div>
         <p> <a href=@Url.Action("btnExportToExcel_Click", "Manage") download> הורד אקסל סטודנטים </a></p>
-        <p> <a href=@Url.Action("btnExportToExcel2", "Manage") >  הורד אקסל סטודנטים מקוצר</a></p>
+        <p> <a href=@Url.Action("btnExportToExcel2", "Manage")>  הורד אקסל סטודנטים מקוצר</a></p>
+        <p> <a href=@Url.Action("btnExportToExcel4", "Manage")>  הורד אקסל SMS</a></p>
+        <p> <a href=@Url.Action("btnExportToExcel3", "Manage")>  הורד אקסל רכבים </a></p>
+        <p> <a href=@Url.Action("SendEmail", "Manage")> משלוח אימייל הסעות להורים</a></p>
 
-    </div>
-    <div class="navbar-inner" style="float:right;">
-        <ul class="list-group" >
-            <li class="list-group-item">סך משפחות במערכת <span class="badge">@ViewBag.totalStudents</span></li>
-            <li class="list-group-item">סך סטודנטים במערכת<span class="badge">@ViewBag.totalFamilies</span></li>
-            <li class="list-group-item">סך סטודנטים רשומים במערכת <span class="badge">@ViewBag.totalRegistrationStudents</span></li>
-        </ul>
-    </div>
+      
+            <div class="headerColaps">
+                <strong>בחר קוים עבור האקסל</strong><br>
+            </div>
+            <div class="simpleBlock">
+                @Html.DropDownListFor(x => Model.SelectedValues, new MultiSelectList(Model.allLines, "lineNumber", "lineName", null),  new { multiple = "true" })
+                <button class="greenButton" name="search" value="search">בחר קוים</button>
+                <a href=@Url.Action("btnExportToExcel5", "Manage")  class="downloadExcel" style="visibility:hidden">  הורד אקסל קוים </a>
+             </div>
+      
+        </div>
 
-</content>
-<style>
-    .list-group-item>.badge {
-    float: left;
-}
-    .list-group-item {
-    background-color:black;
 
-}
-</style>
+
+       
+
+        <div class="navbar-inner" style="float:right;">
+            <ul class="list-group">
+                <li class="list-group-item">סך משפחות במערכת <span class="badge">@ViewBag.totalFamilies</span></li>
+                <li class="list-group-item">סך סטודנטים במערכת<span class="badge">@ViewBag.totalStudents</span></li>
+                <li class="list-group-item">סך סטודנטים רשומים במערכת-שולמו דמי רישום <span class="badge">@ViewBag.totalRegistrationStudents</span></li>
+
+            </ul>
+        </div>
+    </content>
+    <style>
+        .list-group-item > .badge {
+            float: left;
+        }
+
+        .list-group-item {
+            background-color: black;
+        }
+    </style>
+
+<script>
+    $(".greenButton").click(function () {
+    var selectedValues = [];
+    $("#SelectedValues :selected").each(function () {
+        selectedValues.push($(this).val());
+    });
+    $.ajax({
+        url: '@Url.Action("selectLines", "Manage")',
+        type: 'Post',
+        data: JSON.stringify(selectedValues),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (returnValue) {
+            document.querySelector(".downloadExcel").style.visibility = 'visible';
+            
+            alert("ניתן להוריד את האקסל");
+        },
+        error: function (xhr, status, error) {
+            alert($("#ajaxErrorMessage1").val());
+        }
+    });
+});
+</script>
+
+
