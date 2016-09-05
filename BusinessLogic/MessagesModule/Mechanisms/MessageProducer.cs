@@ -4,24 +4,13 @@ using System.Linq;
 using System.Text;
 
 using Business_Logic.MessagesModule.InnerLibs.Text2Graph;
+using Business_Logic.MessagesModule.DataObjects;
 
-namespace Business_Logic.MessagesModule {
+namespace Business_Logic.MessagesModule.Mechanisms {
 
     public class MessageProducerException : Exception {
         public MessageProducerException (string Message) : base (Message) {
         }
-    }
-
-    public enum MessageType {
-        Sms,
-        Email
-    }
-
-    public class Message {
-        public string Header { get; set; }
-        public string Body { get; set; }
-        public string Adress { get; set; }
-        public MessageType Type { get; set; }
     }
 
     class MessageProductionErrorContainer {
@@ -76,7 +65,6 @@ namespace Business_Logic.MessagesModule {
             if (node.Type == TextNodeType.plain) 
                 sb.Append(GetStringWithReplacements(node.Content, data.Skip(iterNum).First()));
             else {
-                //TODO CONDITIONAL NODES PROCESSES HERE
                 if (node.Type == TextNodeType.conditional) {
                     //node.ParamsString - here all params from node, you can evaluate condition here
                     bool conditionPassed = false;

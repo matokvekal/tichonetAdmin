@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Business_Logic.MessagesModule.EntitiesExtensions;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -43,14 +44,14 @@ namespace Business_Logic.MessagesModule {
             return DB.Set<TEntity>().FirstOrDefault(x => x.Id == Id);
         }
 
-        public IQueryable<TEntity> GetFilteredQueryable<TEntity>(IEnumerable<IQueryFilter> filters, IQueryable<TEntity> baseQuery = null)
+        public IQueryable<TEntity> GetFilteredQueryable<TEntity>(IEnumerable<IQueryFilter> filters = null, IQueryable<TEntity> baseQuery = null)
                 where TEntity : class, IMessagesModuleEntity {
 
             var query = baseQuery ?? DB.Set<TEntity>().AsQueryable();
-            var entityType = typeof(TEntity);
-            var entityTypeExpr = Expression.Parameter(entityType);
             if (filters == null)
                 return query;
+            var entityType = typeof(TEntity);
+            var entityTypeExpr = Expression.Parameter(entityType);
             filters = filters.Where(x => x.Valid);
             foreach (var filter in filters) {
                 var propInfo = entityType.GetProperty(filter.key);
@@ -125,7 +126,7 @@ namespace Business_Logic.MessagesModule {
         /// <summary>
         /// Only Adding New Allowed
         /// </summary>
-        public void AddRange<TEntity>(ICollection<TEntity> items)
+        public void AddRange<TEntity>(IEnumerable<TEntity> items)
                         where TEntity : class, IMessagesModuleEntity {
             DB.Set<TEntity>().AddRange(items);
             
@@ -208,7 +209,7 @@ namespace Business_Logic.MessagesModule {
         object ValidateToType(object val, Type type) {
             //date time for some reason comes here as string....
             if (type == dateType || type == dateNullableType)
-                return DateTime.Parse(val.ToString());
+                return DateTime.SpecifyKind( DateTime.Parse(val.ToString()), DateTimeKind.Utc );
             return val;
         }
     }

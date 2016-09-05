@@ -12,7 +12,7 @@ namespace Business_Logic.SqlContext{
             GC.SuppressFinalize(this);
         }
 
-        private readonly IDbConnectionFactory _dbConnectionFactory;
+        readonly IDbConnectionFactory _dbConnectionFactory;
 
         public SqlLogic(IDbConnectionFactory dbConnectionFactory){
             _dbConnectionFactory = dbConnectionFactory;

@@ -1,4 +1,5 @@
 ﻿using Business_Logic.MessagesModule;
+using Business_Logic.MessagesModule.EntitiesExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +71,7 @@ namespace ticonet.Controllers.Ng {
 
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
         public JsonResult GetRepeatModes() {
-            var items = tblMessageScheduleHelper.GetAllowedRepeatModeNames();
+            var items = ScheduleRepeatModeHelper.GetAllowedRepeatModeNames();
             return NgResultToJsonResult(FetchResult<string>.Succes(items, items.Length));
         }
     }

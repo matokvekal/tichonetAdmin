@@ -110,9 +110,29 @@
     <Compile Include="BusToLineLogic.cs" />
     <Compile Include="Dtos\TotalDto.cs" />
     <Compile Include="DriverLogic.cs" />
-    <Compile Include="MessagesModule\EntitiesExtensions.cs" />
-    <Compile Include="MessagesModule\InnerLibs\EmailSender.cs" />
+    <Compile Include="MessagesModule\DataObjects\FilterValueContainer.cs" />
+    <Compile Include="MessagesModule\DataObjects\Message.cs" />
+    <Compile Include="MessagesModule\DataObjects\ValueOperatorPair.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblFilterHelper.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblFilter_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblMessage_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\Interfaces.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\ScheduleRepeatMode.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblMessageBatch_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblMessageSchedule_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblRecepientCard_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblRecepientFilter_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblRecepientFilterTableName_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblTemplate_extended.cs" />
+    <Compile Include="MessagesModule\EntitiesExtensions\tblWildcard_extended.cs" />
+    <Compile Include="MessagesModule\Mechanisms\BatchCreationManager.cs" />
+    <Compile Include="MessagesModule\Mechanisms\EmailSender.cs" />
     <Compile Include="MessagesModule\InnerLibs\Text2Graph.cs" />
+    <Compile Include="MessagesModule\Mechanisms\BatchCreator.cs" />
+    <Compile Include="MessagesModule\Mechanisms\MessageDataCollector.cs" />
+    <Compile Include="MessagesModule\Mechanisms\BatchCreationComponent.cs" />
+    <Compile Include="MessagesModule\Mechanisms\SmsSender.cs" />
+    <Compile Include="MessagesModule\Mechanisms\TASK_PROTOTYPE.cs" />
     <Compile Include="MessagesModule\MessageContext.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -128,7 +148,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MessageContext.edmx</DependentUpon>
     </Compile>
-    <Compile Include="MessagesModule\MessageProducer.cs" />
+    <Compile Include="MessagesModule\Mechanisms\MessageProducer.cs" />
     <Compile Include="MessagesModule\MessagesModuleBaseLogic.cs" />
     <Compile Include="MessagesModule\MessagesModuleLogic.cs" />
     <Compile Include="MessagesModule\tblFilter.cs">

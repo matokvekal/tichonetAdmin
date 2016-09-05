@@ -2,10 +2,9 @@
 using System.Net.Mail;
 using System.Web.Configuration;
 
-namespace Business_Logic.MessagesModule.InnerLibs
-{
-    public class EmailSender
-    {
+namespace Business_Logic.MessagesModule.Mechanisms {
+
+    public class EmailSender{
         public static string SystemEmailAddress
         {
             get { return WebConfigurationManager.AppSettings["SystemEmailAddress"]; }

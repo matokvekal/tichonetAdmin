@@ -1,4 +1,5 @@
 ﻿using Business_Logic.MessagesModule;
+using Business_Logic.MessagesModule.EntitiesExtensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

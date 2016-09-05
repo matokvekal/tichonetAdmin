@@ -40,7 +40,7 @@ namespace ticonet
                     Shicva = data.Shicva,
                     Class = data.@class,
                     Active = data.Active ?? false,
-                    schoolName=data.schoolName
+                    SchoolName=data.schoolName
                 }).ToList();
             }
             return res;

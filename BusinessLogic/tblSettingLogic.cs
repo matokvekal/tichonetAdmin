@@ -50,7 +50,7 @@ namespace Business_Logic
             foreach (var kv in settings) {
                 var prop = GetType().GetProperty(kv.Key);
                 if (prop != null) {
-                    //TODO
+                    //todo..
                     //prop.DeclaringType;
                     bool res;
                     res = ((string[])kv.Value)[0] == "true";

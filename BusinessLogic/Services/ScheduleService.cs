@@ -78,7 +78,6 @@ namespace Business_Logic.Services
             return schedule;
         }
 
-        //todo use it in GenerateSchedule
         public tblSchedule GenerateSingleSchedule (Line line, DateTime date, bool AddLeaveTime, bool AddArriveTime) {
             var item = new tblSchedule {
                 Date = date,

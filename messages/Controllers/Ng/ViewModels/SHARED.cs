@@ -4,6 +4,7 @@ using Business_Logic.MessagesModule;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Business_Logic.SqlContext;
+using System.Collections.Generic;
 
 namespace ticonet.Controllers.Ng.ViewModels {
 
@@ -62,6 +63,13 @@ namespace ticonet.Controllers.Ng.ViewModels {
             return vm;
         }
 
+        public static TModel MakeFromObj<TOrig, TModel, TInjection>(TOrig obj, TInjection inject, POCOReflectorInje<TOrig, TModel, TInjection> reflector) where TModel : class, new() {
+            var vm = Activator.CreateInstance<TModel>();
+            //TODO EXCEPTION HANDLING
+            reflector.Run(obj, vm, inject);
+            return vm;
+        }
+
         public static void Reflect<TFrom, TTo>(TFrom from, TTo to, POCOReflector<TFrom, TTo> reflector) {
             //TODO EXCEPTION HANDLING
             reflector.Run(from, to);
@@ -100,13 +108,38 @@ namespace ticonet.Controllers.Ng.ViewModels {
 
         Action<TOriginal, TModel>[] funcs;
 
-        private POCOReflector (params Action<TOriginal, TModel>[] funcs) {
+        private POCOReflector(params Action<TOriginal, TModel>[] funcs) {
             this.funcs = funcs;
         }
 
-        public void Run (TOriginal o, TModel m) {
+        public void Run(TOriginal o, TModel m) {
             foreach (var f in funcs)
                 f(o, m);
+        }
+    }
+
+    public class POCOReflectorInje<TOriginal, TModel, TInjection> {
+        public static POCOReflectorInje<TOriginal, TModel, TInjection> Create(params Action<TOriginal, TModel>[] funcs) {
+            return new POCOReflectorInje<TOriginal, TModel, TInjection>(funcs);
+        }
+
+        Action<TOriginal, TModel>[] funcs;
+        List<Action<TOriginal, TModel, TInjection>> injected_funcs = new List<Action<TOriginal, TModel, TInjection>>();
+
+        private POCOReflectorInje(params Action<TOriginal, TModel>[] funcs) {
+            this.funcs = funcs;
+        }
+
+        public POCOReflectorInje<TOriginal, TModel, TInjection> AddInjected (params Action<TOriginal, TModel, TInjection>[] funcs) {
+            injected_funcs.AddRange(funcs);
+            return this;
+        }
+
+        public void Run(TOriginal o, TModel m, TInjection inj) {
+            foreach (var f in funcs)
+                f(o, m);
+            foreach (var f in injected_funcs)
+                f(o, m, inj);
         }
     }
 

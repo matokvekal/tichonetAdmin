@@ -29,23 +29,10 @@ namespace ticonet.Controllers.Ng {
 
         protected override FetchResult<FilterVM> _fetch(int? Skip, int? Count, NgControllerInstruct[] filters) {
             IEnumerable<FilterVM> filts;
-            IDictionary<int, string> filtsToTables = new Dictionary<int, string>();
             int allQueryCount;
             using (var l = new MessagesModuleLogic()) {
                 var result = l.GetFiltered<tblFilter>(Skip, Count, filters, out allQueryCount);
-                filts = result.Select(x => PocoConstructor.MakeFromObj(x, FilterVM.tblFilterPR)).ToArray();
-                result.ForEach(x => filtsToTables.Add(x.Id, x.tblRecepientFilter.tblRecepientFilterTableName.ReferncedTableName));
-            }
-
-            //TODO REFACTOR
-            
-            foreach(var f in filts) {
-                if (f.autoUpdatedList) {
-                    var type = sqllogic.GetColomnType(filtsToTables[f.Id], f.Key);
-                    var valops = sqllogic.FetchDataDistinct(new[] { f.Key }, filtsToTables[f.Id])
-                        .Select(x => new ValueOperatorPair(x[f.Key].ToString(), "=", type)).ToArray();
-                    f.ValsOps = valops;
-                }
+                filts = result.Select(x => PocoConstructor.MakeFromObj(x, sqllogic, FilterVM.tblFilterPR)).ToArray();
             }
 
             return FetchResult<FilterVM>.Succes(filts, allQueryCount);
