@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Business_Logic;
@@ -91,8 +92,9 @@ namespace ticonet.Controllers
         }
 
         [ActionName("SaveGeometry")]
-        public void PostSaveGeometry(SaveGeometryModel model)
+        public List<StationToLineModel> PostSaveGeometry(SaveGeometryModel model)
         {
+            var res = new List<StationToLineModel>() ;
             using (var logic = new LineLogic())
             {
                 var line = logic.GetLine(model.Id);
@@ -100,8 +102,32 @@ namespace ticonet.Controllers
                 {
                     line.PathGeometry = model.Data;
                     logic.SaveChanges();
+
+                    string fs = "0:0";
+                    StationsToLine st = null;
+                    st = line.Direction == 0 ? line.StationsToLines.OrderBy(s=>s.Position).Last() : line.StationsToLines.OrderBy(s => s.Position).First();
+                    if (line.StationsToLines.Select(l => l.ArrivalDate).Max() > st.ArrivalDate && line.Direction==0)
+                        st.ArrivalDate = line.StationsToLines.Select(l => l.ArrivalDate).Max();
+                    fs = st.ArrivalDate.Hours + ":" + st.ArrivalDate.Minutes;
+                    var data = new SaveDurationsModel
+                    {
+                        LineId = model.Id,
+                        Durations = model.Durations,
+                        FirstStation = fs
+                    };
+                    var ln = logic.ReCalcTimeTable(data);
+                    if (ln != null)
+                    {
+
+                        res = ln.StationsToLines
+                            .OrderBy(z=>z.Position)
+                            .Select(z => new StationToLineModel(z))
+                            .ToList();
+
+                    }
                 }
             }
+            return res;
         }
 
         [ActionName("deleteLine")]
