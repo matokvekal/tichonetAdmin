@@ -43,7 +43,7 @@
             }
             smap.lines.overlay.showLineOverlay();
         });
-       
+
     },
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
@@ -135,7 +135,7 @@
                         dur += d.routes[0].legs[z].duration.value;
                     }
 
-                    line.ways[j].path = { routes: [d.routes[0]], request: d.request };                  
+                    line.ways[j].path = { routes: [d.routes[0]], request: d.request };
                     line.ways[j].distance = dist;
                     line.ways[j].duration = dur;
                 }
@@ -172,7 +172,7 @@
                 line.ways.push(way);
                 smap.lines.addDirectionChangedListener(way, line);
             } else {
-                oldWay.position= i;
+                oldWay.position = i;
             }
         }
         for (var i = 0; i < line.ways.length;) { //remove ways with incorrect stations
@@ -304,6 +304,13 @@
             }
             smap.lines.overlay.showLineOverlay();
         }
+    },
+    resetWays: function (id) {
+        var ln = smap.getLine(id);
+        smap.lines.hideLine(id);
+        ln.ways = null;
+        smap.lines.showLine(id);
+
     },
     getColor: function (id) {
         var line = smap.getLine(id);
@@ -500,22 +507,15 @@
         //console.log(smap.lines.durations);
     },
     lineStationsVisibleSwitch: function (id) {
-        var c = "glyphicon-eye-close";
-        var o = "glyphicon-eye-open";
-        var btn = $("span[rel=lsswitch][ref=" + id + "]");
+
         var ln = smap.getLine(id);
-        var h = false; // hide = true, show =false
-        if ($(btn).hasClass(o)) {
-            //hide
-            $(btn).removeClass(o);
-            $(btn).addClass(c);
-            h = true;
-        } else {
-            //show
-            h = false;
-            $(btn).removeClass(c);
-            $(btn).addClass(o);
+        var h = true; // hide = true, show =false
+
+        for (var i in ln.Stations) {
+            var st = smap.stations.getStation(ln.Stations[i].StationId);
+            if (st.Marker == null) h = false; //if any stations hide, then swith to show mode
         }
+
         for (var i1 in ln.Stations) {
             var st1 = smap.stations.getStation(ln.Stations[i1].StationId);
             if (h) {

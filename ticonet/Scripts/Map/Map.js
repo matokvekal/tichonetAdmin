@@ -131,7 +131,8 @@
         });
     },
     restoryWays: function (line) {
-        var ways = $.parseJSON(unescape(line.Geometry));   
+        var ways = $.parseJSON(unescape(line.Geometry));
+        if (!ways) return;
         for (var k in ways) {
             ways[k].display = new google.maps.DirectionsRenderer(smap.lines.getRenderOptions(line));
             smap.fixGeometry(ways[k].path);            
@@ -141,6 +142,7 @@
         line.ways = ways;
     },
     fixGeometry: function (g) {
+        if (!g) return;
         g.request.destination = smap.fixCoords(g.request.destination);
         g.request.origin = smap.fixCoords(g.request.origin);
         for (var r in g.request.waypoints) {

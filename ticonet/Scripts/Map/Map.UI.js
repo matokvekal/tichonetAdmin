@@ -363,8 +363,8 @@
         $("<div id='dLineMenu' class='line-table-menu'></div>").appendTo("#map-canvas");
         $("#dLineMenu").css("top", (offset.top - coffset.top+15) + "px").css("left", (offset.left - coffset.left-70) + "px");
         $("<div><a href='javascript:smap.lines.showTimeTable(" + id + ");smap.UI.hideLineMenu();'>Time Table</a></div>").appendTo("#dLineMenu");
-        $("<div><a href='javascript:smap.lines.lineStationsVisibleSwitch(" + id + ");smap.UI.hideLineMenu();' ><span rel='lsswitch' ref='" + id + "'>Show / hide stations</span></a></div>").appendTo("#dLineMenu");
-        $("<div><a href='javascript:smap.UI.hideLineMenu();'>Recalc route</a></div>").appendTo("#dLineMenu");
+        $("<div><a href='javascript:smap.lines.lineStationsVisibleSwitch(" + id + ");smap.UI.hideLineMenu();' ><span>Show / hide stations</span></a></div>").appendTo("#dLineMenu");
+        $("<div><a href='javascript:smap.lines.resetWays(" + id + ");smap.UI.hideLineMenu();'>Recalc route</a></div>").appendTo("#dLineMenu");
         e.stopPropagation();;
         return false;
         
