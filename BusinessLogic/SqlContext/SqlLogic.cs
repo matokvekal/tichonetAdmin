@@ -26,7 +26,7 @@ namespace Business_Logic.SqlContext{
         /// condition - SqlPredicate Graph
         /// </summary>
         public IList<IDictionary<string,object>> FetchData (IEnumerable<string> fieldNames, string table, string schema = "dbo", SqlPredicate condition = null) {
-            string cond = condition == null || condition.IsEmpty ? null : "WHERE " + condition.ToSqlString();
+            string cond = condition == null || condition.CheckEmptiness() ? null : "WHERE " + condition.ToSqlString();
             string command = MakeCommand(false, fieldNames, table, schema, cond);
             return FetchData(command, reader => {
                 var dict = new Dictionary<string, object>();
@@ -42,7 +42,7 @@ namespace Business_Logic.SqlContext{
         /// condition - SqlPredicate Graph
         /// </summary>
         public IList<IDictionary<string, object>> FetchDataDistinct(IEnumerable<string> fieldNames, string table, string schema = "dbo", SqlPredicate condition = null) {
-            string cond = condition == null || condition.IsEmpty ? null : "WHERE " + condition.ToSqlString();
+            string cond = condition == null || condition.CheckEmptiness() ? null : "WHERE " + condition.ToSqlString();
             string command = MakeCommand(true, fieldNames, table, schema, cond);
             return FetchData(command, reader => {
                 var dict = new Dictionary<string, object>();

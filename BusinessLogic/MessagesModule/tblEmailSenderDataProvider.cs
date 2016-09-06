@@ -12,17 +12,17 @@ namespace Business_Logic.MessagesModule
     using System;
     using System.Collections.Generic;
     
-    public partial class tblMessage
+    public partial class tblEmailSenderDataProvider
     {
         public int Id { get; set; }
-        public string Header { get; set; }
-        public string Body { get; set; }
-        public string Adress { get; set; }
-        public bool IsSms { get; set; }
-        public Nullable<System.DateTime> SentOn { get; set; }
-        public int tblMessageBatchId { get; set; }
-    
-        public virtual tblMessageBatch tblMessageBatch { get; set; }
-        public virtual tblPendingMessagesQueue tblPendingMessagesQueue { get; set; }
+        public string Name { get; set; }
+        public bool IsActive { get; set; }
+        public string FromEmailAddress { get; set; }
+        public string FromEmailDisplayName { get; set; }
+        public string FromEmailPassword { get; set; }
+        public string SmtpHostName { get; set; }
+        public int SmtpPort { get; set; }
+        public bool EnableSsl { get; set; }
+        public int MaxMessagesInHour { get; set; }
     }
 }

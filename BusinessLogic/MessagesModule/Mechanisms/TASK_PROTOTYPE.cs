@@ -7,25 +7,20 @@ namespace Business_Logic.MessagesModule.Mechanisms {
     public static class TASK_PROTOTYPE {
 
         /// <summary>
-        /// SAVE RESULTED MESSAGES TO PENDING DATABASE
-        /// 
-        /// int minutesPeriod = 5;
         /// ISqlLogic sqlLogic = kernel.Get<ISqlLogic>();
-        /// TASK_PROTOTYPE.Run(minutesPeriod, sqlLogic);
         /// </summary>
-        /// <param name="minutesPeriod">minutesPeriod should be greater on equals then 1</param>
-        /// <param name="sqlLogic">ISqlLogic sqlLogic = kernel.Get<ISqlLogic>();</param>
-        public static void Run(int minutesPeriod, ISqlLogic sqlLogic) {
+        public static void RunBatchCreation(int minutesPeriod, ISqlLogic sqlLogic) {
             if (minutesPeriod < 1)
-                throw new ArgumentOutOfRangeException("minutesPeriod should be greater on equals then 1");
+                throw new ArgumentOutOfRangeException("minutesPeriod should be greater or equals then 1");
 
-            using (var manager = BatchCreationManager.NewInstance(minutesPeriod)) {
+            using (var manager = BatchCreationManager.NewInstance(minutesPeriod, sqlLogic)) {
                 var shedules = manager.GetActualMessageSchedules();
-                var creator = new BatchCreator(manager, sqlLogic);
+                var creator = new BatchCreator(manager);
                 var results = new List<BatchCreationResult>();
                 foreach (var sched in shedules)
-                    results.Add(creator.CreateBatch(sched));
-                //TODO SAVE RESULTED MESSAGES TO PENDING DATABASE!
+                    //TODO SET PRIORITY HERE:
+                    results.Add(creator.CreateBatch(sched,0));
+
                 manager.SaveResultsToDB(results);
             }
 

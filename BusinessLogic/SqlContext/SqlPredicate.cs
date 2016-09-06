@@ -9,8 +9,6 @@ namespace Business_Logic.SqlContext {
 
     public class SqlPredicate {
 
-        public bool IsEmpty { get { return isEmpty; } }
-
         enum ptype {
             body,
             or,
@@ -68,6 +66,14 @@ namespace Business_Logic.SqlContext {
             childNodes.Add(predicate);
         }
 
+        /// <summary>
+        /// returns true if empty
+        /// </summary>
+        public bool CheckEmptiness() {
+            RevalidateEmptiness();
+            return isEmpty;
+        }
+
         public string ToSqlString () {
             StringBuilder output = new StringBuilder();
             if (predicateType == ptype.body) {
@@ -104,7 +110,7 @@ namespace Business_Logic.SqlContext {
                 isEmpty = true;
                 childNodes.ForEach(x => {
                     x.RevalidateEmptiness();
-                    if (!x.IsEmpty)
+                    if (!x.isEmpty)
                         isEmpty = false;
                 });
             }

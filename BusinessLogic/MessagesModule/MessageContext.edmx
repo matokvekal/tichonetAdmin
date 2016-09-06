@@ -5,6 +5,29 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="Messages.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="tblBatchCreationManagerData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LastStartTime" Type="datetime" Nullable="false" />
+          <Property Name="LastEndTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblEmailSenderDataProvider">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="FromEmailAddress" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FromEmailDisplayName" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="FromEmailPassword" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="SmtpHostName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="SmtpPort" Type="int" Nullable="false" />
+          <Property Name="EnableSsl" Type="bit" Nullable="false" />
+          <Property Name="MaxMessagesInHour" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="tblFilter">
           <Key>
             <PropertyRef Name="Id" />
@@ -13,7 +36,7 @@
           <Property Name="tblRecepientFilterId" Type="int" Nullable="false" />
           <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
           <Property Name="ValuesJSON" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="OperatorsJSON" Type="nvarchar(max)" />
+          <Property Name="OperatorsJSON" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Type" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="allowUserInput" Type="bit" />
           <Property Name="allowMultipleSelection" Type="bit" />
@@ -59,6 +82,13 @@
           <Property Name="FilterValueContainersJSON" Type="nvarchar(max)" />
           <Property Name="ChoosenReccardIdsJSON" Type="nvarchar(max)" />
         </EntityType>
+        <EntityType Name="tblPendingMessagesQueue">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Priority" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="tblRecepientCard">
           <Key>
             <PropertyRef Name="Id" />
@@ -75,8 +105,8 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
           <Property Name="tblRecepientFilterTableNameId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
         </EntityType>
         <EntityType Name="tblRecepientFilterTableName">
           <Key>
@@ -109,16 +139,35 @@
           <Property Name="Code" Type="nvarchar" MaxLength="150" Nullable="false" />
           <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
+        <Association Name="FK__tblPendingMe__Id__7073AF84">
+          <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="1" />
+          <End Role="tblPendingMessagesQueue" Type="Self.tblPendingMessagesQueue" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="tblMessage">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblPendingMessagesQueue">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="MessagesStoreContainer">
+          <EntitySet Name="tblBatchCreationManagerData" EntityType="Self.tblBatchCreationManagerData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblEmailSenderDataProvider" EntityType="Self.tblEmailSenderDataProvider" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblFilter" EntityType="Self.tblFilter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblMessage" EntityType="Self.tblMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblMessageBatch" EntityType="Self.tblMessageBatch" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblMessageSchedule" EntityType="Self.tblMessageSchedule" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblPendingMessagesQueue" EntityType="Self.tblPendingMessagesQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientCard" EntityType="Self.tblRecepientCard" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilter" EntityType="Self.tblRecepientFilter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblRecepientFilterTableName" EntityType="Self.tblRecepientFilterTableName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblTemplate" EntityType="Self.tblTemplate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblWildcard" EntityType="Self.tblWildcard" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__tblPendingMe__Id__7073AF84" Association="Self.FK__tblPendingMe__Id__7073AF84">
+            <End Role="tblMessage" EntitySet="tblMessage" />
+            <End Role="tblPendingMessagesQueue" EntitySet="tblPendingMessagesQueue" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -166,6 +215,13 @@
             <End Role="tblMessageBatch" EntitySet="tblMessageBatches" />
             <End Role="tblMessage" EntitySet="tblMessages" />
           </AssociationSet>
+          <EntitySet Name="tblBatchCreationManagerDatas" EntityType="Messages.tblBatchCreationManagerData" />
+          <EntitySet Name="tblEmailSenderDataProviders" EntityType="Messages.tblEmailSenderDataProvider" />
+          <EntitySet Name="tblPendingMessagesQueues" EntityType="Messages.tblPendingMessagesQueue" />
+          <AssociationSet Name="FK__tblPendingMe__Id__7073AF84" Association="Messages.FK__tblPendingMe__Id__7073AF84">
+            <End Role="tblMessage" EntitySet="tblMessages" />
+            <End Role="tblPendingMessagesQueue" EntitySet="tblPendingMessagesQueues" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="tblFilter">
           <Key>
@@ -181,7 +237,7 @@
           <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="autoUpdatedList" Type="Boolean" />
           <Property Name="ValuesJSON" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="OperatorsJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OperatorsJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityType Name="tblRecepientFilter">
           <Key>
@@ -315,6 +371,7 @@
           <Property Name="SentOn" Type="DateTime" Precision="3" />
           <Property Name="tblMessageBatchId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="tblMessageBatch" Relationship="Messages.tblMessageBatchtblMessage" FromRole="tblMessage" ToRole="tblMessageBatch" />
+          <NavigationProperty Name="tblPendingMessagesQueue" Relationship="Messages.FK__tblPendingMe__Id__7073AF84" FromRole="tblMessage" ToRole="tblPendingMessagesQueue" />
         </EntityType>
         <EntityType Name="tblMessageBatch">
           <Key>
@@ -380,6 +437,49 @@
             </Principal>
             <Dependent Role="tblMessage">
               <PropertyRef Name="tblMessageBatchId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="tblBatchCreationManagerData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LastStartTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastEndTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="tblEmailSenderDataProvider">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="FromEmailAddress" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FromEmailDisplayName" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="FromEmailPassword" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SmtpHostName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SmtpPort" Type="Int32" Nullable="false" />
+          <Property Name="EnableSsl" Type="Boolean" Nullable="false" />
+          <Property Name="MaxMessagesInHour" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblPendingMessagesQueue">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="tblMessage" Relationship="Messages.FK__tblPendingMe__Id__7073AF84" FromRole="tblPendingMessagesQueue" ToRole="tblMessage" />
+        </EntityType>
+        <Association Name="FK__tblPendingMe__Id__7073AF84">
+          <End Type="Messages.tblMessage" Role="tblMessage" Multiplicity="1" />
+          <End Type="Messages.tblPendingMessagesQueue" Role="tblPendingMessagesQueue" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="tblMessage">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblPendingMessagesQueue">
+              <PropertyRef Name="Id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -498,6 +598,39 @@
                 <ScalarProperty Name="ScheduleDate" ColumnName="ScheduleDate" />
                 <ScalarProperty Name="tblTemplateId" ColumnName="tblTemplateId" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblBatchCreationManagerDatas">
+            <EntityTypeMapping TypeName="Messages.tblBatchCreationManagerData">
+              <MappingFragment StoreEntitySet="tblBatchCreationManagerData">
+                <ScalarProperty Name="LastEndTime" ColumnName="LastEndTime" />
+                <ScalarProperty Name="LastStartTime" ColumnName="LastStartTime" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblEmailSenderDataProviders">
+            <EntityTypeMapping TypeName="Messages.tblEmailSenderDataProvider">
+              <MappingFragment StoreEntitySet="tblEmailSenderDataProvider">
+                <ScalarProperty Name="MaxMessagesInHour" ColumnName="MaxMessagesInHour" />
+                <ScalarProperty Name="EnableSsl" ColumnName="EnableSsl" />
+                <ScalarProperty Name="SmtpPort" ColumnName="SmtpPort" />
+                <ScalarProperty Name="SmtpHostName" ColumnName="SmtpHostName" />
+                <ScalarProperty Name="FromEmailPassword" ColumnName="FromEmailPassword" />
+                <ScalarProperty Name="FromEmailDisplayName" ColumnName="FromEmailDisplayName" />
+                <ScalarProperty Name="FromEmailAddress" ColumnName="FromEmailAddress" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblPendingMessagesQueues">
+            <EntityTypeMapping TypeName="Messages.tblPendingMessagesQueue">
+              <MappingFragment StoreEntitySet="tblPendingMessagesQueue">
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

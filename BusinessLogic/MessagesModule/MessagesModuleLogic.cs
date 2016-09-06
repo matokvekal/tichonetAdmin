@@ -128,6 +128,7 @@ namespace Business_Logic.MessagesModule {
         /// </summary>
         public void AddRange<TEntity>(IEnumerable<TEntity> items)
                         where TEntity : class, IMessagesModuleEntity {
+            if (items == null) return;
             DB.Set<TEntity>().AddRange(items);
             
             DB.SaveChanges();

@@ -12,17 +12,10 @@ namespace Business_Logic.MessagesModule
     using System;
     using System.Collections.Generic;
     
-    public partial class tblMessage
+    public partial class tblBatchCreationManagerData
     {
         public int Id { get; set; }
-        public string Header { get; set; }
-        public string Body { get; set; }
-        public string Adress { get; set; }
-        public bool IsSms { get; set; }
-        public Nullable<System.DateTime> SentOn { get; set; }
-        public int tblMessageBatchId { get; set; }
-    
-        public virtual tblMessageBatch tblMessageBatch { get; set; }
-        public virtual tblPendingMessagesQueue tblPendingMessagesQueue { get; set; }
+        public System.DateTime LastStartTime { get; set; }
+        public System.DateTime LastEndTime { get; set; }
     }
 }

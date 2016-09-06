@@ -25,11 +25,10 @@ namespace Business_Logic.MessagesModule.Mechanisms {
     }
 
     public class MessageDataCollector : BatchCreationComponent {
-        readonly ISqlLogic sqlLogic;
+        readonly BatchCreationManager _manager;
 
-        public MessageDataCollector (BatchCreationManager manager, ISqlLogic _sqlLogic) : base(manager)
-        {
-            sqlLogic = _sqlLogic;
+        public MessageDataCollector (BatchCreationManager manager) : base(manager) {
+            _manager = manager;
         }
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                 .Concat(recepients.Select(x => x.NameKey))
                 .Concat(recepients.Select(x => x.PhoneKey)).Distinct();
 
-            var sqlData = sqlLogic.FetchData(colomns, templ.TableWithKeysName, "dbo", Condition);
+            var sqlData = _manager.SqlLogic.FetchData(colomns, templ.TableWithKeysName, "dbo", Condition);
 
             var wildcardsSummed = wildcards.SelectMany(x => x.ToKeyValues());
 
@@ -90,16 +89,25 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         Dictionary<int, ValueOperatorPair[]> GetFiltersActualSettings(tblFilter[] filters, FilterValueContainer[] userInputedValues) {
             var filtsToValOps = new Dictionary<int, ValueOperatorPair[]>();
             foreach (var f in filters) {
-                var valops = tblFilterHelper.GetValueOperatorPairs(f, sqlLogic);
+                var valops = tblFilterHelper.GetValueOperatorPairs(f, _manager.SqlLogic);
                 if (NullBoolToBool(f.allowUserInput)) {
-                    valops = valops
-                        //HERE WE USE STRING CHECK to Compare... =\
-                        .Where(x => userInputedValues.Any
-                            (y => y.FilterId == f.Id && y.Values != null
-                                && y.Values.Any(z => ToStringSafe(z) == x.Value.ToString())
+                    //if user was selecting from list.
+                    if (NullBoolToBool(f.autoUpdatedList) || valops.Length > 1) {
+                        valops = valops
+                            //HERE WE USE STRING CHECK to Compare... =\
+                            .Where(x => userInputedValues.Any
+                                (y => y.FilterId == f.Id && y.Values != null
+                                    && y.Values.Any(z => ToStringSafe(z) == x.Value.ToString())
+                                )
                             )
-                        )
-                        .ToArray();
+                            .ToArray();
+                    }
+                    //if user typed value directly
+                    else {
+                        var val = userInputedValues.First(x => x.FilterId == f.Id);
+                        valops = new[] { new ValueOperatorPair(val.Values[0].ToString(), valops[0].Operator, f.Type) };
+                    }
+
                 }
                 filtsToValOps.Add(f.Id, valops);
             }

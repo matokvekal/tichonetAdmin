@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
+    public class BatchCreationResult {
+        public tblMessageBatch Batch;
+        public IEnumerable<tblMessage> Messages;
+        public IEnumerable<tblPendingMessagesQueue> SendQueue;
+    }
+
     /// <summary>
     /// Controls specific time period and engages BatchCreationManager to create batches.
     /// This entity generaly exists for avoiding doubled same batch creation, and avoiding errors 
@@ -23,7 +29,9 @@ namespace Business_Logic.MessagesModule.Mechanisms {
 
         public readonly DateTime periodStart;
         public readonly DateTime periodEnd;
+
         public readonly MessagesModuleLogic Logic;
+        public readonly ISqlLogic SqlLogic;
 
         /// <summary>
         /// Creates new instance on control period. 
@@ -32,20 +40,21 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         /// Manages all lifecycle of batch creating, provides instance of MessagesModuleLogic
         /// for all connected to it BatchCreationComponents
         /// </summary>
-        public static BatchCreationManager NewInstance(int controlledPeriodMinutes) {
+        public static BatchCreationManager NewInstance(int controlledPeriodMinutes, ISqlLogic SqlLogic) {
             //TODO ADD BATCH_SEND PRIORITY HANDLING
             //TODO ADD NO_TIMED CONSTRUCTOR
-            //TODO AVOID THE NEXT IMPLICITLY: PERIOD STARTS IN ONE DAY AND END IN NEXT!
             //TODO u can manage here uncovered periods...
             //TODO get from db start time
+
+            //TODO !!!!!!!!!!!!!!  AVOID THE NEXT IMPLICITLY: PERIOD STARTS IN ONE DAY AND END IN NEXT!
             DateTime controlledPeriodStart = getStartDate();
             DateTime controlledPeriodEnd = controlledPeriodStart.AddMinutes(controlledPeriodMinutes);
 
-            return new BatchCreationManager(controlledPeriodStart, controlledPeriodStart);
+            return new BatchCreationManager(controlledPeriodStart, controlledPeriodEnd, new MessagesModuleLogic(), SqlLogic);
         }
 
         /// <summary>
-        /// Return tblMessageSchedules valid for this time period
+        /// Return tblMessageSchedules valid for this BatchCreationManager time period
         /// </summary>
         public IQueryable<tblMessageSchedule> GetActualMessageSchedules() {
             string repeatMode_none = ScheduleRepeatModeHelper.RepeatModeToString(ScheduleRepeatMode.None);
@@ -65,11 +74,11 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                         && x.ScheduleDate >= periodStart && x.ScheduleDate < periodEnd
                     ) 
                     ||
-                    (EntityFunctions.CreateTime(x.ScheduleDate.Value.Hour, x.ScheduleDate.Value.Minute, x.ScheduleDate.Value.Second) >= periodStart.TimeOfDay
-                        &&  EntityFunctions.CreateTime(x.ScheduleDate.Value.Hour, x.ScheduleDate.Value.Minute, x.ScheduleDate.Value.Second) < periodEnd.TimeOfDay
+                    (DbFunctions.CreateTime(x.ScheduleDate.Value.Hour, x.ScheduleDate.Value.Minute, x.ScheduleDate.Value.Second) >= periodStart.TimeOfDay
+                        && DbFunctions.CreateTime(x.ScheduleDate.Value.Hour, x.ScheduleDate.Value.Minute, x.ScheduleDate.Value.Second) < periodEnd.TimeOfDay
                         &&  (x.RepeatMode == repeatMode_day
                             || (x.RepeatMode == repeatMode_week
-                                && EntityFunctions.DiffDays(firstSunday, x.ScheduleDate) % 7 == DayOfWeekNow
+                                && DbFunctions.DiffDays(firstSunday, x.ScheduleDate) % 7 == DayOfWeekNow
                             )
                             || (x.RepeatMode == repeatMode_month
                                 && x.ScheduleDate.Value.Day == periodStart.Day
@@ -88,14 +97,16 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             //TODO HANDLE DOUBLE-SAVE
             Logic.AddRange(results.Select(x => x.Batch));
             Logic.AddRange(results.SelectMany(x => x.Messages));
+            Logic.AddRange(results.SelectMany(x => x.SendQueue));
             WriteEndDate(periodEnd);
         }
+
 
         //---------------------------------------------
         //private part
 
         static DateTime getStartDate () {
-            return DateTime.Now;
+            return DateTime.MinValue;
         }
 
         void WriteEndDate (DateTime end) {
@@ -105,14 +116,15 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         //TODO use this list and static _lock to implement singletone with queque
         static List<BatchCreationManager> stack = new List<BatchCreationManager>();
 
-        private BatchCreationManager(DateTime controlledPeriodStart, DateTime controlledPeriodEnd) {
-            Logic = new MessagesModuleLogic();
+        private BatchCreationManager(DateTime controlledPeriodStart, DateTime controlledPeriodEnd, MessagesModuleLogic Logic, ISqlLogic SqlLogic) {
+            this.SqlLogic = SqlLogic;
+            this.Logic = Logic;
             periodStart = controlledPeriodStart;
             periodEnd = controlledPeriodEnd;
             stack.Add(this);
         }
 
-        #region IDisposable Support
+        #region IDisposable Implementation
         bool disposedValue = false; // To detect redundant calls
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {

@@ -109,3 +109,34 @@ CREATE TABLE [dbo].[tblMessage] (
     
 	PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+CREATE TABLE [dbo].[tblPendingMessagesQueue] (
+    [Id]           INT NOT NULL,
+    [Priority]     INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([Id]) REFERENCES [dbo].[tblMessage] ([Id])
+);
+
+CREATE TABLE [dbo].[tblEmailSenderDataProvider] (
+    [Id]                   INT            IDENTITY (1, 1) NOT NULL,
+    [Name]                 NVARCHAR (150) NOT NULL,
+    [IsActive]             BIT            NOT NULL,
+    [FromEmailAddress]     NVARCHAR (MAX) NOT NULL,
+    [FromEmailDisplayName] NVARCHAR (300) NOT NULL,
+    [FromEmailPassword]    NVARCHAR (MAX) NOT NULL,
+    [SmtpHostName]         NVARCHAR (MAX) NOT NULL,
+    [SmtpPort]             INT            NOT NULL,
+    [EnableSsl]            BIT            NOT NULL,
+    [MaxMessagesInHour]    INT            NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+CREATE TABLE [dbo].[tblBatchCreationManagerData] (
+    [Id]			INT				IDENTITY (1, 1) NOT NULL,
+
+	[LastStartTime] DATETIME NOT NULL,
+	[LastEndTime]	DATETIME NOT NULL,
+
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+
+);

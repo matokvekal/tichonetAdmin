@@ -9,36 +9,32 @@ using System.Threading.Tasks;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
-    public class BatchCreationResult {
-        public tblMessageBatch Batch;
-        public IEnumerable<tblMessage> Messages;
-    }
-
     public class BatchCreator : BatchCreationComponent {
         readonly BatchCreationManager _manager;
-        readonly ISqlLogic _sqlLogic;
 
-        public BatchCreator(BatchCreationManager manager, ISqlLogic sqlLogic) : base (manager) {
+        public BatchCreator(BatchCreationManager manager) : base (manager) {
             _manager = manager;
-            _sqlLogic = sqlLogic;
         }
         /// <summary>
-        /// Creates Batch, creates messages assigned to this batch.
-        /// returns entities NOT WRITTEN to db,
+        /// Creates Batch, creates messages assigned to this batch, puts messages to send queque.
+        /// returns entities NOT WRITTEN to db.
+        /// 'sendPriority': int.min - lowest priory, int.max - highest.
         /// </summary>
-        public BatchCreationResult CreateBatch (tblMessageSchedule schedule) {
+        public BatchCreationResult CreateBatch (tblMessageSchedule schedule, int sendPriority) {
             var result = new BatchCreationResult();
             var batch = logic.Create<tblMessageBatch>();
             batch.CreatedOn = DateTime.Now;
             batch.tblMessageSchedule = schedule;
 
-            var dataCollector = new MessageDataCollector(_manager, _sqlLogic);
+            var dataCollector = new MessageDataCollector(_manager);
             var msgData = dataCollector.Collect(schedule);
 
             var markSpecs = new DefaultMarkUpSpecification { NewLineSymbol = "\n" };
             var msgProducer = new MessageProducer(schedule.MsgHeader, schedule.MsgBody, null, markSpecs);
 
             var messages = new List<tblMessage>();
+            var sendQueues = new List<tblPendingMessagesQueue>();
+
             foreach(var data in msgData) {
                 msgProducer.ChangeWildCards(data.wildCards);
                 foreach (var textData in data.TextProductionData) {
@@ -49,10 +45,16 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                     msg.Header = msgRaw.Header;
                     msg.IsSms = schedule.IsSms;
                     msg.tblMessageBatch = batch;
+                    messages.Add(msg);
+                    var pmq = logic.Create<tblPendingMessagesQueue>();
+                    pmq.tblMessage = msg;
+                    pmq.Priority = sendPriority;
+                    sendQueues.Add(pmq);
                 }
             }
             result.Batch = batch;
             result.Messages = messages;
+            result.SendQueue = sendQueues;
             return result;
         }
 
