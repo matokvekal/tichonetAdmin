@@ -364,6 +364,7 @@
     <Content Include="Scripts\JquerySimpleUI.js" />
     <Content Include="Scripts\Map\Map.js" />
     <Content Include="Scripts\Map\Map.Lines.js" />
+    <Content Include="Scripts\Map\Map.Lines.Overlay.js" />
     <Content Include="Scripts\markerclusterer.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
