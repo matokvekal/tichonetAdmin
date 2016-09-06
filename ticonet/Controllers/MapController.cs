@@ -118,12 +118,10 @@ namespace ticonet.Controllers
                     var ln = logic.ReCalcTimeTable(data);
                     if (ln != null)
                     {
-
                         res = ln.StationsToLines
                             .OrderBy(z=>z.Position)
                             .Select(z => new StationToLineModel(z))
                             .ToList();
-
                     }
                 }
             }

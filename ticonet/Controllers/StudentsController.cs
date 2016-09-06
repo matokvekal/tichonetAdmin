@@ -137,6 +137,7 @@ namespace ticonet
                             st.streetId = data.StreetId;
                             st.city = data.City;
                             st.cityId = data.CityId;
+                            st.houseNumber = data.HouseNumber;
                             st.Lat = null;
                             st.Lng = null;
                             tblStudentLogic.update(st);
