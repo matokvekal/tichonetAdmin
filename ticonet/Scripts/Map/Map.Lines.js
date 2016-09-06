@@ -27,7 +27,7 @@
             smap.table.linesGrid.jqGrid('addRowData', line.Id, line);
         }
         if (show == true) smap.lines.showLine(line.Id);
-
+        smap.lines.overlay.showLineOverlay();
     },
     showLine: function (id) {
 
@@ -127,7 +127,7 @@
 
             for (var j in line.ways) {
                 if (line.ways[j].path) {
-                    var d = line.ways[j].display.getDirections()
+                    var d = line.ways[j].display.getDirections();
                     var dur = 0;
                     var dist = 0;
                     for (var z in d.routes[0].legs) {
@@ -141,6 +141,8 @@
                 }
             }
             if (!smap.lines.notSaveGeometry) smap.lines.saveGeometry(line);
+          
+           
         });
     },
     calcValues: null,
@@ -279,6 +281,7 @@
     },
     saveGeometry: function (line) {
         var data = [];
+        var durations = [];
         for (var i in line.ways) {
             var way = line.ways[i];
             data.push({
@@ -289,9 +292,28 @@
                 duration: way.duration,
                 position: way.position
             });
+            durations.push({
+                StationId: way.startStationId,
+                Duration: way.duration
+            });
         }
         // console.log(data);
-        $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)) });
+        $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)), Durations: durations})
+            .done(function(loader) {
+                console.dir(loader);
+                if (loader.length > 0) {
+                    var ln = smap.getLine(loader[0].LineId);
+                    for (var i in loader) {
+                        for (var j in ln.Stations) {
+                            if (ln.Stations[j].StationId == loader[i].StationId) {
+                                ln.Stations[j].ArrivalDate = loader[i].ArrivalDate;
+                                ln.Stations[j].ArrivalDateString = loader[i].ArrivalDateString;
+                            }
+                        }
+                    }
+                    smap.lines.overlay.showLineOverlay();
+                }
+            });
 
     },
     hideLine: function (id) {
@@ -472,6 +494,8 @@
         smap.lines.reCalcTimeTable();
     },
     reCalcTimeTable: function () {
+        console.log("Recalc time table");
+
         var lnId = $("#hfTTLineId").val();
         var ln = smap.getLine(lnId);
         smap.lines.durations = {
@@ -485,6 +509,7 @@
                 Duration: ln.ways[i].duration
             });
         }
+        console.dir(smap.lines.durations);
         smap.lines.saveDurations();
         //$("#spStatus").html("Update time table for line " + ln.LineNumber);
         //smap.lines.showLine(lnId, false);
@@ -492,8 +517,9 @@
     },
     saveDurations: function () {
         $.post("/api/map/SaveDurations", smap.lines.durations).done(function (loader) {
+            console.log("Save duration. Done");
             smap.restoryWays(loader);
-            console.log(loader);
+         
             smap.lines.updateLine(loader, true);
             if (smap.lines.ttGrid != null)
                 for (var i in loader.Stations) {
