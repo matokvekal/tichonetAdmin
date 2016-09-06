@@ -329,11 +329,11 @@
             buttons: {
                 "Save": function () {
                     var data = $("#frmStudAddr").serialize();
-                    console.log(data);
+                    //console.log(data);
                     $.post("/api/students/address", data).done(function (loader) {
-                        console.log(loader);
-                        
-
+                      //  console.log(loader);
+                        smap.updateStudent(loader);
+                        dialog.dialog("close");
                     });
                 },
                 Cancel: function () {

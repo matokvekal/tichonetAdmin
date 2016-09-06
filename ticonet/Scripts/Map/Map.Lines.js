@@ -300,7 +300,6 @@
         // console.log(data);
         $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)), Durations: durations})
             .done(function(loader) {
-                console.dir(loader);
                 if (loader.length > 0) {
                     var ln = smap.getLine(loader[0].LineId);
                     for (var i in loader) {
