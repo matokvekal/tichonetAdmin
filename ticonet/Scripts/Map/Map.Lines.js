@@ -41,7 +41,9 @@
             for (var i in line.ways) {
                 line.ways[i].display.setMap(smap.mainMap);
             }
+            smap.lines.overlay.showLineOverlay();
         });
+       
     },
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
@@ -300,6 +302,7 @@
             for (var i in line.ways) {
                 line.ways[i].display.setMap(null);
             }
+            smap.lines.overlay.showLineOverlay();
         }
     },
     getColor: function (id) {

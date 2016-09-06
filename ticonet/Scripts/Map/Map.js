@@ -9,6 +9,8 @@
     graphicElements: [],
     attachGrid: null,
     init: function () {
+       
+
         // getting map's center
         var latCenter = 32.086368;
         var lngCenter = 34.889135;
@@ -129,7 +131,7 @@
         });
     },
     restoryWays: function (line) {
-        var ways = $.parseJSON(unescape(line.Geometry));
+        var ways = $.parseJSON(unescape(line.Geometry));   
         for (var k in ways) {
             ways[k].display = new google.maps.DirectionsRenderer(smap.lines.getRenderOptions(line));
             smap.fixGeometry(ways[k].path);            
@@ -386,6 +388,7 @@
     },
     closeConextMenu: function () {
         $('.contextmenu').remove();
+        smap.UI.hideLineMenu(); 
     },
     fixCssColor: function (color) { //fix color for use in css properies
         if (color.substring(0, 1) != "#") color = "#" + color;
