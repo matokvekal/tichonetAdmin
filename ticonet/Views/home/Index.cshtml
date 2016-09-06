@@ -32,7 +32,7 @@
         </div>
     </div>
 </div>
-<div class="students-fly">
+<div class="students-fly" onclick="smap.UI.hideLineMenu();">
     <div class="header" style="padding-left: 10px; border-bottom: 1px solid #999; ">
         <h2>
             <a href="javascript:smap.switchStationsVisible();" title="Show all stations / hide stations without lines">
@@ -184,7 +184,6 @@
                     <span class="form-control-static" style="margin-left: 5px; margin-right: 5px;">:</span>
                     <input type="number" id="tbAddLineMinutes" name="Minutes" class="form-control input-sm" style="width: 50px; display: inline;" />
 
-                </span>
             </div>*@
         <div class="row form-group">
             <label for="ddlAddPosition" class="col-xs-3 control-label">Position</label>
@@ -209,7 +208,14 @@
                 <div class="color-indicator" id="dAddLine"></div>
             </div>
         </div>
-
+        <div class="row form-group">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <input type="checkbox" name="StrAlwaysFirst" ref="new" rel="first" onchange="smap.UI.swithFirstLineStations(event)" /> <span>Always first station</span>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <input type="checkbox" name="StrAlwaysLast" ref="new" rel="last" onchange="smap.UI.swithFirstLineStations(event)" /> <span> Always last station</span>
+            </div>
+        </div>
     </form>
 </div>
 <div id="dlgEditToLine" title="Edit station on line" style="display: none;">
@@ -231,6 +237,16 @@
             <div class="row form-group" style="margin-top:27px">
                 <label for="cbEditLineColor" class="col-xs-4 control-label">Use line color </label>
                 <input type="checkbox" name="StrChangeColor" id="cbEditLineColor">
+            </div>
+            <div class="row form-group" style="margin-top: 27px">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="cbEditLineAlwaysFirst" class="control-label">Always first station</label>
+                    <input type="checkbox" name="StrAlwaysFirst" id="cbEditLineAlwaysFirst" ref="edit" rel="first" onchange="smap.UI.swithFirstLineStations(event)">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <label for="cbEditLineAlwaysLast" class="control-label">Always last station</label>
+                    <input type="checkbox" name="StrAlwaysLast" id="cbEditLineAlwaysLast" ref="edit" rel="last" onchange="smap.UI.swithFirstLineStations(event)">
+                </div>
             </div>
             <input type="hidden" id="hfEditToLineStationId" name="StationId" />
             <input type="hidden" id="hfEditToLineLineId" name="LineId" />
@@ -293,24 +309,24 @@
 
         <input type="hidden" name="StudentId" />
         <div class="container">
-            
-                <div >
-                    <div class="label">City</div>
 
-                    <input type="text" class="form-control input-xs" placeholder="City" name="City" />
+            <div>
+                <div class="label">City</div>
 
-                    <input type="hidden" name="CityId" />
-                </div>
-                <div >
-                    <div class="label">Street</div>
-                    <input type="text" class="form-control input-xs has-error" placeholder="Street" name="Street" />
-                    <input type="hidden" name="StreetId" />
-                </div>
-                <div >
-                    <div class="label">House</div>
-                    <input type="text" class="form-control input-xs" placeholder="House" name="HouseNumber" />
-                </div>
-          
+                <input type="text" class="form-control input-xs" placeholder="City" name="City" />
+
+                <input type="hidden" name="CityId" />
+            </div>
+            <div>
+                <div class="label">Street</div>
+                <input type="text" class="form-control input-xs has-error" placeholder="Street" name="Street" />
+                <input type="hidden" name="StreetId" />
+            </div>
+            <div>
+                <div class="label">House</div>
+                <input type="text" class="form-control input-xs" placeholder="House" name="HouseNumber" />
+            </div>
+
         </div>
     </form>
 

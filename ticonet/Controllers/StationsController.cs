@@ -223,6 +223,10 @@ namespace ticonet
         [System.Web.Http.ActionName("AddToLine")]
         public SaveStationToLineResult PostAddToLine(AddStationToLineModel model)
         {
+            var positionMode = 0;
+            if (model.StrAlwaysFirst == "on") positionMode = 1;
+            if (model.StrAlwaysLast == "on") positionMode = 2;
+
             var ts = new TimeSpan(model.Hours, model.Minutes, 0);
             var res = new SaveStationToLineResult();
             using (var logic = new StationsLogic())
@@ -232,6 +236,7 @@ namespace ticonet
                     model.LineId,
                     ts,
                     model.Position,
+                    positionMode,
                     model.ChangeColor);
 
                 res.Station = new StationModel(logic.GetStation(model.StationId));
@@ -268,6 +273,10 @@ namespace ticonet
         [System.Web.Http.ActionName("SaveOnLine")]
         public SaveStationToLineResult PostSaveOnLine(AddStationToLineModel model)
         {
+
+            var positionMode = 0;
+            if (model.StrAlwaysFirst == "on") positionMode = 1;
+            if (model.StrAlwaysLast == "on") positionMode = 2;
             var ts = new TimeSpan(model.Hours, model.Minutes, 0);
             var res = new SaveStationToLineResult();
             using (var logic = new StationsLogic())
@@ -277,6 +286,7 @@ namespace ticonet
                     model.LineId,
                     ts,
                     model.Position,
+                    positionMode,
                     (model.StrChangeColor ?? "off").ToLower() == "on");
 
                 res.Station = new StationModel(logic.GetStation(model.StationId));

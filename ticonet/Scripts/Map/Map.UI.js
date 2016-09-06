@@ -332,7 +332,7 @@
                     console.log(data);
                     $.post("/api/students/address", data).done(function (loader) {
                         console.log(loader);
-                        smap.up
+                        
 
                     });
                 },
@@ -342,5 +342,34 @@
             }
         });
         $(".ui-dialog-buttonset").children("button").addClass("btn btn-default");
+    },
+    swithFirstLineStations: function (e) {
+        
+        var rel = $(e.target).attr("rel");
+        var ref = $(e.target).attr("ref");
+        var checked = $(e.target).prop("checked");
+        if (checked) {
+            if (rel == 'first') {
+                $("input[ref=" + ref + "][rel=last]").prop("checked", false);
+            } else {
+                $("input[ref=" + ref + "][rel=first]").prop("checked", false);
+            }
+        }
+    },
+    showLineMenu: function (id, e) {
+        $("#dLineMenu").remove();
+        var coffset = $("#map-canvas").offset();
+        var offset = $(e.target).offset();
+        $("<div id='dLineMenu' class='line-table-menu'></div>").appendTo("#map-canvas");
+        $("#dLineMenu").css("top", (offset.top - coffset.top+15) + "px").css("left", (offset.left - coffset.left-70) + "px");
+        $("<div><a href='javascript:smap.lines.showTimeTable(" + id + ");smap.UI.hideLineMenu();'>Time Table</a></div>").appendTo("#dLineMenu");
+        $("<div><a href='javascript:smap.lines.lineStationsVisibleSwitch(" + id + ");smap.UI.hideLineMenu();' ><span>Show / hide stations</span></a></div>").appendTo("#dLineMenu");
+        $("<div><a href='javascript:smap.lines.resetWays(" + id + ");smap.UI.hideLineMenu();'>Recalc route</a></div>").appendTo("#dLineMenu");
+        e.stopPropagation();;
+        return false;
+        
+    },
+    hideLineMenu: function() {
+        $("#dLineMenu").remove();
     }
 }

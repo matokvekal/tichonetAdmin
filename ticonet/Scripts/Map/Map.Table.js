@@ -51,7 +51,7 @@
                     rulesText: " rules",
                     clearSearch: false
                 },
-                colNames: ["", "Id", "Name", "schoolName", "Class", "Address", "Station", "Line", "Dist"],
+                colNames: ["", "Id", "Name", "SchoolName", "Class", "Address", "Station", "Line", "Dist"],
                 colModel: [
                     {
                         name: "show",
@@ -94,7 +94,7 @@
                             return res;
                         }
                     },
-                    {name: 'Id', index: 'Id', clearSearch: false, width: 100, search: false, formatter: smap.table.stationNameFormatter2},
+                    { name: 'Id', index: 'Id', clearSearch: false, width: 100, search: false, formatter: smap.table.stationNameFormatter2 },
                     { name: 'Id', index: 'Id', clearSearch: false, width: 50, search: false, formatter: smap.table.lineColorFormatter },
                     { name: 'Id', index: 'Id', clearSearch: false, width: 50, align: "center", search: false, formatter: smap.table.distanceFormatter }
                 ]
@@ -375,15 +375,19 @@
         return '<div style="width:46px; height:10px;background-color:' + color + '" title="' + color + '"></div>';
     },
     lineActionsFormatter: function (cellvalue, options, rowObject) {
-        var res = "";
+        var res = "<div >";
 
-        res += "<a href='javascript:smap.lines.lineStationsVisibleSwitch(" + cellvalue + ")' title='Show/hide stations'><span rel='lsswitch' ref='" + cellvalue + "' class='glyphicon glyphicon-eye-open'></span></a>";
-        res += "&nbsp;&nbsp;";
-        res += "<a href='javascript:smap.lines.showTimeTable(" + cellvalue + ")' title='Time table'><span class='glyphicon glyphicon-time'></span></a>";
+        //res += "<a href='javascript:smap.lines.lineStationsVisibleSwitch(" + cellvalue + ")' title='Show/hide stations'><span rel='lsswitch' ref='" + cellvalue + "' class='glyphicon glyphicon-eye-open'></span></a>";
+        //res += "&nbsp;&nbsp;";
+        //res += "<a href='javascript:smap.lines.showTimeTable(" + cellvalue + ")' title='Time table'><span class='glyphicon glyphicon-time'></span></a>";
+        //res += "&nbsp;&nbsp;";
+      
+        res += "<a href='javascript:void(0);' onclick='smap.UI.showLineMenu(" + cellvalue + ", event)' title='More actions'><span class='glyphicon glyphicon-chevron-down'></span></a>";
         res += "&nbsp;&nbsp;";
         res += "<a href='javascript:smap.lines.editLine(" + cellvalue + ")' title='Edit line'><span class='glyphicon glyphicon-pencil'></span></a>";
         res += "&nbsp;&nbsp;";
         res += "<a href='javascript:smap.lines.deleteLine(" + cellvalue + ")' title='Delete line'><span class='glyphicon glyphicon-trash'></span></a>";
+        res += "</div>";
         return res;
     },
     lineNameFormatter: function (cellvalue, options, rowObject) {

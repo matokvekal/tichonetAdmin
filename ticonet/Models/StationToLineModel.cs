@@ -15,6 +15,8 @@ namespace ticonet.Models
             StationId = data.StationId;
             Position = data.Position;
             ArrivalDate = data.ArrivalDate;
+            AlwaysFirst = data.PositionMode == 1;
+            AlwaysLast = data.PositionMode == 2;
         }
 
 
@@ -29,7 +31,18 @@ namespace ticonet.Models
 
         public string ArrivalDateString
         {
-            get { return ArrivalDate.ToString("g"); }
+            get
+            {
+                return (ArrivalDate.Hours < 10 ? "0" : "") +
+                  ArrivalDate.Hours +
+                  ":" +
+                  (ArrivalDate.Minutes < 10 ? "0" : "") +
+                  ArrivalDate.Minutes;
+            }
         }
+
+        public bool AlwaysFirst { get; set; }
+        public bool AlwaysLast { get; set; }
+
     }
 }

@@ -31,6 +31,7 @@ namespace IdentitySample
                          "~/Scripts/Map/Map.Table.js",
                          "~/Scripts/Map/Map.Stations.js",
                          "~/Scripts/Map/Map.Lines.js",
+                         "~/Scripts/Map/Map.Lines.Overlay.js",
                          "~/Scripts/Map/Map.UI.js",
                         "~/Scripts/jqGrid/jquery.jqGrid.min.js",
                         "~/Scripts/jqGrid/plugins/grid.addons.js",

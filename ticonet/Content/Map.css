@@ -228,3 +228,39 @@
 #dlgSchedule table {
     margin-bottom: 10px;
 }
+
+.st-label {
+    background-color: #00a71d;
+    color: #000;
+    background-color: #FFF;
+    border: solid 1px #CCC;
+    position: absolute;
+    z-index: 900;
+    padding: 3px;
+    width: 100px;
+    box-shadow: #DDD 2px 2px 5px;
+    text-align: center;
+}
+
+    .st-label span {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+.line-table-menu {
+    position: absolute;
+    z-index: 990;
+    background-color: #222222;
+    border: 1px solid #999;
+    padding: 10px;
+    font-size: 10pt; 
+}
+
+    .line-table-menu a {
+        color: #999;
+        text-decoration: none;
+    }
+
+        .line-table-menu a:hover {
+            color: #fff;
+        }

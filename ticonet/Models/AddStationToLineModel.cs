@@ -20,5 +20,11 @@ namespace ticonet.Models
         public bool ChangeColor { get; set; }
         public string  StrChangeColor { get; set; }
 
+        public bool AlwaysFirst { get; set; }
+        public bool AlwaysLast { get; set; }
+
+        public string  StrAlwaysFirst { get; set; }
+        public string  StrAlwaysLast { get; set; }
+
     }
 }

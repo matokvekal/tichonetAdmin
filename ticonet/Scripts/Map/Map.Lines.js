@@ -27,7 +27,7 @@
             smap.table.linesGrid.jqGrid('addRowData', line.Id, line);
         }
         if (show == true) smap.lines.showLine(line.Id);
-
+        smap.lines.overlay.showLineOverlay();
     },
     showLine: function (id) {
 
@@ -41,7 +41,9 @@
             for (var i in line.ways) {
                 line.ways[i].display.setMap(smap.mainMap);
             }
+            smap.lines.overlay.showLineOverlay();
         });
+
     },
     showSegment: function (line) {
         var st1 = smap.stations.getStation(line.currentStationsList[0]);
@@ -125,7 +127,7 @@
 
             for (var j in line.ways) {
                 if (line.ways[j].path) {
-                    var d = line.ways[j].display.getDirections()
+                    var d = line.ways[j].display.getDirections();
                     var dur = 0;
                     var dist = 0;
                     for (var z in d.routes[0].legs) {
@@ -133,12 +135,14 @@
                         dur += d.routes[0].legs[z].duration.value;
                     }
 
-                    line.ways[j].path = { routes: [d.routes[0]], request: d.request };                  
+                    line.ways[j].path = { routes: [d.routes[0]], request: d.request };
                     line.ways[j].distance = dist;
                     line.ways[j].duration = dur;
                 }
             }
             if (!smap.lines.notSaveGeometry) smap.lines.saveGeometry(line);
+          
+           
         });
     },
     calcValues: null,
@@ -170,7 +174,7 @@
                 line.ways.push(way);
                 smap.lines.addDirectionChangedListener(way, line);
             } else {
-                oldWay.position= i;
+                oldWay.position = i;
             }
         }
         for (var i = 0; i < line.ways.length;) { //remove ways with incorrect stations
@@ -277,6 +281,7 @@
     },
     saveGeometry: function (line) {
         var data = [];
+        var durations = [];
         for (var i in line.ways) {
             var way = line.ways[i];
             data.push({
@@ -287,9 +292,28 @@
                 duration: way.duration,
                 position: way.position
             });
+            durations.push({
+                StationId: way.startStationId,
+                Duration: way.duration
+            });
         }
         // console.log(data);
-        $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)) });
+        $.post("/api/map/SaveGeometry", { Id: line.Id, Data: escape(JSON.stringify(data)), Durations: durations})
+            .done(function(loader) {
+                console.dir(loader);
+                if (loader.length > 0) {
+                    var ln = smap.getLine(loader[0].LineId);
+                    for (var i in loader) {
+                        for (var j in ln.Stations) {
+                            if (ln.Stations[j].StationId == loader[i].StationId) {
+                                ln.Stations[j].ArrivalDate = loader[i].ArrivalDate;
+                                ln.Stations[j].ArrivalDateString = loader[i].ArrivalDateString;
+                            }
+                        }
+                    }
+                    smap.lines.overlay.showLineOverlay();
+                }
+            });
 
     },
     hideLine: function (id) {
@@ -300,7 +324,15 @@
             for (var i in line.ways) {
                 line.ways[i].display.setMap(null);
             }
+            smap.lines.overlay.showLineOverlay();
         }
+    },
+    resetWays: function (id) {
+        var ln = smap.getLine(id);
+        smap.lines.hideLine(id);
+        ln.ways = null;
+        smap.lines.showLine(id);
+
     },
     getColor: function (id) {
         var line = smap.getLine(id);
@@ -462,6 +494,8 @@
         smap.lines.reCalcTimeTable();
     },
     reCalcTimeTable: function () {
+        console.log("Recalc time table");
+
         var lnId = $("#hfTTLineId").val();
         var ln = smap.getLine(lnId);
         smap.lines.durations = {
@@ -475,6 +509,7 @@
                 Duration: ln.ways[i].duration
             });
         }
+        console.dir(smap.lines.durations);
         smap.lines.saveDurations();
         //$("#spStatus").html("Update time table for line " + ln.LineNumber);
         //smap.lines.showLine(lnId, false);
@@ -482,8 +517,9 @@
     },
     saveDurations: function () {
         $.post("/api/map/SaveDurations", smap.lines.durations).done(function (loader) {
+            console.log("Save duration. Done");
             smap.restoryWays(loader);
-            console.log(loader);
+         
             smap.lines.updateLine(loader, true);
             if (smap.lines.ttGrid != null)
                 for (var i in loader.Stations) {
@@ -497,22 +533,15 @@
         //console.log(smap.lines.durations);
     },
     lineStationsVisibleSwitch: function (id) {
-        var c = "glyphicon-eye-close";
-        var o = "glyphicon-eye-open";
-        var btn = $("span[rel=lsswitch][ref=" + id + "]");
+
         var ln = smap.getLine(id);
-        var h = false; // hide = true, show =false
-        if ($(btn).hasClass(o)) {
-            //hide
-            $(btn).removeClass(o);
-            $(btn).addClass(c);
-            h = true;
-        } else {
-            //show
-            h = false;
-            $(btn).removeClass(c);
-            $(btn).addClass(o);
+        var h = true; // hide = true, show =false
+
+        for (var i in ln.Stations) {
+            var st = smap.stations.getStation(ln.Stations[i].StationId);
+            if (st.Marker == null) h = false; //if any stations hide, then swith to show mode
         }
+
         for (var i1 in ln.Stations) {
             var st1 = smap.stations.getStation(ln.Stations[i1].StationId);
             if (h) {

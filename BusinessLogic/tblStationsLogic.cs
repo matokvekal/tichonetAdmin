@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -87,7 +87,7 @@ namespace Business_Logic
             return res;
         }
 
-        public bool AddToLine(int stationId, int lineId, TimeSpan arrivalTime, int position, bool changeColor)
+        public bool AddToLine(int stationId, int lineId, TimeSpan arrivalTime, int position, int positionMode, bool changeColor)
         {
             var res = false;
             try
@@ -99,7 +99,28 @@ namespace Business_Logic
                     DB.StationsToLines.Remove(itm);
                     DB.SaveChanges();
                 }
-                var stationsOnLine = DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position); //All station of line exclude  new
+
+                var stationsOnLine = DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position).ToList(); //All station of line exclude  new
+
+                if (positionMode == 1)
+                {
+                    stationsOnLine.Where(s => s.PositionMode == 1).ToList().ForEach(s => s.PositionMode = 0);
+                    position = 1;
+                }
+                else if (positionMode == 2)
+                {
+                    stationsOnLine.Where(s => s.PositionMode == 2).ToList().ForEach(s => s.PositionMode = 0);
+                    position = stationsOnLine.Count() + 1;
+                }
+                else if (position == 1)
+                {
+                    if (stationsOnLine.Any(s => s.PositionMode == 1)) position = 2;
+                }
+                else if (position == stationsOnLine.Count + 1)
+                {
+                    if (stationsOnLine.Any(s => s.PositionMode == 2)) position = stationsOnLine.Count;
+                }
+
                 foreach (var station in stationsOnLine)
                 {
                     //If position of station equals ore more that new station position then move to one position
@@ -110,7 +131,8 @@ namespace Business_Logic
                     LineId = lineId,
                     StationId = stationId,
                     ArrivalDate = arrivalTime,
-                    Position = position
+                    Position = position,
+                    PositionMode = positionMode
                 };
                 DB.StationsToLines.Add(itm);
                 var line = DB.Lines.FirstOrDefault(z => z.Id == lineId);
@@ -163,15 +185,19 @@ namespace Business_Logic
             return res;
         }
 
-        public ChangeStationsOrderResult ChangeStationPosition(int stationId, int lineId, int newPosition) {
+        public ChangeStationsOrderResult ChangeStationPosition(int stationId, int lineId, int newPosition)
+        {
             var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
             if (itm == null)
                 return null;
             var result = new ChangeStationsOrderResult();
-            if (itm.Position != newPosition) { 
+            if (itm.Position != newPosition)
+            {
                 var p = 1;
-                foreach (var station in DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position)) {
-                    if (station.StationId != stationId) {
+                foreach (var station in DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position))
+                {
+                    if (station.StationId != stationId)
+                    {
                         if (p == newPosition) p++;
                         station.Position = p;
                         result.StationsToPositions.Add(station.StationId, p);
@@ -182,11 +208,11 @@ namespace Business_Logic
                 result.StationsToPositions.Add(itm.StationId, newPosition);
                 DB.SaveChanges();
             }
-            
+
             return result;
         }
 
-        public bool SaveOnLine(int stationId, int lineId, TimeSpan arrivalTime, int position, bool changeColor)
+        public bool SaveOnLine(int stationId, int lineId, TimeSpan arrivalTime, int position, int positionMode, bool changeColor)
         {
             var res = false;
             try
@@ -194,10 +220,39 @@ namespace Business_Logic
                 var itm = DB.StationsToLines.FirstOrDefault(z => z.LineId == lineId && z.StationId == stationId);
                 if (itm != null)
                 {
-                    if (itm.Position != position) //reorder
+                    if (itm.Position != position || itm.PositionMode != positionMode) //reorder
                     {
+
+                        var stations =
+                            DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position).ToList();
+
+                        if (positionMode == 1)
+                        {
+                            stations.Where(s => s.PositionMode == 1).ToList().ForEach(s => s.PositionMode = 0);
+                            position = 1;
+                        }
+                        else if (positionMode == 2)
+                        {
+                            stations.Where(s => s.PositionMode == 2).ToList().ForEach(s => s.PositionMode = 0);
+                            position = stations.Count;
+                        }
+                        else if (position == 1)
+                        {
+                            if (stations.Any(s => s.PositionMode == 1))
+                            {
+                                position = 2;
+                            }
+                        }
+                        else if (position == stations.Count)
+                        {
+                            if (stations.Any(s => s.PositionMode == 2))
+                            {
+                                position = stations.Count - 1;
+                            }
+                        }
+
                         var p = 1;
-                        foreach (var station in DB.StationsToLines.Where(z => z.LineId == lineId).OrderBy(z => z.Position))
+                        foreach (var station in stations)
                         {
                             if (station.StationId != stationId)
                             {
@@ -207,6 +262,7 @@ namespace Business_Logic
                             }
                         }
                         itm.Position = position;
+                        itm.PositionMode = positionMode;
                     }
                     itm.ArrivalDate = arrivalTime;
                     //var c = "";
@@ -403,4 +459,3 @@ namespace Business_Logic
 
     }
 }
-
