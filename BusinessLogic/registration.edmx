@@ -108,6 +108,7 @@
           <Property Name="ArrivalDate" Type="time" Precision="7" Nullable="false" />
           <Property Name="color" Type="nvarchar" MaxLength="50" />
           <Property Name="distanceFromStation" Type="nvarchar" MaxLength="50" />
+          <Property Name="PositionMode" Type="int" />
         </EntityType>
         <EntityType Name="Students">
           <Key>
@@ -775,6 +776,7 @@
           <Property Name="distanceFromStation" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Line" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="StationsToLine" ToRole="Line" />
           <NavigationProperty Name="Station" Relationship="BusProjectModel.FK_StationsToLines_ToStations" FromRole="StationsToLine" ToRole="Station" />
+          <Property Name="PositionMode" Type="Int32" />
         </EntityType>
         <EntityType Name="Student">
           <Key>
@@ -1331,6 +1333,7 @@
           <EntitySetMapping Name="StationsToLines">
             <EntityTypeMapping TypeName="BusProjectModel.StationsToLine">
               <MappingFragment StoreEntitySet="StationsToLines">
+                <ScalarProperty Name="PositionMode" ColumnName="PositionMode" />
                 <ScalarProperty Name="distanceFromStation" ColumnName="distanceFromStation" />
                 <ScalarProperty Name="color" ColumnName="color" />
                 <ScalarProperty Name="ArrivalDate" ColumnName="ArrivalDate" />
