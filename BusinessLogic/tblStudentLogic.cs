@@ -252,7 +252,7 @@ namespace Business_Logic
                            from stat in ps1.DefaultIfEmpty()
                            join line in context.Lines on stLine.LineId equals line.Id into ps2
                            from line in ps2.DefaultIfEmpty()
-                           where stLine.Date == null &&
+                           where (stLine.Date == null && stLine.mon != true && stLine.fri != true && stLine.sat != true && stLine.sun != true && stLine.thu != true && stLine.tue != true && stLine.wed != true) && //It is default line for student
                            ((string.IsNullOrEmpty(request.StudentId)) || (stud.studentId.ToLower().Contains(request.StudentId.ToLower()))) &&
                             ((ss == 0) || (request.Shicva.Contains(stud.Shicva))) &&
                             ((cs == 0) || (request.Class.Contains(stud.@class))) &&
