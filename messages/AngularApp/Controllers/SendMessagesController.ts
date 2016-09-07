@@ -153,6 +153,15 @@
 
             this.scope.RefetchSchedules = this.refetchSchedules
 
+            this.scope.SendNow = (sched: MessageScheduleVM, boolDontRefetch = true) => {
+                sched = sched || this.va.cursched
+                //new from scratch starts with id == -1
+                let cb = (r) => {
+                    this.request(true, { urlalias: "sendnow", params: { ScheduleId: sched.Id} })
+                }
+                this.pushSched(sched, sched.Id === -1, this.va.cursched !== sched, boolDontRefetch, cb)
+            }
+
             //------------------- Inner Init
 
             this.initUrlModuleFromRowObj(data.urls)
@@ -229,14 +238,17 @@
             this.va.cursched = null
         }
 
-        pushSched = (sched: MessageScheduleVM,asNew: boolean, background = true, dontRefetch = false) => {
+        pushSched = (sched: MessageScheduleVM,asNew: boolean, background = true, dontRefetch = false, onSucces?: (r)=>void) => {
             let params = { models: [sched], mode: "" }
             params.mode = asNew ? "cr" : "up"
             let cb = dontRefetch ? null : (response) => this.refetchSchedules()
             this.request(!background, {
                 urlalias: "mngmschedules",
                 params: params,
-                onSucces: cb
+                onSucces: (r) => {
+                    fnc.F(cb, r)
+                    fnc.F(onSucces,r)
+                }
             })
         }
 

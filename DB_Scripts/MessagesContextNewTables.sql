@@ -93,7 +93,7 @@ CREATE TABLE [dbo].[tblMessageBatch] (
 	[tblMessageScheduleId]			INT NOT NULL,
 	[CreatedOn]		DATETIME NULL,
 	[FinishedOn]	DATETIME NULL,
-	[Errors]		NVARCHAR NULL,
+	[Errors]		NVARCHAR (MAX) NULL,
 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
@@ -106,6 +106,7 @@ CREATE TABLE [dbo].[tblMessage] (
 	[IsSms]			BIT				NOT NULL,
 	[SentOn]		DATETIME NULL,
 	[tblMessageBatchId] INT NOT NULL,
+	[ErrorLog] nvarchar (MAX),
     
 	PRIMARY KEY CLUSTERED ([Id] ASC)
 );
@@ -113,6 +114,7 @@ CREATE TABLE [dbo].[tblMessage] (
 CREATE TABLE [dbo].[tblPendingMessagesQueue] (
     [Id]           INT NOT NULL,
     [Priority]     INT NOT NULL,
+	[Deleted]      [bit] NOT NULL CONSTRAINT [DF_tblPendingMessagesQueue_Deleted]  DEFAULT ((0)),
     PRIMARY KEY CLUSTERED ([Id] ASC),
     FOREIGN KEY ([Id]) REFERENCES [dbo].[tblMessage] ([Id])
 );
@@ -127,7 +129,8 @@ CREATE TABLE [dbo].[tblEmailSenderDataProvider] (
     [SmtpHostName]         NVARCHAR (MAX) NOT NULL,
     [SmtpPort]             INT            NOT NULL,
     [EnableSsl]            BIT            NOT NULL,
-    [MaxMessagesInHour]    INT            NOT NULL,
+    [SendProviderRestrictionDataJSON] nvarchar (MAX),
+	[SendProviderRestrictionDataLogJSON] nvarchar (MAX),
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

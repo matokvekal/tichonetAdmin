@@ -23,6 +23,7 @@ namespace Business_Logic.MessagesModule
         public string SmtpHostName { get; set; }
         public int SmtpPort { get; set; }
         public bool EnableSsl { get; set; }
-        public int MaxMessagesInHour { get; set; }
+        public string SendProviderRestrictionDataJSON { get; set; }
+        public string SendProviderRestrictionDataLogJSON { get; set; }
     }
 }

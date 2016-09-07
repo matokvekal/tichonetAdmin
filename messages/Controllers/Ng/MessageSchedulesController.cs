@@ -1,5 +1,8 @@
 ﻿using Business_Logic.MessagesModule;
 using Business_Logic.MessagesModule.EntitiesExtensions;
+using Business_Logic.MessagesModule.Mechanisms;
+using Business_Logic.SqlContext;
+using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +15,13 @@ namespace ticonet.Controllers.Ng {
 
     [Authorize]
     public class MessageSchedulesController : NgController<MessageScheduleVM> {
+
+        ISqlLogic sqllogic;
+
+        [Inject]
+        public MessageSchedulesController(ISqlLogic logic) {
+            sqllogic = logic;
+        }
 
         protected override NgResult _create(MessageScheduleVM[] models) {
             using (var l = new MessagesModuleLogic()) {
@@ -73,6 +83,19 @@ namespace ticonet.Controllers.Ng {
         public JsonResult GetRepeatModes() {
             var items = ScheduleRepeatModeHelper.GetAllowedRepeatModeNames();
             return NgResultToJsonResult(FetchResult<string>.Succes(items, items.Length));
+        }
+
+        [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
+        public JsonResult SendImmediately(int ScheduleId) {
+            using (var l = new MessagesModuleLogic()) {
+                var sched = l.Get<tblMessageSchedule>(ScheduleId);
+                if (sched == null)
+                    return NgResultToJsonResult(NgResult.Fail("Server Error: cannot find template, try save it and re-open."));
+                var result = TASK_PROTOTYPE.RunImmediateBatchCreation(sched, 1, sqllogic, l);
+                var msg = @"Message Batch was created and will be sended as soon as possible.
+                            It contains: " + result.Messages.Count() + " messages.";
+                return NgResultToJsonResult(NgResult.Succes(msg));
+            }
         }
     }
 

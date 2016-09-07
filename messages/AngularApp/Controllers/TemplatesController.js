@@ -198,10 +198,10 @@ var AngularApp;
                 this.scope.HasReccard = this.hasRecepient;
                 this.scope.SwitchReccard = this.switchRecepient;
                 this.scope.DEMO = function () {
-                    var func = function () { return _this.fetchtoarr(true, {
-                        urlalias: "mockmsgs", params: { templateId: _this.va.curtemplate.Id }
+                    var CB = function () { return _this.fetchtoarr(true, {
+                        urlalias: "mockmsgs", params: { templateId: _this.va.curtemplate.Id, MaxCount: 10 }
                     }, _this.va.demomsgs, true); };
-                    _this.pushCurtemplate(_this.va.curtemplate.Id === -1, func);
+                    _this.pushCurtemplate(_this.va.curtemplate.Id === -1, CB);
                 };
                 //------------------- Inner Init
                 this.initUrlModuleFromRowObj(data.urls);

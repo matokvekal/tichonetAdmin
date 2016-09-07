@@ -8,12 +8,12 @@ namespace Business_Logic.MessagesModule.Mechanisms {
 
     public abstract class BatchCreationComponent {
 
-        protected readonly MessagesModuleLogic logic;
+        protected readonly BatchCreationManager Manager;
 
         protected BatchCreationComponent (BatchCreationManager manager) {
             if (manager.IsDisposed)
                 throw new InvalidOperationException("Cannot create BatchCreationComponent:" + GetType()+ " on Disposed BatchCreationManager");
-            logic = manager.Logic;
+            Manager = manager;
         }
 
     }

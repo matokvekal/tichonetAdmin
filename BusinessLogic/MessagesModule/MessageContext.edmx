@@ -26,7 +26,8 @@
           <Property Name="SmtpHostName" Type="nvarchar(max)" Nullable="false" />
           <Property Name="SmtpPort" Type="int" Nullable="false" />
           <Property Name="EnableSsl" Type="bit" Nullable="false" />
-          <Property Name="MaxMessagesInHour" Type="int" Nullable="false" />
+          <Property Name="SendProviderRestrictionDataJSON" Type="nvarchar(max)" />
+          <Property Name="SendProviderRestrictionDataLogJSON" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="tblFilter">
           <Key>
@@ -54,6 +55,7 @@
           <Property Name="IsSms" Type="bit" Nullable="false" />
           <Property Name="SentOn" Type="datetime" />
           <Property Name="tblMessageBatchId" Type="int" Nullable="false" />
+          <Property Name="ErrorLog" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="tblMessageBatch">
           <Key>
@@ -63,7 +65,7 @@
           <Property Name="tblMessageScheduleId" Type="int" Nullable="false" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="FinishedOn" Type="datetime" />
-          <Property Name="Errors" Type="nvarchar" MaxLength="1" />
+          <Property Name="Errors" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="tblMessageSchedule">
           <Key>
@@ -88,6 +90,7 @@
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="Priority" Type="int" Nullable="false" />
+          <Property Name="Deleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="tblRecepientCard">
           <Key>
@@ -139,7 +142,7 @@
           <Property Name="Code" Type="nvarchar" MaxLength="150" Nullable="false" />
           <Property Name="Key" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
-        <Association Name="FK__tblPendingMe__Id__7073AF84">
+        <Association Name="FK__tblPendingMe__Id__61316BF4">
           <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="1" />
           <End Role="tblPendingMessagesQueue" Type="Self.tblPendingMessagesQueue" Multiplicity="0..1" />
           <ReferentialConstraint>
@@ -164,7 +167,7 @@
           <EntitySet Name="tblRecepientFilterTableName" EntityType="Self.tblRecepientFilterTableName" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblTemplate" EntityType="Self.tblTemplate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblWildcard" EntityType="Self.tblWildcard" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__tblPendingMe__Id__7073AF84" Association="Self.FK__tblPendingMe__Id__7073AF84">
+          <AssociationSet Name="FK__tblPendingMe__Id__61316BF4" Association="Self.FK__tblPendingMe__Id__61316BF4">
             <End Role="tblMessage" EntitySet="tblMessage" />
             <End Role="tblPendingMessagesQueue" EntitySet="tblPendingMessagesQueue" />
           </AssociationSet>
@@ -372,6 +375,7 @@
           <Property Name="tblMessageBatchId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="tblMessageBatch" Relationship="Messages.tblMessageBatchtblMessage" FromRole="tblMessage" ToRole="tblMessageBatch" />
           <NavigationProperty Name="tblPendingMessagesQueue" Relationship="Messages.FK__tblPendingMe__Id__7073AF84" FromRole="tblMessage" ToRole="tblPendingMessagesQueue" />
+          <Property Name="ErrorLog" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblMessageBatch">
           <Key>
@@ -381,7 +385,7 @@
           <Property Name="tblMessageScheduleId" Type="Int32" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="FinishedOn" Type="DateTime" Precision="3" />
-          <Property Name="Errors" Type="String" MaxLength="1" FixedLength="false" Unicode="true" />
+          <Property Name="Errors" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="tblMessageSchedule" Relationship="Messages.tblMessageBatchtblMessageSchedule" FromRole="tblMessageBatch" ToRole="tblMessageSchedule" />
           <NavigationProperty Name="tblMessages" Relationship="Messages.tblMessageBatchtblMessage" FromRole="tblMessageBatch" ToRole="tblMessage" />
         </EntityType>
@@ -461,7 +465,8 @@
           <Property Name="SmtpHostName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="SmtpPort" Type="Int32" Nullable="false" />
           <Property Name="EnableSsl" Type="Boolean" Nullable="false" />
-          <Property Name="MaxMessagesInHour" Type="Int32" Nullable="false" />
+          <Property Name="SendProviderRestrictionDataJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SendProviderRestrictionDataLogJSON" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblPendingMessagesQueue">
           <Key>
@@ -470,6 +475,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Priority" Type="Int32" Nullable="false" />
           <NavigationProperty Name="tblMessage" Relationship="Messages.FK__tblPendingMe__Id__7073AF84" FromRole="tblPendingMessagesQueue" ToRole="tblMessage" />
+          <Property Name="Deleted" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK__tblPendingMe__Id__7073AF84">
           <End Type="Messages.tblMessage" Role="tblMessage" Multiplicity="1" />
@@ -563,6 +569,7 @@
           <EntitySetMapping Name="tblMessages">
             <EntityTypeMapping TypeName="Messages.tblMessage">
               <MappingFragment StoreEntitySet="tblMessage">
+                <ScalarProperty Name="ErrorLog" ColumnName="ErrorLog" />
                 <ScalarProperty Name="tblMessageBatchId" ColumnName="tblMessageBatchId" />
                 <ScalarProperty Name="SentOn" ColumnName="SentOn" />
                 <ScalarProperty Name="IsSms" ColumnName="IsSms" />
@@ -614,7 +621,8 @@
           <EntitySetMapping Name="tblEmailSenderDataProviders">
             <EntityTypeMapping TypeName="Messages.tblEmailSenderDataProvider">
               <MappingFragment StoreEntitySet="tblEmailSenderDataProvider">
-                <ScalarProperty Name="MaxMessagesInHour" ColumnName="MaxMessagesInHour" />
+                <ScalarProperty Name="SendProviderRestrictionDataLogJSON" ColumnName="SendProviderRestrictionDataLogJSON" />
+                <ScalarProperty Name="SendProviderRestrictionDataJSON" ColumnName="SendProviderRestrictionDataJSON" />
                 <ScalarProperty Name="EnableSsl" ColumnName="EnableSsl" />
                 <ScalarProperty Name="SmtpPort" ColumnName="SmtpPort" />
                 <ScalarProperty Name="SmtpHostName" ColumnName="SmtpHostName" />
@@ -630,6 +638,7 @@
           <EntitySetMapping Name="tblPendingMessagesQueues">
             <EntityTypeMapping TypeName="Messages.tblPendingMessagesQueue">
               <MappingFragment StoreEntitySet="tblPendingMessagesQueue">
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
                 <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

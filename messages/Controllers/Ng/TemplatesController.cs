@@ -6,11 +6,19 @@ using Business_Logic.MessagesModule;
 using System.Web.Mvc;
 using Ninject;
 using Business_Logic.SqlContext;
+using Business_Logic.MessagesModule.Mechanisms;
+using Business_Logic.MessagesModule.DataObjects;
 
 namespace ticonet.Controllers.Ng{
 
     [Authorize]
     public class TemplatesController : NgController<TemplateVM> {
+        ISqlLogic sqllogic;
+
+        [Inject]
+        public TemplatesController(ISqlLogic logic) {
+            sqllogic = logic;
+        }
 
         protected override NgResult _create(TemplateVM[] models) {
             using (var l = new MessagesModuleLogic()) {
@@ -57,8 +65,15 @@ namespace ticonet.Controllers.Ng{
             return obj.ToString();
         }
 
-        public JsonResult MockMessage (int templateId) {
-            throw new NotImplementedException();
+        public JsonResult MockMessage (int templateId, int? MaxCount) {
+            using (var l = new MessagesModuleLogic()) {
+                var tmpl = l.Get<tblTemplate>(templateId);
+                if (tmpl == null)
+                    return NgResultToJsonResult(NgResult.Fail("Server Error: cannot find template, try save it and re-open."));
+
+                var items = TASK_PROTOTYPE.GetDemoMessages(l,tmpl,sqllogic,tmpl.IsSms, MaxCount ?? 0);
+                return NgResultToJsonResult(FetchResult<Message>.Succes(items, items.Count));
+            }
         }
     }
 }

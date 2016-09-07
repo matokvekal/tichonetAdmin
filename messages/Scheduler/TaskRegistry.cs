@@ -8,7 +8,7 @@ namespace ticonet.Scheduler
         public TaskRegistry()
         {
             // Task Running Every Hours
-            Schedule<ITaskEveryHours>().ToRunEvery(1).Hours();
+            Schedule<ITaskSending>().ToRunEvery(5).Seconds();
         }
     }
 }

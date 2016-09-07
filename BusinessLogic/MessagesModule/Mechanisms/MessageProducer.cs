@@ -5,6 +5,7 @@ using System.Text;
 
 using Business_Logic.MessagesModule.InnerLibs.Text2Graph;
 using Business_Logic.MessagesModule.DataObjects;
+using Business_Logic.MessagesModule.EntitiesExtensions;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
@@ -29,10 +30,10 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         IEnumerable<KeyValuePair<string,string>> wildcards;
         MessageProductionErrorContainer errorContainer = new MessageProductionErrorContainer();
 
-        public MessageProducer(string headerTempl, string bodyTempl, IEnumerable<KeyValuePair<string, string>> wildcards, INodeMarkUpSpecification specs) {
+        public MessageProducer(IMessageTemplate templ, IEnumerable<KeyValuePair<string, string>> wildcards, INodeMarkUpSpecification specs) {
             try {
-                this.headerTempl = TextNode.SplitTextToNodes(headerTempl + "  ", specs);
-                this.bodyTempl = TextNode.SplitTextToNodes(bodyTempl + "  ", specs);
+                headerTempl = TextNode.SplitTextToNodes(templ.MsgHeader + "  ", specs);
+                bodyTempl = TextNode.SplitTextToNodes(templ.MsgBody + "  ", specs);
             }
             catch (TextParseException e) {
                 errorContainer.parseExceptions.Add(e);

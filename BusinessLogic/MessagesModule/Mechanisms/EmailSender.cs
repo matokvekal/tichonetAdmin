@@ -8,14 +8,24 @@ using System;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
-    public class EmailSender {
+    public class EmailSender : BatchSendingComponent {
+
+        public EmailSender(BatchSendingManager manager) : base(manager) {
+        }
+
+        public void SendBatch (IEnumerable<IEmailMessage> messages, IEmailServiceProvider provider) {
+            OpenSmptAndDO(provider, smtp => {
+                foreach (var msg in messages)
+                    SendEmail(msg, provider, smtp);
+            });
+        }
 
         public void SendSingle (IEmailMessage msg, IEmailServiceProvider provider) {
             OpenSmptAndDO(provider, smtp => SendEmail(msg, provider, smtp));
         }
 
         void SendEmail(IEmailMessage msg, IEmailServiceProvider provider, SmtpClient smtp) {
-            //TODO CATCH SmtpException HERE
+
             var toAddress = new MailAddress(msg.RecepientAdress, msg.RecepientName);
 
             using (var message = new MailMessage(provider.FromEmailAddress, toAddress) {
@@ -23,7 +33,13 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                 Body = msg.Body,
                 IsBodyHtml = msg.IsBodyHtml // still text
             })
-                smtp.Send(message);
+                try {
+                    smtp.Send(message);
+                    msg.SendDate = DateTime.Now;
+                }
+                catch (SmtpException e) {
+                    msg.AddError("SmtpException: " + e.Message); 
+                }
         }
 
         void OpenSmptAndDO(IEmailServiceProvider provider, Action<SmtpClient> action) {

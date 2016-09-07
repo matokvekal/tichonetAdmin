@@ -14,6 +14,17 @@ namespace Business_Logic.MessagesModule.EntitiesExtensions {
         EveryYear
     }
 
+    /// <summary>
+    /// Just utility class
+    /// </summary>
+    public class RepeatModeStrings {
+        public readonly string repeatMode_none = ScheduleRepeatModeHelper.RepeatModeToString(ScheduleRepeatMode.None);
+        public readonly string repeatMode_day = ScheduleRepeatModeHelper.RepeatModeToString(ScheduleRepeatMode.EveryDay);
+        public readonly string repeatMode_week = ScheduleRepeatModeHelper.RepeatModeToString(ScheduleRepeatMode.EveryWeek);
+        public readonly string repeatMode_month = ScheduleRepeatModeHelper.RepeatModeToString(ScheduleRepeatMode.EveryMonth);
+        public readonly string repeatMode_year = ScheduleRepeatModeHelper.RepeatModeToString(ScheduleRepeatMode.EveryYear);
+    }
+
     public static class ScheduleRepeatModeHelper {
 
         public static ScheduleRepeatMode RepeatModeFromString(string str) {

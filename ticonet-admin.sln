@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ticonet-admin", "ticonet\ticonet-admin.csproj", "{82F4DFE1-8B7E-437C-B9B9-6C48AFBF0A7F}"
 EndProject
@@ -12,6 +12,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ticonet-messages", "messages\ticonet-messages.csproj", "{2CD9F6BD-1077-4749-8563-42907FC23A64}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wsTiconet", "wsTiconet\wsTiconet.csproj", "{B9DFDBC2-B437-421B-8A7C-5661CA88F398}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business_Logic_Tests", "Business_Logic_Tests\Business_Logic_Tests.csproj", "{6FAA9527-4CC5-4CF2-9175-44EEFF7002E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8EE085D7-D665-4F10-925C-011A1B63027E} = {8EE085D7-D665-4F10-925C-011A1B63027E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +44,10 @@ Global
 		{B9DFDBC2-B437-421B-8A7C-5661CA88F398}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9DFDBC2-B437-421B-8A7C-5661CA88F398}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9DFDBC2-B437-421B-8A7C-5661CA88F398}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FAA9527-4CC5-4CF2-9175-44EEFF7002E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FAA9527-4CC5-4CF2-9175-44EEFF7002E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FAA9527-4CC5-4CF2-9175-44EEFF7002E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FAA9527-4CC5-4CF2-9175-44EEFF7002E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

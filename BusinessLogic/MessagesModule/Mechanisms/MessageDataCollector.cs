@@ -1,11 +1,8 @@
 ﻿using Business_Logic.MessagesModule.DataObjects;
 using Business_Logic.MessagesModule.EntitiesExtensions;
 using Business_Logic.SqlContext;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
@@ -25,10 +22,8 @@ namespace Business_Logic.MessagesModule.Mechanisms {
     }
 
     public class MessageDataCollector : BatchCreationComponent {
-        readonly BatchCreationManager _manager;
 
         public MessageDataCollector (BatchCreationManager manager) : base(manager) {
-            _manager = manager;
         }
 
         /// <summary>
@@ -62,7 +57,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                 .Concat(recepients.Select(x => x.NameKey))
                 .Concat(recepients.Select(x => x.PhoneKey)).Distinct();
 
-            var sqlData = _manager.SqlLogic.FetchData(colomns, templ.TableWithKeysName, "dbo", Condition);
+            var sqlData = Manager.SqlLogic.FetchData(colomns, templ.TableWithKeysName, "dbo", Condition);
 
             var wildcardsSummed = wildcards.SelectMany(x => x.ToKeyValues());
 
@@ -89,7 +84,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         Dictionary<int, ValueOperatorPair[]> GetFiltersActualSettings(tblFilter[] filters, FilterValueContainer[] userInputedValues) {
             var filtsToValOps = new Dictionary<int, ValueOperatorPair[]>();
             foreach (var f in filters) {
-                var valops = tblFilterHelper.GetValueOperatorPairs(f, _manager.SqlLogic);
+                var valops = tblFilterHelper.GetValueOperatorPairs(f, Manager.SqlLogic);
                 if (NullBoolToBool(f.allowUserInput)) {
                     //if user was selecting from list.
                     if (NullBoolToBool(f.autoUpdatedList) || valops.Length > 1) {

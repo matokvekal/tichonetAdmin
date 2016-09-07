@@ -154,8 +154,8 @@
       <HintPath>..\packages\MvcJqGrid.1.0.12\lib\net40\MvcJqGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
@@ -289,7 +289,7 @@
     <Compile Include="Scheduler\NinjectTaskFactory.cs" />
     <Compile Include="Scheduler\TaskException.cs" />
     <Compile Include="Scheduler\TaskRegistry.cs" />
-    <Compile Include="Scheduler\Tasks\TaskEveryHours.cs" />
+    <Compile Include="Scheduler\Tasks\TaskSending.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\AwaitLayer.css" />

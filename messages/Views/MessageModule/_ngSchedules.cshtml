@@ -10,6 +10,7 @@
             mngmschedules: '@Url.Action("Manage","MessageSchedules")',
             getrepeatmodes: '@Url.Action("GetRepeatModes","MessageSchedules")',
             getoperators: '@Url.Action("GetOperatorsForType","Filters")',
+            sendnow: '@Url.Action("SendImmediately","MessageSchedules")',
         }
     })">
 
@@ -384,6 +385,7 @@
                 <div>
                     <a class="abut" ng-click="SaveSched(va.cursched,false)">Save</a>
                     <a class="abut" ng-click="hideEditor()">Cancel</a>
+                    <a class="abut" ng-click="SendNow(va.cursched)">Send Now!</a>
                 </div>
 
 

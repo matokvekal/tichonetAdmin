@@ -9,7 +9,16 @@ using System.Threading.Tasks;
 
 namespace Business_Logic.MessagesModule.EntitiesExtensions {
 
-    public interface IEmailMessage {
+    public interface IErrorLoged {
+        void AddError(string errorMessage);
+    }
+
+    public interface IMessage: IErrorLoged {
+        
+        DateTime? SendDate { get; set; }
+    }
+
+    public interface IEmailMessage : IMessage {
         string RecepientName { get; }
         string RecepientAdress { get; }
         string Subject { get; }
@@ -17,11 +26,14 @@ namespace Business_Logic.MessagesModule.EntitiesExtensions {
         bool IsBodyHtml { get; }
     }
 
-    public interface IEmailServiceProvider {
+    public interface ISendServiceProvider {
+        SendProviderRestrictionData RestrictionData { get; }
+        SendProviderRestrictionDataLog RestrictionDataLog { get; set; }
+    }
+    public interface IEmailServiceProvider : ISendServiceProvider {
         string SmtpHostName { get; }
         int SmtpPort { get; }
         bool EnableSsl { get; }
-        int MaxMsgsInHour { get; }
 
         MailAddress FromEmailAddress { get; }
         NetworkCredential NetworkCredentials { get;}

@@ -21,6 +21,7 @@ namespace Business_Logic.MessagesModule
         public bool IsSms { get; set; }
         public Nullable<System.DateTime> SentOn { get; set; }
         public int tblMessageBatchId { get; set; }
+        public string ErrorLog { get; set; }
     
         public virtual tblMessageBatch tblMessageBatch { get; set; }
         public virtual tblPendingMessagesQueue tblPendingMessagesQueue { get; set; }

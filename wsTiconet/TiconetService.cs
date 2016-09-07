@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Business_Logic.MessagesModule;
+using Business_Logic.MessagesModule.Mechanisms;
+using System.Diagnostics;
 
 namespace wsTiconet
 {
@@ -31,7 +33,10 @@ namespace wsTiconet
         {
             ServiceTimer.Stop();
 
-            //TODO Work Loop
+            using (var logic = new MessagesModuleLogic(new MessageContext()))
+            {
+                TASK_PROTOTYPE.RunScheduledBatchSending(logic);
+            }
 
             ServiceTimer.Start();
         }

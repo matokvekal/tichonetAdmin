@@ -16,6 +16,14 @@ namespace Business_Logic.MessagesModule {
 
     public class MessagesModuleLogic : MessagesModuleBaseLogic {
 
+        public MessagesModuleLogic() {
+
+        }
+
+        public MessagesModuleLogic(MessageContext OpenedContext) : base(OpenedContext) {
+
+        }
+
         //-------------------------------------------
         //CREATE
         //---------------------
@@ -113,6 +121,7 @@ namespace Business_Logic.MessagesModule {
             return item;
         }
 
+
         /// <summary>
         /// Only Adding New Allowed
         /// </summary>
@@ -153,6 +162,13 @@ namespace Business_Logic.MessagesModule {
                 return false;
             Delete(item);
             return true;
+        }
+
+        public void DeleteRange<TEntity> (IEnumerable<TEntity> items)
+            where TEntity : class, IMessagesModuleEntity
+        {
+            DB.Set<TEntity>().RemoveRange(items);
+            DB.SaveChanges();
         }
 
         //-------------------------------------------
@@ -213,6 +229,35 @@ namespace Business_Logic.MessagesModule {
                 return DateTime.SpecifyKind( DateTime.Parse(val.ToString()), DateTimeKind.Utc );
             return val;
         }
+
+
+
+
+        //-------------------------------------------
+        //Simple part
+        //---------------------
+
+        public TEntity SaveChangesSimple<TEntity>(TEntity item) where TEntity : class, IMessagesModuleEntity
+        {
+            DB.Entry(item).State = EntityState.Modified;
+            return item;
+        }
+        public void SaveChangesRangeSimple<TEntity>(IEnumerable<TEntity> items)  where TEntity : class, IMessagesModuleEntity
+        {
+            foreach (var item in items)
+            {
+                DB.Entry(item).State = EntityState.Modified;
+            }
+        }
+        public void DeleteRangeSimple<TEntity>(IEnumerable<TEntity> items) where TEntity : class, IMessagesModuleEntity
+        {
+            DB.Set<TEntity>().RemoveRange(items);
+        }
+        public void SimpleComplete()
+        {
+            DB.SaveChanges();
+        }
+
     }
 
 }

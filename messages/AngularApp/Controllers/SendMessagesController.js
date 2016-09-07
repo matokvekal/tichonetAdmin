@@ -106,7 +106,7 @@ var AngularApp;
                 this.turnOffSchedEdition = function () {
                     _this.va.cursched = null;
                 };
-                this.pushSched = function (sched, asNew, background, dontRefetch) {
+                this.pushSched = function (sched, asNew, background, dontRefetch, onSucces) {
                     if (background === void 0) { background = true; }
                     if (dontRefetch === void 0) { dontRefetch = false; }
                     var params = { models: [sched], mode: "" };
@@ -115,7 +115,10 @@ var AngularApp;
                     _this.request(!background, {
                         urlalias: "mngmschedules",
                         params: params,
-                        onSucces: cb
+                        onSucces: function (r) {
+                            fnc.F(cb, r);
+                            fnc.F(onSucces, r);
+                        }
                     });
                 };
                 this.deleteSched = function (sched) {
@@ -260,6 +263,15 @@ var AngularApp;
                     return Controllers.HasFilterValueContVal(_this.va.cursched, filt, value);
                 };
                 this.scope.RefetchSchedules = this.refetchSchedules;
+                this.scope.SendNow = function (sched, boolDontRefetch) {
+                    if (boolDontRefetch === void 0) { boolDontRefetch = true; }
+                    sched = sched || _this.va.cursched;
+                    //new from scratch starts with id == -1
+                    var cb = function (r) {
+                        _this.request(true, { urlalias: "sendnow", params: { ScheduleId: sched.Id } });
+                    };
+                    _this.pushSched(sched, sched.Id === -1, _this.va.cursched !== sched, boolDontRefetch, cb);
+                };
                 //------------------- Inner Init
                 this.initUrlModuleFromRowObj(data.urls);
                 // Grid Manager Init

@@ -16,6 +16,7 @@ namespace Business_Logic.MessagesModule
     {
         public int Id { get; set; }
         public int Priority { get; set; }
+        public bool Deleted { get; set; }
     
         public virtual tblMessage tblMessage { get; set; }
     }
