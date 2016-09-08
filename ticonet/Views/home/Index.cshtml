@@ -159,10 +159,31 @@
                 <input type="radio" name="ConflictAction" id="rAttachSchedule" value="1" onchange="smap.stations.dateVisibleSwitch" /><span>Schedule route for</span>
             </div>
             <div class="row message">
-                <input type="text" id="tbAttachDate" style="width: 150px;" name="StrDate" />
+                @*<input type="text" id="tbAttachDate" style="width: 150px;" name="StrDate" />
                 <input type="number" id="tbAttachHours" style="width: 40px; margin-left: 20px;" name="Hours" />
                 <span>:</span>
-                <input type="number" id="tbAttachMinutes" style="width: 40px;" name="Minutes" />
+                <input type="number" id="tbAttachMinutes" style="width: 40px;" name="Minutes" />*@
+                <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
+                    <input type="checkbox"/>mon
+                </div>
+                <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
+                    <input type="checkbox" />tue
+                </div>
+                <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
+                    <input type="checkbox" />wed
+                </div>
+                <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
+                    <input type="checkbox" />thu
+                </div>
+                <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
+                    <input type="checkbox" />fri
+                </div>
+                <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
+                    <input type="checkbox" />sat
+                </div>
+                <div class="col-lg-1 col-sm-1 col-md-1 col-xs-1">
+                    <input type="checkbox" />sun
+                </div>
             </div>
         </div>
         <input type="hidden" id="hfAttachStudentId" name="StudentId" />
