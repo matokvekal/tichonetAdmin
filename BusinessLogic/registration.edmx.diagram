@@ -8,7 +8,7 @@
         <EntityTypeShape EntityType="BusProjectModel.Bus" Width="1.5" PointX="0.75" PointY="16.375" />
         <EntityTypeShape EntityType="BusProjectModel.BusesToLine" Width="1.5" PointX="3" PointY="11.875" />
         <EntityTypeShape EntityType="BusProjectModel.Driver" Width="1.5" PointX="5.75" PointY="0.75" />
-        <EntityTypeShape EntityType="BusProjectModel.Line" Width="1.5" PointX="0.75" PointY="10" />
+        <EntityTypeShape EntityType="BusProjectModel.Line" Width="1.5" PointX="0.75" PointY="9.5" />
         <EntityTypeShape EntityType="BusProjectModel.Login" Width="1.5" PointX="5.75" PointY="3.75" />
         <EntityTypeShape EntityType="BusProjectModel.Station" Width="1.5" PointX="0.75" PointY="3" />
         <EntityTypeShape EntityType="BusProjectModel.StationsToLine" Width="1.5" PointX="3" PointY="2" />

@@ -71,8 +71,9 @@
           <Property Name="FriTime" Type="datetime" />
           <Property Name="Sut" Type="bit" />
           <Property Name="SutTime" Type="datetime" />
-          <Property Name="BasicArriveTime" Type="time" Precision="7" />
-          <Property Name="BasicDepartureTime" Type="time" Precision="7" />
+          <Property Name="BasicArriveTime" Type="datetime" />
+          <Property Name="BasicDepartureTime" Type="datetime" />
+          <Property Name="schoolId" Type="int" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -129,7 +130,6 @@
           <Property Name="MotherCellPhone" Type="nvarchar" MaxLength="50" />
           <Property Name="FatherEmail" Type="nvarchar" MaxLength="50" />
           <Property Name="MotherEmail" Type="nvarchar" MaxLength="50" />
-          <Property Name="schoolId" Type="int" />
         </EntityType>
         <EntityType Name="StudentsToLines">
           <Key>
@@ -220,24 +220,9 @@
           <Property Name="DateCreatedUTC" Type="datetime" />
           <Property Name="cantBeChange" Type="bit" />
         </EntityType>
-        <!--Ошибки, обнаруженные при создании:
-предупреждение 6002: В таблице или представлении "BusProject.dbo.tblFamily" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
         <EntityType Name="tblFamily">
           <Key>
             <PropertyRef Name="familyId" />
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
           </Key>
           <Property Name="familyId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentId" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -413,8 +398,11 @@
           <Property Name="request" Type="nvarchar" MaxLength="250" />
           <Property Name="cityId" Type="int" />
           <Property Name="streetId" Type="int" />
-          <Property Name="schoolName" Type="nvarchar" MaxLength="100" />
           <Property Name="schoolId" Type="int" />
+          <Property Name="schoolName" Type="nvarchar" MaxLength="100" />
+          <Property Name="AdminComment" Type="text" />
+          <Property Name="payment3rdParty" Type="bit" />
+          <Property Name="payment3rdPartyComment" Type="nvarchar" MaxLength="254" />
         </EntityType>
         <EntityType Name="tblSystem">
           <Key>
@@ -522,6 +510,7 @@
           <EntitySet Name="tblCalendar" EntityType="Self.tblCalendar" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCulture" EntityType="Self.tblCulture" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblDictSystem" EntityType="Self.tblDictSystem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblFamily" EntityType="Self.tblFamily" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblLinesPlan" EntityType="Self.tblLinesPlan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblMessageQueue" EntityType="Self.tblMessageQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblPaymentOrders" EntityType="Self.tblPaymentOrders" Schema="dbo" store:Type="Tables" />
@@ -532,41 +521,6 @@
           <EntitySet Name="tblStudent" EntityType="Self.tblStudent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSystem" EntityType="Self.tblSystem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblYears" EntityType="Self.tblYears" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="tblFamily" EntityType="Self.tblFamily" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [tblFamily].[familyId] AS [familyId], 
-    [tblFamily].[ParentId] AS [ParentId], 
-    [tblFamily].[parent1Type] AS [parent1Type], 
-    [tblFamily].[parent1FirstName] AS [parent1FirstName], 
-    [tblFamily].[parent1LastName] AS [parent1LastName], 
-    [tblFamily].[parent1Email] AS [parent1Email], 
-    [tblFamily].[parent1EmailConfirm] AS [parent1EmailConfirm], 
-    [tblFamily].[parent1GetAlertByEmail] AS [parent1GetAlertByEmail], 
-    [tblFamily].[parent1CellPhone] AS [parent1CellPhone], 
-    [tblFamily].[parent1CellConfirm] AS [parent1CellConfirm], 
-    [tblFamily].[parent1GetAlertBycell] AS [parent1GetAlertBycell], 
-    [tblFamily].[parent2Type] AS [parent2Type], 
-    [tblFamily].[parent2FirstName] AS [parent2FirstName], 
-    [tblFamily].[parent2LastName] AS [parent2LastName], 
-    [tblFamily].[parent2Email] AS [parent2Email], 
-    [tblFamily].[parent2EmailConfirm] AS [parent2EmailConfirm], 
-    [tblFamily].[parent2GetAlertByEmail] AS [parent2GetAlertByEmail], 
-    [tblFamily].[parent2CellPhone] AS [parent2CellPhone], 
-    [tblFamily].[parent2CellConfirm] AS [parent2CellConfirm], 
-    [tblFamily].[parent2GetAlertBycell] AS [parent2GetAlertBycell], 
-    [tblFamily].[date] AS [date], 
-    [tblFamily].[LastUpdate] AS [LastUpdate], 
-    [tblFamily].[paymentOk] AS [paymentOk], 
-    [tblFamily].[paymentDateConfirm] AS [paymentDateConfirm], 
-    [tblFamily].[iAgree] AS [iAgree], 
-    [tblFamily].[subsidy] AS [subsidy], 
-    [tblFamily].[allredyUsed] AS [allredyUsed], 
-    [tblFamily].[oneParentOnly] AS [oneParentOnly], 
-    [tblFamily].[PaymentPlanID] AS [PaymentPlanID], 
-    [tblFamily].[PaymentRequestID] AS [PaymentRequestID], 
-    [tblFamily].[registrationStatus] AS [registrationStatus]
-    FROM [dbo].[tblFamily] AS [tblFamily]</DefiningQuery>
-          </EntitySet>
           <AssociationSet Name="FK_BusesToLines_ToBuses" Association="Self.FK_BusesToLines_ToBuses">
             <End Role="Buses" EntitySet="Buses" />
             <End Role="BusesToLines" EntitySet="BusesToLines" />
@@ -735,8 +689,9 @@
           <NavigationProperty Name="StationsToLines" Relationship="BusProjectModel.FK_StationsToLines_ToLines" FromRole="Line" ToRole="StationsToLine" />
           <NavigationProperty Name="tblSchedules" Relationship="BusProjectModel.LinetblSchedule" FromRole="Line" ToRole="tblSchedule" />
           <NavigationProperty Name="tblLinesPlan" Relationship="BusProjectModel.tblLinesPlanLine" FromRole="Line" ToRole="tblLinesPlan" />
-          <Property Name="BasicArriveTime" Type="Time" Precision="7" />
-          <Property Name="BasicDepartureTime" Type="Time" Precision="7" />		  
+          <Property Name="BasicArriveTime" Type="DateTime" />
+          <Property Name="BasicDepartureTime" Type="DateTime" />
+          <Property Name="schoolId" Type="Int32" />		  
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -797,7 +752,6 @@
           <Property Name="MotherCellPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="FatherEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="MotherEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="schoolId" Type="Int32" />
         </EntityType>
         <EntityType Name="StudentsToLine">
           <Key>
@@ -1033,6 +987,9 @@
           <Property Name="streetId" Type="Int32" />
           <Property Name="schoolName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="schoolId" Type="Int32" />
+          <Property Name="AdminComment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="payment3rdParty" Type="Boolean" />
+          <Property Name="payment3rdPartyComment" Type="String" MaxLength="254" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblSystem">
           <Key>
@@ -1277,6 +1234,7 @@
           <EntitySetMapping Name="Lines">
             <EntityTypeMapping TypeName="BusProjectModel.Line">
               <MappingFragment StoreEntitySet="Lines">
+                <ScalarProperty Name="schoolId" ColumnName="schoolId" />
                 <ScalarProperty Name="BasicDepartureTime" ColumnName="BasicDepartureTime" />
                 <ScalarProperty Name="BasicArriveTime" ColumnName="BasicArriveTime" />
                 <ScalarProperty Name="SutTime" ColumnName="SutTime" />
@@ -1347,7 +1305,6 @@
           <EntitySetMapping Name="Students">
             <EntityTypeMapping TypeName="BusProjectModel.Student">
               <MappingFragment StoreEntitySet="Students">
-                <ScalarProperty Name="schoolId" ColumnName="schoolId" />
                 <ScalarProperty Name="MotherEmail" ColumnName="MotherEmail" />
                 <ScalarProperty Name="FatherEmail" ColumnName="FatherEmail" />
                 <ScalarProperty Name="MotherCellPhone" ColumnName="MotherCellPhone" />
@@ -1569,6 +1526,9 @@
           <EntitySetMapping Name="tblStudents">
             <EntityTypeMapping TypeName="BusProjectModel.tblStudent">
               <MappingFragment StoreEntitySet="tblStudent">
+                <ScalarProperty Name="payment3rdPartyComment" ColumnName="payment3rdPartyComment" />
+                <ScalarProperty Name="payment3rdParty" ColumnName="payment3rdParty" />
+                <ScalarProperty Name="AdminComment" ColumnName="AdminComment" />
                 <ScalarProperty Name="schoolId" ColumnName="schoolId" />
                 <ScalarProperty Name="schoolName" ColumnName="schoolName" />
                 <ScalarProperty Name="streetId" ColumnName="streetId" />
