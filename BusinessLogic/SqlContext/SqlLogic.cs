@@ -59,6 +59,7 @@ namespace Business_Logic.SqlContext{
                 comm.Connection = dbConnection;
                 comm.CommandType = CommandType.Text;
                 comm.CommandText = command;
+                //todo throw SQLLogicExcpetion if some-thing wrong
                 using (SqlDataReader reader = comm.ExecuteReader()) {
                     while (reader.Read())
                         result.Add(dataMaker(reader));

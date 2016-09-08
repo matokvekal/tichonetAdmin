@@ -172,6 +172,44 @@ namespace Business_Logic.MessagesModule {
         }
 
         //-------------------------------------------
+        //Lazy Actions
+        //---------------------
+
+        /// <summary>
+        /// Only Saving Existing Allowed.
+        /// Mark items to be saved, but transaction runs only after SaveChanges() called
+        /// </summary>
+        public TEntity SaveLazy<TEntity>(TEntity item) where TEntity : class, IMessagesModuleEntity {
+            DB.Entry(item).State = EntityState.Modified;
+            return item;
+        }
+
+        /// <summary>
+        /// Only Saving Existing Allowed.
+        /// Mark items to be saved, but transaction runs only after SaveChanges() called
+        /// </summary>
+        public void SaveLazy<TEntity>(IEnumerable<TEntity> items) where TEntity : class, IMessagesModuleEntity {
+            foreach (var item in items) {
+                DB.Entry(item).State = EntityState.Modified;
+            }
+        }
+
+        /// <summary>
+        /// Only Saving Existing Allowed.
+        /// Mark items to be deleted, but transaction runs only after SaveChanges() called
+        /// </summary>
+        public void DeleteLazy<TEntity>(IEnumerable<TEntity> items) where TEntity : class, IMessagesModuleEntity {
+            DB.Set<TEntity>().RemoveRange(items);
+        }
+
+        /// <summary>
+        /// Executes all 'Lazy' actions.
+        /// </summary>
+        public void SaveChanges() {
+            DB.SaveChanges();
+        }
+
+        //-------------------------------------------
         //Private part
         //---------------------
 
@@ -228,34 +266,6 @@ namespace Business_Logic.MessagesModule {
             if (type == dateType || type == dateNullableType)
                 return DateTime.SpecifyKind( DateTime.Parse(val.ToString()), DateTimeKind.Utc );
             return val;
-        }
-
-
-
-
-        //-------------------------------------------
-        //Simple part
-        //---------------------
-
-        public TEntity SaveChangesSimple<TEntity>(TEntity item) where TEntity : class, IMessagesModuleEntity
-        {
-            DB.Entry(item).State = EntityState.Modified;
-            return item;
-        }
-        public void SaveChangesRangeSimple<TEntity>(IEnumerable<TEntity> items)  where TEntity : class, IMessagesModuleEntity
-        {
-            foreach (var item in items)
-            {
-                DB.Entry(item).State = EntityState.Modified;
-            }
-        }
-        public void DeleteRangeSimple<TEntity>(IEnumerable<TEntity> items) where TEntity : class, IMessagesModuleEntity
-        {
-            DB.Set<TEntity>().RemoveRange(items);
-        }
-        public void SimpleComplete()
-        {
-            DB.SaveChanges();
         }
 
     }

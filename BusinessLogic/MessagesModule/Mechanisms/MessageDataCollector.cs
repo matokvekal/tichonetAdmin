@@ -3,6 +3,7 @@ using Business_Logic.MessagesModule.EntitiesExtensions;
 using Business_Logic.SqlContext;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Business_Logic.MessagesModule.Mechanisms {
 
@@ -27,7 +28,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
         }
 
         /// <summary>
-        /// Returns enumerable for each Recepient in template.
+        /// Returns MessageProductionData for each Recepient in template.
         /// </summary>
         public IEnumerable< MessageProductionData > Collect (IMessageTemplate templ) {
             var output = new List<MessageProductionData>();
@@ -92,7 +93,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                             //HERE WE USE STRING CHECK to Compare... =\
                             .Where(x => userInputedValues.Any
                                 (y => y.FilterId == f.Id && y.Values != null
-                                    && y.Values.Any(z => ToStringSafe(z) == x.Value.ToString())
+                                    && y.Values.Any(z => GetValueFormatted(z) == x.Value.ToString())
                                 )
                             )
                             .ToArray();
@@ -100,7 +101,11 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                     //if user typed value directly
                     else {
                         var val = userInputedValues.First(x => x.FilterId == f.Id);
-                        valops = new[] { new ValueOperatorPair(val.Values[0].ToString(), valops[0].Operator, f.Type) };
+                        string formattedValue;
+                        if (IfValueValidGetValueFormatted(val.Values, f.Type, out formattedValue))
+                            valops = new[] { new ValueOperatorPair(formattedValue, valops[0].Operator, f.Type) };
+                        else
+                            valops = new ValueOperatorPair[0];
                     }
 
                 }
@@ -110,6 +115,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             return filtsToValOps;
         }
 
+
         //------------------------------------------
         //Utility Part
 
@@ -117,7 +123,24 @@ namespace Business_Logic.MessagesModule.Mechanisms {
             return b.HasValue && b.Value;
         }
 
-        static string ToStringSafe(object obj) {
+        /// <summary>
+        /// Checks - if no value, that means that filter not be used.
+        /// Also handle BOOL case - if no value, it return valid "False" value
+        /// </summary>
+        static bool IfValueValidGetValueFormatted(object[] values,string SqlType, out string FormattedValue) {
+            if (values == null || values.Length == 0 || values[0] == null) {
+                if (SqlType.ToLower() == "bit") {
+                    FormattedValue = bool.FalseString;
+                    return true;
+                }
+                FormattedValue = null;
+                return false;
+            }
+            FormattedValue = GetValueFormatted(values[0]);
+            return true;
+        }
+
+        static string GetValueFormatted(object obj) {
             if (obj == null)
                 return "";
             return obj.ToString();

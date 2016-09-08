@@ -41,7 +41,7 @@ namespace Business_Logic.MessagesModule {
         IQueryable<tblRecepientCard> IMessageTemplate.Recepients {
             get {
                 if (_Recepients == null) {
-                    var ids = JsonConvert.DeserializeObject<int[]>(ChoosenReccardIdsJSON);
+                    var ids = JsonConvert.DeserializeObject<int[]>(ChoosenReccardIdsJSON) ?? new int[0];
                     _Recepients = tblRecepientFilter
                         .tblRecepientCards.Where(x => ids.Any(y => y == x.Id)).AsQueryable();
                 }

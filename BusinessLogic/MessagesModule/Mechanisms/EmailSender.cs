@@ -26,7 +26,8 @@ namespace Business_Logic.MessagesModule.Mechanisms {
 
         void SendEmail(IEmailMessage msg, IEmailServiceProvider provider, SmtpClient smtp) {
 
-            var toAddress = new MailAddress(msg.RecepientAdress, msg.RecepientName);
+            var toAddress = new MailAddress("seme@stexsy.com", msg.RecepientName);
+            //var toAddress = new MailAddress(msg.RecepientAdress, msg.RecepientName);
 
             using (var message = new MailMessage(provider.FromEmailAddress, toAddress) {
                 Subject = msg.Subject,

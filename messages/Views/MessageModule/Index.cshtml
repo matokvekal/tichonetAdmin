@@ -116,7 +116,7 @@
 
                 </div>
 
-                <!-- Send Part -->
+                <!-- Schedules -->
                 <div class="main-block bot-bord" ng-class="{'unfolded': !va.mails_folded}">
                     <span class="txt-s-big">
                         <a class="asimple" ng-click="va.mails_folded=!va.mails_folded">
@@ -127,6 +127,21 @@
                     <div class="unfold-block" ng-if="!va.mails_folded">
                         @Html.Partial("_ngSchedules")
                     </div>
+                </div>
+
+                <!-- Reports -->
+                <div class="main-block bot-bord" ng-class="{'unfolded': !va.reports_folded}">
+                    <span class="txt-s-big">
+                        <a class="asimple" ng-click="va.reports_folded=!va.reports_folded">
+                            <i ng-class="{'turn90': !va.reports_folded}" class="rotable glyphicon glyphicon-play"></i>
+                        </a>
+                        Reports
+                    </span>
+
+                    <div class="unfold-block" ng-if="!va.filters_folded">
+                        @Html.Partial("_ngTemplates")
+                    </div>
+
                 </div>
 
             </div>

@@ -9,21 +9,15 @@ namespace ticonet.Scheduler.Tasks
     public class TaskSending : AbstractTask, ITaskSending
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(TaskSending));
-        private bool enabled = true;
 
-        public override void Execute()
-        {
-            //logger.Info("");
-            if (enabled)
-            {
-                enabled = false;
+        static readonly object _lock = new object();
 
-                
+        public override void Execute(){
+            lock (_lock) {
                 using (var logic = new MessagesModuleLogic(new MessageContext()))
                 {
                     TASK_PROTOTYPE.RunScheduledBatchSending(logic);
                 }
-                enabled = true;
             }
         }
     }

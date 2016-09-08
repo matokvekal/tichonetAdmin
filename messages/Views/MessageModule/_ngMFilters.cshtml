@@ -97,6 +97,9 @@
                             </div>
 
                             <div ng-if="va.SHOW_RCARDS" class="foldable editor-container bounded-block-m">
+                                <div class="txt-c-grmore txt-s-med" ng-if="va.curmetafilter.reccards.length==0">
+                                    No Recepient cards. Drag Key from right list to create new.
+                                </div>
                                 <div ng-repeat="rc in va.curmetafilter.reccards" class="ngan-fade-mid">
                                     <div ng-if="!rc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':rc.Invalid}">
                                         <div>
@@ -159,6 +162,9 @@
                                 </div>
                             </div>
                             <div ng-if="va.SHOW_WCARDS" class="foldable editor-container bounded-block-m">
+                                <div class="txt-c-grmore txt-s-med" ng-if="va.curmetafilter.wildcards.length==0">
+                                    No Wildcards. Drag Key from right list to create new.
+                                </div>
                                 <div ng-repeat="wc in va.curmetafilter.wildcards" class="ngan-fade-mid">
                                     <div ng-if="!wc.ng_ToDelete" class="wildcard item-row" ng-class="{'invalid':wc.Invalid}">
                                         <div>
@@ -220,6 +226,9 @@
                                 </div>
                             </div>
                             <div ng-if="va.SHOW_FILTS" class="foldable editor-container bounded-block-m">
+                                <div class="txt-c-grmore txt-s-med" ng-if="va.curmetafilter.filters.length==0">
+                                    No Filters. Drag Key from right list to create new.
+                                </div>
                                 <div class="filter-row ngan-fade-mid" ng-repeat="nfilt in va.curmetafilter.filters">
                                     <div class="item-row" ng-if="!nfilt.ng_ToDelete" ng-class="{'invalid':nfilt.Invalid}">
                                         @* nfilt.ValsOps is array. if there more then 1 value, other values is like "OR" in expression *@

@@ -61,9 +61,16 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                 //TODO TRY-CATCH and complete transaction?
                 using (var manager = BatchSendingManager.NewInstance(Logic)) {
                     var allPendingMails = manager.GetPendingEmails();
+                    var allPendingSms = manager.GetPendingSms();
                     int allPendingMailsCount = allPendingMails.Count();
-                    //todo concat batches: sms and emails
-                    var batches = allPendingMails.Select(x => x.tblMessageBatch).ToArray();
+
+                    var batches = allPendingMails
+                        .Select(x => x.tblMessageBatch)
+                        .Distinct()
+                        .Concat(allPendingSms
+                            .Select(x => x.tblMessageBatch)
+                            .Distinct())
+                        .ToArray();
                     var emailProviders = manager.GetActiveEmailProviders().GetEnumerator();
 
                     //EMAIL
@@ -80,11 +87,7 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                             Emailer.SendBatch(pendingMailsPortion, provider);
                             manager.StoreSendProviderWorkHistory(provider, start, DateTime.Now.AddMilliseconds(1), getted);
                             //UPDATE DB AFTER StoreSendProviderWorkHistory somehow:
-                            //TODO: SoftDelete
-                            //var pendingMessagesQueue = pendingMailsPortion.Cast<tblMessage>().Select(x => x.tblPendingMessagesQueue);
-                            //foreach (var item in pendingMessagesQueue) item.Deleted = true;
-                            //manager.Logic.SaveChangesRangeSimple(pendingMessagesQueue);
-                            manager.Logic.DeleteRangeSimple(pendingMailsPortion.Cast<tblMessage>().Select(x => x.tblPendingMessagesQueue));
+                            manager.Logic.DeleteLazy(pendingMailsPortion.Cast<tblMessage>().Select(x => x.tblPendingMessagesQueue));
 
                             Counter += getted;
                         }
@@ -93,8 +96,8 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                         continueCycle = emailProviders.MoveNext();
                     }
                     //SMS
-                    //var pendingSms = manager.GetPendingSms();
-                    //....
+                    var Smser = new SmsSender(manager);
+
 
                     //CHECK IF BATCHES FINISHED
                     //ADD ERRORS TO BATCH
@@ -105,10 +108,10 @@ namespace Business_Logic.MessagesModule.Mechanisms {
                         if (batch.tblMessages.Where(x => x.ErrorLog != null).Any()) {
                             (batch as IErrorLoged).AddError("Some errors have arisen at sending stage at " + DateTime.Now.ToShortDateString());
                         }
-                        manager.Logic.SaveChangesSimple(batch);
+                        manager.Logic.SaveLazy(batch);
                     }
 
-                    try { manager.Logic.SimpleComplete(); } catch { success = false; }
+                    try { manager.Logic.SaveChanges(); } catch { success = false; }
                 }
                 Logic.Dispose();
                 if(success) transaction.Complete();

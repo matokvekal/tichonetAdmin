@@ -12,6 +12,7 @@ var AngularApp;
                 this.filters_folded = true;
                 this.templates_folded = true;
                 this.mails_folded = true;
+                this.reports_folded = true;
             }
             return PageBlocksVA;
         }());
